@@ -11,11 +11,19 @@ import { toast } from "@/components/ui/sonner";
 import { InputField } from "@/components/auth/form-fields/InputField";
 import { SelectField } from "@/components/auth/form-fields/SelectField";
 
+// Define the exact values allowed for gender and skill level
+const GENDER_VALUES = ["Male", "Female"] as const;
+const SKILL_LEVEL_VALUES = ["2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5"] as const;
+
+// Create type aliases for better type safety
+type Gender = typeof GENDER_VALUES[number];
+type SkillLevel = typeof SKILL_LEVEL_VALUES[number];
+
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(50, "First name cannot exceed 50 characters"),
   lastName: z.string().min(1, "Last name is required").max(50, "Last name cannot exceed 50 characters"),
-  gender: z.enum(["Male", "Female"], { required_error: "Please select your gender" }),
-  skillLevel: z.enum(["2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5"], { required_error: "Please select your skill level" }),
+  gender: z.enum(GENDER_VALUES, { required_error: "Please select your gender" }),
+  skillLevel: z.enum(SKILL_LEVEL_VALUES, { required_error: "Please select your skill level" }),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -33,8 +41,8 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
     defaultValues: {
       firstName: "",
       lastName: "",
-      gender: "Male", // Set a default value instead of undefined
-      skillLevel: "2.5", // Set a default value instead of undefined
+      gender: "Male", 
+      skillLevel: "2.5", 
     },
   });
 
@@ -43,32 +51,49 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
     if (profileData) {
       console.log("Profile data loaded:", profileData);
       
-      // Extract values from profile data
-      const firstName = profileData.first_name || "";
-      const lastName = profileData.last_name || "";
-      const gender = profileData.gender || "Male";
-      const skillLevel = profileData.skill_level || "2.5";
-      
-      console.log("Setting form values:", {
-        firstName, 
-        lastName,
-        gender,
-        skillLevel
-      });
-      
-      // Reset the form with the values
-      form.reset({
-        firstName,
-        lastName,
-        gender: gender as "Male" | "Female", 
-        skillLevel: skillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5"
-      });
+      try {
+        // Ensure we have valid values or use defaults
+        const firstName = profileData.first_name || "";
+        const lastName = profileData.last_name || "";
+        
+        // Force the gender to be a valid value from our enum
+        let gender: Gender = "Male";
+        if (profileData.gender === "Female" || profileData.gender === "Male") {
+          gender = profileData.gender;
+        }
+        
+        // Force the skill level to be a valid value from our enum
+        let skillLevel: SkillLevel = "2.5";
+        if (SKILL_LEVEL_VALUES.includes(profileData.skill_level)) {
+          skillLevel = profileData.skill_level as SkillLevel;
+        }
+        
+        console.log("Setting form values:", {
+          firstName, 
+          lastName,
+          gender,
+          skillLevel
+        });
+        
+        // Reset the form with the validated values
+        form.reset({
+          firstName,
+          lastName,
+          gender,
+          skillLevel
+        });
+      } catch (error) {
+        console.error("Error setting form values:", error);
+        toast.error("Error loading profile data");
+      }
     }
   }, [profileData, form]);
 
   const onSubmit = async (values: ProfileFormValues) => {
     try {
       setIsLoading(true);
+      
+      console.log("Saving profile with values:", values);
       
       const { error } = await supabase
         .from("profiles")
