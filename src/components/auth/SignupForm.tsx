@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { 
   Form,
 } from "@/components/ui/form";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { SignupSchema, signupSchema } from "@/lib/validation/auth";
 import { 
   Card, 
