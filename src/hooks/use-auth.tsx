@@ -87,12 +87,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
       }
       
+      // Get the current URL for proper email redirects
+      const currentUrl = window.location.origin;
+      const redirectTo = `${currentUrl}/auth/callback`;
+      
+      console.log("Using redirect URL:", redirectTo);
+      
       const result = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: redirectTo
         }
       });
 
@@ -183,8 +189,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resendVerificationEmail = async (email: string) => {
     try {
+      // Get the current URL for proper email redirects
+      const currentUrl = window.location.origin;
+      const redirectTo = `${currentUrl}/auth/callback`;
+      
+      console.log("Using reset password redirect URL:", redirectTo);
+      
       const result = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
       });
       
       if (result.error) {

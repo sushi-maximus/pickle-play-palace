@@ -10,15 +10,24 @@ const AuthCallback = () => {
   useEffect(() => {
     // Process the authentication callback
     const handleAuthCallback = async () => {
+      // Extract hash parameters from URL
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      const type = hashParams.get("type");
+      
+      console.log("Auth callback received:", { 
+        hasAccessToken: !!accessToken,
+        hasRefreshToken: !!refreshToken, 
+        type 
+      });
       
       if (accessToken) {
         try {
           // Set session from the URL hash
           const { data, error } = await supabase.auth.setSession({
             access_token: accessToken,
-            refresh_token: hashParams.get("refresh_token") || "",
+            refresh_token: refreshToken || "",
           });
 
           if (error) {
@@ -32,9 +41,17 @@ const AuthCallback = () => {
 
           if (data.session) {
             console.log("Authentication successful");
-            toast.success("Authentication successful", {
-              description: "You have been authenticated successfully."
-            });
+            
+            if (type === "signup") {
+              toast.success("Account verified", {
+                description: "Your email has been verified and your account is now active."
+              });
+            } else {
+              toast.success("Authentication successful", {
+                description: "You have been authenticated successfully."
+              });
+            }
+            
             navigate("/");
           }
         } catch (err) {
