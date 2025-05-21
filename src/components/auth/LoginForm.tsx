@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { EyeIcon, EyeOffIcon, AlertCircleIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, AlertCircleIcon, MailIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginSchema, loginSchema } from "@/lib/validation/auth";
 import { 
@@ -22,10 +22,11 @@ import { toast } from "@/components/ui/sonner";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, resendVerificationEmail } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [verificationRequired, setVerificationRequired] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
   const form = useForm<LoginSchema>({
@@ -67,16 +68,29 @@ export const LoginForm = () => {
   };
 
   const handleResendVerification = async () => {
+    if (!userEmail) {
+      toast.error("Email required", {
+        description: "Please enter your email address first."
+      });
+      return;
+    }
+    
     try {
-      // This is a placeholder - in a real implementation, you would call a Supabase
-      // function to resend the verification email
-      toast.success("Verification email sent", {
-        description: "Please check your inbox for a new verification link."
-      });
-    } catch (error) {
-      toast.error("Failed to resend verification email", {
-        description: "Please try again later."
-      });
+      setIsResendingEmail(true);
+      const { error } = await resendVerificationEmail(userEmail);
+      
+      if (error) {
+        toast.error("Failed to resend verification email", {
+          description: error.message || "Please try again later."
+        });
+      } else {
+        toast.success("Verification email sent", {
+          description: "Please check your inbox for a new verification link.",
+          duration: 6000
+        });
+      }
+    } finally {
+      setIsResendingEmail(false);
     }
   };
 
@@ -101,8 +115,19 @@ export const LoginForm = () => {
                     className="p-0 h-auto text-amber-600 font-medium underline underline-offset-4"
                     onClick={handleResendVerification}
                     type="button"
+                    disabled={isResendingEmail}
                   >
-                    Resend verification email
+                    {isResendingEmail ? (
+                      <>
+                        <span className="mr-2">Sending verification email...</span>
+                        <div className="h-4 w-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+                      </>
+                    ) : (
+                      <>
+                        <MailIcon className="h-3 w-3 mr-1" />
+                        Resend verification email
+                      </>
+                    )}
                   </Button>
                 </AlertDescription>
               </Alert>
@@ -115,7 +140,15 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="you@example.com" type="email" {...field} />
+                    <Input 
+                      placeholder="you@example.com" 
+                      type="email" 
+                      {...field} 
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setUserEmail(e.target.value);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,7 +192,14 @@ export const LoginForm = () => {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Logging in..." : "Log In"}
+              {isLoading ? (
+                <>
+                  <span className="mr-2">Logging in...</span>
+                  <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                </>
+              ) : (
+                "Log In"
+              )}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
