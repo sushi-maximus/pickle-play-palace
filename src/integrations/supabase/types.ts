@@ -9,7 +9,71 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          birthday: string | null
+          created_at: string
+          dupr_rating: number | null
+          first_name: string
+          gender: Database["public"]["Enums"]["gender"]
+          id: string
+          last_name: string
+          skill_level: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          birthday?: string | null
+          created_at?: string
+          dupr_rating?: number | null
+          first_name: string
+          gender: Database["public"]["Enums"]["gender"]
+          id: string
+          last_name: string
+          skill_level: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          birthday?: string | null
+          created_at?: string
+          dupr_rating?: number | null
+          first_name?: string
+          gender?: Database["public"]["Enums"]["gender"]
+          id?: string
+          last_name?: string
+          skill_level?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_skill_level_fkey"
+            columns: ["skill_level"]
+            isOneToOne: false
+            referencedRelation: "skill_levels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skill_levels: {
+        Row: {
+          description: string
+          id: string
+          name: string
+        }
+        Insert: {
+          description: string
+          id: string
+          name: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +82,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      gender: "Male" | "Female"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +197,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      gender: ["Male", "Female"],
+    },
   },
 } as const

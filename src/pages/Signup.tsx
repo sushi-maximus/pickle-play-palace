@@ -8,9 +8,9 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { SkillLevelGuide } from "@/components/SkillLevelGuide";
 import { 
   Form,
   FormControl,
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const signupSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -48,10 +49,10 @@ const skillLevelOptions = [
 ];
 
 const Signup = () => {
-  const { toast } = useToast();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -68,24 +69,50 @@ const Signup = () => {
 
   const onSubmit = async (values: SignupFormValues) => {
     try {
-      // This is where we would connect to Supabase for authentication
-      console.log("Form submitted with values:", values);
+      setIsLoading(true);
       
-      // For now, just show a success message
-      toast({
-        title: "Account created",
-        description: "Please connect Supabase to enable full authentication",
+      // Sign up the user with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            gender: values.gender,
+            skillLevel: values.skillLevel,
+          }
+        }
       });
       
-      // Normally would redirect to dashboard after successful signup
-      // navigate("/dashboard");
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message || "An error occurred during signup. Please try again.",
+        });
+        console.error("Signup error:", error);
+        return;
+      }
+
+      // Success!
+      toast({
+        title: "Account created",
+        description: "Please check your email to confirm your account.",
+      });
+      
+      // Redirect to login page after successful signup
+      navigate("/login");
+      
     } catch (error) {
       console.error("Signup error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "An error occurred during signup. Please try again.",
+        description: "An unexpected error occurred during signup. Please try again.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -177,7 +204,12 @@ const Signup = () => {
                     name="skillLevel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Skill Level</FormLabel>
+                        <FormLabel>
+                          Skill Level
+                          <span className="ml-1">
+                            <SkillLevelGuide />
+                          </span>
+                        </FormLabel>
                         <Select 
                           onValueChange={field.onChange} 
                           defaultValue={field.value}
@@ -272,7 +304,9 @@ const Signup = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-4">
-                <Button className="w-full" type="submit">Sign Up</Button>
+                <Button className="w-full" type="submit" disabled={isLoading}>
+                  {isLoading ? "Creating account..." : "Sign Up"}
+                </Button>
                 <div className="text-center text-sm text-muted-foreground">
                   Already have an account?{" "}
                   <Link to="/login" className="text-primary underline underline-offset-4">
