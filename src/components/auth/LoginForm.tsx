@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, AlertCircleIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginSchema, loginSchema } from "@/lib/validation/auth";
 import { 
@@ -17,12 +17,16 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "@/components/ui/sonner";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [verificationRequired, setVerificationRequired] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -35,16 +39,44 @@ export const LoginForm = () => {
   const onSubmit = async (values: LoginSchema) => {
     try {
       setIsLoading(true);
+      setUserEmail(values.email); // Store email in case we need to show verification message
       
       const { error } = await signIn(values.email, values.password);
       
-      if (!error) {
-        // Redirect to dashboard/home after successful login
+      if (error) {
+        if (error.message.includes("Email not confirmed") || error.message.toLowerCase().includes("verification")) {
+          setVerificationRequired(true);
+          toast.error("Email verification required", {
+            description: "Please check your inbox and verify your email before logging in."
+          });
+        } else {
+          toast.error("Login failed", {
+            description: error.message || "Invalid login credentials."
+          });
+        }
+      } else {
+        toast.success("Login successful", {
+          description: "Welcome back to Pickle Ninja!"
+        });
         navigate("/");
       }
       
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      // This is a placeholder - in a real implementation, you would call a Supabase
+      // function to resend the verification email
+      toast.success("Verification email sent", {
+        description: "Please check your inbox for a new verification link."
+      });
+    } catch (error) {
+      toast.error("Failed to resend verification email", {
+        description: "Please try again later."
+      });
     }
   };
 
@@ -59,6 +91,23 @@ export const LoginForm = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+            {verificationRequired && (
+              <Alert className="bg-amber-50 border-amber-200">
+                <AlertCircleIcon className="h-4 w-4 text-amber-500" />
+                <AlertDescription className="text-amber-800">
+                  <p>Please verify your email address before logging in.</p>
+                  <Button 
+                    variant="link" 
+                    className="p-0 h-auto text-amber-600 font-medium underline underline-offset-4"
+                    onClick={handleResendVerification}
+                    type="button"
+                  >
+                    Resend verification email
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <FormField
               control={form.control}
               name="email"

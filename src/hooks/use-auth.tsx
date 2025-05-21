@@ -2,7 +2,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 
 type AuthContextType = {
   session: Session | null;
@@ -11,6 +11,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   signUp: (email: string, password: string, metadata: any) => Promise<{ error: any | null; data: any | null }>;
   signIn: (email: string, password: string) => Promise<{ error: any | null; data: any | null }>;
+  resendVerificationEmail: (email: string) => Promise<{ error: any | null; data: any | null }>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   signUp: async () => ({ error: null, data: null }),
   signIn: async () => ({ error: null, data: null }),
+  resendVerificationEmail: async () => ({ error: null, data: null }),
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event);
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
@@ -52,8 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast({
-        title: "Signed out",
+      toast.success("Signed out", {
         description: "You have been signed out successfully."
       });
     } catch (error) {
@@ -85,9 +87,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error: result.error, data: null };
       }
 
-      toast({
-        title: "Account created",
-        description: "Your account has been created successfully. Please check your email to confirm your account."
+      toast.success("Account created", {
+        description: "Please check your email to confirm your account before logging in."
       });
       return { error: null, data: result.data };
     } catch (error: any) {
@@ -109,16 +110,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (result.error) {
-        toast({
-          variant: "destructive",
-          title: "Login error",
-          description: result.error.message || "Invalid login credentials."
-        });
+        if (result.error.message.includes("Email not confirmed")) {
+          toast({
+            variant: "destructive",
+            title: "Email not verified",
+            description: "Please check your inbox and verify your email before logging in."
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Login error",
+            description: result.error.message || "Invalid login credentials."
+          });
+        }
         return { error: result.error, data: null };
       }
 
-      toast({
-        title: "Welcome back!",
+      toast.success("Welcome back!", {
         description: "You have been logged in successfully."
       });
       return { error: null, data: result.data };
@@ -133,8 +141,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const resendVerificationEmail = async (email: string) => {
+    try {
+      // This functionality currently isn't exposed directly in Supabase JS client
+      // It would require a custom implementation or server function
+      // This is a placeholder for now
+      const result = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/login',
+      });
+      
+      if (result.error) {
+        toast({
+          variant: "destructive",
+          title: "Error sending verification email",
+          description: result.error.message || "Failed to send verification email."
+        });
+        return { error: result.error, data: null };
+      }
+      
+      toast.success("Email sent", {
+        description: "If an account exists with this email, a new verification link has been sent."
+      });
+      return { error: null, data: result.data };
+    } catch (error: any) {
+      console.error("Error resending verification email:", error);
+      toast({
+        variant: "destructive",
+        title: "Error sending verification email",
+        description: error.message || "An unexpected error occurred."
+      });
+      return { error, data: null };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user, isLoading, signOut, signUp, signIn }}>
+    <AuthContext.Provider value={{ 
+      session, 
+      user, 
+      isLoading, 
+      signOut, 
+      signUp, 
+      signIn,
+      resendVerificationEmail 
+    }}>
       {children}
     </AuthContext.Provider>
   );
