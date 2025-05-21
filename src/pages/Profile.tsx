@@ -71,11 +71,16 @@ export default function Profile() {
         
         if (data) {
           setProfileData(data);
+          
+          // Validate skill_level value is one of the expected enum values
+          const validSkillLevel = skillLevelOptions.find(option => option.value === data.skill_level)?.value;
+          
           form.reset({
             firstName: data.first_name || "",
             lastName: data.last_name || "",
             gender: (data.gender as any) || undefined,
-            skillLevel: data.skill_level || undefined,
+            // Only set the skill level if it's one of the valid options, otherwise use default
+            skillLevel: validSkillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5" || "2.5",
           });
           
           if (data.avatar_url) {
