@@ -41,15 +41,25 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   // Set form values when profile data is available
   useEffect(() => {
     if (profileData) {
-      // Validate skill_level value is one of the expected enum values
-      const validSkillLevel = skillLevelOptions.find(option => option.value === profileData.skill_level)?.value;
+      console.log("Profile data loaded:", profileData);
+      console.log("Current skill level:", profileData.skill_level);
+      
+      // Find if the skill_level from profile matches any of our valid options
+      const skillLevelValue = profileData.skill_level;
+      console.log("Skill level options:", skillLevelOptions.map(o => o.value));
+      
+      // Make sure we're setting a valid skill level from our enum options
+      const validSkillLevel = skillLevelOptions.find(option => option.value === skillLevelValue)?.value;
+      console.log("Valid skill level found:", validSkillLevel);
+      
+      // Cast the skill level to the appropriate type for the form
+      const typedSkillLevel = validSkillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5";
       
       form.reset({
         firstName: profileData.first_name || "",
         lastName: profileData.last_name || "",
         gender: (profileData.gender as "Male" | "Female") || undefined,
-        // Make sure we set a valid skill level that matches our enum
-        skillLevel: validSkillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5",
+        skillLevel: typedSkillLevel || "2.5", // Provide a default if no valid option is found
       });
     }
   }, [profileData, form]);
