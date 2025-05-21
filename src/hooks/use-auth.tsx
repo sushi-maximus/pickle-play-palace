@@ -85,7 +85,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       toast.success("Account created", {
-        description: "Please check your email to confirm your account before logging in."
+        description: "Please check your email to confirm your account before logging in.",
+        duration: Infinity  // Make this toast persist until manually closed
       });
       return { error: null, data: result.data };
     } catch (error: any) {
@@ -144,7 +145,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       
       toast.success("Email sent", {
-        description: "If an account exists with this email, a new verification link has been sent."
+        description: "If an account exists with this email, a new verification link has been sent.",
+        duration: Infinity  // Make this toast persist until manually closed
       });
       return { error: null, data: result.data };
     } catch (error: any) {
