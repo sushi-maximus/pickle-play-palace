@@ -1,10 +1,9 @@
-
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SignupForm } from "@/components/auth/SignupForm";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Signup = () => {
   const { user } = useAuth();

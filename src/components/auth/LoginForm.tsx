@@ -13,7 +13,7 @@ import {
   FormMessage 
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { LoginSchema, loginSchema } from "@/lib/validation/auth";
 import { 
   Card, 
@@ -23,24 +23,14 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { LoginErrorMessage } from "./LoginErrorMessage";
+import { ResendVerificationDialog } from "./ResendVerificationDialog";
 
 export const LoginForm = () => {
-  const { signIn, resendVerificationEmail } = useAuth();
+  const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [resendEmail, setResendEmail] = useState("");
-  const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -68,27 +58,8 @@ export const LoginForm = () => {
     }
   };
 
-  const handleResendVerification = async () => {
-    if (!resendEmail) return;
-    
-    setResendStatus("loading");
-    try {
-      const { error } = await resendVerificationEmail(resendEmail);
-      
-      if (error) {
-        setResendStatus("error");
-        return;
-      }
-      
-      setResendStatus("success");
-      setTimeout(() => {
-        setIsDialogOpen(false);
-        // Reset after dialog closes
-        setTimeout(() => setResendStatus("idle"), 500);
-      }, 3000);
-    } catch (error) {
-      setResendStatus("error");
-    }
+  const handleOpenResendDialog = () => {
+    setIsDialogOpen(true);
   };
 
   return (
@@ -103,55 +74,10 @@ export const LoginForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             {loginError && (
-              <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm flex items-start">
-                <AlertCircle className="h-4 w-4 mr-2 mt-0.5" />
-                <div>
-                  <p>{loginError}</p>
-                  {loginError.includes("Email not confirmed") && (
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="link" className="h-auto p-0 text-sm">
-                          Resend verification email
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Resend verification email</DialogTitle>
-                          <DialogDescription>
-                            Enter your email address to receive a new verification link.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="py-4">
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Enter your email"
-                                value={resendEmail}
-                                onChange={(e) => setResendEmail(e.target.value)}
-                                type="email"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        </div>
-                        <DialogFooter>
-                          <Button
-                            type="button"
-                            onClick={handleResendVerification}
-                            disabled={resendStatus === "loading" || !resendEmail}
-                          >
-                            {resendStatus === "loading" 
-                              ? "Sending..." 
-                              : resendStatus === "success" 
-                              ? "Email sent!" 
-                              : "Send verification email"}
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                </div>
-              </div>
+              <LoginErrorMessage 
+                errorMessage={loginError}
+                onResendVerification={handleOpenResendDialog}
+              />
             )}
             
             <FormField
@@ -201,6 +127,11 @@ export const LoginForm = () => {
           </CardFooter>
         </form>
       </Form>
+      
+      <ResendVerificationDialog 
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </Card>
   );
 };
