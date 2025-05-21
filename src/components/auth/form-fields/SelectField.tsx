@@ -2,7 +2,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control } from "react-hook-form";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 interface SelectOption {
   value: string;
@@ -38,6 +38,7 @@ export const SelectField = ({
           </FormLabel>
           <Select 
             onValueChange={field.onChange} 
+            value={field.value}
             defaultValue={field.value}
           >
             <FormControl>
