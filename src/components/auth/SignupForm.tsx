@@ -63,8 +63,10 @@ export const SignupForm = () => {
       const { error } = await signUp(values.email, values.password, userData);
       
       if (!error) {
-        // Only navigate to login page if no error
+        // Navigate to login page
         navigate("/login");
+        // Reset scroll position to the top of the page
+        window.scrollTo(0, 0);
       }
       
     } catch (error) {
