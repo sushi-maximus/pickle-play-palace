@@ -68,6 +68,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, metadata: any) => {
     try {
+      // Log the metadata being sent to Supabase for debugging purposes
+      console.log("Signup metadata being sent:", {
+        email,
+        firstName: metadata.firstName,
+        lastName: metadata.lastName,
+        gender: metadata.gender,
+        skillLevel: metadata.skillLevel
+      });
+      
       const result = await supabase.auth.signUp({
         email,
         password,
@@ -78,12 +87,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (result.error) {
+        console.error("Signup error details:", result.error);
         toast.error("Signup error", {
           description: result.error.message || "An error occurred during signup."
         });
         return { error: result.error, data: null };
       }
 
+      // Check if user was actually created
+      if (!result.data?.user) {
+        console.error("User not created. Response:", result);
+        toast.error("Signup failed", {
+          description: "User account could not be created. Please try again."
+        });
+        return { error: { message: "User not created" }, data: null };
+      }
+
+      console.log("Signup successful. User data:", result.data.user);
       toast.success("Account created", {
         description: "Please check your email to confirm your account before logging in.",
         duration: Infinity  // Make this toast persist until manually closed
