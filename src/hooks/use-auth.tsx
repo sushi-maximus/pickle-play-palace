@@ -72,7 +72,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
         options: {
-          data: metadata
+          data: metadata,
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
 
@@ -131,11 +132,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resendVerificationEmail = async (email: string) => {
     try {
-      // This functionality currently isn't exposed directly in Supabase JS client
-      // It would require a custom implementation or server function
-      // This is a placeholder for now
       const result = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/login',
+        redirectTo: `${window.location.origin}/auth/callback`,
       });
       
       if (result.error) {
