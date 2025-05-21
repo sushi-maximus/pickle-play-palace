@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -21,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 const signupSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -50,6 +49,7 @@ const skillLevelOptions = [
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,38 +71,19 @@ const Signup = () => {
     try {
       setIsLoading(true);
       
-      // Sign up the user with Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            gender: values.gender,
-            skillLevel: values.skillLevel,
-          }
-        }
-      });
+      const userData = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        gender: values.gender,
+        skillLevel: values.skillLevel,
+      };
       
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message || "An error occurred during signup. Please try again.",
-        });
-        console.error("Signup error:", error);
-        return;
+      const { error } = await signUp(values.email, values.password, userData);
+      
+      if (!error) {
+        // Only navigate to login page if no error
+        navigate("/login");
       }
-
-      // Success!
-      toast({
-        title: "Account created",
-        description: "Please check your email to confirm your account.",
-      });
-      
-      // Redirect to login page after successful signup
-      navigate("/login");
       
     } catch (error) {
       console.error("Signup error:", error);

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -23,6 +22,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,36 +38,13 @@ const Login = () => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password,
-      });
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: error.message || "Please check your credentials and try again.",
-        });
-        return;
+      const { error } = await signIn(values.email, values.password);
+      
+      if (!error) {
+        // Redirect to dashboard/home after successful login
+        navigate("/");
       }
-
-      // Success!
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
       
-      // Redirect to dashboard/home after successful login
-      navigate("/");
-      
-    } catch (error) {
-      console.error("Login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-      });
     } finally {
       setIsLoading(false);
     }
