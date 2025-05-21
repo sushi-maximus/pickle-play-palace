@@ -36,6 +36,13 @@ interface ProfileFormProps {
 export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
+  // Simple log to check what data is coming in
+  useEffect(() => {
+    if (profileData) {
+      console.log("Initial profile data:", profileData);
+    }
+  }, [profileData]);
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -49,43 +56,16 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   // Set form values when profile data is available
   useEffect(() => {
     if (profileData) {
-      console.log("Profile data loaded:", profileData);
+      // Simple approach - set the values directly
+      const formValues = {
+        firstName: profileData.first_name || "",
+        lastName: profileData.last_name || "",
+        gender: profileData.gender || "Male",
+        skillLevel: profileData.skill_level || "2.5",
+      };
       
-      try {
-        // Ensure we have valid values or use defaults
-        const firstName = profileData.first_name || "";
-        const lastName = profileData.last_name || "";
-        
-        // Force the gender to be a valid value from our enum
-        let gender: Gender = "Male";
-        if (profileData.gender === "Female" || profileData.gender === "Male") {
-          gender = profileData.gender;
-        }
-        
-        // Force the skill level to be a valid value from our enum
-        let skillLevel: SkillLevel = "2.5";
-        if (SKILL_LEVEL_VALUES.includes(profileData.skill_level)) {
-          skillLevel = profileData.skill_level as SkillLevel;
-        }
-        
-        console.log("Setting form values:", {
-          firstName, 
-          lastName,
-          gender,
-          skillLevel
-        });
-        
-        // Reset the form with the validated values
-        form.reset({
-          firstName,
-          lastName,
-          gender,
-          skillLevel
-        });
-      } catch (error) {
-        console.error("Error setting form values:", error);
-        toast.error("Error loading profile data");
-      }
+      console.log("Setting form values to:", formValues);
+      form.reset(formValues);
     }
   }, [profileData, form]);
 
@@ -95,14 +75,18 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       
       console.log("Saving profile with values:", values);
       
+      const updateData = {
+        first_name: values.firstName,
+        last_name: values.lastName,
+        gender: values.gender,
+        skill_level: values.skillLevel
+      };
+      
+      console.log("Update data being sent to Supabase:", updateData);
+      
       const { error } = await supabase
         .from("profiles")
-        .update({
-          first_name: values.firstName,
-          last_name: values.lastName,
-          gender: values.gender,
-          skill_level: values.skillLevel
-        })
+        .update(updateData)
         .eq("id", userId);
       
       if (error) throw error;
