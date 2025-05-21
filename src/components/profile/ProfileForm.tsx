@@ -33,8 +33,8 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
     defaultValues: {
       firstName: "",
       lastName: "",
-      gender: undefined,
-      skillLevel: undefined,
+      gender: "Male", // Set a default value instead of undefined
+      skillLevel: "2.5", // Set a default value instead of undefined
     },
   });
 
@@ -42,24 +42,26 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   useEffect(() => {
     if (profileData) {
       console.log("Profile data loaded:", profileData);
-      console.log("Current skill level:", profileData.skill_level);
       
-      // Find if the skill_level from profile matches any of our valid options
-      const skillLevelValue = profileData.skill_level;
-      console.log("Skill level options:", skillLevelOptions.map(o => o.value));
+      // Extract values from profile data
+      const firstName = profileData.first_name || "";
+      const lastName = profileData.last_name || "";
+      const gender = profileData.gender || "Male";
+      const skillLevel = profileData.skill_level || "2.5";
       
-      // Make sure we're setting a valid skill level from our enum options
-      const validSkillLevel = skillLevelOptions.find(option => option.value === skillLevelValue)?.value;
-      console.log("Valid skill level found:", validSkillLevel);
+      console.log("Setting form values:", {
+        firstName, 
+        lastName,
+        gender,
+        skillLevel
+      });
       
-      // Cast the skill level to the appropriate type for the form
-      const typedSkillLevel = validSkillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5";
-      
+      // Reset the form with the values
       form.reset({
-        firstName: profileData.first_name || "",
-        lastName: profileData.last_name || "",
-        gender: (profileData.gender as "Male" | "Female") || undefined,
-        skillLevel: typedSkillLevel || "2.5", // Provide a default if no valid option is found
+        firstName,
+        lastName,
+        gender: gender as "Male" | "Female", 
+        skillLevel: skillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5"
       });
     }
   }, [profileData, form]);
