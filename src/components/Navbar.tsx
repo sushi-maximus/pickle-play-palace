@@ -1,18 +1,15 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
-
-  const handleLogout = async () => {
-    await signOut();
-  };
+  const { user } = useAuth();
 
   return (
     <nav className="w-full bg-background border-b border-border py-3">
@@ -29,15 +26,13 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {user ? (
-              <>
+              <Link to="/profile">
                 <Button variant="ghost" size="icon" className="rounded-full">
-                  <User className="h-5 w-5" />
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>{user.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+                  </Avatar>
                 </Button>
-                <Button variant="outline" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Log Out
-                </Button>
-              </>
+              </Link>
             ) : (
               <>
                 <Link to="/login">
@@ -71,14 +66,12 @@ export function Navbar() {
           <div className="flex flex-col gap-4">
             {user ? (
               <div className="flex flex-col gap-2 mt-2">
-                <Button variant="ghost" className="justify-start">
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
-                </Button>
-                <Button variant="outline" onClick={handleLogout} className="justify-start">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Log Out
-                </Button>
+                <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="ghost" className="justify-start w-full">
+                    <User className="h-4 w-4 mr-2" />
+                    Profile
+                  </Button>
+                </Link>
               </div>
             ) : (
               <div className="flex flex-col gap-2 mt-2">
