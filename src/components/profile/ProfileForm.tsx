@@ -36,7 +36,7 @@ interface ProfileFormProps {
 export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simple log to check what data is coming in
+  // Log the incoming profile data for debugging
   useEffect(() => {
     if (profileData) {
       console.log("Initial profile data:", profileData);
@@ -56,16 +56,22 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   // Set form values when profile data is available
   useEffect(() => {
     if (profileData) {
-      // Simple approach - set the values directly
+      // Create a safe copy of the profile data to use for the form
       const formValues = {
         firstName: profileData.first_name || "",
         lastName: profileData.last_name || "",
-        gender: profileData.gender || "Male",
-        skillLevel: profileData.skill_level || "2.5",
-      };
+        // Ensure gender is a valid enum value
+        gender: GENDER_VALUES.includes(profileData.gender) ? profileData.gender : "Male",
+        // Ensure skill level is a valid enum value
+        skillLevel: SKILL_LEVEL_VALUES.includes(profileData.skill_level) ? profileData.skill_level : "2.5",
+      } as ProfileFormValues;
       
       console.log("Setting form values to:", formValues);
-      form.reset(formValues);
+      
+      // Use setValue for each field individually to ensure the SelectFields update correctly
+      Object.entries(formValues).forEach(([key, value]) => {
+        form.setValue(key as keyof ProfileFormValues, value);
+      });
     }
   }, [profileData, form]);
 
