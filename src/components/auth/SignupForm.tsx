@@ -27,6 +27,7 @@ export const SignupForm = () => {
   const navigate = useNavigate();
   const { signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [signupError, setSignupError] = useState<string | null>(null);
   
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
@@ -44,6 +45,16 @@ export const SignupForm = () => {
   const onSubmit = async (values: SignupSchema) => {
     try {
       setIsLoading(true);
+      setSignupError(null);
+      
+      // Log form values to ensure they're correct
+      console.log("Form values submitted:", {
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        gender: values.gender,
+        skillLevel: values.skillLevel,
+      });
       
       const userData = {
         firstName: values.firstName,
@@ -54,15 +65,20 @@ export const SignupForm = () => {
       
       const { error } = await signUp(values.email, values.password, userData);
       
-      if (!error) {
-        // Navigate to login page
-        navigate("/login");
-        // Reset scroll position to the top of the page
-        window.scrollTo(0, 0);
+      if (error) {
+        console.error("Error during signup:", error);
+        setSignupError(error.message || "Failed to create account. Please try again.");
+        return;
       }
+      
+      // Navigate to login page
+      navigate("/login");
+      // Reset scroll position to the top of the page
+      window.scrollTo(0, 0);
       
     } catch (error) {
       console.error("Signup error:", error);
+      setSignupError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +95,12 @@ export const SignupForm = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+            {signupError && (
+              <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
+                Error: {signupError}
+              </div>
+            )}
+            
             <PersonalInfoFields control={form.control} />
             <PasswordFields control={form.control} />
             <TermsAndPolicy />

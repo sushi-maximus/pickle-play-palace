@@ -77,6 +77,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         skillLevel: metadata.skillLevel
       });
       
+      // Verify that all required fields are present in the metadata
+      if (!metadata.firstName || !metadata.lastName || !metadata.gender || !metadata.skillLevel) {
+        console.warn("Missing metadata fields:", {
+          hasFirstName: !!metadata.firstName,
+          hasLastName: !!metadata.lastName,
+          hasGender: !!metadata.gender,
+          hasSkillLevel: !!metadata.skillLevel
+        });
+      }
+      
       const result = await supabase.auth.signUp({
         email,
         password,
@@ -104,6 +114,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       console.log("Signup successful. User data:", result.data.user);
+      
+      // Check if profile was created
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', result.data.user.id)
+          .single();
+        
+        if (profileError) {
+          console.error("Error checking for profile:", profileError);
+        } else if (!profile) {
+          console.warn("Profile not found for user after signup:", result.data.user.id);
+        } else {
+          console.log("Profile successfully created:", profile);
+        }
+      } catch (profileCheckError) {
+        console.error("Exception checking profile:", profileCheckError);
+      }
+      
       toast.success("Account created", {
         description: "Please check your email to confirm your account before logging in.",
         duration: Infinity  // Make this toast persist until manually closed
