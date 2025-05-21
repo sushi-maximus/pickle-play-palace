@@ -31,9 +31,9 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: profileData?.first_name || "",
-      lastName: profileData?.last_name || "",
-      gender: (profileData?.gender as "Male" | "Female") || undefined,
+      firstName: "",
+      lastName: "",
+      gender: undefined,
       skillLevel: undefined,
     },
   });
@@ -47,9 +47,9 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       form.reset({
         firstName: profileData.first_name || "",
         lastName: profileData.last_name || "",
-        gender: (profileData.gender as any) || undefined,
-        // Only set the skill level if it's one of the valid options, otherwise use default
-        skillLevel: validSkillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5" || "2.5",
+        gender: (profileData.gender as "Male" | "Female") || undefined,
+        // Make sure we set a valid skill level that matches our enum
+        skillLevel: validSkillLevel as "2.5" | "3.0" | "3.5" | "4.0" | "4.5" | "5.0" | "5.5",
       });
     }
   }, [profileData, form]);
