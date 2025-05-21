@@ -60,9 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     } catch (error) {
       console.error("Error signing out:", error);
-      toast({
-        variant: "destructive",
-        title: "Error signing out",
+      toast.error("Error signing out", {
         description: "An error occurred while signing out."
       });
     }
@@ -79,9 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (result.error) {
-        toast({
-          variant: "destructive",
-          title: "Signup error",
+        toast.error("Signup error", {
           description: result.error.message || "An error occurred during signup."
         });
         return { error: result.error, data: null };
@@ -93,9 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { error: null, data: result.data };
     } catch (error: any) {
       console.error("Unexpected signup error:", error);
-      toast({
-        variant: "destructive",
-        title: "Signup error",
+      toast.error("Signup error", {
         description: error.message || "An unexpected error occurred during signup."
       });
       return { error, data: null };
@@ -111,15 +105,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (result.error) {
         if (result.error.message.includes("Email not confirmed")) {
-          toast({
-            variant: "destructive",
-            title: "Email not verified",
+          toast.error("Email not verified", {
             description: "Please check your inbox and verify your email before logging in."
           });
         } else {
-          toast({
-            variant: "destructive",
-            title: "Login error",
+          toast.error("Login error", {
             description: result.error.message || "Invalid login credentials."
           });
         }
@@ -132,9 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { error: null, data: result.data };
     } catch (error: any) {
       console.error("Unexpected login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Login error",
+      toast.error("Login error", {
         description: error.message || "An unexpected error occurred during login."
       });
       return { error, data: null };
@@ -151,9 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       if (result.error) {
-        toast({
-          variant: "destructive",
-          title: "Error sending verification email",
+        toast.error("Error sending verification email", {
           description: result.error.message || "Failed to send verification email."
         });
         return { error: result.error, data: null };
@@ -165,9 +151,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { error: null, data: result.data };
     } catch (error: any) {
       console.error("Error resending verification email:", error);
-      toast({
-        variant: "destructive",
-        title: "Error sending verification email",
+      toast.error("Error sending verification email", {
         description: error.message || "An unexpected error occurred."
       });
       return { error, data: null };
