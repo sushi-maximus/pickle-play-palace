@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -193,10 +192,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const currentUrl = window.location.origin;
       const redirectTo = `${currentUrl}/auth/callback`;
       
-      console.log("Using reset password redirect URL:", redirectTo);
+      console.log("Using verification redirect URL:", redirectTo);
       
-      const result = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo,
+      const result = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: {
+          emailRedirectTo: redirectTo,
+        }
       });
       
       if (result.error) {
@@ -208,7 +211,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       toast.success("Email sent", {
         description: "If an account exists with this email, a new verification link has been sent.",
-        duration: Infinity  // Make this toast persist until manually closed
       });
       return { error: null, data: result.data };
     } catch (error: any) {

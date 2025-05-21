@@ -10,8 +10,32 @@ const AuthCallback = () => {
   useEffect(() => {
     // Process the authentication callback
     const handleAuthCallback = async () => {
-      // Extract hash parameters from URL
+      // Check for error parameters in the URL
+      const urlParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      
+      const error = urlParams.get("error") || hashParams.get("error");
+      const errorDescription = urlParams.get("error_description") || hashParams.get("error_description");
+      
+      if (error) {
+        console.error("Auth error:", error, errorDescription);
+        
+        if (error === "access_denied" && errorDescription?.includes("expired")) {
+          toast.error("Verification link expired", {
+            description: "The verification link has expired. Please request a new one from the login page.",
+          });
+          navigate("/login");
+          return;
+        }
+        
+        toast.error("Authentication failed", {
+          description: errorDescription || "Unable to complete authentication process."
+        });
+        navigate("/login");
+        return;
+      }
+      
+      // Extract hash parameters from URL
       const accessToken = hashParams.get("access_token");
       const refreshToken = hashParams.get("refresh_token");
       const type = hashParams.get("type");

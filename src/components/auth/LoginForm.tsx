@@ -3,10 +3,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { 
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage 
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { EyeIcon, EyeOffIcon, AlertCircleIcon, MailIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginSchema, loginSchema } from "@/lib/validation/auth";
 import { 
@@ -17,17 +23,24 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "@/components/ui/sonner";
+import { AlertCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const LoginForm = () => {
-  const navigate = useNavigate();
   const { signIn, resendVerificationEmail } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [verificationRequired, setVerificationRequired] = useState(false);
-  const [isResendingEmail, setIsResendingEmail] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
+  const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -40,99 +53,107 @@ export const LoginForm = () => {
   const onSubmit = async (values: LoginSchema) => {
     try {
       setIsLoading(true);
-      setUserEmail(values.email); // Store email in case we need to show verification message
+      setLoginError(null);
       
       const { error } = await signIn(values.email, values.password);
       
       if (error) {
-        if (error.message.includes("Email not confirmed") || error.message.toLowerCase().includes("verification")) {
-          setVerificationRequired(true);
-          toast.error("Email verification required", {
-            description: "Please check your inbox and verify your email before logging in."
-          });
-        } else {
-          toast.error("Login failed", {
-            description: error.message || "Invalid login credentials."
-          });
-        }
-      } else {
-        toast.success("Login successful", {
-          description: "Welcome back to Pickle Ninja!"
-        });
-        navigate("/");
+        setLoginError(error.message);
+        return;
       }
-      
+    } catch (error: any) {
+      setLoginError(error.message || "Failed to log in. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResendVerification = async () => {
-    if (!userEmail) {
-      toast.error("Email required", {
-        description: "Please enter your email address first."
-      });
-      return;
-    }
+    if (!resendEmail) return;
     
+    setResendStatus("loading");
     try {
-      setIsResendingEmail(true);
-      const { error } = await resendVerificationEmail(userEmail);
+      const { error } = await resendVerificationEmail(resendEmail);
       
       if (error) {
-        toast.error("Failed to resend verification email", {
-          description: error.message || "Please try again later."
-        });
-      } else {
-        toast.success("Verification email sent", {
-          description: "Please check your inbox for a new verification link.",
-          duration: 6000
-        });
+        setResendStatus("error");
+        return;
       }
-    } finally {
-      setIsResendingEmail(false);
+      
+      setResendStatus("success");
+      setTimeout(() => {
+        setIsDialogOpen(false);
+        // Reset after dialog closes
+        setTimeout(() => setResendStatus("idle"), 500);
+      }, 3000);
+    } catch (error) {
+      setResendStatus("error");
     }
   };
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-2xl">Log in to your account</CardTitle>
+        <CardTitle className="text-2xl">Log in</CardTitle>
         <CardDescription>
-          Welcome back to Pickle Ninja
+          Enter your email and password to access your account
         </CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
-            {verificationRequired && (
-              <Alert className="bg-amber-50 border-amber-200">
-                <AlertCircleIcon className="h-4 w-4 text-amber-500" />
-                <AlertDescription className="text-amber-800">
-                  <p>Please verify your email address before logging in.</p>
-                  <Button 
-                    variant="link" 
-                    className="p-0 h-auto text-amber-600 font-medium underline underline-offset-4"
-                    onClick={handleResendVerification}
-                    type="button"
-                    disabled={isResendingEmail}
-                  >
-                    {isResendingEmail ? (
-                      <>
-                        <span className="mr-2">Sending verification email...</span>
-                        <div className="h-4 w-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
-                      </>
-                    ) : (
-                      <>
-                        <MailIcon className="h-3 w-3 mr-1" />
-                        Resend verification email
-                      </>
-                    )}
-                  </Button>
-                </AlertDescription>
-              </Alert>
+            {loginError && (
+              <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm flex items-start">
+                <AlertCircle className="h-4 w-4 mr-2 mt-0.5" />
+                <div>
+                  <p>{loginError}</p>
+                  {loginError.includes("Email not confirmed") && (
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="link" className="h-auto p-0 text-sm">
+                          Resend verification email
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Resend verification email</DialogTitle>
+                          <DialogDescription>
+                            Enter your email address to receive a new verification link.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4">
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter your email"
+                                value={resendEmail}
+                                onChange={(e) => setResendEmail(e.target.value)}
+                                type="email"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            type="button"
+                            onClick={handleResendVerification}
+                            disabled={resendStatus === "loading" || !resendEmail}
+                          >
+                            {resendStatus === "loading" 
+                              ? "Sending..." 
+                              : resendStatus === "success" 
+                              ? "Email sent!" 
+                              : "Send verification email"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </div>
+              </div>
             )}
-
+            
             <FormField
               control={form.control}
               name="email"
@@ -140,21 +161,13 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="you@example.com" 
-                      type="email" 
-                      {...field} 
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setUserEmail(e.target.value);
-                      }}
-                    />
+                    <Input placeholder="your.email@example.com" type="email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            
             <FormField
               control={form.control}
               name="password"
@@ -162,44 +175,22 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input 
-                        type={showPassword ? "text" : "password"} 
-                        placeholder="Your password" 
-                        {...field} 
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-0 h-full px-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                      </Button>
-                    </div>
+                    <Input placeholder="••••••••" type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            
             <div className="text-right">
               <Link to="/forgot-password" className="text-sm text-primary underline underline-offset-4">
-                Forgot Password?
+                Forgot password?
               </Link>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <span className="mr-2">Logging in...</span>
-                  <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                </>
-              ) : (
-                "Log In"
-              )}
+              {isLoading ? "Logging in..." : "Log In"}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
