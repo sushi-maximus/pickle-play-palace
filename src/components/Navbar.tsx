@@ -5,11 +5,19 @@ import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  // Get user initials for avatar fallback
+  const getInitials = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase();
+    }
+    return user?.email?.charAt(0).toUpperCase() || 'U';
+  };
 
   return (
     <nav className="w-full bg-background border-b border-border py-3">
@@ -29,7 +37,10 @@ export function Navbar() {
               <Link to="/profile">
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback>{user.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+                    {profile?.avatar_url && (
+                      <AvatarImage src={profile.avatar_url} alt="Profile" />
+                    )}
+                    <AvatarFallback>{getInitials()}</AvatarFallback>
                   </Avatar>
                 </Button>
               </Link>

@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProfileAvatarProps {
   userId: string;
@@ -14,6 +15,7 @@ interface ProfileAvatarProps {
 export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarProps) => {
   const [uploading, setUploading] = useState(false);
   const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(avatarUrl);
+  const { refreshProfile } = useAuth();
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -48,6 +50,10 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
       if (updateError) throw updateError;
       
       setLocalAvatarUrl(publicUrl);
+      
+      // Refresh profile data in context
+      await refreshProfile();
+      
       toast.success("Avatar updated successfully");
       
     } catch (error: any) {
