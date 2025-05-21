@@ -1,12 +1,18 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+  };
 
   return (
     <nav className="w-full bg-background border-b border-border py-3">
@@ -20,25 +26,28 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-6">
-          <div className="flex items-center gap-4">
-            <Link to="/about" className="text-foreground hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-foreground hover:text-primary transition-colors">
-              Contact
-            </Link>
-            <Link to="/privacy" className="text-foreground hover:text-primary transition-colors">
-              Privacy
-            </Link>
-          </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link to="/login">
-              <Button variant="outline">Log In</Button>
-            </Link>
-            <Link to="/signup">
-              <Button>Sign Up</Button>
-            </Link>
+            {user ? (
+              <>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <User className="h-5 w-5" />
+                </Button>
+                <Button variant="outline" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Log Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline">Log In</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button>Sign Up</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -60,35 +69,27 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="md:hidden px-4 py-4 bg-background border-b border-border">
           <div className="flex flex-col gap-4">
-            <Link 
-              to="/about" 
-              className="text-foreground hover:text-primary transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link 
-              to="/contact" 
-              className="text-foreground hover:text-primary transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contact
-            </Link>
-            <Link 
-              to="/privacy" 
-              className="text-foreground hover:text-primary transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Privacy
-            </Link>
-            <div className="flex flex-col gap-2 mt-2">
-              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="outline" className="w-full">Log In</Button>
-              </Link>
-              <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full">Sign Up</Button>
-              </Link>
-            </div>
+            {user ? (
+              <div className="flex flex-col gap-2 mt-2">
+                <Button variant="ghost" className="justify-start">
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </Button>
+                <Button variant="outline" onClick={handleLogout} className="justify-start">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Log Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 mt-2">
+                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="outline" className="w-full">Log In</Button>
+                </Link>
+                <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                  <Button className="w-full">Sign Up</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
