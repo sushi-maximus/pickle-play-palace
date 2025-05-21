@@ -1,15 +1,15 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { skillLevelOptions } from "@/lib/constants/skill-levels";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+import { InputField } from "@/components/auth/form-fields/InputField";
+import { SelectField } from "@/components/auth/form-fields/SelectField";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(50, "First name cannot exceed 50 characters"),
@@ -39,7 +39,7 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   });
 
   // Set form values when profile data is available
-  useState(() => {
+  useEffect(() => {
     if (profileData) {
       // Validate skill_level value is one of the expected enum values
       const validSkillLevel = skillLevelOptions.find(option => option.value === profileData.skill_level)?.value;
@@ -79,82 +79,42 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
     }
   };
 
+  const genderOptions = [
+    { value: "Male", label: "Male" },
+    { value: "Female", label: "Female" }
+  ];
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
+          <InputField
             control={form.control}
             name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="First Name"
+            placeholder="John"
           />
-          <FormField
+          <InputField
             control={form.control}
             name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Doe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Last Name"
+            placeholder="Doe"
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
+          <SelectField
             control={form.control}
             name="gender"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Gender</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Gender"
+            placeholder="Select gender"
+            options={genderOptions}
           />
-          <FormField
+          <SelectField
             control={form.control}
             name="skillLevel"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Skill Level</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select skill level" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {skillLevelOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Skill Level"
+            placeholder="Select skill level"
+            options={skillLevelOptions}
           />
         </div>
         <div className="flex justify-end mt-4">
