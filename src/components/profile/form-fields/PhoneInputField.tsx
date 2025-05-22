@@ -1,5 +1,4 @@
 
-import { useState, useEffect } from "react";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Control } from "react-hook-form";
@@ -41,7 +40,7 @@ export const PhoneInputField = ({
       control={control}
       name={name}
       render={({ field }) => {
-        // Store the raw value (for form submission) and formatted value (for display)
+        // Format the value for display
         const formattedValue = formatPhoneNumber(field.value || "");
         
         return (

@@ -4,16 +4,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Navigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
-import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { AccountInfo } from "@/components/profile/AccountInfo";
-import { differenceInYears } from "date-fns";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Profile() {
   const { user, signOut, profile } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
 
   // Use profile data from AuthContext
@@ -39,28 +38,6 @@ export default function Profile() {
     return user.email?.charAt(0).toUpperCase() || "U";
   };
 
-  // Calculate age from birthday
-  const calculateAge = () => {
-    if (profileData?.birthday) {
-      const birthdayDate = new Date(profileData.birthday);
-      return differenceInYears(new Date(), birthdayDate);
-    }
-    return null;
-  };
-
-  const age = calculateAge();
-
-  // Determine rating display
-  const getRatingDisplay = () => {
-    if (profileData?.dupr_rating) {
-      return { label: "DUPR", value: profileData.dupr_rating };
-    } else {
-      return { label: "Skill Level", value: profileData?.skill_level || "2.5" };
-    }
-  };
-
-  const ratingDisplay = getRatingDisplay();
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -71,41 +48,48 @@ export default function Profile() {
           
           {/* Main Content */}
           <div className="flex-1">
-            <div className="border border-border rounded-lg p-6">
-              <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+            {/* Profile Header with Avatar and Basic Info */}
+            {user && profileData && (
+              <ProfileHeader 
+                user={user} 
+                profile={profileData} 
+                getInitials={getInitials} 
+              />
+            )}
+            
+            {/* Profile Tabs */}
+            <Tabs defaultValue="personal-info" className="mt-6">
+              <TabsList className="grid grid-cols-2 md:w-[400px]">
+                <TabsTrigger value="personal-info">Personal Information</TabsTrigger>
+                <TabsTrigger value="account">Account Settings</TabsTrigger>
+              </TabsList>
               
-              <div className="space-y-6">
-                {/* Avatar Upload Section */}
-                <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6 mb-8">
-                  {user && profile && (
-                    <ProfileAvatar 
-                      userId={user.id}
-                      avatarUrl={profile.avatar_url}
-                      getInitials={getInitials}
-                    />
-                  )}
-                  <div>
-                    <h2 className="text-xl font-semibold">
-                      {profileData?.first_name} {profileData?.last_name}
-                    </h2>
-                    <p className="text-muted-foreground">{user.email}</p>
-                    <div className="flex flex-wrap gap-4 mt-1 text-muted-foreground">
-                      <p>{ratingDisplay.label}: {ratingDisplay.value}</p>
-                      <p>Age: {age !== null ? age : ""}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Personal Information</h3>
-                  {user && profileData && (
-                    <ProfileForm userId={user.id} profileData={profileData} />
-                  )}
-                </div>
-                
-                {user && <AccountInfo user={user} profile={profileData} />}
-              </div>
-            </div>
+              <TabsContent value="personal-info" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">Personal Information</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {user && profileData && (
+                      <ProfileForm userId={user.id} profileData={profileData} />
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="account" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">Account Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {user && profileData && (
+                      <AccountInfo user={user} profile={profileData} />
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
