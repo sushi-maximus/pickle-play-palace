@@ -69,7 +69,7 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="text-xl">Personal Information</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-6">
                     {user && profileData && (
                       <ProfileForm userId={user.id} profileData={profileData} />
                     )}
@@ -82,7 +82,7 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="text-xl">Account Settings</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-6">
                     {user && profileData && (
                       <AccountInfo user={user} profile={profileData} />
                     )}

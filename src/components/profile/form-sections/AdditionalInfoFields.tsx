@@ -18,9 +18,9 @@ interface AdditionalInfoFieldsProps {
 
 export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => {
   return (
-    <div className="space-y-6 w-full">
+    <div className="w-full mt-6">
       {/* Birthday and DUPR Rating Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-6 mb-6">
         <DatePickerField
           control={control}
           name="birthday"
