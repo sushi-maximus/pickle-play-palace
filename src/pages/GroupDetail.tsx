@@ -1,127 +1,144 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
-import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
 import { GroupHeader } from "@/components/groups/GroupHeader";
-import { GroupDetailTabs } from "@/components/groups/GroupDetailTabs";
-import { GroupDetailActions } from "@/components/groups/GroupDetailActions";
+import { GroupMembers } from "@/components/groups/GroupMembers";
+import { GroupSettings } from "@/components/groups/GroupSettings";
 import { 
   getGroupById, 
   getGroupMembers, 
   checkIfUserIsMember,
   checkIfUserIsAdmin,
   joinGroup,
-  leaveGroup
-} from "@/services/groups";
-import { Group, MemberWithProfile } from "@/types/group";
+  leaveGroup,
+  removeMember
+} from "@/services/groupService";
+import { Group } from "@/types/group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Loader2, UserPlus, UserMinus, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const GroupDetail = () => {
   const { groupId } = useParams<{ groupId: string }>();
-  const navigate = useNavigate();
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   const [group, setGroup] = useState<Group | null>(null);
-  const [members, setMembers] = useState<MemberWithProfile[]>([]);
-  const [isMember, setIsMember] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [joining, setJoining] = useState(false);
-  const [leaving, setLeaving] = useState(false);
+  const [members, setMembers] = useState<any[]>([]);
+  const [isMember, setIsMember] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState("about");
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const loadGroupData = async () => {
+    if (!groupId) return;
+
+    setLoading(true);
+    try {
+      // Load group data
+      const groupData = await getGroupById(groupId);
+      if (!groupData) {
+        toast.error("Group not found");
+        navigate("/groups");
+        return;
+      }
+      setGroup(groupData);
+
+      // Load group members
+      const membersData = await getGroupMembers(groupId);
+      setMembers(membersData);
+
+      // Check if current user is a member and/or admin
+      if (user) {
+        const userIsMember = await checkIfUserIsMember(groupId, user.id);
+        setIsMember(userIsMember);
+
+        const userIsAdmin = await checkIfUserIsAdmin(groupId, user.id);
+        setIsAdmin(userIsAdmin);
+      }
+    } catch (error) {
+      console.error("Error loading group:", error);
+      toast.error("Failed to load group information");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchGroupDetails = async () => {
-      if (!groupId) return;
-      
-      setLoading(true);
-      try {
-        const groupData = await getGroupById(groupId);
-        
-        if (!groupData) {
-          toast.error("Group not found");
-          navigate("/groups");
-          return;
+    loadGroupData();
+  }, [groupId, user]);
+
+  const handleJoinLeave = async () => {
+    if (!user) {
+      navigate("/login", { state: { from: `/groups/${groupId}` } });
+      return;
+    }
+
+    if (!group) return;
+
+    setActionLoading(true);
+    try {
+      if (isMember) {
+        await leaveGroup(group.id);
+        toast.success("You have left the group");
+        setIsMember(false);
+        setIsAdmin(false);
+      } else {
+        if (group.is_private) {
+          toast.error("This is a private group. You need an invitation to join.");
+        } else {
+          await joinGroup(group.id);
+          toast.success("You have joined the group");
+          setIsMember(true);
         }
-        
-        setGroup(groupData);
-        
-        const members = await getGroupMembers(groupId);
-        setMembers(members);
-        
-        if (user) {
-          const [memberStatus, adminStatus] = await Promise.all([
-            checkIfUserIsMember(groupId, user.id),
-            checkIfUserIsAdmin(groupId, user.id)
-          ]);
-          
-          setIsMember(memberStatus);
-          setIsAdmin(adminStatus);
-        }
-      } catch (error) {
-        console.error("Error fetching group details:", error);
-        toast.error("Failed to load group details");
-      } finally {
-        setLoading(false);
       }
-    };
-    
-    fetchGroupDetails();
-  }, [groupId, user, navigate]);
-
-  const handleJoin = async () => {
-    if (!groupId || !user) return;
-    
-    setJoining(true);
-    try {
-      await joinGroup(groupId);
-      toast.success("Successfully joined group!");
-      setIsMember(true);
-      
-      // Refresh member list
-      const members = await getGroupMembers(groupId);
-      setMembers(members);
+      // Refresh group data
+      loadGroupData();
     } catch (error) {
-      console.error("Error joining group:", error);
-      toast.error("Failed to join group");
+      console.error("Error joining/leaving group:", error);
+      toast.error(isMember ? "Failed to leave group" : "Failed to join group");
     } finally {
-      setJoining(false);
+      setActionLoading(false);
     }
   };
 
-  const handleLeave = async () => {
-    if (!groupId || !user) return;
-    
-    setLeaving(true);
+  const handleRemoveMember = async (memberId: string) => {
     try {
-      await leaveGroup(groupId);
-      toast.success("Successfully left group");
-      setIsMember(false);
-      setIsAdmin(false);
-      
-      // Refresh member list
-      const members = await getGroupMembers(groupId);
-      setMembers(members);
+      await removeMember(memberId);
+      // Refresh members list
+      const updatedMembers = await getGroupMembers(groupId!);
+      setMembers(updatedMembers);
+      return Promise.resolve();
     } catch (error) {
-      console.error("Error leaving group:", error);
-      toast.error("Failed to leave group");
-    } finally {
-      setLeaving(false);
+      console.error("Error removing member:", error);
+      return Promise.reject(error);
     }
   };
 
-  // Helper function to check if a member is the current user
-  const isCurrentUser = (userId: string) => {
-    return user?.id === userId;
+  const handleGroupUpdated = (updatedGroup: Group) => {
+    setGroup(updatedGroup);
   };
 
+  // Build breadcrumb items
   const breadcrumbItems = [
-    { label: "Groups", href: "/groups" },
+    { label: "Groups", link: "/groups" },
     { label: group?.name || "Group Details" }
   ];
 
@@ -129,12 +146,21 @@ const GroupDetail = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <main className="flex-1 py-12 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <div className="flex justify-center items-center py-24">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+          </div>
         </main>
         <Footer />
       </div>
     );
+  }
+
+  if (!group) {
+    navigate("/groups");
+    return null;
   }
 
   return (
@@ -143,47 +169,96 @@ const GroupDetail = () => {
       
       <main className="flex-1 py-12 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center mb-6">
-            <Button 
-              variant="ghost"
-              size="sm"
-              className="mr-4"
-              onClick={() => navigate("/groups")}
-            >
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Groups
-            </Button>
-            <BreadcrumbNav items={breadcrumbItems} />
-          </div>
+          <BreadcrumbNav items={breadcrumbItems} className="mb-6" />
           
-          {group && (
-            <div className="space-y-6">
-              <GroupHeader 
-                group={group} 
-                memberCount={members.length}
-                isAdmin={isAdmin} 
-              />
+          <div className="flex flex-col gap-6">
+            <div className="flex justify-between items-start">
+              <Button 
+                variant="ghost"
+                className="mb-4"
+                onClick={() => navigate("/groups")}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" /> Back to Groups
+              </Button>
               
-              <div className="flex items-center justify-between">
-                <GroupDetailTabs
-                  group={group}
-                  members={members}
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  isAdmin={isAdmin}
-                  isCurrentUser={isCurrentUser}
-                />
-                
-                <GroupDetailActions
-                  isMember={isMember}
-                  joining={joining}
-                  leaving={leaving}
-                  onJoin={handleJoin}
-                  onLeave={handleLeave}
-                />
-              </div>
+              {user && (
+                <Button
+                  variant={isMember ? "destructive" : "default"}
+                  onClick={handleJoinLeave}
+                  disabled={actionLoading || (group.is_private && !isMember)}
+                >
+                  {actionLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {isMember ? "Leaving..." : "Joining..."}
+                    </>
+                  ) : (
+                    <>
+                      {isMember ? (
+                        <>
+                          <UserMinus className="mr-2 h-4 w-4" /> Leave Group
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="mr-2 h-4 w-4" /> Join Group
+                        </>
+                      )}
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
-          )}
+            
+            <GroupHeader 
+              group={group} 
+              memberCount={members.length}
+              isAdmin={isAdmin}
+            />
+            
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="mb-6">
+                <TabsTrigger value="about">About</TabsTrigger>
+                <TabsTrigger value="members">Members</TabsTrigger>
+                {isAdmin && <TabsTrigger value="settings">Settings</TabsTrigger>}
+              </TabsList>
+              
+              <TabsContent value="about">
+                <div className="space-y-6">
+                  <div className="bg-card rounded-lg border p-6">
+                    <h2 className="text-xl font-semibold mb-4">Group Description</h2>
+                    <p className="text-muted-foreground">
+                      {group.description || "This group has no description."}
+                    </p>
+                  </div>
+                  
+                  {group.location && (
+                    <div className="bg-card rounded-lg border p-6">
+                      <h2 className="text-xl font-semibold mb-4">Location</h2>
+                      <p className="text-muted-foreground">{group.location}</p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="members">
+                <GroupMembers 
+                  members={members} 
+                  currentUserId={user?.id}
+                  isCurrentUserAdmin={isAdmin}
+                  onRemoveMember={handleRemoveMember}
+                />
+              </TabsContent>
+              
+              {isAdmin && (
+                <TabsContent value="settings">
+                  <GroupSettings 
+                    group={group}
+                    onGroupUpdated={handleGroupUpdated} 
+                  />
+                </TabsContent>
+              )}
+            </Tabs>
+          </div>
         </div>
       </main>
       
