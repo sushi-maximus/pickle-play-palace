@@ -39,7 +39,7 @@ export const TermsAndPolicy = () => {
                   privacy policy
                 </Link>
               </FormLabel>
-              <FormMessage />
+              <FormMessage data-testid="terms-error" />
             </div>
           </FormItem>
         );

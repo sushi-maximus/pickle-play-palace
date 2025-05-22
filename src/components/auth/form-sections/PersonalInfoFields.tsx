@@ -32,6 +32,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
           name="lastName"
           label="Last Name"
           placeholder="Doe"
+          data-testid="last-name-input"
         />
       </div>
       
@@ -41,6 +42,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
         label="Email"
         placeholder="you@example.com"
         type="email"
+        data-testid="email-input"
       />
 
       <div className="grid grid-cols-2 gap-4">
@@ -53,6 +55,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
             { value: "Male", label: "Male" },
             { value: "Female", label: "Female" }
           ]}
+          data-testid="gender-select"
         />
         
         <div className="space-y-2">
@@ -82,6 +85,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
             hideLabel={true}
             placeholder="Select skill"
             options={skillLevelOptions}
+            data-testid="skill-level-select"
           />
         </div>
       </div>
