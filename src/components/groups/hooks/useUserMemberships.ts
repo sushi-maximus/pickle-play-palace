@@ -1,10 +1,11 @@
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useState, useEffect, useCallback } from "react";
 import { fetchUserMemberships } from "../utils/groupUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 type Membership = {
   id: string;
+  role: string;
   group: {
     id: string;
     name: string;
@@ -12,52 +13,81 @@ type Membership = {
     location: string | null;
     created_at: string;
     is_private: boolean;
+    member_count?: number;
   };
-  role: string;
 };
 
 export const useUserMemberships = (userId: string, searchTerm: string = "") => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
-  const [filteredMemberships, setFilteredMemberships] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (userId) {
-      fetchMemberships();
+  const fetchMemberships = useCallback(async () => {
+    try {
+      if (!userId) {
+        setMemberships([]);
+        return;
+      }
+
+      setLoading(true);
+      const data = await fetchUserMemberships(userId);
+      
+      // For each group, get the member count
+      const membershipsWithCount = await Promise.all(
+        data.map(async (membership) => {
+          const { count, error } = await supabase
+            .from("group_members")
+            .select("*", { count: "exact", head: true })
+            .eq("group_id", membership.group.id)
+            .eq("status", "active");
+            
+          if (error) {
+            console.error(`Error counting members for group ${membership.group.id}:`, error);
+            return membership;
+          }
+          
+          return {
+            ...membership,
+            group: {
+              ...membership.group,
+              member_count: count || 0
+            }
+          };
+        })
+      );
+      
+      setMemberships(membershipsWithCount);
+    } catch (error) {
+      console.error("Error in useUserMemberships:", error);
+      setMemberships([]);
+    } finally {
+      setLoading(false);
     }
   }, [userId]);
 
   useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredMemberships(memberships);
-    } else {
-      const lowercasedSearch = searchTerm.toLowerCase();
-      setFilteredMemberships(
-        memberships.filter(
-          (membership) =>
-            membership.group.name.toLowerCase().includes(lowercasedSearch) ||
-            (membership.group.description && 
-              membership.group.description.toLowerCase().includes(lowercasedSearch)) ||
-            (membership.group.location && 
-              membership.group.location.toLowerCase().includes(lowercasedSearch))
-        )
-      );
-    }
-  }, [searchTerm, memberships]);
+    fetchMemberships();
+  }, [fetchMemberships]);
 
-  const fetchMemberships = async () => {
-    setLoading(true);
-    try {
-      const membershipData = await fetchUserMemberships(userId);
-      setMemberships(membershipData);
-      setFilteredMemberships(membershipData);
-    } catch (error) {
-      console.error("Error fetching memberships:", error);
-      toast.error("Failed to load your groups");
-    } finally {
-      setLoading(false);
-    }
+  // Filter memberships based on searchTerm
+  const filteredMemberships = memberships.filter(membership => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      membership.group.name.toLowerCase().includes(searchLower) ||
+      (membership.group.description && 
+       membership.group.description.toLowerCase().includes(searchLower)) ||
+      (membership.group.location && 
+       membership.group.location.toLowerCase().includes(searchLower))
+    );
+  });
+
+  const refreshMemberships = async () => {
+    return fetchMemberships();
   };
 
-  return { memberships, filteredMemberships, loading, refreshMemberships: fetchMemberships };
+  return { 
+    memberships,
+    filteredMemberships,
+    loading,
+    refreshMemberships 
+  };
 };

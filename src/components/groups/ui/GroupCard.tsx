@@ -1,9 +1,9 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Lock, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 
 type Group = {
   id: string;
@@ -43,11 +43,17 @@ export const GroupCard = ({ group }: GroupCardProps) => {
           <div className="text-xs text-muted-foreground mt-1">
             Created {new Date(group.created_at).toLocaleDateString()}
           </div>
-          {group.is_private && (
-            <div className="text-xs font-medium mt-2 inline-block bg-secondary/50 px-2 py-0.5 rounded-full">
-              Private Group
-            </div>
-          )}
+          <div className="flex flex-wrap gap-2 mt-2">
+            <Badge variant="outline" className="text-xs">
+              <Users className="h-3 w-3 mr-1" />
+              {group.member_count || 0} {group.member_count === 1 ? "member" : "members"}
+            </Badge>
+            {group.is_private && (
+              <Badge variant="outline" className="text-xs">
+                Private
+              </Badge>
+            )}
+          </div>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1">

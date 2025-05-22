@@ -72,6 +72,7 @@ export const checkGroupAdmin = async (userId: string, groupId: string): Promise<
  * A utility function to fetch all groups
  */
 export const fetchAllGroups = async () => {
+  // First fetch all groups
   const { data, error } = await supabase
     .from("groups")
     .select("*")
@@ -81,8 +82,26 @@ export const fetchAllGroups = async () => {
     console.error("Error fetching groups:", error);
     throw error;
   }
+
+  // For each group, count the number of active members
+  const groupsWithMemberCount = await Promise.all(
+    (data || []).map(async (group) => {
+      const { count, error: countError } = await supabase
+        .from("group_members")
+        .select("*", { count: "exact", head: true })
+        .eq("group_id", group.id)
+        .eq("status", "active");
+
+      if (countError) {
+        console.error(`Error counting members for group ${group.id}:`, countError);
+        return { ...group, member_count: 0 };
+      }
+
+      return { ...group, member_count: count || 0 };
+    })
+  );
   
-  return data || [];
+  return groupsWithMemberCount || [];
 };
 
 /**
