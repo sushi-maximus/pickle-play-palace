@@ -49,8 +49,8 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
     const { error: procError } = await supabase.rpc('add_group_member', {
       p_group_id: groupData.id,
       p_user_id: userId,
-      p_role: 'admin',
-      p_status: 'active'
+      p_role: 'admin' as const,
+      p_status: 'active' as const
     });
 
     if (procError) {
