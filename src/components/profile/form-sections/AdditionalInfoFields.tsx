@@ -20,17 +20,21 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
   return (
     <div className="space-y-6 mt-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <DatePickerField
-          control={control}
-          name="birthday"
-          label="Birthday"
-        />
-        <InputField
-          control={control}
-          name="duprRating"
-          label="DUPR Rating"
-          placeholder="4.5"
-        />
+        <div className="w-full">
+          <DatePickerField
+            control={control}
+            name="birthday"
+            label="Birthday"
+          />
+        </div>
+        <div className="w-full">
+          <InputField
+            control={control}
+            name="duprRating"
+            label="DUPR Rating"
+            placeholder="4.5"
+          />
+        </div>
       </div>
       
       <div className="w-full">

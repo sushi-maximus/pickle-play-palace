@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -43,7 +44,9 @@ export default function Profile() {
       <div className="container px-4 mx-auto py-8">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Left Sidebar */}
-          <ProfileSidebar onLogout={handleLogout} />
+          <div className="md:w-64 w-full">
+            <ProfileSidebar onLogout={handleLogout} />
+          </div>
           
           {/* Main Content */}
           <div className="flex-1">
@@ -58,7 +61,7 @@ export default function Profile() {
             
             {/* Profile Tabs */}
             <Tabs defaultValue="personal-info" className="mt-6">
-              <TabsList className="grid grid-cols-2 md:w-[400px]">
+              <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
                 <TabsTrigger value="personal-info">Personal Information</TabsTrigger>
                 <TabsTrigger value="account">Account Settings</TabsTrigger>
               </TabsList>
@@ -68,12 +71,10 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="text-xl">Personal Information</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="w-full">
-                      {user && profileData && (
-                        <ProfileForm userId={user.id} profileData={profileData} />
-                      )}
-                    </div>
+                  <CardContent className="p-4 md:p-6">
+                    {user && profileData && (
+                      <ProfileForm userId={user.id} profileData={profileData} />
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -83,7 +84,7 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="text-xl">Account Settings</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 md:p-6">
                     {user && profileData && (
                       <AccountInfo user={user} profile={profileData} />
                     )}

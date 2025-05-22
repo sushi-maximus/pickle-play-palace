@@ -44,12 +44,13 @@ export const PhoneInputField = ({
         const formattedValue = formatPhoneNumber(field.value || "");
         
         return (
-          <FormItem>
+          <FormItem className="w-full">
             {!hideLabel && <FormLabel>{label}</FormLabel>}
             <FormControl>
               <Input
                 placeholder={placeholder}
                 value={formattedValue}
+                className="w-full"
                 onChange={(e) => {
                   // Update the field value with the formatted phone number
                   const formatted = formatPhoneNumber(e.target.value);

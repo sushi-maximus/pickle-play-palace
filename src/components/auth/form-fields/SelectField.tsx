@@ -33,7 +33,7 @@ export const SelectField = ({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="w-full">
           {!hideLabel && (
             <FormLabel>
               {label}
@@ -46,7 +46,7 @@ export const SelectField = ({
             defaultValue={field.value}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>

@@ -83,7 +83,7 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
           <AdditionalInfoFields control={form.control} />
           
           <div className="flex justify-end mt-8">
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
               {isLoading ? "Updating..." : "Save Changes"}
             </Button>
           </div>

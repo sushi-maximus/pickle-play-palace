@@ -32,15 +32,16 @@ export const InputField = ({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="w-full">
           {!hideLabel && <FormLabel>{label}</FormLabel>}
           <FormControl>
             {isPassword ? (
-              <div className="relative">
+              <div className="relative w-full">
                 <Input 
                   type={showPassword ? "text" : "password"} 
                   placeholder={placeholder} 
                   {...field} 
+                  className="w-full"
                 />
                 <Button
                   type="button"
@@ -53,7 +54,7 @@ export const InputField = ({
                 </Button>
               </div>
             ) : (
-              <Input placeholder={placeholder} type={type} {...field} />
+              <Input placeholder={placeholder} type={type} {...field} className="w-full" />
             )}
           </FormControl>
           <FormMessage />
