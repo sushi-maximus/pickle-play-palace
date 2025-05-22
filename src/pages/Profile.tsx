@@ -38,7 +38,7 @@ const Profile = () => {
   };
 
   // Define breadcrumb items for the profile page
-  const breadcrumbItems = [{ label: "Account", href: "/account" }, { label: "Profile" }];
+  const breadcrumbItems = [{ label: "Account", href: "/profile" }, { label: "Profile" }];
 
   if (!user) {
     navigate("/login");
