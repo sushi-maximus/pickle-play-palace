@@ -12,6 +12,7 @@ import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 
 const Groups = () => {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ const Groups = () => {
   const [loading, setLoading] = useState({ public: true, my: true });
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("discover");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const loadGroups = async () => {
     if (user) {
@@ -112,7 +114,7 @@ const Groups = () => {
             </div>
             
             {user && (
-              <Button onClick={() => navigate('/create-group')}>Create Group</Button>
+              <Button onClick={() => setIsCreateDialogOpen(true)}>Create Group</Button>
             )}
           </div>
           
@@ -239,6 +241,13 @@ const Groups = () => {
       </main>
       
       <Footer />
+
+      {/* Create Group Dialog */}
+      <CreateGroupDialog 
+        open={isCreateDialogOpen} 
+        onOpenChange={setIsCreateDialogOpen}
+        onGroupCreated={loadGroups}
+      />
     </div>
   );
 };
