@@ -4,6 +4,14 @@ import { SelectField } from "@/components/auth/form-fields/SelectField";
 import { Control } from "react-hook-form";
 import { GENDER_VALUES, ProfileFormValues } from "../schemas/profileSchema";
 import { skillLevelOptions } from "@/lib/constants/skill-levels";
+import { HelpCircle } from "lucide-react";
+import { SkillLevelGuide } from "@/components/SkillLevelGuide";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PersonalInfoFieldsProps {
   control: Control<ProfileFormValues>;
@@ -36,13 +44,35 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
           placeholder="Select gender"
           options={genderOptions}
         />
-        <SelectField
-          control={control}
-          name="skillLevel"
-          label="Skill Level"
-          placeholder="Select skill level"
-          options={skillLevelOptions}
-        />
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Skill Level
+            </label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center cursor-pointer text-primary ml-1">
+                    <SkillLevelGuide triggerElement={
+                      <HelpCircle className="h-4 w-4" />
+                    } />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Learn about skill levels</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <SelectField
+            control={control}
+            name="skillLevel"
+            label=""
+            hideLabel={true}
+            placeholder="Select skill level"
+            options={skillLevelOptions}
+          />
+        </div>
       </div>
     </>
   );
