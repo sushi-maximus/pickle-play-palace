@@ -4,7 +4,7 @@ import { InputField } from "../form-fields/InputField";
 import { SelectField } from "../form-fields/SelectField";
 import { SkillLevelGuide } from "@/components/SkillLevelGuide";
 import { skillLevelOptions } from "@/lib/constants/skill-levels";
-import { QuestionMark } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -66,7 +66,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
                 <TooltipTrigger asChild>
                   <span className="inline-flex items-center cursor-pointer text-primary">
                     <SkillLevelGuide triggerElement={
-                      <QuestionMark className="h-4 w-4 ml-1" />
+                      <HelpCircle className="h-4 w-4 ml-1" />
                     } />
                   </span>
                 </TooltipTrigger>
