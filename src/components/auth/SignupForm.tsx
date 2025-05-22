@@ -44,7 +44,7 @@ export const SignupForm = () => {
       agreeToTerms: false,
     },
     mode: "onSubmit", // Only validate on submit
-    reValidateMode: "onSubmit", // Only revalidate on submit
+    reValidateMode: "onChange", // Revalidate as values change after first submission
   });
 
   console.log("Form errors:", form.formState.errors);
@@ -118,6 +118,7 @@ export const SignupForm = () => {
               className="w-full transition-all" 
               type="submit" 
               disabled={isLoading}
+              data-testid="signup-button"
             >
               {isLoading ? "Creating account..." : "Sign Up"}
             </Button>

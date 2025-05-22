@@ -25,6 +25,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
           name="firstName"
           label="First Name"
           placeholder="John"
+          data-testid="first-name-input"
         />
         <InputField 
           control={control}

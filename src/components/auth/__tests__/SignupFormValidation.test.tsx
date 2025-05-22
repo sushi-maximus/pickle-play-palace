@@ -20,7 +20,7 @@ describe('SignupForm Validation', () => {
     console.log('Starting test...');
   });
 
-  test('displays terms validation error when submitting empty form', async () => {
+  test('displays first name validation error when submitting empty form', async () => {
     console.log('Rendering SignupForm...');
     const { user } = renderWithProviders(<SignupForm />);
     
@@ -33,14 +33,14 @@ describe('SignupForm Validation', () => {
     console.log('Clicking submit button...');
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));
     
-    // Wait for validation errors to appear and only check terms error
-    console.log('Waiting for terms validation error...');
+    // Wait for first name validation error to appear
+    console.log('Waiting for first name validation error...');
     await waitFor(() => {
-      const termsError = screen.queryByText(/You must agree to the terms and privacy policy/i);
-      console.log('Terms error found:', !!termsError);
+      const firstNameError = screen.queryByText(/First name is required/i);
+      console.log('First name error found:', !!firstNameError);
       
-      if (!termsError) throw new Error('Terms error not found');
-      expect(termsError).toBeInTheDocument();
+      if (!firstNameError) throw new Error('First name error not found');
+      expect(firstNameError).toBeInTheDocument();
     });
   });
 });
