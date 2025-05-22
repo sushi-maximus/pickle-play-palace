@@ -38,8 +38,12 @@ export default function Dashboard() {
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="bg-card rounded-lg p-4 border border-border">
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">Your Skill Level</h3>
-              <p className="text-2xl font-bold">{profile?.skill_level || "2.5"}</p>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                {profile?.dupr_rating ? "Your DUPR Rating" : "Your Skill Level"}
+              </h3>
+              <p className="text-2xl font-bold">
+                {profile?.dupr_rating ? profile.dupr_rating : (profile?.skill_level || "2.5")}
+              </p>
             </div>
             <div className="bg-card rounded-lg p-4 border border-border">
               <h3 className="text-sm font-medium text-muted-foreground mb-1">Account Status</h3>
