@@ -2,53 +2,49 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthContext } from '@/contexts/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { AuthProvider } from '@/providers/AuthProvider';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
 
-// Mock auth context values
-const defaultAuthContextValue = {
-  session: null,
-  user: null,
-  profile: null,
-  isLoading: false,
-  signOut: vi.fn().mockResolvedValue(undefined),
-  signUp: vi.fn().mockResolvedValue({ error: null, data: {} }),
-  signIn: vi.fn().mockResolvedValue({ error: null, data: {} }),
-  resendVerificationEmail: vi.fn().mockResolvedValue({ error: null, data: {} }),
-  refreshProfile: vi.fn().mockResolvedValue(undefined),
-};
-
-// Setup providers wrapper for testing
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  authContextValue?: Partial<typeof defaultAuthContextValue>;
-  route?: string;
-}
-
+// Create a custom render function that includes all providers
 export function renderWithProviders(
   ui: ReactElement,
-  {
-    authContextValue = {},
-    route = '/',
-    ...renderOptions
-  }: CustomRenderOptions = {}
+  options?: Omit<RenderOptions, 'wrapper'> & {
+    authContextValue?: Partial<any>;
+  }
 ) {
-  // Set up browser router with specified route
-  window.history.pushState({}, 'Test page', route);
+  const { authContextValue = {}, ...renderOptions } = options || {};
+  
+  // Create a fresh QueryClient for each test
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
 
-  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  // Setup user event
+  const user = userEvent.setup();
+  
+  function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <AuthContext.Provider value={{ ...defaultAuthContextValue, ...authContextValue }}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </AuthContext.Provider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider defaultTheme="light">
+          <AuthProvider overrideValues={authContextValue}>
+            <BrowserRouter>{children}</BrowserRouter>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     );
-  };
-
+  }
+  
   return {
-    user: userEvent.setup(),
-    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+    user,
+    ...render(ui, {
+      wrapper: Wrapper,
+      ...renderOptions,
+    }),
   };
 }
-
-// Re-export everything from testing-library
-export * from '@testing-library/react';
