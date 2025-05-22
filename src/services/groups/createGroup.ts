@@ -45,12 +45,12 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
       throw new Error("Failed to create group - no data returned");
     }
 
-    // Here's the fix - we need to use proper typecasting for enum values
+    // Fixed typing for enum parameters by using an explicit type cast
     const { error: procError } = await supabase.rpc('add_group_member', {
       p_group_id: groupData.id,
       p_user_id: userId,
-      p_role: 'admin',
-      p_status: 'active'
+      p_role: 'admin' as const,
+      p_status: 'active' as const
     });
 
     if (procError) {
