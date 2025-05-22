@@ -1,12 +1,12 @@
 
-import { UserProfile } from "@/integrations/supabase/types";
+import { Tables } from "@/integrations/supabase/types";
 import { User } from "@supabase/supabase-js";
 import { differenceInYears } from "date-fns";
 import { ProfileAvatar } from "./ProfileAvatar";
 
 interface ProfileHeaderProps {
   user: User;
-  profile: UserProfile | null;
+  profile: Tables<"profiles"> | null;
   getInitials: () => string;
 }
 
