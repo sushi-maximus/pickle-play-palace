@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import type {
@@ -7,12 +8,16 @@ import type {
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
+// Default duration for toasts that should auto-dismiss
+const DEFAULT_TOAST_DURATION = 5000
 
 type ToasterToast = ToastProps & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  duration?: number // Add duration field
+  showCloseButton?: boolean // Add showCloseButton field
 }
 
 const actionTypes = {
@@ -141,6 +146,8 @@ type Toast = Omit<ToasterToast, "id">
 
 function toast({ ...props }: Toast) {
   const id = genId()
+  const duration = props.duration === Infinity ? undefined : props.duration || DEFAULT_TOAST_DURATION;
+  const showCloseButton = duration === undefined; // Only show close button for toasts that don't auto-close
 
   const update = (props: ToasterToast) =>
     dispatch({
@@ -149,11 +156,20 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
+  // If we have a duration, automatically dismiss after that time
+  if (duration) {
+    setTimeout(() => {
+      dismiss();
+    }, duration);
+  }
+
   dispatch({
     type: "ADD_TOAST",
     toast: {
       ...props,
       id,
+      duration,
+      showCloseButton,
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss()
