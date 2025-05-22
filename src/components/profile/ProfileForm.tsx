@@ -10,6 +10,7 @@ import { profileSchema, ProfileFormValues } from "./schemas/profileSchema";
 import { PersonalInfoFields } from "./form-sections/PersonalInfoFields";
 import { AdditionalInfoFields } from "./form-sections/AdditionalInfoFields";
 import { formatProfileDataForUpdate, mapProfileDataToFormValues } from "./utils/profileUtils";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProfileFormProps {
   userId: string;
@@ -18,6 +19,7 @@ interface ProfileFormProps {
 
 export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { refreshProfile } = useAuth();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -60,6 +62,9 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
         .eq("id", userId);
       
       if (error) throw error;
+      
+      // Refresh the profile data after successful update
+      await refreshProfile();
       
       toast.success("Profile updated successfully");
     } catch (error) {
