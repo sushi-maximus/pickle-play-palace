@@ -1,4 +1,3 @@
-
 import * as React from "react"
 
 import type {
@@ -147,15 +146,13 @@ type Toast = Omit<ToasterToast, "id">
 function toast({ ...props }: Toast) {
   const id = genId()
   
-  // Handle duration and auto-dismiss logic
+  // Determine if toast should auto-dismiss or be permanent
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
-  // For auto-dismissing toasts, explicitly set showCloseButton to false
-  // For permanent toasts, show close button unless explicitly disabled
-  const showCloseButton = props.showCloseButton !== undefined 
-    ? props.showCloseButton 
-    : duration === null;
-
+  // IMPORTANT: Explicitly set showCloseButton to false for auto-dismissing toasts
+  // Only show close button on permanent toasts (null duration) unless explicitly set by user
+  const showCloseButton = duration === null && props.showCloseButton !== false;
+  
   const update = (props: ToasterToast) =>
     dispatch({
       type: "UPDATE_TOAST",
@@ -163,7 +160,7 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
-  // If we have a valid duration, automatically dismiss after that time
+  // Auto-dismiss logic for toasts with duration
   if (duration !== null) {
     setTimeout(() => {
       dismiss();
@@ -176,7 +173,7 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       duration,
-      showCloseButton,
+      showCloseButton, // This will be false for auto-dismissing toasts
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss()

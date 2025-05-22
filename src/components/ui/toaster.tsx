@@ -24,6 +24,7 @@ export function Toaster() {
               )}
             </div>
             {action}
+            {/* Only render close button when showCloseButton is explicitly true */}
             {showCloseButton === true && <ToastClose />}
           </Toast>
         )
