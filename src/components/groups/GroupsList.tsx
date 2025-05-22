@@ -58,12 +58,16 @@ export const GroupsList = ({ user }: GroupsListProps) => {
     try {
       // Only fetch groups if the user is logged in
       if (user) {
+        // Direct query with no joins to prevent RLS recursion issues
         const { data, error } = await supabase
           .from("groups")
           .select("*")
           .order("created_at", { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Error details:", error);
+          throw error;
+        }
         setGroups(data || []);
       } else {
         setGroups([]);

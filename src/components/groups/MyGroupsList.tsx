@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,26 +59,88 @@ export const MyGroupsList = ({ user, onRefresh }: MyGroupsListProps) => {
   const fetchMyGroups = async () => {
     setLoading(true);
     try {
-      // Fetch groups the user is a member of
-      const { data, error } = await supabase
+      if (!user) {
+        setGroupMemberships([]);
+        return;
+      }
+      
+      // First get the groups this user has created
+      const { data: createdGroups, error: createdError } = await supabase
+        .from("groups")
+        .select("*")
+        .eq("created_by", user.id);
+        
+      if (createdError) {
+        console.error("Error fetching created groups:", createdError);
+        throw createdError;
+      }
+      
+      // Then get group memberships separately to avoid recursion
+      const { data: membershipData, error: membershipError } = await supabase
         .from("group_members")
-        .select(`
-          id,
-          role,
-          group:group_id (
-            id,
-            name,
-            description,
-            location,
-            created_at,
-            is_private
-          )
-        `)
+        .select("id, role, group_id, user_id")
         .eq("user_id", user.id)
         .eq("status", "active");
-
-      if (error) throw error;
-      setGroupMemberships(data || []);
+      
+      if (membershipError) {
+        console.error("Error fetching memberships:", membershipError);
+        throw membershipError;
+      }
+      
+      // If we have memberships, get the group details
+      let memberships: GroupMembership[] = [];
+      
+      if (membershipData && membershipData.length > 0) {
+        // Extract group IDs from memberships
+        const groupIds = membershipData.map(m => m.group_id);
+        
+        // Get those groups' details
+        const { data: groupsData, error: groupsError } = await supabase
+          .from("groups")
+          .select("*")
+          .in("id", groupIds);
+        
+        if (groupsError) {
+          console.error("Error fetching member groups:", groupsError);
+          throw groupsError;
+        }
+        
+        if (groupsData) {
+          // Combine membership data with group data
+          memberships = membershipData.map(membership => {
+            const group = groupsData.find(g => g.id === membership.group_id);
+            return {
+              id: membership.id,
+              role: membership.role,
+              group: group || {
+                id: membership.group_id,
+                name: "Unknown Group",
+                description: null,
+                location: null,
+                created_at: new Date().toISOString(),
+                is_private: false
+              }
+            };
+          });
+        }
+      }
+      
+      // Add created groups as admin memberships
+      const createdMemberships = (createdGroups || []).map(group => ({
+        id: `created-${group.id}`,
+        role: "admin",
+        group
+      }));
+      
+      // Combine and deduplicate (in case user is both creator and member)
+      const allMemberships = [...memberships];
+      createdMemberships.forEach(cm => {
+        if (!allMemberships.some(m => m.group.id === cm.group.id)) {
+          allMemberships.push(cm);
+        }
+      });
+      
+      setGroupMemberships(allMemberships);
     } catch (error) {
       console.error("Error fetching my groups:", error);
       toast.error("Failed to load your groups");
@@ -88,6 +151,12 @@ export const MyGroupsList = ({ user, onRefresh }: MyGroupsListProps) => {
 
   const leaveGroup = async (groupMembershipId: string, groupName: string) => {
     try {
+      // Don't allow leaving groups you created (only actual memberships have valid UUIDs)
+      if (groupMembershipId.startsWith('created-')) {
+        toast.error("You cannot leave a group you created");
+        return;
+      }
+      
       const { error } = await supabase
         .from("group_members")
         .delete()
