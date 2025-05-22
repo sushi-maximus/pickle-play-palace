@@ -20,8 +20,7 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
   const userId = userData.user.id;
   
   try {
-    // Begin a transaction by using a PostgreSQL stored procedure
-    // First, insert the new group
+    // First, create the group with a direct insert
     const { data: groupData, error: groupError } = await supabase
       .from('groups')
       .insert([
@@ -45,23 +44,35 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
       throw new Error("Failed to create group - no data returned");
     }
 
-    // Then manually insert the creator as a group member
-    const { error: memberError } = await supabase
-      .from('group_members')
-      .insert([
-        {
-          group_id: groupData.id,
-          user_id: userId,
-          role: 'admin',
-          status: 'active'
-        }
-      ]);
+    // Instead of relying on the trigger or RLS policies, use a stored procedure/function
+    // to directly add the member without triggering RLS checks
+    const { error: procError } = await supabase.rpc('add_group_member', {
+      p_group_id: groupData.id,
+      p_user_id: userId,
+      p_role: 'admin',
+      p_status: 'active'
+    });
 
-    if (memberError) {
-      console.error('Error adding member to group:', memberError);
-      // Continue anyway since the group is created
-      // This is likely happening because the database trigger already added the user
-      console.log('Continuing despite member error - the trigger may have already added the user');
+    if (procError) {
+      console.error('Error adding member using procedure:', procError);
+      
+      // Fallback: Try direct insert if the procedure fails
+      const { error: memberError } = await supabase
+        .from('group_members')
+        .insert([
+          {
+            group_id: groupData.id,
+            user_id: userId,
+            role: 'admin',
+            status: 'active'
+          }
+        ]);
+        
+      if (memberError) {
+        console.error('Fallback member insertion failed:', memberError);
+        // Continue anyway since the group is created
+        console.log('Group created but member addition failed. User may need to join manually.');
+      }
     }
 
     return groupData as Group;
