@@ -1,6 +1,6 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Group } from "@/types/group";
+import { Database } from "@/integrations/supabase/types";
 
 /**
  * Creates a new group and returns the created group data
@@ -44,13 +44,12 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
       throw new Error("Failed to create group - no data returned");
     }
 
-    // Instead of relying on the trigger or RLS policies, use a stored procedure/function
-    // to directly add the member without triggering RLS checks
+    // The issue was here - we need to provide proper typing for the enum values
     const { error: procError } = await supabase.rpc('add_group_member', {
       p_group_id: groupData.id,
       p_user_id: userId,
-      p_role: 'admin' as const,
-      p_status: 'active' as const
+      p_role: 'admin' as Database["public"]["Enums"]["group_member_role"],
+      p_status: 'active' as Database["public"]["Enums"]["group_member_status"]
     });
 
     if (procError) {
