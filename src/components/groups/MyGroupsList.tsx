@@ -1,8 +1,10 @@
 
+import { useState, useEffect } from "react";
 import { useUserMemberships } from "./hooks/useUserMemberships";
 import { GroupsLoadingState } from "./ui/GroupsLoadingState";
 import { MyGroupsEmptyState } from "./ui/MyGroupsEmptyState";
 import { MembershipsGrid } from "./ui/MembershipsGrid";
+import { GroupsPagination } from "./ui/GroupsPagination";
 
 interface MyGroupsListProps {
   user: any;
@@ -12,6 +14,13 @@ interface MyGroupsListProps {
 
 export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListProps) => {
   const { filteredMemberships, loading, refreshMemberships } = useUserMemberships(user.id, searchTerm);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // Show 6 groups per page (2 rows of 3)
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   if (loading) {
     return <GroupsLoadingState />;
@@ -33,5 +42,22 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
     return <MyGroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
   }
 
-  return <MembershipsGrid memberships={filteredMemberships} />;
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredMemberships.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentMemberships = filteredMemberships.slice(startIndex, endIndex);
+
+  return (
+    <>
+      <MembershipsGrid memberships={currentMemberships} />
+      {totalPages > 1 && (
+        <GroupsPagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
+    </>
+  );
 };

@@ -6,6 +6,7 @@ import { GroupsLoadingState } from "./ui/GroupsLoadingState";
 import { GroupsEmptyState } from "./ui/GroupsEmptyState";
 import { GroupsGrid } from "./ui/GroupsGrid";
 import { useGroupFiltering } from "./hooks/useGroupFiltering";
+import { GroupsPagination } from "./ui/GroupsPagination";
 
 type Group = {
   id: string;
@@ -26,10 +27,19 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const { filteredGroups } = useGroupFiltering(groups, searchTerm);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // Show 6 groups per page (2 rows of 3)
 
   useEffect(() => {
     fetchGroups();
   }, [user]);
+
+  useEffect(() => {
+    // Reset to first page when search term changes
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const fetchGroups = async () => {
     setLoading(true);
@@ -61,5 +71,22 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
     return <GroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
   }
 
-  return <GroupsGrid groups={filteredGroups} />;
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentGroups = filteredGroups.slice(startIndex, endIndex);
+
+  return (
+    <>
+      <GroupsGrid groups={currentGroups} />
+      {totalPages > 1 && (
+        <GroupsPagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
+    </>
+  );
 };
