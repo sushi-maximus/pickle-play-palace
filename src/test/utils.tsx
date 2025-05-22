@@ -4,6 +4,7 @@ import { render, RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContext } from '@/contexts/AuthContext';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 
 // Mock auth context values
 const defaultAuthContextValue = {
