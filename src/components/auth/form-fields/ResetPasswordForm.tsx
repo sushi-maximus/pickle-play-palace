@@ -41,6 +41,7 @@ export const ResetPasswordForm = () => {
           variant: "destructive",
           title: "Error",
           description: error.message || "Unable to send reset email. Please try again.",
+          duration: 5000,
         });
         return;
       }
@@ -50,6 +51,7 @@ export const ResetPasswordForm = () => {
       toast({
         title: "Reset email sent",
         description: "Please check your email for password reset instructions.",
+        duration: 5000,
       });
 
       form.reset();
@@ -60,6 +62,7 @@ export const ResetPasswordForm = () => {
         variant: "destructive",
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);

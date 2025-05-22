@@ -68,14 +68,16 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       
       toast({
         title: "Success",
-        description: "Profile updated successfully"
+        description: "Profile updated successfully",
+        duration: 5000,
       });
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
         title: "Error",
         description: "Failed to update profile",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);

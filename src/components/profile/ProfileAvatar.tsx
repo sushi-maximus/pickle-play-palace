@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
@@ -59,7 +60,8 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
       
       toast({
         title: "Success",
-        description: "Avatar updated successfully"
+        description: "Avatar updated successfully",
+        duration: 5000,
       });
       
     } catch (error: any) {
@@ -67,7 +69,8 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
       toast({
         title: "Error",
         description: `Error uploading avatar: ${error.message}`,
-        variant: "destructive"
+        variant: "destructive",
+        duration: 5000,
       });
     } finally {
       setUploading(false);
