@@ -32,7 +32,8 @@ export function renderWithProviders(
     return (
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light">
-          <AuthProvider overrideValues={authContextValue}>
+          {/* Since AuthProvider doesn't accept overrideValues directly, we'll use mocks through context */}
+          <AuthProvider>
             <BrowserRouter>{children}</BrowserRouter>
           </AuthProvider>
         </ThemeProvider>
