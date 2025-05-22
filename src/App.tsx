@@ -17,6 +17,7 @@ import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import Groups from "./pages/Groups";
+import GroupDetails from "./pages/GroupDetails";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/groups" element={<Groups />} />
+              <Route path="/groups/:id" element={<GroupDetails />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

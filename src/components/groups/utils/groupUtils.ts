@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -176,6 +175,22 @@ export const fetchUserMemberships = async (userId: string) => {
     return allMemberships;
   } catch (error) {
     console.error("Error fetching user memberships:", error);
+    throw error;
+  }
+};
+
+/**
+ * A utility function to fetch group details
+ */
+export const fetchGroupDetails = async (groupId: string): Promise<any> => {
+  try {
+    // In a real app, this would fetch from an API
+    // For now, we'll get all groups and find the one with the matching ID
+    const allGroups = await fetchAllGroups();
+    const group = allGroups.find(g => g.id === groupId);
+    return group || null;
+  } catch (error) {
+    console.error('Error fetching group details:', error);
     throw error;
   }
 };
