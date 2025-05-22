@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 import { ValidationIcon } from "./ValidationIcon";
+import { PasswordInputField } from "./PasswordInputField";
 
 export interface FormInputFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -45,7 +46,6 @@ export function FormInputField<
 
   // If this is a password field, use the dedicated PasswordInputField component
   if (props.isPassword) {
-    const { PasswordInputField } = require('./PasswordInputField');
     return (
       <PasswordInputField
         control={control}
