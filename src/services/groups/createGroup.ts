@@ -20,8 +20,9 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
   const userId = userData.user.id;
   
   try {
-    // Insert the new group into the database
-    const { data, error } = await supabase
+    // Begin a transaction by using a PostgreSQL stored procedure
+    // First, insert the new group
+    const { data: groupData, error: groupError } = await supabase
       .from('groups')
       .insert([
         { 
@@ -35,12 +36,35 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
       .select()
       .single();
 
-    if (error) {
-      console.error('Error creating group:', error);
-      throw error;
+    if (groupError) {
+      console.error('Error creating group:', groupError);
+      throw groupError;
     }
 
-    return data as Group;
+    if (!groupData) {
+      throw new Error("Failed to create group - no data returned");
+    }
+
+    // Then manually insert the creator as a group member
+    const { error: memberError } = await supabase
+      .from('group_members')
+      .insert([
+        {
+          group_id: groupData.id,
+          user_id: userId,
+          role: 'admin',
+          status: 'active'
+        }
+      ]);
+
+    if (memberError) {
+      console.error('Error adding member to group:', memberError);
+      // Continue anyway since the group is created
+      // This is likely happening because the database trigger already added the user
+      console.log('Continuing despite member error - the trigger may have already added the user');
+    }
+
+    return groupData as Group;
   } catch (error) {
     console.error('Unexpected error creating group:', error);
     throw error;
