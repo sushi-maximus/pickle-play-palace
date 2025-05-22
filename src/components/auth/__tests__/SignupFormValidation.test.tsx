@@ -31,6 +31,7 @@ describe('SignupForm Validation', () => {
       expect(screen.getByText(/Last name is required/i)).toBeInTheDocument();
       expect(screen.getByText(/Please enter a valid email address/i)).toBeInTheDocument();
       expect(screen.getByText(/Password must be at least 8 characters/i)).toBeInTheDocument();
+      expect(screen.getByText(/You must agree to the terms and privacy policy/i)).toBeInTheDocument();
     });
   });
 
@@ -45,6 +46,10 @@ describe('SignupForm Validation', () => {
     // Enter mismatched passwords
     await user.type(screen.getByLabelText(/^Password/i), 'password123');
     await user.type(screen.getByLabelText(/Confirm Password/i), 'password456');
+    
+    // Accept terms
+    const termsCheckbox = screen.getByRole('checkbox');
+    await user.click(termsCheckbox);
     
     // Submit the form
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));

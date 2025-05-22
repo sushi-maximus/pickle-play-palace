@@ -49,6 +49,10 @@ describe('SignupForm Submission', () => {
     await user.click(skillCombobox);
     await user.click(screen.getByText('3.0'));
     
+    // Accept terms
+    const termsCheckbox = screen.getByRole('checkbox');
+    await user.click(termsCheckbox);
+    
     // Submit the form
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));
     
@@ -95,6 +99,10 @@ describe('SignupForm Submission', () => {
     const skillCombobox = screen.getByRole('combobox', { name: /skill level/i });
     await user.click(skillCombobox);
     await user.click(screen.getByText('3.0'));
+    
+    // Accept terms
+    const termsCheckbox = screen.getByRole('checkbox');
+    await user.click(termsCheckbox);
     
     // Submit the form
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));

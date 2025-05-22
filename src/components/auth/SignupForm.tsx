@@ -39,6 +39,7 @@ export const SignupForm = () => {
       lastName: "",
       gender: undefined,
       skillLevel: undefined,
+      agreeToTerms: false,
     },
   });
 
