@@ -3,15 +3,18 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, AlertCircle } from "lucide-react";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormInputField, FormInputFieldProps } from "./FormInputField";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
+import { ValidationIcon } from "./ValidationIcon";
 
-interface BaseInputFieldProps {
-  id?: string;
+// Interface for standalone input field (not connected to react-hook-form)
+interface StandaloneInputFieldProps {
+  id: string;
   label: string;
   type?: string;
   placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   required?: boolean;
   autoComplete?: string;
@@ -24,96 +27,23 @@ interface BaseInputFieldProps {
   validateFn?: (value: string) => { valid: boolean; message?: string };
 }
 
-interface StandaloneInputFieldProps extends BaseInputFieldProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  id: string; // Required for standalone usage
-}
+// Type to allow either standalone or form-controlled usage
+export type InputFieldProps = 
+  | StandaloneInputFieldProps 
+  | (FormInputFieldProps & { control: Control<any> });
 
-interface FormInputFieldProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends BaseInputFieldProps {
-  control: Control<TFieldValues>;
-  name: TName;
-  isPassword?: boolean;
-}
-
-export type InputFieldProps = StandaloneInputFieldProps | FormInputFieldProps;
-
+// Type guard to check if props are for FormInputField
 function isFormInputField(props: InputFieldProps): props is FormInputFieldProps {
   return 'control' in props && 'name' in props;
 }
 
 export function InputField(props: InputFieldProps) {
-  // If the component is used with react-hook-form
+  // If using with react-hook-form, delegate to FormInputField component
   if (isFormInputField(props)) {
-    const { 
-      control, 
-      name, 
-      label, 
-      type = 'text',
-      placeholder, 
-      required = false,
-      disabled = false,
-      autoComplete,
-      pattern,
-      maxLength,
-      minLength,
-      className,
-      isPassword = false
-    } = props;
-
-    return (
-      <FormField
-        control={control}
-        name={name}
-        render={({ field, fieldState }) => {
-          const { error } = fieldState;
-          
-          return (
-            <FormItem className={cn("space-y-2", className)}>
-              <FormLabel className="text-sm font-medium">
-                {label} {required && <span className="text-destructive">*</span>}
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input
-                    type={isPassword ? "password" : type}
-                    placeholder={placeholder}
-                    required={required}
-                    disabled={disabled}
-                    autoComplete={autoComplete}
-                    pattern={pattern}
-                    maxLength={maxLength}
-                    minLength={minLength}
-                    className={cn(
-                      "pr-10 input-focus-animation",
-                      error ? "border-destructive/50 focus:border-destructive" : "",
-                      !error && fieldState.isDirty ? "border-primary/50 focus:border-primary" : ""
-                    )}
-                    {...field}
-                  />
-                  {fieldState.isDirty && (
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity duration-200">
-                      {error ? (
-                        <AlertCircle className="h-5 w-5 text-destructive animate-scale-in" />
-                      ) : (
-                        <CheckCircle2 className="h-5 w-5 text-primary animate-scale-in" />
-                      )}
-                    </div>
-                  )}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          );
-        }}
-      />
-    );
+    return <FormInputField {...props} />;
   }
 
-  // Original standalone implementation (not used with react-hook-form)
+  // Original standalone implementation for direct usage without react-hook-form
   const {
     id,
     label,
@@ -176,13 +106,7 @@ export function InputField(props: InputFieldProps) {
           onBlur={() => setTouched(true)}
         />
         {touched && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity duration-200">
-            {error || (touched && validationMessage && !valid) ? (
-              <AlertCircle className="h-5 w-5 text-destructive animate-scale-in" />
-            ) : valid ? (
-              <CheckCircle2 className="h-5 w-5 text-primary animate-scale-in" />
-            ) : null}
-          </div>
+          <ValidationIcon valid={!error && valid === true} />
         )}
       </div>
       {error || (touched && validationMessage && !valid) ? (
