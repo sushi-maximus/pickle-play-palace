@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -94,7 +93,7 @@ export const signUp = async (email: string, password: string, metadata: any) => 
       console.error("Exception checking profile:", profileCheckError);
     }
     
-    // Use persistent toast that won't auto-hide
+    // Use persistent toast for account verification instructions
     toast.persistent("Account created", {
       description: "Please check your email to confirm your account before logging in."
     });

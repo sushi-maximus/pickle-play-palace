@@ -28,8 +28,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
   )
 }
 
-// Create our custom toast interface that extends the original
-interface CustomToast {
+// Create our enhanced toast interface
+interface ToastInterface {
   (message: ReactNode, data?: ExternalToast): string | number;
   success: typeof sonnerToast.success;
   error: typeof sonnerToast.error;
@@ -40,22 +40,21 @@ interface CustomToast {
   loading: typeof sonnerToast.loading;
   dismiss: typeof sonnerToast.dismiss;
   custom: typeof sonnerToast.custom;
-  // Persistent toast that doesn't auto-hide
   persistent: (message: ReactNode, data?: ExternalToast) => string | number;
 }
 
-// Create our custom toast object with the persistent method
+// Create our enhanced toast object with the persistent method
 const toast = Object.assign(
   sonnerToast,
   {
     persistent: (message: ReactNode, opts: ExternalToast = {}) => {
       return sonnerToast(message, {
         ...opts,
-        duration: Infinity, // Use Infinity instead of undefined for clarity
-        closeButton: true, // Always show close button
+        duration: Infinity,
+        closeButton: true,
       });
     }
   }
-) as CustomToast;
+) as ToastInterface;
 
 export { Toaster, toast }

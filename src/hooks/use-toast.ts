@@ -1,15 +1,14 @@
 
-// Re-export Sonner toast for simplified usage
+// Direct re-export of Sonner toast 
 import { toast } from "@/components/ui/sonner";
 
-// Export Sonner's toast as default
 export { toast };
 
-// For components still using the old useToast hook pattern
+// Minimal compatibility layer for old useToast pattern
 export const useToast = () => {
   return {
     toast,
-    // Provide empty functions to maintain API compatibility
+    // Empty values for backward compatibility
     toasts: [],
     dismiss: () => {},
   };
