@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { profileSchema, ProfileFormValues } from "./schemas/profileSchema";
 import { PersonalInfoFields } from "./form-sections/PersonalInfoFields";
 import { AdditionalInfoFields } from "./form-sections/AdditionalInfoFields";
@@ -66,17 +65,14 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       // Refresh the profile data after successful update
       await refreshProfile();
       
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
+      toast.success("Profile updated", {
+        description: "Your profile has been updated successfully",
         duration: 5000,
       });
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update profile",
-        variant: "destructive",
+      toast.error("Update failed", {
+        description: "Failed to update profile. Please try again.",
         duration: 5000,
       });
     } finally {

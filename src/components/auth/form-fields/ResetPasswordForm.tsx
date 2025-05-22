@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InputField } from "@/components/auth/form-fields/InputField";
@@ -37,9 +36,7 @@ export const ResetPasswordForm = () => {
       });
 
       if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
+        toast.error("Reset failed", {
           description: error.message || "Unable to send reset email. Please try again.",
           duration: 5000,
         });
@@ -48,8 +45,7 @@ export const ResetPasswordForm = () => {
 
       setIsSuccess(true);
       
-      toast({
-        title: "Reset email sent",
+      toast.success("Reset email sent", {
         description: "Please check your email for password reset instructions.",
         duration: 5000,
       });
@@ -58,9 +54,7 @@ export const ResetPasswordForm = () => {
       
     } catch (error) {
       console.error("Password reset error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
+      toast.error("Reset error", {
         description: "An unexpected error occurred. Please try again.",
         duration: 5000,
       });

@@ -1,75 +1,16 @@
 
-import * as React from "react"
-import { 
-  ToasterToast, 
-  genId, 
-  DEFAULT_TOAST_DURATION 
-} from "./toast-types"
-import { dispatch, memoryState, listeners } from "./toast-reducer"
+// Re-export Sonner toast for backward compatibility
+import { toast } from "@/components/ui/sonner";
 
-type Toast = Omit<ToasterToast, "id">
+// Export Sonner's toast as default
+export { toast };
 
-/**
- * Creates and manages toast notifications
- */
-function toast({ ...props }: Toast) {
-  const id = genId()
-  
-  // Always use a duration (either provided or default)
-  const duration = props.duration || DEFAULT_TOAST_DURATION;
-  
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
-
-  // Always set up auto-dismiss timer
-  setTimeout(() => {
-    dismiss();
-  }, duration);
-
-  dispatch({
-    type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      duration,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
-    },
-  })
-
+// For components still using the old useToast hook pattern
+export const useToast = () => {
   return {
-    id: id,
-    dismiss,
-    update: (props: ToasterToast) =>
-      dispatch({
-        type: "UPDATE_TOAST",
-        toast: { ...props, id },
-      }),
-  }
-}
-
-/**
- * Hook to access toast state and functions
- */
-function useToast() {
-  const [state, setState] = React.useState<{ toasts: ToasterToast[] }>(memoryState)
-
-  React.useEffect(() => {
-    listeners.push(setState)
-    return () => {
-      const index = listeners.indexOf(setState)
-      if (index > -1) {
-        listeners.splice(index, 1)
-      }
-    }
-  }, [state])
-
-  return {
-    ...state,
     toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
-  }
-}
-
-export { useToast, toast }
+    // Provide empty functions to maintain API compatibility
+    toasts: [],
+    dismiss: () => {},
+  };
+};

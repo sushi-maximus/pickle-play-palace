@@ -1,3 +1,4 @@
+
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -6,13 +7,13 @@ export const signOut = async () => {
     await supabase.auth.signOut();
     toast.success("Signed out", {
       description: "You have been signed out successfully.",
-      duration: 5000 // Explicitly set duration for auto-dismiss
+      duration: 5000
     });
   } catch (error) {
     console.error("Error signing out:", error);
     toast.error("Error signing out", {
       description: "An error occurred while signing out.",
-      duration: 5000 // Explicitly set duration for auto-dismiss
+      duration: 5000
     });
   }
 };

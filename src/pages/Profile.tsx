@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Navigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { AccountInfo } from "@/components/profile/AccountInfo";
@@ -28,12 +27,9 @@ export default function Profile() {
 
   const handleLogout = async () => {
     await signOut();
-    // Use standard duration toast that auto-dismisses
-    toast({
-      title: "Success",
-      description: "You have been logged out",
-      variant: "default",
-      duration: 5000, // Explicitly set duration
+    toast.success("Logged out", {
+      description: "You have been logged out successfully",
+      duration: 5000,
     });
   };
 
