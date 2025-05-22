@@ -78,12 +78,14 @@ export default function Profile() {
                       {profileData?.first_name} {profileData?.last_name}
                     </h2>
                     <p className="text-muted-foreground">{user.email}</p>
-                    {age !== null && (
-                      <p className="text-muted-foreground mt-1">Age: {age}</p>
-                    )}
-                    {profileData?.dupr_rating && (
-                      <p className="text-muted-foreground mt-1">DUPR Rating: {profileData.dupr_rating}</p>
-                    )}
+                    <div className="flex flex-wrap gap-4 mt-1 text-muted-foreground">
+                      {profileData?.dupr_rating && (
+                        <p>DUPR: {profileData.dupr_rating}</p>
+                      )}
+                      {age !== null && (
+                        <p>Age: {age}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
                 
