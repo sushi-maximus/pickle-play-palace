@@ -7,7 +7,7 @@ export const formatProfileDataForUpdate = (values: ProfileFormValues) => {
     last_name: values.lastName,
     gender: values.gender,
     skill_level: values.skillLevel,
-    birthday: values.birthday ? values.birthday.toISOString() : null,
+    birthday: values.birthday ? values.birthday.toISOString().split('T')[0] : null,
     dupr_rating: values.duprRating ? parseFloat(values.duprRating) : null
   };
 };
