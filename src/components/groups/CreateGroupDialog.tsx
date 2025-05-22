@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,12 +21,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { LockClosedIcon } from "lucide-react";
 
 // Schema for form validation
 const createGroupSchema = z.object({
   name: z.string().min(3, "Group name must be at least 3 characters"),
   description: z.string().optional(),
   location: z.string().optional(),
+  is_private: z.boolean().default(false),
 });
 
 type CreateGroupFormValues = z.infer<typeof createGroupSchema>;
@@ -47,6 +50,7 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
       name: "",
       description: "",
       location: "",
+      is_private: false,
     },
   });
 
@@ -69,6 +73,7 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
             description: values.description || null,
             location: values.location || null,
             created_by: user.id,
+            is_private: values.is_private,
           },
         ])
         .select();
@@ -176,6 +181,29 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
                       <Input placeholder="Enter location" {...field} />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="is_private"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base flex items-center">
+                        <LockClosedIcon className="w-4 h-4 mr-2" />
+                        Private Group
+                      </FormLabel>
+                      <FormDescription>
+                        Private groups require approval to join
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />

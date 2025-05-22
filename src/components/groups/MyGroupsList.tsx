@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, LogOut } from "lucide-react";
+import { Users, LogOut, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -16,6 +15,7 @@ type GroupMembership = {
     description: string | null;
     location: string | null;
     created_at: string;
+    is_private: boolean;
   };
   role: string;
 };
@@ -69,7 +69,8 @@ export const MyGroupsList = ({ user, onRefresh }: MyGroupsListProps) => {
             name,
             description,
             location,
-            created_at
+            created_at,
+            is_private
           )
         `)
         .eq("user_id", user.id)
@@ -145,7 +146,12 @@ export const MyGroupsList = ({ user, onRefresh }: MyGroupsListProps) => {
           <Card className="h-full flex flex-col hover:shadow-md transition-shadow duration-300 border-2 border-transparent hover:border-primary/20">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">{membership.group.name}</CardTitle>
+                <CardTitle className="text-xl flex items-center">
+                  {membership.group.name}
+                  {membership.group.is_private && (
+                    <Lock className="h-4 w-4 ml-2 text-muted-foreground" />
+                  )}
+                </CardTitle>
                 <div className="p-2 bg-primary/10 rounded-full">
                   <Users className="h-5 w-5 text-primary" />
                 </div>
@@ -157,8 +163,15 @@ export const MyGroupsList = ({ user, onRefresh }: MyGroupsListProps) => {
                 <div className="text-xs text-muted-foreground mt-1">
                   Created {new Date(membership.group.created_at).toLocaleDateString()}
                 </div>
-                <div className="text-xs font-medium mt-2 inline-block bg-secondary/50 px-2 py-0.5 rounded-full">
-                  Role: {membership.role === "admin" ? "Admin" : "Member"}
+                <div className="flex gap-2 mt-2">
+                  <div className="text-xs font-medium inline-block bg-secondary/50 px-2 py-0.5 rounded-full">
+                    Role: {membership.role === "admin" ? "Admin" : "Member"}
+                  </div>
+                  {membership.group.is_private && (
+                    <div className="text-xs font-medium inline-block bg-secondary/50 px-2 py-0.5 rounded-full">
+                      Private Group
+                    </div>
+                  )}
                 </div>
               </CardDescription>
             </CardHeader>

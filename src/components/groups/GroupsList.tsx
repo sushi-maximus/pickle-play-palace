@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { Users, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ type Group = {
   description: string | null;
   location: string | null;
   created_at: string;
+  is_private: boolean;
   member_count?: number;
 };
 
@@ -126,7 +127,12 @@ export const GroupsList = ({ user }: GroupsListProps) => {
           <Card className="h-full flex flex-col hover:shadow-md transition-shadow duration-300 border-2 border-transparent hover:border-primary/20">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">{group.name}</CardTitle>
+                <CardTitle className="text-xl flex items-center">
+                  {group.name}
+                  {group.is_private && (
+                    <Lock className="h-4 w-4 ml-2 text-muted-foreground" />
+                  )}
+                </CardTitle>
                 <div className="p-2 bg-primary/10 rounded-full">
                   <Users className="h-5 w-5 text-primary" />
                 </div>
@@ -138,6 +144,11 @@ export const GroupsList = ({ user }: GroupsListProps) => {
                 <div className="text-xs text-muted-foreground mt-1">
                   Created {new Date(group.created_at).toLocaleDateString()}
                 </div>
+                {group.is_private && (
+                  <div className="text-xs font-medium mt-2 inline-block bg-secondary/50 px-2 py-0.5 rounded-full">
+                    Private Group
+                  </div>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
