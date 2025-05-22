@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Users, Lock, MapPin, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { GroupMembersList } from "@/components/groups/GroupMembersList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -137,19 +139,35 @@ const GroupDetails = () => {
             </CardHeader>
             
             <CardContent>
-              <div className="prose dark:prose-invert">
-                <h3 className="text-lg font-medium mb-2">About this group</h3>
-                <p className="text-muted-foreground">
-                  {group.description || "No description provided."}
-                </p>
-              </div>
-              
-              {user && (
-                <div className="mt-6 flex gap-4">
-                  <Button>Join Group</Button>
-                  <Button variant="outline">Contact Admin</Button>
-                </div>
-              )}
+              <Tabs defaultValue="about" className="w-full">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="about">About</TabsTrigger>
+                  <TabsTrigger value="members">
+                    Members ({group.member_count || 0})
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="about">
+                  <div className="prose dark:prose-invert">
+                    <h3 className="text-lg font-medium mb-2">About this group</h3>
+                    <p className="text-muted-foreground">
+                      {group.description || "No description provided."}
+                    </p>
+                  </div>
+                  
+                  {user && (
+                    <div className="mt-6 flex gap-4">
+                      <Button>Join Group</Button>
+                      <Button variant="outline">Contact Admin</Button>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="members">
+                  <h3 className="text-lg font-medium mb-4">Group Members</h3>
+                  <GroupMembersList members={group.members || []} />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>

@@ -180,15 +180,65 @@ export const fetchUserMemberships = async (userId: string) => {
 };
 
 /**
- * A utility function to fetch group details
+ * A utility function to fetch group details including members
  */
 export const fetchGroupDetails = async (groupId: string): Promise<any> => {
   try {
-    // In a real app, this would fetch from an API
-    // For now, we'll get all groups and find the one with the matching ID
-    const allGroups = await fetchAllGroups();
-    const group = allGroups.find(g => g.id === groupId);
-    return group || null;
+    // First get the group details
+    const { data: groupData, error: groupError } = await supabase
+      .from("groups")
+      .select("*")
+      .eq("id", groupId)
+      .single();
+      
+    if (groupError) {
+      console.error('Error fetching group details:', groupError);
+      throw groupError;
+    }
+    
+    if (!groupData) {
+      return null;
+    }
+    
+    // Count active members
+    const { count: memberCount, error: countError } = await supabase
+      .from("group_members")
+      .select("*", { count: "exact", head: true })
+      .eq("group_id", groupId)
+      .eq("status", "active");
+      
+    if (countError) {
+      console.error(`Error counting members for group ${groupId}:`, countError);
+    }
+    
+    // Get members with their profile info
+    const { data: membersData, error: membersError } = await supabase
+      .from("group_members")
+      .select(`
+        id,
+        role,
+        joined_at,
+        user_id,
+        profiles:user_id (
+          id,
+          first_name,
+          last_name,
+          avatar_url
+        )
+      `)
+      .eq("group_id", groupId)
+      .eq("status", "active");
+      
+    if (membersError) {
+      console.error(`Error fetching members for group ${groupId}:`, membersError);
+    }
+    
+    // Return group with member data
+    return {
+      ...groupData,
+      member_count: memberCount || 0,
+      members: membersData || []
+    };
   } catch (error) {
     console.error('Error fetching group details:', error);
     throw error;
