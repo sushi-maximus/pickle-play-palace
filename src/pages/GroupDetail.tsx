@@ -5,11 +5,12 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { GroupHeader } from "@/components/groups/GroupHeader";
+import { GroupDetailTabs } from "@/components/groups/GroupDetailTabs";
+import { GroupDetailActions } from "@/components/groups/GroupDetailActions";
 import { 
   getGroupById, 
   getGroupMembers, 
@@ -114,6 +115,11 @@ const GroupDetail = () => {
     }
   };
 
+  // Helper function to check if a member is the current user
+  const isCurrentUser = (userId: string) => {
+    return user?.id === userId;
+  };
+
   const breadcrumbItems = [
     { label: "Groups", href: "/groups" },
     { label: group?.name || "Group Details" }
@@ -159,114 +165,23 @@ const GroupDetail = () => {
               />
               
               <div className="flex items-center justify-between">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList>
-                    <TabsTrigger value="about">About</TabsTrigger>
-                    <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
-                    {isAdmin && <TabsTrigger value="settings">Settings</TabsTrigger>}
-                  </TabsList>
-                </Tabs>
+                <GroupDetailTabs
+                  group={group}
+                  members={members}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  isAdmin={isAdmin}
+                  isCurrentUser={isCurrentUser}
+                />
                 
-                {!isMember ? (
-                  <Button 
-                    onClick={handleJoin} 
-                    disabled={joining}
-                    className="ml-4"
-                  >
-                    {joining ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Joining...
-                      </>
-                    ) : "Join Group"}
-                  </Button>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    onClick={handleLeave}
-                    disabled={leaving}
-                    className="ml-4"
-                  >
-                    {leaving ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Leaving...
-                      </>
-                    ) : "Leave Group"}
-                  </Button>
-                )}
+                <GroupDetailActions
+                  isMember={isMember}
+                  joining={joining}
+                  leaving={leaving}
+                  onJoin={handleJoin}
+                  onLeave={handleLeave}
+                />
               </div>
-              
-              <TabsContent value="about" className="pt-4">
-                <div className="space-y-6 bg-card p-6 rounded-lg border border-border">
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Description</h3>
-                    <p className="text-muted-foreground">
-                      {group.description || "No description provided."}
-                    </p>
-                  </div>
-                  
-                  {group.location && (
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Location</h3>
-                      <p className="text-muted-foreground">{group.location}</p>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="members" className="pt-4">
-                <div className="bg-card p-6 rounded-lg border border-border">
-                  <h3 className="text-lg font-medium mb-4">Group Members</h3>
-                  
-                  <div className="space-y-4">
-                    {members.map(member => (
-                      <div 
-                        key={member.id} 
-                        className="flex items-center justify-between p-3 border-b last:border-0"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
-                            {member.profile.first_name ? (
-                              `${member.profile.first_name.charAt(0)}${
-                                member.profile.last_name ? member.profile.last_name.charAt(0) : ''
-                              }`
-                            ) : 'U'}
-                          </div>
-                          <div>
-                            <p className="font-medium">
-                              {member.profile.first_name} {member.profile.last_name}
-                            </p>
-                            {member.role === 'admin' && (
-                              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                                Admin
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {isAdmin && member.user_id !== user?.id && (
-                          <Button variant="ghost" size="sm">
-                            Manage
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </TabsContent>
-              
-              {isAdmin && (
-                <TabsContent value="settings" className="pt-4">
-                  <div className="bg-card p-6 rounded-lg border border-border">
-                    <h3 className="text-lg font-medium mb-4">Group Settings</h3>
-                    
-                    <div className="space-y-4">
-                      <Button>Edit Group Details</Button>
-                    </div>
-                  </div>
-                </TabsContent>
-              )}
             </div>
           )}
         </div>
