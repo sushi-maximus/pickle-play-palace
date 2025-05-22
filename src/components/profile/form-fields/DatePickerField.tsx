@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Control } from "react-hook-form";
 
@@ -32,10 +32,10 @@ export const DatePickerField = ({ control, name, label }: DatePickerFieldProps) 
                     !field.value && "text-muted-foreground"
                   )}
                 >
-                  {field.value ? (
+                  {field.value && isValid(field.value) ? (
                     format(field.value, "MMMM d, yyyy")
                   ) : (
-                    <span>Pick a date</span>
+                    <span>Select your date of birth</span>
                   )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
@@ -52,6 +52,8 @@ export const DatePickerField = ({ control, name, label }: DatePickerFieldProps) 
                 captionLayout="dropdown-buttons"
                 fromYear={1920}
                 toYear={new Date().getFullYear()}
+                defaultMonth={field.value || new Date(1990, 0, 1)}
+                showOutsideDays={false}
               />
             </PopoverContent>
           </Popover>
