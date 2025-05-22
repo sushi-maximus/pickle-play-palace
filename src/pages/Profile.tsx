@@ -32,6 +32,7 @@ export default function Profile() {
       title: "Success",
       description: "You have been logged out",
       variant: "default",
+      showCloseButton: false, // Explicitly set to false
     });
   };
 
