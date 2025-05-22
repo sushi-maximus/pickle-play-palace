@@ -6,8 +6,9 @@ import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { Button } from "@/components/ui/button";
-import { Activity, Calendar, ChevronRight, LayoutDashboard, Users } from "lucide-react";
+import { Activity, Calendar, ChevronRight, LayoutDashboard, Users, Plus } from "lucide-react";
 import { motion } from "framer-motion";
+import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 
 const Dashboard = () => {
   const { user, profile } = useAuth();
@@ -70,6 +71,14 @@ const Dashboard = () => {
                 <Calendar className="mr-2 h-4 w-4" />
                 Last 30 days
               </Button>
+              <CreateGroupDialog 
+                trigger={
+                  <Button size="sm" className="hover-scale">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Group
+                  </Button>
+                }
+              />
             </motion.div>
           </div>
           

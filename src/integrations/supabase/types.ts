@@ -9,6 +9,101 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: Database["public"]["Enums"]["group_member_role"]
+          status: Database["public"]["Enums"]["group_member_status"]
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: Database["public"]["Enums"]["group_member_role"]
+          status?: Database["public"]["Enums"]["group_member_status"]
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: Database["public"]["Enums"]["group_member_role"]
+          status?: Database["public"]["Enums"]["group_member_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_private: boolean
+          location: string | null
+          max_members: number | null
+          name: string
+          skill_level_max: string | null
+          skill_level_min: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_private?: boolean
+          location?: string | null
+          max_members?: number | null
+          name: string
+          skill_level_max?: string | null
+          skill_level_min?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_private?: boolean
+          location?: string | null
+          max_members?: number | null
+          name?: string
+          skill_level_max?: string | null
+          skill_level_min?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_skill_level_max_fkey"
+            columns: ["skill_level_max"]
+            isOneToOne: false
+            referencedRelation: "skill_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "groups_skill_level_min_fkey"
+            columns: ["skill_level_min"]
+            isOneToOne: false
+            referencedRelation: "skill_levels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -89,6 +184,8 @@ export type Database = {
     }
     Enums: {
       gender: "Male" | "Female"
+      group_member_role: "admin" | "member"
+      group_member_status: "invited" | "active" | "declined"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -205,6 +302,8 @@ export const Constants = {
   public: {
     Enums: {
       gender: ["Male", "Female"],
+      group_member_role: ["admin", "member"],
+      group_member_status: ["invited", "active", "declined"],
     },
   },
 } as const
