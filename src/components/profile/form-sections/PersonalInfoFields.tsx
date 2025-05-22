@@ -21,9 +21,9 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
   const genderOptions = GENDER_VALUES.map(value => ({ value, label: value }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       {/* First and Last Name Row */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <InputField
           control={control}
           name="firstName"
@@ -39,7 +39,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
       </div>
       
       {/* Gender and Skill Level Row */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <SelectField
           control={control}
           name="gender"
