@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { FormInputField } from "./FormInputField";
+import { FormInputField, FormInputFieldProps } from "./FormInputField";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 import { ValidationIcon } from "./ValidationIcon";
 import { Eye, EyeOff } from "lucide-react";
@@ -33,10 +33,10 @@ interface StandaloneInputFieldProps {
 // Type to allow either standalone or form-controlled usage
 export type InputFieldProps = 
   | StandaloneInputFieldProps 
-  | (Omit<FormInputField.FormInputFieldProps, 'control'> & { control: Control<any> });
+  | (Omit<FormInputFieldProps, 'control'> & { control: Control<any> });
 
 // Type guard to check if props are for FormInputField
-function isFormInputField(props: InputFieldProps): props is FormInputField.FormInputFieldProps {
+function isFormInputField(props: InputFieldProps): props is FormInputFieldProps {
   return 'control' in props && 'name' in props;
 }
 

@@ -14,7 +14,7 @@ export function ValidationIcon({ valid, className }: ValidationIconProps) {
       "absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity duration-200",
       className
     )}>
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence initial={false}>
         {valid ? (
           <motion.div
             key="valid"
