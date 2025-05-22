@@ -4,7 +4,7 @@ import { PhoneInputField } from "../form-fields/PhoneInputField";
 import { InputField } from "@/components/auth/form-fields/InputField";
 import { Control } from "react-hook-form";
 import { ProfileFormValues } from "../schemas/profileSchema";
-import { Info, ExternalLink } from "lucide-react";
+import { Info } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -20,26 +20,21 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
   return (
     <div className="space-y-6">
       {/* First row: DUPR Rating and DUPR Profile Link */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            DUPR Rating
-          </label>
-          <InputField
-            control={control}
-            name="duprRating"
-            label=""
-            placeholder="4.5"
-            validateFn={(value) => {
-              if (!value) return { valid: true };
-              const parsed = parseFloat(value);
-              return {
-                valid: !isNaN(parsed) && parsed >= 2.0 && parsed <= 8.0,
-                message: "DUPR rating must be between 2.0 and 8.0"
-              };
-            }}
-          />
-        </div>
+      <div className="grid grid-cols-2 gap-4">
+        <InputField
+          control={control}
+          name="duprRating"
+          label="DUPR Rating"
+          placeholder="4.5"
+          validateFn={(value) => {
+            if (!value) return { valid: true };
+            const parsed = parseFloat(value);
+            return {
+              valid: !isNaN(parsed) && parsed >= 2.0 && parsed <= 8.0,
+              message: "DUPR rating must be between 2.0 and 8.0"
+            };
+          }}
+        />
         
         <div className="space-y-2">
           <div className="flex items-center">
@@ -63,6 +58,7 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
             control={control}
             name="duprProfileLink"
             label=""
+            hideLabel={true}
             type="url"
             placeholder="https://dupr.com/player/your-profile"
           />
@@ -70,17 +66,12 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
       </div>
       
       {/* Second row: Birthday and Phone Number */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            Birthday
-          </label>
-          <DatePickerField
-            control={control}
-            name="birthday"
-            label=""
-          />
-        </div>
+      <div className="grid grid-cols-2 gap-4">
+        <DatePickerField
+          control={control}
+          name="birthday"
+          label="Birthday"
+        />
         
         <div className="space-y-2">
           <div className="flex items-center">
@@ -104,6 +95,7 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
             control={control}
             name="phoneNumber"
             label=""
+            hideLabel={true}
           />
         </div>
       </div>
