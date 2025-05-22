@@ -9,6 +9,7 @@ import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { AccountInfo } from "@/components/profile/AccountInfo";
+import { differenceInYears } from "date-fns";
 
 export default function Profile() {
   const { user, signOut, profile } = useAuth();
@@ -38,6 +39,17 @@ export default function Profile() {
     return user.email?.charAt(0).toUpperCase() || "U";
   };
 
+  // Calculate age from birthday
+  const calculateAge = () => {
+    if (profileData?.birthday) {
+      const birthdayDate = new Date(profileData.birthday);
+      return differenceInYears(new Date(), birthdayDate);
+    }
+    return null;
+  };
+
+  const age = calculateAge();
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -66,6 +78,12 @@ export default function Profile() {
                       {profileData?.first_name} {profileData?.last_name}
                     </h2>
                     <p className="text-muted-foreground">{user.email}</p>
+                    {age !== null && (
+                      <p className="text-muted-foreground mt-1">Age: {age}</p>
+                    )}
+                    {profileData?.dupr_rating && (
+                      <p className="text-muted-foreground mt-1">DUPR Rating: {profileData.dupr_rating}</p>
+                    )}
                   </div>
                 </div>
                 

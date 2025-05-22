@@ -10,6 +10,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { InputField } from "@/components/auth/form-fields/InputField";
 import { SelectField } from "@/components/auth/form-fields/SelectField";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 // Define the exact values allowed for gender and skill level
 const GENDER_VALUES = ["Male", "Female"] as const;
@@ -24,6 +30,12 @@ const profileSchema = z.object({
   lastName: z.string().min(1, "Last name is required").max(50, "Last name cannot exceed 50 characters"),
   gender: z.enum(GENDER_VALUES, { required_error: "Please select your gender" }),
   skillLevel: z.enum(SKILL_LEVEL_VALUES, { required_error: "Please select your skill level" }),
+  birthday: z.date().optional(),
+  duprRating: z.string().optional().refine((val) => {
+    if (!val) return true;
+    const parsed = parseFloat(val);
+    return !isNaN(parsed) && parsed >= 2.0 && parsed <= 8.0;
+  }, "DUPR rating must be between 2.0 and 8.0"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -49,7 +61,9 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       firstName: "",
       lastName: "",
       gender: "Male", 
-      skillLevel: "2.5", 
+      skillLevel: "2.5",
+      birthday: undefined,
+      duprRating: "",
     },
   });
 
@@ -64,6 +78,8 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
         gender: GENDER_VALUES.includes(profileData.gender) ? profileData.gender : "Male",
         // Ensure skill level is a valid enum value
         skillLevel: SKILL_LEVEL_VALUES.includes(profileData.skill_level) ? profileData.skill_level : "2.5",
+        birthday: profileData.birthday ? new Date(profileData.birthday) : undefined,
+        duprRating: profileData.dupr_rating ? String(profileData.dupr_rating) : "",
       } as ProfileFormValues;
       
       console.log("Setting form values to:", formValues);
@@ -85,7 +101,9 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
         first_name: values.firstName,
         last_name: values.lastName,
         gender: values.gender,
-        skill_level: values.skillLevel
+        skill_level: values.skillLevel,
+        birthday: values.birthday ? values.birthday.toISOString() : null,
+        dupr_rating: values.duprRating ? parseFloat(values.duprRating) : null
       };
       
       console.log("Update data being sent to Supabase:", updateData);
@@ -144,6 +162,58 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
             options={skillLevelOptions}
           />
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Birthday Field */}
+          <FormField
+            control={form.control}
+            name="birthday"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Birthday</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* DUPR Rating Field */}
+          <InputField
+            control={form.control}
+            name="duprRating"
+            label="DUPR Rating"
+            placeholder="4.5"
+          />
+        </div>
+
         <div className="flex justify-end mt-4">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Updating..." : "Save Changes"}
