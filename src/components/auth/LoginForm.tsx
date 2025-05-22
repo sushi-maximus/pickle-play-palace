@@ -4,9 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { 
-  Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginSchema, loginSchema } from "@/lib/validation/auth";
 import { 
@@ -19,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { LoginErrorMessage } from "./LoginErrorMessage";
 import { ResendVerificationDialog } from "./ResendVerificationDialog";
-import { InputField } from "./form-fields/InputField";
+import { LoginFields } from "./form-sections/LoginFields";
 
 export const LoginForm = () => {
   const { signIn } = useAuth();
@@ -67,7 +65,7 @@ export const LoginForm = () => {
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4 pt-4">
+          <CardContent className="space-y-6 pt-4">
             {loginError && (
               <LoginErrorMessage 
                 errorMessage={loginError}
@@ -75,21 +73,7 @@ export const LoginForm = () => {
               />
             )}
             
-            <InputField
-              control={form.control}
-              name="email"
-              label="Email"
-              placeholder="your.email@example.com"
-              type="email"
-            />
-            
-            <InputField
-              control={form.control}
-              name="password"
-              label="Password"
-              placeholder="••••••••"
-              isPassword={true}
-            />
+            <LoginFields control={form.control} />
             
             <div className="text-right">
               <Link to="/forgot-password" className="text-sm text-primary hover:underline underline-offset-4 transition-colors">
