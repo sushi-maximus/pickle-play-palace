@@ -10,6 +10,8 @@ type Profile = {
   avatar_url: string | null;
   gender: string;
   skill_level: string;
+  dupr_rating: number | null;
+  birthday?: string | null;
 };
 
 type AuthContextType = {
