@@ -46,7 +46,7 @@ const AvatarFallback = React.forwardRef<
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
-// Updated AvatarWithBorder component with proper rounded styling and black outer edge
+// Fixed AvatarWithBorder component with proper rounded styling
 const AvatarWithBorder = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & { 
@@ -55,20 +55,20 @@ const AvatarWithBorder = React.forwardRef<
   }
 >(({ className, borderColor, borderWidth = 3, ...props }, ref) => (
   <div 
-    className={cn(
-      "rounded-full relative", 
-      className
-    )}
+    className="rounded-full overflow-hidden flex items-center justify-center"
     style={{ 
       padding: borderWidth,
       background: borderColor || 'transparent',
       border: '1px solid black', // Add thin black outside edge
-      boxSizing: 'content-box', // Ensure padding doesn't affect the overall dimensions
+      boxSizing: 'content-box', // Ensure padding doesn't affect overall dimensions
+      display: 'inline-flex', // Ensure it takes up just the space needed
+      width: 'fit-content', // Maintain compact size
+      height: 'fit-content',
     }}
   >
     <AvatarPrimitive.Root
       ref={ref}
-      className="h-full w-full rounded-full overflow-hidden"
+      className={cn("rounded-full overflow-hidden", className)}
       {...props}
     />
   </div>

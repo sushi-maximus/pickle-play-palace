@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
@@ -70,12 +69,10 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
   };
 
   return (
-    <div className="relative mb-4 md:mb-0">
+    <div className="relative mb-4 md:mb-0 flex items-center justify-center">
       <AvatarWithBorder className="h-24 w-24" borderColor={borderColor} borderWidth={4}>
-        {localAvatarUrl || avatarUrl ? (
-          <AvatarImage src={localAvatarUrl || avatarUrl} alt="Profile" />
-        ) : null}
-        <AvatarFallback className="text-lg">{getInitials()}</AvatarFallback>
+        <AvatarImage src={localAvatarUrl || avatarUrl || ""} alt="Profile" className="rounded-full" />
+        <AvatarFallback className="text-lg rounded-full">{getInitials()}</AvatarFallback>
       </AvatarWithBorder>
       <div className="absolute bottom-0 right-0">
         <label htmlFor="avatar-upload" className="cursor-pointer">
