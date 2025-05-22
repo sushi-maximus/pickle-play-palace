@@ -6,13 +6,15 @@ import { Group } from "@/types/group";
  * Creates a new group and returns the created group data
  */
 export async function createGroup(group: Partial<Group>): Promise<Group> {
-  const user = supabase.auth.getUser();
-  const userId = (await user).data.user?.id;
+  const { data: userData, error: userError } = await supabase.auth.getUser();
   
-  if (!userId) {
+  if (!userData?.user) {
     throw new Error("User not authenticated");
   }
   
+  const userId = userData.user.id;
+  
+  // Insert the new group into the database
   const { data, error } = await supabase
     .from('groups')
     .insert([
