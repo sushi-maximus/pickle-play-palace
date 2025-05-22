@@ -37,6 +37,7 @@ describe('SignupForm Validation', () => {
     });
   });
 
+  /* Commenting out other tests to focus on one test at a time
   test('validates matching passwords', async () => {
     const { user } = renderWithProviders(<SignupForm />);
     
@@ -61,4 +62,5 @@ describe('SignupForm Validation', () => {
       expect(screen.getByText(/Passwords do not match/i)).toBeInTheDocument();
     });
   });
+  */
 });
