@@ -29,6 +29,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
             name="firstName"
             label="First Name"
             placeholder="John"
+            required
           />
         </div>
         <div>
@@ -37,6 +38,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
             name="lastName"
             label="Last Name"
             placeholder="Doe"
+            required
           />
         </div>
       </div>
@@ -49,6 +51,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
             label="Gender"
             placeholder="Select gender"
             options={genderOptions}
+            required
           />
         </div>
         <div>
@@ -78,6 +81,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
             hideLabel={true}
             placeholder="Select skill level"
             options={skillLevelOptions}
+            required
           />
         </div>
       </div>

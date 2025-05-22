@@ -30,6 +30,14 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
           name="duprRating"
           label="DUPR Rating"
           placeholder="4.5"
+          validateFn={(value) => {
+            if (!value) return { valid: true };
+            const parsed = parseFloat(value);
+            return {
+              valid: !isNaN(parsed) && parsed >= 2.0 && parsed <= 8.0,
+              message: "DUPR rating must be between 2.0 and 8.0"
+            };
+          }}
         />
       </div>
       

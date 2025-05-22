@@ -12,6 +12,8 @@ import { AdditionalInfoFields } from "./form-sections/AdditionalInfoFields";
 import { formatProfileDataForUpdate, mapProfileDataToFormValues } from "./utils/profileUtils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProfileErrorMessage } from "./ProfileErrorMessage";
+import { Loader2 } from "lucide-react";
 
 interface ProfileFormProps {
   userId: string;
@@ -21,6 +23,7 @@ interface ProfileFormProps {
 export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const { refreshProfile } = useAuth();
 
   const form = useForm<ProfileFormValues>({
@@ -33,6 +36,7 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       birthday: undefined,
       duprRating: "",
     },
+    mode: "onChange" // Enable onChange validation mode for real-time feedback
   });
 
   // Set form values when profile data is available
@@ -56,6 +60,7 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   const onSubmit = async (values: ProfileFormValues) => {
     try {
       setIsLoading(true);
+      setFormError(null);
       
       console.log("Saving profile with values:", values);
       const updateData = formatProfileDataForUpdate(values);
@@ -75,8 +80,9 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
         description: "Your profile has been updated successfully",
         duration: 5000,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile:", error);
+      setFormError(error.message || "Failed to update profile. Please try again.");
       toast.error("Update failed", {
         description: "Failed to update profile. Please try again.",
         duration: 5000,
@@ -116,12 +122,32 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-        <PersonalInfoFields control={form.control} />
-        <AdditionalInfoFields control={form.control} />
+        {formError && <ProfileErrorMessage errorMessage={formError} />}
         
-        <div className="flex justify-end mt-4">
-          <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-            {isLoading ? "Updating..." : "Save Changes"}
+        <div className="space-y-8">
+          <div>
+            <h3 className="text-lg font-medium mb-4">Personal Information</h3>
+            <PersonalInfoFields control={form.control} />
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-medium mb-4">Additional Information</h3>
+            <AdditionalInfoFields control={form.control} />
+          </div>
+        </div>
+        
+        <div className="flex justify-end mt-6">
+          <Button 
+            type="submit" 
+            disabled={isLoading || !form.formState.isDirty} 
+            className="w-full md:w-auto transition-all"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : "Save Changes"}
           </Button>
         </div>
       </form>
