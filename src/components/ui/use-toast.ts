@@ -1,5 +1,5 @@
 
 // Re-export from new location
-import { useToast, toast, toastWithCloseButton } from "@/hooks/use-toast";
+import { useToast, toast } from "@/hooks/use-toast";
 
-export { useToast, toast, toastWithCloseButton };
+export { useToast, toast };

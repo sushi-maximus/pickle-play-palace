@@ -94,7 +94,7 @@ export const signUp = async (email: string, password: string, metadata: any) => 
       console.error("Exception checking profile:", profileCheckError);
     }
     
-    // Use persistent toast for important messages that should remain visible
+    // Use persistent toast that won't auto-hide
     toast.persistent("Account created", {
       description: "Please check your email to confirm your account before logging in."
     });

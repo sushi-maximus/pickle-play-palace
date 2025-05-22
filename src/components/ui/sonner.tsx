@@ -12,7 +12,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
-      // Remove the global closeButton={false} to allow per-toast configuration
       toastOptions={{
         classNames: {
           toast:
@@ -29,14 +28,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
   )
 }
 
-// Extend the toast object with a version that shows the close button
-const toastWithCloseButton = (message: string, opts: ExternalToast = {}) => {
-  return sonnerToast(message, {
-    ...opts,
-    closeButton: true
-  });
-};
-
 // Create our custom toast interface that extends the original
 interface CustomToast {
   (message: ReactNode, data?: ExternalToast): string | number;
@@ -49,22 +40,22 @@ interface CustomToast {
   loading: typeof sonnerToast.loading;
   dismiss: typeof sonnerToast.dismiss;
   custom: typeof sonnerToast.custom;
-  // Add our persistent method
+  // Persistent toast that doesn't auto-hide
   persistent: (message: ReactNode, data?: ExternalToast) => string | number;
 }
 
-// Create our custom toast object and add the persistent method
+// Create our custom toast object with the persistent method
 const toast = Object.assign(
   sonnerToast,
   {
     persistent: (message: ReactNode, opts: ExternalToast = {}) => {
       return sonnerToast(message, {
         ...opts,
-        duration: undefined, // No auto-dismiss
+        duration: Infinity, // Use Infinity instead of undefined for clarity
         closeButton: true, // Always show close button
       });
     }
   }
 ) as CustomToast;
 
-export { Toaster, toast, toastWithCloseButton }
+export { Toaster, toast }
