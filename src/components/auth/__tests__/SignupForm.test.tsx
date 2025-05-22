@@ -90,11 +90,10 @@ describe('SignupForm', () => {
   });
 
   test('submits form with valid data successfully', async () => {
-    // Mock the signUp function to return success
-    const mockSignUp = mockSuccessfulSignup;
+    const signUpMock = mockSuccessfulSignup;
     
     const { user } = renderWithProviders(<SignupForm />, {
-      authContextValue: { signUp: mockSignUp }
+      authContextValue: { signUp: signUpMock }
     });
     
     // Fill in required fields
@@ -106,15 +105,12 @@ describe('SignupForm', () => {
     await user.type(screen.getByLabelText(/^Password/i), 'password123');
     await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
     
-    // We need to mock the select interactions which are more complex
-    // For now, we'll just assume they're filled correctly
-    
     // Submit the form
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));
     
-    // Check that signUp was called
+    // Check that signUp was called with correct arguments
     await waitFor(() => {
-      expect(mockSignUp).toHaveBeenCalledWith(
+      expect(signUpMock).toHaveBeenCalledWith(
         'john.doe@example.com',
         'password123',
         expect.objectContaining({
@@ -129,11 +125,10 @@ describe('SignupForm', () => {
   });
 
   test('displays error message when signup fails', async () => {
-    // Mock the signUp function to return error
-    const mockSignUp = mockFailedSignup;
+    const signUpMock = mockFailedSignup;
     
     const { user } = renderWithProviders(<SignupForm />, {
-      authContextValue: { signUp: mockSignUp }
+      authContextValue: { signUp: signUpMock }
     });
     
     // Fill in required fields
