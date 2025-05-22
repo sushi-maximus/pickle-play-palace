@@ -8,3 +8,14 @@ export const skillLevelOptions = [
   { value: "5.0", label: "5.0 - Expert/Pro" },
   { value: "5.5", label: "5.5 - Professional/Elite" },
 ];
+
+// Skill level color mapping for profile borders
+export const skillLevelColors: Record<string, string> = {
+  "2.5": "#FFFFFF", // White - Beginner
+  "3.0": "#FFFF00", // Yellow - Intermediate
+  "3.5": "#FFA500", // Orange - Advanced Intermediate
+  "4.0": "#008000", // Green - Advanced
+  "4.5": "#8B4513", // Brown - Highly Advanced
+  "5.0": "#000000", // Black - Expert/Pro
+  "5.5": "#FF0000", // Red - Professional/Elite
+};

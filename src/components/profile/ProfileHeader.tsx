@@ -3,6 +3,14 @@ import { Tables } from "@/integrations/supabase/types";
 import { User } from "@supabase/supabase-js";
 import { differenceInYears } from "date-fns";
 import { ProfileAvatar } from "./ProfileAvatar";
+import { skillLevelColors } from "@/lib/constants/skill-levels";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
 
 interface ProfileHeaderProps {
   user: User;
@@ -32,6 +40,11 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
   const age = calculateAge();
   const ratingDisplay = getRatingDisplay();
 
+  // Get the color for the current skill level
+  const skillLevelColor = profile?.skill_level ? 
+    skillLevelColors[profile.skill_level] : 
+    skillLevelColors["2.5"];
+
   return (
     <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6 mb-8 p-6 bg-card rounded-lg shadow-sm border border-border">
       {user && profile && (
@@ -47,9 +60,41 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
         </h2>
         <p className="text-muted-foreground">{user.email}</p>
         <div className="flex flex-wrap gap-4 mt-3">
-          <div className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium">
-            {ratingDisplay.label}: {ratingDisplay.value}
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div 
+                  className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium flex items-center gap-1 cursor-help"
+                  style={{ borderLeft: `4px solid ${skillLevelColor}` }}
+                >
+                  {ratingDisplay.label}: {ratingDisplay.value}
+                  <HelpCircle className="h-3 w-3 opacity-70" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="w-64 p-0">
+                <div className="p-3">
+                  <p className="text-sm font-medium mb-2">Skill Level Color Guide</p>
+                  <div className="grid grid-cols-1 gap-1">
+                    {Object.entries(skillLevelColors).map(([level, color]) => (
+                      <div key={level} className="flex items-center text-xs">
+                        <div 
+                          className="h-3 w-3 rounded-full mr-2" 
+                          style={{ backgroundColor: color, border: color === "#FFFFFF" ? "1px solid #e2e8f0" : "none" }}
+                        ></div>
+                        <span>{level} - {level === "2.5" ? "Beginner" : 
+                                         level === "3.0" ? "Intermediate" : 
+                                         level === "3.5" ? "Advanced Intermediate" : 
+                                         level === "4.0" ? "Advanced" :
+                                         level === "4.5" ? "Highly Advanced" :
+                                         level === "5.0" ? "Expert/Pro" : 
+                                         "Professional/Elite"}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           {age !== null && (
             <div className="bg-secondary/10 text-secondary rounded-full px-3 py-1 text-sm font-medium">
               Age: {age}

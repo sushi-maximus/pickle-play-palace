@@ -1,10 +1,11 @@
 
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { skillLevelColors } from "@/lib/constants/skill-levels";
 
 interface ProfileAvatarProps {
   userId: string;
@@ -15,7 +16,11 @@ interface ProfileAvatarProps {
 export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarProps) => {
   const [uploading, setUploading] = useState(false);
   const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(avatarUrl);
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, profile } = useAuth();
+
+  // Get the skill level for border color
+  const skillLevel = profile?.skill_level || "2.5";
+  const borderColor = skillLevelColors[skillLevel];
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -66,12 +71,12 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
 
   return (
     <div className="relative mb-4 md:mb-0">
-      <Avatar className="h-24 w-24">
+      <AvatarWithBorder className="h-24 w-24" borderColor={borderColor}>
         {localAvatarUrl || avatarUrl ? (
           <AvatarImage src={localAvatarUrl || avatarUrl} alt="Profile" />
         ) : null}
         <AvatarFallback className="text-lg">{getInitials()}</AvatarFallback>
-      </Avatar>
+      </AvatarWithBorder>
       <div className="absolute bottom-0 right-0">
         <label htmlFor="avatar-upload" className="cursor-pointer">
           <div className="bg-primary text-primary-foreground rounded-full p-1">

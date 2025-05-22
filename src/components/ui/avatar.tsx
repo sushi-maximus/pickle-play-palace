@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
@@ -45,4 +46,31 @@ const AvatarFallback = React.forwardRef<
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
-export { Avatar, AvatarImage, AvatarFallback }
+// Add a new Avatar component with border
+const AvatarWithBorder = React.forwardRef<
+  React.ElementRef<typeof AvatarPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & { 
+    borderColor?: string;
+    borderWidth?: string | number;
+  }
+>(({ className, borderColor, borderWidth = 3, ...props }, ref) => (
+  <div 
+    className={cn(
+      "rounded-full relative", 
+      className
+    )}
+    style={{ 
+      padding: borderWidth,
+      background: borderColor || 'transparent',
+    }}
+  >
+    <AvatarPrimitive.Root
+      ref={ref}
+      className="h-full w-full rounded-full overflow-hidden"
+      {...props}
+    />
+  </div>
+))
+AvatarWithBorder.displayName = "AvatarWithBorder"
+
+export { Avatar, AvatarImage, AvatarFallback, AvatarWithBorder }
