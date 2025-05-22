@@ -17,30 +17,19 @@ vi.mock('react-router-dom', async () => {
 describe('SignupForm Validation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    console.log('Starting test...');
   });
 
   test('displays first name validation error when submitting empty form', async () => {
-    console.log('Rendering SignupForm...');
     const { user } = renderWithProviders(<SignupForm />);
     
-    // Log form elements to help debug
-    console.log('Form elements:', 
-      screen.queryByRole('button', { name: /Sign Up/i }) ? 'Sign Up button found' : 'Sign Up button not found'
-    );
+    // Find and click the submit button directly by test-id
+    const submitButton = screen.getByTestId('signup-button');
+    await user.click(submitButton);
     
-    // Submit the form without filling in any fields
-    console.log('Clicking submit button...');
-    await user.click(screen.getByRole('button', { name: /Sign Up/i }));
-    
-    // Wait for first name validation error to appear
-    console.log('Waiting for first name validation error...');
+    // Wait for validation error to appear using test-id
     await waitFor(() => {
-      const firstNameError = screen.queryByText(/First name is required/i);
-      console.log('First name error found:', !!firstNameError);
-      
-      if (!firstNameError) throw new Error('First name error not found');
-      expect(firstNameError).toBeInTheDocument();
+      const firstNameError = screen.getByTestId('firstName-error');
+      expect(firstNameError).toHaveTextContent('First name is required');
     });
   });
 });

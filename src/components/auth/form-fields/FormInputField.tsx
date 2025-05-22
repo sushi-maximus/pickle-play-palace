@@ -23,7 +23,7 @@ export interface FormInputFieldProps<
   minLength?: number;
   className?: string;
   isPassword?: boolean;
-  "data-testid"?: string; // Add data-testid prop
+  "data-testid"?: string; // For the input element
 }
 
 export function FormInputField<
@@ -99,7 +99,7 @@ export function FormInputField<
                 )}
               </div>
             </FormControl>
-            <FormMessage data-testid={`${name}-error`} /> {/* Add data-testid to FormMessage */}
+            <FormMessage data-testid={`${name}-error`} />
           </FormItem>
         );
       }}

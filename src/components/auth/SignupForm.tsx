@@ -29,8 +29,6 @@ export const SignupForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
   
-  console.log('Rendering SignupForm component');
-  
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -43,26 +41,14 @@ export const SignupForm = () => {
       skillLevel: undefined,
       agreeToTerms: false,
     },
-    mode: "onSubmit", // Only validate on submit
+    mode: "onSubmit",
     reValidateMode: "onChange", // Revalidate as values change after first submission
   });
-
-  console.log("Form errors:", form.formState.errors);
-  console.log("Form values:", form.getValues());
 
   const onSubmit = async (values: SignupSchema) => {
     try {
       setIsLoading(true);
       setSignupError(null);
-      
-      console.log("Form values submitted:", {
-        email: values.email,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        gender: values.gender,
-        skillLevel: values.skillLevel,
-        agreeToTerms: values.agreeToTerms,
-      });
       
       const userData = {
         firstName: values.firstName,

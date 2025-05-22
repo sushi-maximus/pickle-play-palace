@@ -13,7 +13,7 @@ interface InputFieldProps<
   placeholder?: string;
   isPassword?: boolean;
   hideLabel?: boolean;
-  "data-testid"?: string; // Add data-testid prop
+  "data-testid"?: string;
 }
 
 export function InputField<
@@ -30,7 +30,6 @@ export function InputField<
   "data-testid": dataTestId,
   ...props 
 }: InputFieldProps<TFieldValues, TName>) {
-  // Forward all props including data-testid to FormInputField
   return (
     <FormInputField
       control={control}
