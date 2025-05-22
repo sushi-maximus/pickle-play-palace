@@ -85,16 +85,16 @@ export const SignupForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="text-2xl">Create an account</CardTitle>
-        <CardDescription>
+    <Card className="w-full max-w-md shadow-lg border-opacity-50">
+      <CardHeader className="space-y-2 pb-2">
+        <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+        <CardDescription className="text-center">
           Join Pickle Ninja to connect with players and organize games.
         </CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6 pt-4">
             {signupError && (
               <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
                 Error: {signupError}
@@ -105,13 +105,17 @@ export const SignupForm = () => {
             <PasswordFields control={form.control} />
             <TermsAndPolicy />
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full" type="submit" disabled={isLoading}>
+          <CardFooter className="flex flex-col gap-4 pt-2">
+            <Button 
+              className="w-full transition-all" 
+              type="submit" 
+              disabled={isLoading}
+            >
               {isLoading ? "Creating account..." : "Sign Up"}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/login" className="text-primary underline underline-offset-4">
+              <Link to="/login" className="text-primary hover:underline underline-offset-4 transition-colors">
                 Log In
               </Link>
             </div>

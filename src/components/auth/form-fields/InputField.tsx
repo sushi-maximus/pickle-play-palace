@@ -33,7 +33,7 @@ export const InputField = ({
       name={name}
       render={({ field }) => (
         <FormItem className="w-full">
-          {!hideLabel && <FormLabel className="block mb-2">{label}</FormLabel>}
+          {!hideLabel && <FormLabel className="block mb-2 text-sm font-medium">{label}</FormLabel>}
           <FormControl>
             {isPassword ? (
               <div className="relative w-full">
@@ -41,14 +41,15 @@ export const InputField = ({
                   type={showPassword ? "text" : "password"} 
                   placeholder={placeholder} 
                   {...field} 
-                  className="w-full"
+                  className="w-full pr-10"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="absolute right-0 top-0 h-full px-3"
+                  className="absolute right-0 top-0 h-full px-3 opacity-70 hover:opacity-100"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </Button>
@@ -57,7 +58,7 @@ export const InputField = ({
               <Input placeholder={placeholder} type={type} {...field} className="w-full" />
             )}
           </FormControl>
-          <FormMessage />
+          <FormMessage className="mt-1 text-xs" />
         </FormItem>
       )}
     />

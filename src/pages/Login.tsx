@@ -18,10 +18,12 @@ const Login = () => {
   }, [user, navigate]);
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="flex-1 flex items-center justify-center py-12 px-4">
-        <LoginForm />
+      <main className="flex-1 flex items-center justify-center py-12 px-4 bg-muted/30">
+        <div className="w-full max-w-md">
+          <LoginForm />
+        </div>
       </main>
       <Footer />
     </div>

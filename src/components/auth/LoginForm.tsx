@@ -6,13 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { 
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage 
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginSchema, loginSchema } from "@/lib/validation/auth";
 import { 
@@ -25,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { LoginErrorMessage } from "./LoginErrorMessage";
 import { ResendVerificationDialog } from "./ResendVerificationDialog";
+import { InputField } from "./form-fields/InputField";
 
 export const LoginForm = () => {
   const { signIn } = useAuth();
@@ -63,16 +58,16 @@ export const LoginForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="text-2xl">Log in</CardTitle>
-        <CardDescription>
-          Enter your email and password to access your account
+    <Card className="w-full max-w-md shadow-lg border-opacity-50">
+      <CardHeader className="space-y-2 pb-2">
+        <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+        <CardDescription className="text-center">
+          Enter your credentials to access your account
         </CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             {loginError && (
               <LoginErrorMessage 
                 errorMessage={loginError}
@@ -80,47 +75,39 @@ export const LoginForm = () => {
               />
             )}
             
-            <FormField
+            <InputField
               control={form.control}
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="your.email@example.com" type="email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Email"
+              placeholder="your.email@example.com"
+              type="email"
             />
             
-            <FormField
+            <InputField
               control={form.control}
               name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="••••••••" type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Password"
+              placeholder="••••••••"
+              isPassword={true}
             />
             
             <div className="text-right">
-              <Link to="/forgot-password" className="text-sm text-primary underline underline-offset-4">
+              <Link to="/forgot-password" className="text-sm text-primary hover:underline underline-offset-4 transition-colors">
                 Forgot password?
               </Link>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full" type="submit" disabled={isLoading}>
+          <CardFooter className="flex flex-col gap-4 pt-2">
+            <Button 
+              className="w-full transition-all" 
+              type="submit" 
+              disabled={isLoading}
+            >
               {isLoading ? "Logging in..." : "Log In"}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-primary underline underline-offset-4">
+              <Link to="/signup" className="text-primary hover:underline underline-offset-4 transition-colors">
                 Sign Up
               </Link>
             </div>
