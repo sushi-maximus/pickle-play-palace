@@ -19,13 +19,9 @@ interface AdditionalInfoFieldsProps {
 export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => {
   return (
     <div className="space-y-6">
+      {/* First row: DUPR Rating and DUPR Profile Link */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DatePickerField
-          control={control}
-          name="birthday"
-          label="Birthday"
-        />
-        <div className="space-y-4">
+        <div className="space-y-2">
           <InputField
             control={control}
             name="duprRating"
@@ -40,60 +36,68 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
               };
             }}
           />
-          <div className="relative">
-            <div className="mb-2 flex items-center">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                DUPR Profile Link
-              </label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex items-center cursor-pointer text-muted-foreground ml-1">
-                      <Info className="h-4 w-4" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p>Add a link to your DUPR profile for others to see your tournament history and ratings.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="relative">
-              <InputField
-                control={control}
-                name="duprProfileLink"
-                label=""
-                type="url"
-                placeholder="https://dupr.com/player/your-profile"
-              />
-            </div>
+        </div>
+        
+        <div className="space-y-2">
+          <div className="mb-2 flex items-center">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              DUPR Profile Link
+            </label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center cursor-pointer text-muted-foreground ml-1">
+                    <Info className="h-4 w-4" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>Add a link to your DUPR profile for others to see your tournament history and ratings.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
+          <InputField
+            control={control}
+            name="duprProfileLink"
+            label=""
+            type="url"
+            placeholder="https://dupr.com/player/your-profile"
+          />
         </div>
       </div>
       
-      <div>
-        <div className="mb-2 flex items-center">
-          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            Phone Number
-          </label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="inline-flex items-center cursor-pointer text-muted-foreground ml-1">
-                  <Info className="h-4 w-4" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>This is available to anyone in a group you are in so leave it blank if you don't want anyone to know your phone number and contact you.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <PhoneInputField
+      {/* Second row: Birthday and Phone Number */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DatePickerField
           control={control}
-          name="phoneNumber"
-          label=""
+          name="birthday"
+          label="Birthday"
         />
+        
+        <div className="space-y-2">
+          <div className="mb-2 flex items-center">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Phone Number
+            </label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center cursor-pointer text-muted-foreground ml-1">
+                    <Info className="h-4 w-4" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>This is available to anyone in a group you are in so leave it blank if you don't want anyone to know your phone number and contact you.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <PhoneInputField
+            control={control}
+            name="phoneNumber"
+            label=""
+          />
+        </div>
       </div>
     </div>
   );
