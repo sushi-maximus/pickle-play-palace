@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { GroupsList } from "@/components/groups/GroupsList";
 import { GroupsHeader } from "@/components/groups/GroupsHeader";
 import { LoginPrompt } from "@/components/groups/LoginPrompt";
+import { MyGroupsList } from "@/components/groups/MyGroupsList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Groups = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -34,10 +36,25 @@ const Groups = () => {
           {!user ? (
             <LoginPrompt />
           ) : (
-            <GroupsList 
-              user={user} 
-              key={refreshTrigger} // This key change will force the component to remount when refreshTrigger changes
-            />
+            <Tabs defaultValue="all" className="mt-8">
+              <TabsList className="mb-6">
+                <TabsTrigger value="all">All Groups</TabsTrigger>
+                <TabsTrigger value="my-groups">My Groups</TabsTrigger>
+              </TabsList>
+              <TabsContent value="all">
+                <GroupsList 
+                  user={user} 
+                  key={`all-${refreshTrigger}`} 
+                />
+              </TabsContent>
+              <TabsContent value="my-groups">
+                <MyGroupsList 
+                  user={user} 
+                  onRefresh={handleRefreshGroups}
+                  key={`my-${refreshTrigger}`} 
+                />
+              </TabsContent>
+            </Tabs>
           )}
         </div>
       </main>
