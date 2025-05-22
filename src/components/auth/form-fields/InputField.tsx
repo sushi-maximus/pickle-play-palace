@@ -13,6 +13,7 @@ interface InputFieldProps {
   placeholder?: string;
   type?: string;
   isPassword?: boolean;
+  hideLabel?: boolean;
 }
 
 export const InputField = ({
@@ -22,6 +23,7 @@ export const InputField = ({
   placeholder,
   type = "text",
   isPassword = false,
+  hideLabel = false,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   
@@ -31,7 +33,7 @@ export const InputField = ({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          {!hideLabel && <FormLabel>{label}</FormLabel>}
           <FormControl>
             {isPassword ? (
               <div className="relative">
