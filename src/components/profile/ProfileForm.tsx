@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +11,7 @@ import { PersonalInfoFields } from "./form-sections/PersonalInfoFields";
 import { AdditionalInfoFields } from "./form-sections/AdditionalInfoFields";
 import { formatProfileDataForUpdate, mapProfileDataToFormValues } from "./utils/profileUtils";
 import { useAuth } from "@/contexts/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProfileFormProps {
   userId: string;
@@ -18,6 +20,7 @@ interface ProfileFormProps {
 
 export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataReady, setIsDataReady] = useState(false);
   const { refreshProfile } = useAuth();
 
   const form = useForm<ProfileFormValues>({
@@ -44,6 +47,9 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       Object.entries(formValues).forEach(([key, value]) => {
         form.setValue(key as keyof ProfileFormValues, value);
       });
+      
+      // Set data ready after a small delay to ensure smooth transition
+      setTimeout(() => setIsDataReady(true), 300);
     }
   }, [profileData, form]);
 
@@ -79,6 +85,33 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       setIsLoading(false);
     }
   };
+
+  // Show skeleton UI while data is loading
+  if (!isDataReady) {
+    return (
+      <div className="space-y-6 w-full">
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-24" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        
+        <div className="flex justify-end mt-4">
+          <Skeleton className="h-9 w-32" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>

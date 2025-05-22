@@ -1,11 +1,25 @@
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Dashboard() {
-  const { user, profile } = useAuth();
+  const { user, profile, isLoading: authLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate data loading
+  useEffect(() => {
+    if (profile || !authLoading) {
+      // Add a small delay for smoother transition
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [profile, authLoading]);
 
   // Redirect to login if not authenticated
   if (!user) {
@@ -22,6 +36,56 @@ export default function Dashboard() {
 
   const greeting = getGreeting();
   const firstName = profile?.first_name || user.email?.split('@')[0] || 'User';
+
+  // Skeleton loading UI
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container px-4 mx-auto py-8">
+          <div className="border border-border rounded-lg p-6">
+            <Skeleton className="h-8 w-32 mb-6" />
+            
+            <div className="mb-6">
+              <Skeleton className="h-6 w-64 mb-4" />
+              <Skeleton className="h-4 w-72" />
+            </div>
+
+            {/* Quick Stats Skeletons */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-card rounded-lg p-4 border border-border">
+                  <Skeleton className="h-4 w-32 mb-2" />
+                  <Skeleton className="h-8 w-16" />
+                </div>
+              ))}
+            </div>
+
+            {/* Recent Activity Skeleton */}
+            <div className="mb-8">
+              <Skeleton className="h-6 w-40 mb-4" />
+              <div className="bg-card border border-border p-4 rounded-lg">
+                <Skeleton className="h-20 w-full" />
+              </div>
+            </div>
+
+            {/* Quick Actions Skeleton */}
+            <div>
+              <Skeleton className="h-6 w-36 mb-4" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-card border border-border rounded-lg p-4">
+                    <Skeleton className="h-5 w-24 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-32 mx-auto" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

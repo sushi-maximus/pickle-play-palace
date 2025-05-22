@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
@@ -10,9 +11,10 @@ interface ProfileAvatarProps {
   userId: string;
   avatarUrl: string | null;
   getInitials: () => string;
+  onAvatarLoaded?: () => void;
 }
 
-export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarProps) => {
+export const ProfileAvatar = ({ userId, avatarUrl, getInitials, onAvatarLoaded }: ProfileAvatarProps) => {
   const [uploading, setUploading] = useState(false);
   const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(avatarUrl);
   const { refreshProfile, profile } = useAuth();
@@ -73,10 +75,21 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
     }
   };
 
+  const handleImageLoad = () => {
+    if (onAvatarLoaded) {
+      onAvatarLoaded();
+    }
+  };
+
   return (
     <div className="relative mb-4 md:mb-0 flex items-center justify-center">
       <AvatarWithBorder className="h-24 w-24" borderColor={borderColor} borderWidth={4}>
-        <AvatarImage src={localAvatarUrl || avatarUrl || ""} alt="Profile" className="rounded-full" />
+        <AvatarImage 
+          src={localAvatarUrl || avatarUrl || ""} 
+          alt="Profile" 
+          className="rounded-full" 
+          onLoad={handleImageLoad}
+        />
         <AvatarFallback className="text-lg rounded-full">{getInitials()}</AvatarFallback>
       </AvatarWithBorder>
       <div className="absolute bottom-0 right-0">

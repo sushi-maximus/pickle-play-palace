@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Tables } from "@/integrations/supabase/types";
 import { User } from "@supabase/supabase-js";
 import { differenceInYears } from "date-fns";
@@ -11,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HelpCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProfileHeaderProps {
   user: User;
@@ -19,6 +21,8 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps) => {
+  const [avatarLoading, setAvatarLoading] = useState(!!profile?.avatar_url);
+  
   // Calculate age from birthday
   const calculateAge = () => {
     if (profile?.birthday) {
@@ -42,15 +46,25 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
 
   // Get the appropriate color based on DUPR or skill level
   const skillLevelColor = getSkillLevelColor(profile?.dupr_rating, profile?.skill_level);
+  
+  const handleAvatarLoaded = () => {
+    setAvatarLoading(false);
+  };
 
   return (
     <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6 mb-8 p-6 bg-card rounded-lg shadow-sm border border-border">
       {user && profile && (
-        <ProfileAvatar 
-          userId={user.id}
-          avatarUrl={profile.avatar_url}
-          getInitials={getInitials}
-        />
+        <div className="relative">
+          {avatarLoading && profile.avatar_url && (
+            <Skeleton className="absolute inset-0 h-24 w-24 rounded-full z-10" />
+          )}
+          <ProfileAvatar 
+            userId={user.id}
+            avatarUrl={profile.avatar_url}
+            getInitials={getInitials}
+            onAvatarLoaded={handleAvatarLoaded}
+          />
+        </div>
       )}
       <div className="mt-4 md:mt-0">
         <h2 className="text-xl font-semibold">
