@@ -1,4 +1,5 @@
 
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export function SkillLevelGuide() {
+interface SkillLevelGuideProps {
+  triggerElement?: React.ReactNode;
+}
+
+export function SkillLevelGuide({ triggerElement }: SkillLevelGuideProps) {
   const skillLevels = [
     {
       level: "2.5 - Beginner",
@@ -44,9 +49,11 @@ export function SkillLevelGuide() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="link" className="p-0 text-primary underline underline-offset-4">
-          Learn Your Skill Level
-        </Button>
+        {triggerElement || (
+          <Button variant="link" className="p-0 text-primary underline underline-offset-4">
+            Learn Your Skill Level
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
