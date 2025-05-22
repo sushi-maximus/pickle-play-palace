@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ProfileSidebarProps {
   onLogout: () => Promise<void>;
@@ -27,18 +28,60 @@ export const ProfileSidebar = ({ onLogout }: ProfileSidebarProps) => {
           <User className="mr-2 h-4 w-4" />
           My Profile
         </Button>
-        <Button variant="ghost" className="justify-start">
-          <Settings className="mr-2 h-4 w-4" />
-          Preferences
-        </Button>
-        <Button variant="ghost" className="justify-start">
-          <Bell className="mr-2 h-4 w-4" />
-          Notifications
-        </Button>
-        <Button variant="ghost" className="justify-start">
-          <Shield className="mr-2 h-4 w-4" />
-          Privacy & Security
-        </Button>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="justify-start text-muted-foreground pointer-events-none"
+                disabled
+              >
+                <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
+                Preferences
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p className="text-xs">Coming soon</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="justify-start text-muted-foreground pointer-events-none"
+                disabled
+              >
+                <Bell className="mr-2 h-4 w-4 text-muted-foreground" />
+                Notifications
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p className="text-xs">Coming soon</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="justify-start text-muted-foreground pointer-events-none"
+                disabled
+              >
+                <Shield className="mr-2 h-4 w-4 text-muted-foreground" />
+                Privacy & Security
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p className="text-xs">Coming soon</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         
         <div className="mt-auto pt-4 border-t mt-4">
           <AlertDialog>
