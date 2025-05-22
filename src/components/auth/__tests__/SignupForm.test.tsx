@@ -1,4 +1,3 @@
-
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '@/test/utils';
@@ -6,6 +5,7 @@ import { SignupForm } from '../SignupForm';
 import { 
   mockSuccessfulSignup, 
   mockFailedSignup, 
+  mockDelayedSignup,
   mockNavigate 
 } from '../__mocks__/mockSignUp';
 
@@ -175,17 +175,11 @@ describe('SignupForm', () => {
   });
 
   test('shows loading state during form submission', async () => {
-    // Create a delayed mock to simulate loading
-    const delayedMock = vi.fn().mockImplementation(() => {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve({ error: null, data: { user: { id: 'test-user-id' } } });
-        }, 100);
-      });
-    });
+    // Use the delayed mock to simulate loading
+    const signUpMock = mockDelayedSignup;
     
     const { user } = renderWithProviders(<SignupForm />, {
-      authContextValue: { signUp: delayedMock }
+      authContextValue: { signUp: signUpMock }
     });
     
     // Fill in required fields

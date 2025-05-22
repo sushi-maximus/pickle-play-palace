@@ -13,5 +13,18 @@ export const mockFailedSignup = vi.fn().mockResolvedValue({
   data: null
 });
 
+// Mock delayed signup for loading state testing
+export const mockDelayedSignup = vi.fn().mockImplementation(() => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve({
+        error: null,
+        data: { user: { id: 'test-user-id' } }
+      });
+    }, 100);
+  });
+});
+
 // Mock navigate function
 export const mockNavigate = vi.fn();
+
