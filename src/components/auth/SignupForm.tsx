@@ -4,9 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useAuth } from "@/contexts/AuthContext";
 import { SignupSchema, signupSchema } from "@/lib/validation/auth";
 import { 
@@ -42,7 +40,6 @@ export const SignupForm = () => {
       agreeToTerms: false,
     },
     mode: "onSubmit",
-    reValidateMode: "onChange", // Revalidate as values change after first submission
   });
 
   const onSubmit = async (values: SignupSchema) => {
@@ -65,9 +62,8 @@ export const SignupForm = () => {
         return;
       }
       
-      // Navigate to login page
+      // Navigate to login page on success
       navigate("/login");
-      // Reset scroll position to the top of the page
       window.scrollTo(0, 0);
       
     } catch (error) {
@@ -104,7 +100,7 @@ export const SignupForm = () => {
               className="w-full transition-all" 
               type="submit" 
               disabled={isLoading}
-              data-testid="signup-button"
+              aria-label="Sign Up"
             >
               {isLoading ? "Creating account..." : "Sign Up"}
             </Button>
