@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -49,6 +50,17 @@ export default function Profile() {
 
   const age = calculateAge();
 
+  // Determine rating display
+  const getRatingDisplay = () => {
+    if (profileData?.dupr_rating) {
+      return { label: "DUPR", value: profileData.dupr_rating };
+    } else {
+      return { label: "Skill Level", value: profileData?.skill_level || "2.5" };
+    }
+  };
+
+  const ratingDisplay = getRatingDisplay();
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -78,7 +90,7 @@ export default function Profile() {
                     </h2>
                     <p className="text-muted-foreground">{user.email}</p>
                     <div className="flex flex-wrap gap-4 mt-1 text-muted-foreground">
-                      <p>DUPR: {profileData?.dupr_rating || ""}</p>
+                      <p>{ratingDisplay.label}: {ratingDisplay.value}</p>
                       <p>Age: {age !== null ? age : ""}</p>
                     </div>
                   </div>
@@ -91,7 +103,7 @@ export default function Profile() {
                   )}
                 </div>
                 
-                {user && <AccountInfo user={user} />}
+                {user && <AccountInfo user={user} profile={profileData} />}
               </div>
             </div>
           </div>

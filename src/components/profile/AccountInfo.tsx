@@ -3,9 +3,10 @@ import { User } from "@supabase/supabase-js";
 
 interface AccountInfoProps {
   user: User;
+  profile?: any;
 }
 
-export const AccountInfo = ({ user }: AccountInfoProps) => {
+export const AccountInfo = ({ user, profile }: AccountInfoProps) => {
   return (
     <div>
       <h3 className="text-lg font-medium mb-2">Account Information</h3>
