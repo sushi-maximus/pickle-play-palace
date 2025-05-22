@@ -25,6 +25,7 @@ export const TermsAndPolicy = () => {
                 id="agreeToTerms"
                 aria-required="true"
                 aria-invalid={form.formState.errors.agreeToTerms ? "true" : "false"}
+                data-testid="terms-checkbox"
               />
             </FormControl>
             <div className="space-y-1 leading-none">
