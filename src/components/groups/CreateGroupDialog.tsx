@@ -53,6 +53,7 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
   const onSubmit = async (values: CreateGroupFormValues) => {
     if (!user) {
       toast.error("You need to be logged in to create a group");
+      navigate("/login");
       return;
     }
 
@@ -69,10 +70,12 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
             created_by: user.id,
           },
         ])
-        .select()
-        .single();
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error details:", error);
+        throw error;
+      }
 
       toast.success("Group created successfully!");
       form.reset();
@@ -83,7 +86,7 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
         onSuccess();
       } else {
         // Navigate to the group page if no callback is provided
-        navigate(`/groups/${data.id}`);
+        navigate(`/groups/${data[0].id}`);
       }
     } catch (error) {
       console.error("Error creating group:", error);

@@ -6,10 +6,12 @@ import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Plus } from "lucide-react";
+import { Users, Plus, LogIn } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type Group = {
   id: string;
@@ -24,47 +26,59 @@ const Groups = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-
+  const navigate = useNavigate();
   const breadcrumbItems = [{ label: "Groups" }];
 
   useEffect(() => {
     const fetchGroups = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from("groups")
-          .select("*")
-          .order("created_at", { ascending: false });
+        // Only fetch groups if the user is logged in
+        if (user) {
+          const { data, error } = await supabase
+            .from("groups")
+            .select("*")
+            .order("created_at", { ascending: false });
 
-        if (error) throw error;
-
-        // To enhance this later, we'll need to get member counts for each group
-        setGroups(data);
+          if (error) throw error;
+          setGroups(data || []);
+        } else {
+          setGroups([]);
+        }
       } catch (error) {
         console.error("Error fetching groups:", error);
+        toast.error("Failed to load groups");
       } finally {
         setLoading(false);
       }
     };
 
     fetchGroups();
-  }, []);
+  }, [user]);
 
   const handleRefreshGroups = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("groups")
-        .select("*")
-        .order("created_at", { ascending: false });
+      if (user) {
+        const { data, error } = await supabase
+          .from("groups")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setGroups(data);
+        if (error) throw error;
+        setGroups(data || []);
+      }
     } catch (error) {
       console.error("Error refreshing groups:", error);
+      toast.error("Failed to refresh groups");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLoginPrompt = () => {
+    toast.info("Please log in to create or view groups");
+    navigate("/login", { state: { returnUrl: "/groups" } });
   };
 
   // Animation variants
@@ -99,18 +113,35 @@ const Groups = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
             <h1 className="text-3xl font-bold">Groups</h1>
             
-            <CreateGroupDialog 
-              trigger={
-                <Button className="hover-scale">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Group
-                </Button>
-              }
-              onSuccess={handleRefreshGroups}
-            />
+            {user ? (
+              <CreateGroupDialog 
+                trigger={
+                  <Button className="hover-scale">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Group
+                  </Button>
+                }
+                onSuccess={handleRefreshGroups}
+              />
+            ) : (
+              <Button onClick={handleLoginPrompt} className="hover-scale">
+                <LogIn className="mr-2 h-4 w-4" />
+                Log in to Create Group
+              </Button>
+            )}
           </div>
 
-          {loading ? (
+          {!user ? (
+            <div className="text-center py-12">
+              <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-2xl font-bold mb-2">Please log in</h3>
+              <p className="text-muted-foreground mb-6">You need to be logged in to view and create groups</p>
+              <Button onClick={handleLoginPrompt}>
+                <LogIn className="mr-2 h-4 w-4" />
+                Log in
+              </Button>
+            </div>
+          ) : loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="bg-card border-2 border-transparent opacity-50">
@@ -161,7 +192,7 @@ const Groups = () => {
                       <Button 
                         variant="default" 
                         className="w-full hover:bg-primary/90"
-                        onClick={() => {/* Navigate to group details page */}}
+                        onClick={() => navigate(`/groups/${group.id}`)}
                       >
                         View Group
                       </Button>
