@@ -53,16 +53,18 @@ interface CustomToast {
   persistent: (message: ReactNode, data?: ExternalToast) => string | number;
 }
 
-// Create our custom toast object
-const toast = sonnerToast as CustomToast;
-
-// Add the persistent method
-toast.persistent = (message: ReactNode, opts: ExternalToast = {}) => {
-  return sonnerToast(message, {
-    ...opts,
-    duration: undefined, // No auto-dismiss
-    closeButton: true, // Always show close button
-  });
-};
+// Create our custom toast object and add the persistent method
+const toast = Object.assign(
+  sonnerToast,
+  {
+    persistent: (message: ReactNode, opts: ExternalToast = {}) => {
+      return sonnerToast(message, {
+        ...opts,
+        duration: undefined, // No auto-dismiss
+        closeButton: true, // Always show close button
+      });
+    }
+  }
+) as CustomToast;
 
 export { Toaster, toast, toastWithCloseButton }
