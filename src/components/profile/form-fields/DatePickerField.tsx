@@ -20,8 +20,8 @@ export const DatePickerField = ({ control, name, label }: DatePickerFieldProps) 
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex flex-col">
-          <FormLabel>{label}</FormLabel>
+        <FormItem className="w-full">
+          <FormLabel className="block mb-2">{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>
@@ -48,7 +48,7 @@ export const DatePickerField = ({ control, name, label }: DatePickerFieldProps) 
                 onSelect={field.onChange}
                 disabled={(date) => date > new Date()}
                 initialFocus
-                className="border-none shadow-none"
+                className="border-none shadow-none pointer-events-auto"
                 classNames={{
                   caption: "flex justify-center pt-1 relative items-center",
                   caption_label: "text-sm font-medium hidden", // Hide this label since we have dropdown
