@@ -13,11 +13,11 @@ import {
 import { GroupWithMemberCount } from "@/types/group";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
+import { GroupsGrid } from "@/components/groups/GroupsGrid";
+import { GroupSearchBar } from "@/components/groups/GroupSearchBar";
 
 const Groups = () => {
   const { user } = useAuth();
@@ -123,16 +123,10 @@ const Groups = () => {
             )}
           </div>
           
-          <div className="relative mb-6">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search groups..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+          <GroupSearchBar 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="mb-6">
@@ -141,104 +135,28 @@ const Groups = () => {
             </TabsList>
             
             <TabsContent value="discover" className="space-y-6">
-              {loading.public ? (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : filteredPublicGroups.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredPublicGroups.map(group => (
-                    <div 
-                      key={group.id}
-                      className="border rounded-lg p-4 hover:shadow-md transition"
-                      onClick={() => navigate(`/groups/${group.id}`)}
-                    >
-                      <h3 className="font-semibold text-lg">{group.name}</h3>
-                      {group.description && (
-                        <p className="text-muted-foreground text-sm line-clamp-2 mt-1">
-                          {group.description}
-                        </p>
-                      )}
-                      <div className="flex items-center mt-4">
-                        <span className="text-sm text-muted-foreground">
-                          {group.member_count} members
-                        </span>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="ml-auto"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            myGroupIds.includes(group.id) 
-                              ? handleLeaveGroup(group.id)
-                              : handleJoinGroup(group.id);
-                          }}
-                        >
-                          {myGroupIds.includes(group.id) ? "Leave" : "Join"}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <h3 className="text-lg font-medium">No groups found</h3>
-                  <p className="text-muted-foreground mt-1">
-                    {searchQuery ? `No groups matching "${searchQuery}"` : "There are no public groups yet"}
-                  </p>
-                </div>
-              )}
+              <GroupsGrid
+                groups={filteredPublicGroups}
+                myGroupIds={myGroupIds}
+                loading={loading.public}
+                emptyMessage="There are no public groups yet"
+                searchQuery={searchQuery}
+                onJoinGroup={handleJoinGroup}
+                onLeaveGroup={handleLeaveGroup}
+              />
             </TabsContent>
             
             {user && (
               <TabsContent value="my" className="space-y-6">
-                {loading.my ? (
-                  <div className="flex justify-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  </div>
-                ) : filteredMyGroups.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredMyGroups.map(group => (
-                      <div 
-                        key={group.id}
-                        className="border rounded-lg p-4 hover:shadow-md transition"
-                        onClick={() => navigate(`/groups/${group.id}`)}
-                      >
-                        <h3 className="font-semibold text-lg">{group.name}</h3>
-                        {group.description && (
-                          <p className="text-muted-foreground text-sm line-clamp-2 mt-1">
-                            {group.description}
-                          </p>
-                        )}
-                        <div className="flex items-center mt-4">
-                          <span className="text-sm text-muted-foreground">
-                            {group.member_count} members
-                          </span>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="ml-auto"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLeaveGroup(group.id);
-                            }}
-                          >
-                            Leave
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <h3 className="text-lg font-medium">You haven't joined any groups yet</h3>
-                    <p className="text-muted-foreground mt-1">
-                      {searchQuery 
-                        ? `No groups matching "${searchQuery}"` 
-                        : "Join groups to connect with other players or create your own"}
-                    </p>
-                  </div>
-                )}
+                <GroupsGrid
+                  groups={filteredMyGroups}
+                  myGroupIds={myGroupIds}
+                  loading={loading.my}
+                  emptyMessage="You haven't joined any groups yet. Join groups to connect with other players or create your own"
+                  searchQuery={searchQuery}
+                  onJoinGroup={handleJoinGroup}
+                  onLeaveGroup={handleLeaveGroup}
+                />
               </TabsContent>
             )}
           </Tabs>
