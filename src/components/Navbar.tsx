@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, User, LayoutDashboard, Users } from "lucide-react";
+import { Menu, X, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,14 +55,6 @@ export function Navbar() {
                   : 'text-foreground hover:text-primary'}`}
               >
                 Dashboard
-              </Link>
-              <Link 
-                to="/groups" 
-                className={`relative transition-colors ${location.pathname.startsWith('/groups') 
-                  ? 'text-primary font-medium after:content-[""] after:absolute after:w-full after:h-0.5 after:bg-primary after:bottom-[-8px] after:left-0' 
-                  : 'text-foreground hover:text-primary'}`}
-              >
-                Groups
               </Link>
             </>
           )}
@@ -141,15 +133,6 @@ export function Navbar() {
                   >
                     <LayoutDashboard className="h-4 w-4 mr-2" />
                     Dashboard
-                  </Button>
-                </Link>
-                <Link to="/groups" onClick={() => setIsMenuOpen(false)}>
-                  <Button 
-                    variant="ghost" 
-                    className={`justify-start w-full ${location.pathname.startsWith('/groups') ? 'bg-accent text-accent-foreground' : ''}`}
-                  >
-                    <Users className="h-4 w-4 mr-2" />
-                    Groups
                   </Button>
                 </Link>
                 <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
