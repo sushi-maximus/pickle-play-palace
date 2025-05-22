@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -79,12 +78,8 @@ export default function Profile() {
                     </h2>
                     <p className="text-muted-foreground">{user.email}</p>
                     <div className="flex flex-wrap gap-4 mt-1 text-muted-foreground">
-                      {profileData?.dupr_rating && (
-                        <p>DUPR: {profileData.dupr_rating}</p>
-                      )}
-                      {age !== null && (
-                        <p>Age: {age}</p>
-                      )}
+                      <p>DUPR: {profileData?.dupr_rating || ""}</p>
+                      <p>Age: {age !== null ? age : ""}</p>
                     </div>
                   </div>
                 </div>
