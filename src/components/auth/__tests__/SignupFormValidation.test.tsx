@@ -21,8 +21,9 @@ vi.mock('react-hook-form', async () => {
   return {
     ...actual,
     useForm: () => ({
-      ...actual.useForm(),
-      handleSubmit: () => (fn: any) => mockOnSubmit,
+      handleSubmit: (fn: any) => mockOnSubmit,
+      control: {},
+      formState: { errors: {} },
     }),
   };
 });
