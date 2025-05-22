@@ -60,7 +60,8 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase
+      // Step 1: Create the group
+      const { data: groupData, error: groupError } = await supabase
         .from("groups")
         .insert([
           {
@@ -72,12 +73,32 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
         ])
         .select();
 
-      if (error) {
-        console.error("Error details:", error);
-        throw error;
+      if (groupError) {
+        console.error("Error details:", groupError);
+        throw groupError;
       }
 
-      toast.success("Group created successfully!");
+      const newGroup = groupData[0];
+      
+      // Step 2: Add the creator as a member with admin role
+      const { error: memberError } = await supabase
+        .from("group_members")
+        .insert([
+          {
+            group_id: newGroup.id,
+            user_id: user.id,
+            role: 'admin',
+            status: 'active'
+          },
+        ]);
+
+      if (memberError) {
+        console.error("Error adding creator as member:", memberError);
+        toast.error("Group created but failed to add you as a member. Please try again.");
+      } else {
+        toast.success("Group created successfully!");
+      }
+
       form.reset();
       setOpen(false);
       
@@ -86,7 +107,7 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
         onSuccess();
       } else {
         // Navigate to the group page if no callback is provided
-        navigate(`/groups/${data[0].id}`);
+        navigate(`/groups/${newGroup.id}`);
       }
     } catch (error) {
       console.error("Error creating group:", error);
