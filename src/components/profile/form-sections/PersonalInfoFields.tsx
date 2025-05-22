@@ -22,23 +22,27 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <InputField
-          control={control}
-          name="firstName"
-          label="First Name"
-          placeholder="John"
-        />
-        <InputField
-          control={control}
-          name="lastName"
-          label="Last Name"
-          placeholder="Doe"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <InputField
+            control={control}
+            name="firstName"
+            label="First Name"
+            placeholder="John"
+          />
+        </div>
+        <div>
+          <InputField
+            control={control}
+            name="lastName"
+            label="Last Name"
+            placeholder="Doe"
+          />
+        </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div className="w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
           <SelectField
             control={control}
             name="gender"
@@ -47,7 +51,7 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
             options={genderOptions}
           />
         </div>
-        <div className="w-full">
+        <div>
           <div className="flex items-center mb-2">
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               Skill Level

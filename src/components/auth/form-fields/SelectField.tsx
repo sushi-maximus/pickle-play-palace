@@ -35,7 +35,7 @@ export const SelectField = ({
       render={({ field }) => (
         <FormItem className="w-full">
           {!hideLabel && (
-            <FormLabel>
+            <FormLabel className="block mb-2">
               {label}
               {labelSuffix && <span className="ml-1">{labelSuffix}</span>}
             </FormLabel>

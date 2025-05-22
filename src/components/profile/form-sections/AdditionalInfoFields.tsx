@@ -18,16 +18,16 @@ interface AdditionalInfoFieldsProps {
 
 export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => {
   return (
-    <div className="space-y-6 mt-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div className="w-full">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
           <DatePickerField
             control={control}
             name="birthday"
             label="Birthday"
           />
         </div>
-        <div className="w-full">
+        <div>
           <InputField
             control={control}
             name="duprRating"
@@ -37,7 +37,7 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
         </div>
       </div>
       
-      <div className="w-full">
+      <div>
         <div className="mb-2 flex items-center">
           <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Phone Number

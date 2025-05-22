@@ -49,7 +49,7 @@ export default function Profile() {
           </div>
           
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 max-w-3xl">
             {/* Profile Header with Avatar and Basic Info */}
             {user && profileData && (
               <ProfileHeader 
@@ -71,7 +71,7 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="text-xl">Personal Information</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-4 md:p-6">
+                  <CardContent className="p-6">
                     {user && profileData && (
                       <ProfileForm userId={user.id} profileData={profileData} />
                     )}
@@ -84,7 +84,7 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="text-xl">Account Settings</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-4 md:p-6">
+                  <CardContent className="p-6">
                     {user && profileData && (
                       <AccountInfo user={user} profile={profileData} />
                     )}
