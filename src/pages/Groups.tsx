@@ -9,15 +9,21 @@ import { GroupsHeader } from "@/components/groups/GroupsHeader";
 import { LoginPrompt } from "@/components/groups/LoginPrompt";
 import { MyGroupsList } from "@/components/groups/MyGroupsList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SearchFilter } from "@/components/groups/SearchFilter";
 
 const Groups = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
   const breadcrumbItems = [{ label: "Groups" }];
 
   const handleRefreshGroups = async () => {
     // Increment the refresh trigger to cause the GroupsList to refetch data
     setRefreshTrigger(prev => prev + 1);
+  };
+  
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
   };
 
   return (
@@ -36,25 +42,32 @@ const Groups = () => {
           {!user ? (
             <LoginPrompt />
           ) : (
-            <Tabs defaultValue="my-groups" className="mt-8">
-              <TabsList className="mb-6">
-                <TabsTrigger value="my-groups">My Groups</TabsTrigger>
-                <TabsTrigger value="all">All Groups</TabsTrigger>
-              </TabsList>
-              <TabsContent value="my-groups">
-                <MyGroupsList 
-                  user={user} 
-                  onRefresh={handleRefreshGroups}
-                  key={`my-${refreshTrigger}`} 
-                />
-              </TabsContent>
-              <TabsContent value="all">
-                <GroupsList 
-                  user={user} 
-                  key={`all-${refreshTrigger}`} 
-                />
-              </TabsContent>
-            </Tabs>
+            <>
+              <div className="mt-8 mb-4">
+                <SearchFilter onSearch={handleSearch} placeholder="Search all groups..." />
+              </div>
+              <Tabs defaultValue="my-groups" className="mt-4">
+                <TabsList className="mb-6">
+                  <TabsTrigger value="my-groups">My Groups</TabsTrigger>
+                  <TabsTrigger value="all">All Groups</TabsTrigger>
+                </TabsList>
+                <TabsContent value="my-groups">
+                  <MyGroupsList 
+                    user={user} 
+                    onRefresh={handleRefreshGroups}
+                    searchTerm={searchTerm}
+                    key={`my-${refreshTrigger}`} 
+                  />
+                </TabsContent>
+                <TabsContent value="all">
+                  <GroupsList 
+                    user={user} 
+                    searchTerm={searchTerm}
+                    key={`all-${refreshTrigger}`} 
+                  />
+                </TabsContent>
+              </Tabs>
+            </>
           )}
         </div>
       </main>
