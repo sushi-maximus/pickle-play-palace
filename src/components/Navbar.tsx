@@ -5,7 +5,8 @@ import { Menu, X, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
+import { skillLevelColors } from "@/lib/constants/skill-levels";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,6 +19,10 @@ export function Navbar() {
     }
     return user?.email?.charAt(0).toUpperCase() || 'U';
   };
+
+  // Get the skill level for border color
+  const skillLevel = profile?.skill_level || "2.5";
+  const borderColor = skillLevelColors[skillLevel];
 
   return (
     <nav className="w-full bg-background border-b border-border py-3">
@@ -41,12 +46,14 @@ export function Navbar() {
             {user ? (
               <Link to="/profile">
                 <Button variant="ghost" size="icon" className="rounded-full">
-                  <Avatar className="h-8 w-8">
-                    {profile?.avatar_url && (
-                      <AvatarImage src={profile.avatar_url} alt="Profile" />
-                    )}
-                    <AvatarFallback>{getInitials()}</AvatarFallback>
-                  </Avatar>
+                  <AvatarWithBorder className="h-8 w-8" borderColor={borderColor} borderWidth={2}>
+                    <AvatarImage 
+                      src={profile?.avatar_url || ""} 
+                      alt="Profile" 
+                      className="rounded-full"
+                    />
+                    <AvatarFallback className="rounded-full">{getInitials()}</AvatarFallback>
+                  </AvatarWithBorder>
                 </Button>
               </Link>
             ) : (
