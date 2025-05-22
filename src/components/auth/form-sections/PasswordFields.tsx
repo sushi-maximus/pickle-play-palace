@@ -1,6 +1,6 @@
 
 import { Control } from "react-hook-form";
-import { InputField } from "../form-fields/InputField";
+import { PasswordInputField } from "../form-fields/PasswordInputField";
 
 interface PasswordFieldsProps {
   control: Control<any>;
@@ -9,20 +9,22 @@ interface PasswordFieldsProps {
 export const PasswordFields = ({ control }: PasswordFieldsProps) => {
   return (
     <>
-      <InputField 
+      <PasswordInputField 
         control={control}
         name="password"
         label="Password"
         placeholder="Create a password"
-        isPassword
+        autoComplete="new-password"
+        required
       />
       
-      <InputField 
+      <PasswordInputField 
         control={control}
         name="confirmPassword"
         label="Confirm Password"
         placeholder="Confirm your password"
-        isPassword
+        autoComplete="new-password"
+        required
       />
     </>
   );

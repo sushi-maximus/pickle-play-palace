@@ -1,64 +1,45 @@
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Eye, EyeOff } from "lucide-react";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 import { ValidationIcon } from "./ValidationIcon";
+import { Button } from "@/components/ui/button";
 
-export interface FormInputFieldProps<
+export interface PasswordInputFieldProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > {
   control: Control<TFieldValues>;
   name: TName;
   label: string;
-  type?: string;
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
   autoComplete?: string;
-  pattern?: string;
-  maxLength?: number;
-  minLength?: number;
   className?: string;
-  isPassword?: boolean;
 }
 
-export function FormInputField<
+export function PasswordInputField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->(props: FormInputFieldProps<TFieldValues, TName>) {
+>(props: PasswordInputFieldProps<TFieldValues, TName>) {
   const { 
     control, 
     name, 
     label, 
-    type = 'text',
     placeholder, 
     required = false,
     disabled = false,
-    autoComplete,
-    pattern,
-    maxLength,
-    minLength,
+    autoComplete = "current-password",
     className
   } = props;
 
-  // If this is a password field, use the dedicated PasswordInputField component
-  if (props.isPassword) {
-    const { PasswordInputField } = require('./PasswordInputField');
-    return (
-      <PasswordInputField
-        control={control}
-        name={name}
-        label={label}
-        placeholder={placeholder}
-        required={required}
-        disabled={disabled}
-        autoComplete={autoComplete}
-        className={className}
-      />
-    );
-  }
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
     <FormField
@@ -75,24 +56,36 @@ export function FormInputField<
             <FormControl>
               <div className="relative">
                 <Input
-                  type={type}
+                  type={showPassword ? "text" : "password"}
                   placeholder={placeholder}
                   required={required}
                   disabled={disabled}
                   autoComplete={autoComplete}
-                  pattern={pattern}
-                  maxLength={maxLength}
-                  minLength={minLength}
                   className={cn(
-                    "pr-10 input-focus-animation",
+                    "pr-20 input-focus-animation",
                     error ? "border-destructive/50 focus:border-destructive" : "",
                     !error && fieldState.isDirty ? "border-primary/50 focus:border-primary" : ""
                   )}
                   {...field}
                 />
-                {fieldState.isDirty && (
-                  <ValidationIcon valid={!error} />
-                )}
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex gap-1">
+                  {fieldState.isDirty && (
+                    <ValidationIcon valid={!error} />
+                  )}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 ml-1"
+                    onClick={togglePasswordVisibility}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? 
+                      <EyeOff className="h-4 w-4 text-muted-foreground" /> : 
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    }
+                  </Button>
+                </div>
               </div>
             </FormControl>
             <FormMessage />
