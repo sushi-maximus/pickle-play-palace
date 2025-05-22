@@ -19,5 +19,6 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
     },
+    include: ['**/__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },
 });

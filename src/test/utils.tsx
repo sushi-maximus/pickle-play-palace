@@ -11,13 +11,21 @@ import { vi } from 'vitest';
 // Create a custom render function that includes all providers
 export function renderWithProviders(
   ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'> & {
-    authContextValue?: Partial<any>;
+  options?: {
+    preloadedState?: any;
+    route?: string;
+    authContextValue?: Partial<React.ComponentProps<typeof AuthContext.Provider>['value']>;
+    renderOptions?: Omit<RenderOptions, 'wrapper'>;
   }
 ) {
-  const { authContextValue = {}, ...renderOptions } = options || {};
-  
-  // Create a fresh QueryClient for each test
+  const {
+    preloadedState = {},
+    route = '/',
+    authContextValue = {},
+    renderOptions = {}
+  } = options || {};
+
+  // Create a new query client for each test
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -26,40 +34,41 @@ export function renderWithProviders(
     },
   });
 
-  // Setup user event
-  const user = userEvent.setup();
-  
-  // Create default auth context value
+  // Set up window location for routing tests
+  window.history.pushState({}, 'Test page', route);
+
+  // Default mock for auth context
   const defaultAuthContext = {
     session: null,
     user: null,
     profile: null,
     isLoading: false,
     signOut: vi.fn().mockResolvedValue({}),
-    signUp: vi.fn().mockResolvedValue({ error: null, data: { user: { id: 'mock-id' } } }),
-    signIn: vi.fn().mockResolvedValue({ error: null, data: { user: { id: 'mock-id' } } }),
-    resendVerificationEmail: vi.fn().mockResolvedValue({ error: null, data: {} }),
+    signUp: vi.fn().mockResolvedValue({ error: null, data: null }),
+    signIn: vi.fn().mockResolvedValue({ error: null, data: null }),
+    resendVerificationEmail: vi.fn().mockResolvedValue({ error: null, data: null }),
     refreshProfile: vi.fn().mockResolvedValue({}),
-    ...authContextValue
+    ...authContextValue,
   };
-  
-  function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="light">
-          <AuthContext.Provider value={defaultAuthContext}>
-            <BrowserRouter>{children}</BrowserRouter>
-          </AuthContext.Provider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    );
-  }
-  
+
+  // Set up user-event
+  const user = userEvent.setup();
+
+  // Render with all providers
+  const renderResult = render(
+    <AuthContext.Provider value={defaultAuthContext}>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>{ui}</ThemeProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </AuthContext.Provider>,
+    renderOptions
+  );
+
   return {
+    ...renderResult,
     user,
-    ...render(ui, {
-      wrapper: Wrapper,
-      ...renderOptions,
-    }),
+    queryClient,
   };
 }

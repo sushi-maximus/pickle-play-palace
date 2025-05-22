@@ -105,6 +105,16 @@ describe('SignupForm', () => {
     await user.type(screen.getByLabelText(/^Password/i), 'password123');
     await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
     
+    // Check gender field
+    const genderCombobox = screen.getByRole('combobox', { name: /gender/i });
+    await user.click(genderCombobox);
+    await user.click(screen.getByText('Male'));
+    
+    // Check skill level field
+    const skillCombobox = screen.getByRole('combobox', { name: /skill level/i });
+    await user.click(skillCombobox);
+    await user.click(screen.getByText('3.0'));
+    
     // Submit the form
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));
     
@@ -116,6 +126,8 @@ describe('SignupForm', () => {
         expect.objectContaining({
           firstName: 'John',
           lastName: 'Doe',
+          gender: 'Male',
+          skillLevel: '3.0'
         })
       );
     });
@@ -139,6 +151,16 @@ describe('SignupForm', () => {
     // Fill in passwords
     await user.type(screen.getByLabelText(/^Password/i), 'password123');
     await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
+    
+    // Check gender field
+    const genderCombobox = screen.getByRole('combobox', { name: /gender/i });
+    await user.click(genderCombobox);
+    await user.click(screen.getByText('Male'));
+    
+    // Check skill level field
+    const skillCombobox = screen.getByRole('combobox', { name: /skill level/i });
+    await user.click(skillCombobox);
+    await user.click(screen.getByText('3.0'));
     
     // Submit the form
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));
@@ -175,6 +197,16 @@ describe('SignupForm', () => {
     await user.type(screen.getByLabelText(/^Password/i), 'password123');
     await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
     
+    // Check gender field
+    const genderCombobox = screen.getByRole('combobox', { name: /gender/i });
+    await user.click(genderCombobox);
+    await user.click(screen.getByText('Male'));
+    
+    // Check skill level field
+    const skillCombobox = screen.getByRole('combobox', { name: /skill level/i });
+    await user.click(skillCombobox);
+    await user.click(screen.getByText('3.0'));
+    
     // Submit the form
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));
     
@@ -184,6 +216,6 @@ describe('SignupForm', () => {
     // Wait for the submission to complete
     await waitFor(() => {
       expect(screen.queryByText(/Creating account/i)).not.toBeInTheDocument();
-    });
+    }, { timeout: 200 });
   });
 });
