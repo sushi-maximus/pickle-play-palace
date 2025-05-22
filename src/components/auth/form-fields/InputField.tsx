@@ -46,7 +46,10 @@ export function InputField(props: InputFieldProps) {
     return <FormInputField {...props} />;
   }
 
-  // Original standalone implementation for direct usage without react-hook-form
+  // At this point, TypeScript should know props is StandaloneInputFieldProps
+  // but we need to help it with a type assertion
+  const standaloneProps = props as StandaloneInputFieldProps;
+
   const {
     id,
     label,
@@ -65,7 +68,7 @@ export function InputField(props: InputFieldProps) {
     className,
     validateFn,
     isPassword = false,
-  } = props;
+  } = standaloneProps;
 
   const [touched, setTouched] = useState(false);
   const [internalValid, setInternalValid] = useState<boolean | undefined>(undefined);
