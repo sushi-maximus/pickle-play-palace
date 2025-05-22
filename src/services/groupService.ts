@@ -1,52 +1,97 @@
+
 import { supabase } from "@/integrations/supabase/client";
-import { Group, GroupMember, GroupWithMemberCount } from "@/types/group";
+import { Group, GroupMember, GroupWithMemberCount, MemberWithProfile } from "@/types/group";
 
 export async function fetchPublicGroups(): Promise<GroupWithMemberCount[]> {
   const { data, error } = await supabase
     .from('groups')
     .select(`
       *,
-      member_count:count(group_members.group_id)
+      member_count:group_members(count)
     `)
     .eq('is_private', false)
-    .order('created_at', { ascending: false })
-    .limit(10);
+    .order('created_at', { ascending: false });
 
   if (error) {
     console.error("Error fetching public groups:", error);
     throw error;
   }
 
-  return data as GroupWithMemberCount[];
+  return (data as any[]).map(group => ({
+    ...group,
+    member_count: group.member_count[0]?.count || 0
+  }));
 }
 
 export async function fetchUserGroups(): Promise<GroupWithMemberCount[]> {
-  const { data, error } = await supabase
+  const user = supabase.auth.getUser();
+  const userId = (await user).data.user?.id;
+  
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+  
+  // Get groups user is a member of
+  const { data: membershipData, error: membershipError } = await supabase
+    .from('group_members')
+    .select('group_id')
+    .eq('user_id', userId);
+
+  if (membershipError) {
+    console.error('Error fetching group memberships:', membershipError);
+    throw membershipError;
+  }
+
+  if (!membershipData || membershipData.length === 0) {
+    return [];
+  }
+
+  // Get groups by ids with member count
+  const groupIds = membershipData.map(membership => membership.group_id);
+  const { data: groupsData, error: groupsError } = await supabase
     .from('groups')
     .select(`
       *,
-      member_count:count(group_members.group_id)
+      member_count:group_members(count)
     `)
-    .order('created_at', { ascending: false })
-    .limit(10);
+    .in('id', groupIds)
+    .order('updated_at', { ascending: false });
 
-  if (error) {
-    console.error("Error fetching user groups:", error);
-    throw error;
+  if (groupsError) {
+    console.error('Error fetching user groups:', groupsError);
+    throw groupsError;
   }
 
-  return data as GroupWithMemberCount[];
+  return (groupsData as any[]).map(group => ({
+    ...group,
+    member_count: group.member_count[0]?.count || 0
+  }));
 }
 
 export async function createGroup(group: Partial<Group>): Promise<Group> {
+  const user = supabase.auth.getUser();
+  const userId = (await user).data.user?.id;
+  
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+  
   const { data, error } = await supabase
     .from('groups')
-    .insert([group])
+    .insert([
+      { 
+        name: group.name, 
+        description: group.description,
+        location: group.location,
+        is_private: group.is_private || false,
+        creator_id: userId
+      }
+    ])
     .select()
     .single();
 
   if (error) {
-    console.error("Error creating group:", error);
+    console.error('Error creating group:', error);
     throw error;
   }
 
@@ -54,20 +99,28 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
 }
 
 export async function joinGroup(groupId: string): Promise<GroupMember> {
-  const userId = supabase.auth.currentUser?.id;
-
+  const user = supabase.auth.getUser();
+  const userId = (await user).data.user?.id;
+  
   if (!userId) {
     throw new Error("User not authenticated");
   }
-
+  
   const { data, error } = await supabase
     .from('group_members')
-    .insert([{ group_id: groupId, user_id: userId }])
+    .insert([
+      { 
+        group_id: groupId,
+        user_id: userId,
+        role: 'member',
+        status: 'active'
+      }
+    ])
     .select()
     .single();
 
   if (error) {
-    console.error("Error joining group:", error);
+    console.error('Error joining group:', error);
     throw error;
   }
 
@@ -75,12 +128,13 @@ export async function joinGroup(groupId: string): Promise<GroupMember> {
 }
 
 export async function leaveGroup(groupId: string): Promise<void> {
-  const userId = supabase.auth.currentUser?.id;
-
+  const user = supabase.auth.getUser();
+  const userId = (await user).data.user?.id;
+  
   if (!userId) {
     throw new Error("User not authenticated");
   }
-
+  
   const { error } = await supabase
     .from('group_members')
     .delete()
@@ -88,7 +142,7 @@ export async function leaveGroup(groupId: string): Promise<void> {
     .eq('user_id', userId);
 
   if (error) {
-    console.error("Error leaving group:", error);
+    console.error('Error leaving group:', error);
     throw error;
   }
 }
@@ -111,7 +165,7 @@ export async function getGroupById(groupId: string): Promise<Group | null> {
   return data as Group;
 }
 
-export async function getGroupMembers(groupId: string) {
+export async function getGroupMembers(groupId: string): Promise<MemberWithProfile[]> {
   const { data, error } = await supabase
     .from('group_members')
     .select(`
@@ -132,7 +186,7 @@ export async function getGroupMembers(groupId: string) {
     throw error;
   }
   
-  return data;
+  return data as MemberWithProfile[];
 }
 
 export async function checkIfUserIsMember(groupId: string, userId: string): Promise<boolean> {
