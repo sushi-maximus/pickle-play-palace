@@ -37,8 +37,8 @@ const Profile = () => {
     return (firstInitial + lastInitial).toUpperCase() || "U";
   };
 
-  // Define breadcrumb items for the profile page
-  const breadcrumbItems = [{ label: "Account", href: "/profile" }, { label: "Profile" }];
+  // Define breadcrumb items for the profile page - removed Account from breadcrumb
+  const breadcrumbItems = [{ label: "Profile" }];
 
   if (!user) {
     navigate("/login");
