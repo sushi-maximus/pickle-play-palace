@@ -1,3 +1,4 @@
+
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SignupForm } from "@/components/auth/SignupForm";
@@ -9,10 +10,10 @@ const Signup = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect already authenticated users
+  // Redirect already authenticated users to the dashboard
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 

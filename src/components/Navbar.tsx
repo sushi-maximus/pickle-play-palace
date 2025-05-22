@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,6 +31,11 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-6">
+          {user && (
+            <Link to="/dashboard" className="text-foreground hover:text-primary transition-colors">
+              Dashboard
+            </Link>
+          )}
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {user ? (
@@ -77,6 +82,12 @@ export function Navbar() {
           <div className="flex flex-col gap-4">
             {user ? (
               <div className="flex flex-col gap-2 mt-2">
+                <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="ghost" className="justify-start w-full">
+                    <LayoutDashboard className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Button>
+                </Link>
                 <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
                   <Button variant="ghost" className="justify-start w-full">
                     <User className="h-4 w-4 mr-2" />
