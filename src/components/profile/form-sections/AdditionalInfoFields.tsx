@@ -3,6 +3,13 @@ import { InputField } from "@/components/auth/form-fields/InputField";
 import { DatePickerField } from "../form-fields/DatePickerField";
 import { Control } from "react-hook-form";
 import { ProfileFormValues } from "../schemas/profileSchema";
+import { Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AdditionalInfoFieldsProps {
   control: Control<ProfileFormValues>;
@@ -10,18 +17,48 @@ interface AdditionalInfoFieldsProps {
 
 export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <DatePickerField
-        control={control}
-        name="birthday"
-        label="Birthday"
-      />
-      <InputField
-        control={control}
-        name="duprRating"
-        label="DUPR Rating"
-        placeholder="4.5"
-      />
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DatePickerField
+          control={control}
+          name="birthday"
+          label="Birthday"
+        />
+        <InputField
+          control={control}
+          name="duprRating"
+          label="DUPR Rating"
+          placeholder="4.5"
+        />
+      </div>
+      <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Phone Number
+            </label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center cursor-pointer text-muted-foreground ml-1">
+                    <Info className="h-4 w-4" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>This is available to anyone in a group you are in so leave it blank if you don't want anyone to know your phone number and contact you.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <InputField
+            control={control}
+            name="phoneNumber"
+            label=""
+            hideLabel={true}
+            placeholder="(123) 456-7890"
+          />
+        </div>
+      </div>
+    </>
   );
 };
