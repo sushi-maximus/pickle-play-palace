@@ -75,15 +75,25 @@ export function CreateGroupDialog({ open, onOpenChange, onGroupCreated }: Create
         location: values.location || null,
         is_private: values.is_private,
       });
+      
       toast.success("Group created successfully!");
       form.reset();
       onOpenChange(false);
       onGroupCreated();
-      // Navigate to the new group's page
-      navigate(`/groups/${newGroup.id}`);
-    } catch (error) {
+      
+      // Only navigate if we have a valid group ID
+      if (newGroup && newGroup.id) {
+        navigate(`/groups/${newGroup.id}`);
+      }
+    } catch (error: any) {
       console.error("Error creating group:", error);
-      toast.error("Failed to create group. Please try again.");
+      
+      // More specific error message based on the error
+      if (error?.message?.includes("infinite recursion")) {
+        toast.error("There's an issue with the database configuration. Please contact support.");
+      } else {
+        toast.error("Failed to create group. Please try again later.");
+      }
     } finally {
       setIsSubmitting(false);
     }
