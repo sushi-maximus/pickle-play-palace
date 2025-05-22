@@ -12,7 +12,6 @@ export const TermsAndPolicy = () => {
     <FormField
       control={form.control}
       name="agreeToTerms"
-      defaultValue={false}
       render={({ field }) => (
         <FormItem className="flex flex-row items-start space-x-3 space-y-0">
           <FormControl>

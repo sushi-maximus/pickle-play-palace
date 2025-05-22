@@ -32,6 +32,8 @@ describe('SignupForm Validation', () => {
       expect(screen.getByText(/Please enter a valid email address/i)).toBeInTheDocument();
       expect(screen.getByText(/Password must be at least 8 characters/i)).toBeInTheDocument();
       expect(screen.getByText(/You must agree to the terms and privacy policy/i)).toBeInTheDocument();
+      expect(screen.getByText(/Please select your gender/i)).toBeInTheDocument();
+      expect(screen.getByText(/Please select your skill level/i)).toBeInTheDocument();
     });
   });
 
