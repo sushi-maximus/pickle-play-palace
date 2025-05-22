@@ -29,6 +29,8 @@ export const SignupForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
   
+  console.log('Rendering SignupForm component');
+  
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -41,6 +43,7 @@ export const SignupForm = () => {
       skillLevel: undefined,
       agreeToTerms: false,
     },
+    mode: "onSubmit", // Only validate on submit
   });
 
   const onSubmit = async (values: SignupSchema) => {
@@ -48,13 +51,13 @@ export const SignupForm = () => {
       setIsLoading(true);
       setSignupError(null);
       
-      // Log form values to ensure they're correct
       console.log("Form values submitted:", {
         email: values.email,
         firstName: values.firstName,
         lastName: values.lastName,
         gender: values.gender,
         skillLevel: values.skillLevel,
+        agreeToTerms: values.agreeToTerms,
       });
       
       const userData = {
@@ -94,7 +97,7 @@ export const SignupForm = () => {
         </CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <CardContent className="space-y-6 pt-4">
             {signupError && (
               <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">

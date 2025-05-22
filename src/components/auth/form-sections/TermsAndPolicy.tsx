@@ -18,6 +18,7 @@ export const TermsAndPolicy = () => {
             <Checkbox
               checked={field.value}
               onCheckedChange={field.onChange}
+              aria-required="true"
             />
           </FormControl>
           <div className="space-y-1 leading-none">

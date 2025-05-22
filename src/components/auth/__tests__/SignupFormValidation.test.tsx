@@ -17,50 +17,67 @@ vi.mock('react-router-dom', async () => {
 describe('SignupForm Validation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    console.log('Starting test...');
   });
 
   test('displays validation errors when submitting empty form', async () => {
+    console.log('Rendering SignupForm...');
     const { user } = renderWithProviders(<SignupForm />);
     
+    // Log form elements to help debug
+    console.log('Form elements:', 
+      screen.queryByRole('button', { name: /Sign Up/i }) ? 'Sign Up button found' : 'Sign Up button not found'
+    );
+    
     // Submit the form without filling in any fields
+    console.log('Clicking submit button...');
     await user.click(screen.getByRole('button', { name: /Sign Up/i }));
     
     // Wait for validation errors to appear
+    console.log('Waiting for validation errors...');
     await waitFor(() => {
-      expect(screen.getByText(/First name is required/i)).toBeInTheDocument();
-      expect(screen.getByText(/Last name is required/i)).toBeInTheDocument();
-      expect(screen.getByText(/Please enter a valid email address/i)).toBeInTheDocument();
-      expect(screen.getByText(/Password must be at least 8 characters/i)).toBeInTheDocument();
-      expect(screen.getByText(/You must agree to the terms and privacy policy/i)).toBeInTheDocument();
-      expect(screen.getByText(/Please select your gender/i)).toBeInTheDocument();
-      expect(screen.getByText(/Please select your skill level/i)).toBeInTheDocument();
+      // Check each validation message individually and log what's found
+      const firstNameError = screen.queryByText(/First name is required/i);
+      const lastNameError = screen.queryByText(/Last name is required/i);
+      const emailError = screen.queryByText(/Please enter a valid email address/i);
+      const passwordError = screen.queryByText(/Password must be at least 8 characters/i);
+      const termsError = screen.queryByText(/You must agree to the terms and privacy policy/i);
+      const genderError = screen.queryByText(/Please select your gender/i);
+      const skillLevelError = screen.queryByText(/Please select your skill level/i);
+      
+      console.log('Validation errors found:', {
+        firstNameError: !!firstNameError,
+        lastNameError: !!lastNameError,
+        emailError: !!emailError,
+        passwordError: !!passwordError,
+        termsError: !!termsError,
+        genderError: !!genderError,
+        skillLevelError: !!skillLevelError
+      });
+      
+      // Testing each error individually to see which one fails
+      if (!firstNameError) throw new Error('First name error not found');
+      expect(firstNameError).toBeInTheDocument();
+      
+      if (!lastNameError) throw new Error('Last name error not found');
+      expect(lastNameError).toBeInTheDocument();
+      
+      if (!emailError) throw new Error('Email error not found');
+      expect(emailError).toBeInTheDocument();
+      
+      if (!passwordError) throw new Error('Password error not found');
+      expect(passwordError).toBeInTheDocument();
+      
+      if (!termsError) throw new Error('Terms error not found');
+      expect(termsError).toBeInTheDocument();
+      
+      if (!genderError) throw new Error('Gender error not found');
+      expect(genderError).toBeInTheDocument();
+      
+      if (!skillLevelError) throw new Error('Skill level error not found');
+      expect(skillLevelError).toBeInTheDocument();
     });
   });
 
-  /* Commenting out other tests to focus on one test at a time
-  test('validates matching passwords', async () => {
-    const { user } = renderWithProviders(<SignupForm />);
-    
-    // Fill in required fields except passwords
-    await user.type(screen.getByLabelText(/First Name/i), 'John');
-    await user.type(screen.getByLabelText(/Last Name/i), 'Doe');
-    await user.type(screen.getByLabelText(/Email/i), 'john.doe@example.com');
-    
-    // Enter mismatched passwords
-    await user.type(screen.getByLabelText(/^Password/i), 'password123');
-    await user.type(screen.getByLabelText(/Confirm Password/i), 'password456');
-    
-    // Accept terms
-    const termsCheckbox = screen.getByRole('checkbox');
-    await user.click(termsCheckbox);
-    
-    // Submit the form
-    await user.click(screen.getByRole('button', { name: /Sign Up/i }));
-    
-    // Check for password mismatch error
-    await waitFor(() => {
-      expect(screen.getByText(/Passwords do not match/i)).toBeInTheDocument();
-    });
-  });
-  */
+  /* Commenting out other tests to focus on one test at a time */
 });
