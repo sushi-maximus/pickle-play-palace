@@ -63,9 +63,8 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
                 control={control}
                 name="duprProfileLink"
                 label=""
-                hideLabel={true}
-                placeholder="https://dupr.com/player/your-profile"
                 type="url"
+                placeholder="https://dupr.com/player/your-profile"
               />
             </div>
           </div>
@@ -94,7 +93,6 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
           control={control}
           name="phoneNumber"
           label=""
-          hideLabel={true}
         />
       </div>
     </div>
