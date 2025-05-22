@@ -61,17 +61,20 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
             </Avatar>
             
             <div>
-              <p className="font-medium">
-                {member.profiles.first_name} {member.profiles.last_name}
-              </p>
+              <div className="font-medium flex items-center gap-2">
+                <span>{member.profiles.first_name} {member.profiles.last_name}</span>
+                {member.role === "admin" && (
+                  <Badge className="text-xs">Admin</Badge>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Joined {formatDistanceToNow(new Date(member.joined_at), { addSuffix: true })}
               </p>
             </div>
           </div>
           
-          <Badge variant={member.role === "admin" ? "default" : "outline"}>
-            {member.role === "admin" ? "Admin" : "Member"}
+          <Badge variant={member.role === "admin" ? "default" : "outline"} className="capitalize">
+            {member.role}
           </Badge>
         </div>
       ))}
