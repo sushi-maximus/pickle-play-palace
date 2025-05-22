@@ -153,7 +153,10 @@ function toast({ ...props }: Toast) {
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
   // Only show close button if the toast won't auto-dismiss
-  const showCloseButton = props.showCloseButton ?? (duration === null);
+  // Allow override via explicit showCloseButton prop
+  const showCloseButton = props.showCloseButton !== undefined 
+    ? props.showCloseButton 
+    : (duration === null);
 
   const update = (props: ToasterToast) =>
     dispatch({

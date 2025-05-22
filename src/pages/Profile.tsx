@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -27,7 +28,11 @@ export default function Profile() {
 
   const handleLogout = async () => {
     await signOut();
-    toast.success("You have been logged out");
+    toast({
+      title: "Success",
+      description: "You have been logged out",
+      variant: "default",
+    });
   };
 
   const getInitials = () => {
