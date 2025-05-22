@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { LockClosedIcon } from "lucide-react";
+import { Lock } from "lucide-react";
 
 // Schema for form validation
 const createGroupSchema = z.object({
@@ -191,7 +191,7 @@ export function CreateGroupDialog({ trigger, onSuccess }: CreateGroupDialogProps
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
                       <FormLabel className="text-base flex items-center">
-                        <LockClosedIcon className="w-4 h-4 mr-2" />
+                        <Lock className="w-4 h-4 mr-2" />
                         Private Group
                       </FormLabel>
                       <FormDescription>
