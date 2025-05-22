@@ -22,18 +22,22 @@ vi.mock('@/contexts/AuthContext', () => ({
 }));
 
 // Basic mock for react-hook-form
-vi.mock('react-hook-form', async () => {
-  const actual = await vi.importActual('react-hook-form');
-  return {
-    ...actual,
-    useForm: () => ({
-      handleSubmit: (fn: any) => vi.fn(),
-      control: {},
-      formState: { errors: {} },
-      getValues: () => ({}),
-    }),
-  };
-});
+vi.mock('react-hook-form', () => ({
+  useForm: () => ({
+    handleSubmit: (fn) => (e) => {
+      e?.preventDefault?.();
+      return fn({});
+    },
+    control: {},
+    formState: { errors: {} },
+    getValues: () => ({}),
+  }),
+  useFormContext: () => ({
+    control: {},
+    formState: { errors: {} },
+    getValues: () => ({}),
+  }),
+}));
 
 describe('SignupForm Button', () => {
   test('signup button is clickable', async () => {
