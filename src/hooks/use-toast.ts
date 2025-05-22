@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import type {
@@ -149,9 +150,8 @@ function toast({ ...props }: Toast) {
   // Handle duration and auto-dismiss logic
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
-  // Set showCloseButton based on duration and explicit setting:
-  // - For auto-dismissing toasts: don't show close button unless explicitly requested
-  // - For permanent toasts: show close button unless explicitly disabled
+  // For auto-dismissing toasts, explicitly set showCloseButton to false
+  // For permanent toasts, show close button unless explicitly disabled
   const showCloseButton = props.showCloseButton !== undefined 
     ? props.showCloseButton 
     : duration === null;
