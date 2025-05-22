@@ -23,7 +23,7 @@ export function CreateGroupForm({ isLoading, onCancel, onSubmit }: CreateGroupFo
       name: "",
       description: "",
       location: "",
-      is_private: false,
+      is_private: true,
     },
   });
 
