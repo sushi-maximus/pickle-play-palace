@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Group } from "@/types/group";
 import { Database } from "@/integrations/supabase/types";
@@ -44,12 +45,12 @@ export async function createGroup(group: Partial<Group>): Promise<Group> {
       throw new Error("Failed to create group - no data returned");
     }
 
-    // The issue was here - we need to provide proper typing for the enum values
+    // Here's the fix - we need to use proper typecasting for enum values
     const { error: procError } = await supabase.rpc('add_group_member', {
       p_group_id: groupData.id,
       p_user_id: userId,
-      p_role: 'admin' as Database["public"]["Enums"]["group_member_role"],
-      p_status: 'active' as Database["public"]["Enums"]["group_member_status"]
+      p_role: 'admin',
+      p_status: 'active'
     });
 
     if (procError) {
