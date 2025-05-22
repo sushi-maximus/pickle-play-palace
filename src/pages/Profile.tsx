@@ -11,42 +11,16 @@ import { ProfileForm } from "@/components/profile/ProfileForm";
 import { AccountInfo } from "@/components/profile/AccountInfo";
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, profile } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
 
-  // Fetch user profile data
+  // Use profile data from AuthContext
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user?.id) return;
-      
-      try {
-        setIsLoading(true);
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        if (error) throw error;
-        
-        if (data) {
-          setProfileData(data);
-          if (data.avatar_url) {
-            setAvatarUrl(data.avatar_url);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        toast.error("Failed to load profile data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [user]);
+    if (profile) {
+      setProfileData(profile);
+    }
+  }, [profile]);
 
   if (!user) {
     return <Navigate to="/login" />;
@@ -80,10 +54,10 @@ export default function Profile() {
               <div className="space-y-6">
                 {/* Avatar Upload Section */}
                 <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6 mb-8">
-                  {user && (
+                  {user && profile && (
                     <ProfileAvatar 
                       userId={user.id}
-                      avatarUrl={avatarUrl}
+                      avatarUrl={profile.avatar_url}
                       getInitials={getInitials}
                     />
                   )}

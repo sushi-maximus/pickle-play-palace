@@ -67,8 +67,8 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
   return (
     <div className="relative mb-4 md:mb-0">
       <Avatar className="h-24 w-24">
-        {localAvatarUrl ? (
-          <AvatarImage src={localAvatarUrl} alt="Profile" />
+        {localAvatarUrl || avatarUrl ? (
+          <AvatarImage src={localAvatarUrl || avatarUrl} alt="Profile" />
         ) : null}
         <AvatarFallback className="text-lg">{getInitials()}</AvatarFallback>
       </Avatar>
