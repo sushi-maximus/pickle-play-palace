@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Navigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { AccountInfo } from "@/components/profile/AccountInfo";
@@ -32,7 +31,6 @@ export default function Profile() {
       title: "Success",
       description: "You have been logged out",
       variant: "default",
-      showCloseButton: false, // Explicitly set to false
     });
   };
 

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 import { profileSchema, ProfileFormValues } from "./schemas/profileSchema";
 import { PersonalInfoFields } from "./form-sections/PersonalInfoFields";
 import { AdditionalInfoFields } from "./form-sections/AdditionalInfoFields";

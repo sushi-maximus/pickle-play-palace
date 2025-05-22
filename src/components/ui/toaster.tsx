@@ -14,7 +14,7 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, showCloseButton, ...props }) {
+      {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
             <div className="grid gap-1">
@@ -24,8 +24,7 @@ export function Toaster() {
               )}
             </div>
             {action}
-            {/* CRITICAL: Only render close button when explicitly set to true */}
-            {showCloseButton === true && <ToastClose />}
+            {/* Remove close button entirely - we'll manage this differently */}
           </Toast>
         )
       })}

@@ -18,8 +18,8 @@ function toast({ ...props }: Toast) {
   // Determine if toast should auto-dismiss or be permanent
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
-  // CRITICAL: showCloseButton must be strictly true to show close button
-  const showCloseButton = props.showCloseButton === true ? true : false;
+  // Close button functionality is now disabled through the Toaster component
+  // This property is maintained for compatibility but has no effect
   
   const update = (props: ToasterToast) =>
     dispatch({
@@ -42,7 +42,6 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       duration,
-      showCloseButton, // Pass explicit boolean value
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss()

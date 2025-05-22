@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSkillLevelColor } from "@/lib/constants/skill-levels";
@@ -60,8 +59,7 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
       
       toast({
         title: "Success",
-        description: "Avatar updated successfully",
-        showCloseButton: false // Explicitly set to false
+        description: "Avatar updated successfully"
       });
       
     } catch (error: any) {
@@ -69,8 +67,7 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
       toast({
         title: "Error",
         description: `Error uploading avatar: ${error.message}`,
-        variant: "destructive",
-        showCloseButton: false // Explicitly set to false
+        variant: "destructive"
       });
     } finally {
       setUploading(false);
