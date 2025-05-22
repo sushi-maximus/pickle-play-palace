@@ -100,7 +100,7 @@ export const SignupForm = () => {
               className="w-full transition-all" 
               type="submit" 
               disabled={isLoading}
-              aria-label="Sign Up"
+              data-testid="signup-button"
             >
               {isLoading ? "Creating account..." : "Sign Up"}
             </Button>

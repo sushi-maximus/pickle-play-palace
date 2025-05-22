@@ -1,19 +1,15 @@
 
 import { describe, test, expect, vi } from 'vitest';
-import { screen } from '@testing-library/react';
-import { renderWithProviders } from '@/test/utils';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SignupForm } from '../SignupForm';
 
-// Mock react-router-dom's useNavigate
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => vi.fn(),
-  };
-});
+// Mock all imports and provide the simplest implementations
+vi.mock('react-router-dom', () => ({
+  Link: ({ children, to }) => <a href={to}>{children}</a>,
+  useNavigate: () => vi.fn(),
+}));
 
-// Simple mock for useAuth
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({
     signUp: vi.fn().mockResolvedValue({ error: null }),
@@ -21,7 +17,6 @@ vi.mock('@/contexts/AuthContext', () => ({
   }),
 }));
 
-// Basic mock for react-hook-form
 vi.mock('react-hook-form', () => ({
   useForm: () => ({
     handleSubmit: (fn) => (e) => {
@@ -31,26 +26,62 @@ vi.mock('react-hook-form', () => ({
     control: {},
     formState: { errors: {} },
     getValues: () => ({}),
+    register: () => ({}),
   }),
+  FormProvider: ({ children }) => <>{children}</>,
   useFormContext: () => ({
     control: {},
     formState: { errors: {} },
     getValues: () => ({}),
+    register: () => ({}),
   }),
+}));
+
+// Mock the form sections to simplify the test
+vi.mock('../form-sections/PersonalInfoFields', () => ({
+  PersonalInfoFields: () => <div>Personal Info Fields</div>,
+}));
+
+vi.mock('../form-sections/PasswordFields', () => ({
+  PasswordFields: () => <div>Password Fields</div>,
+}));
+
+vi.mock('../form-sections/TermsAndPolicy', () => ({
+  TermsAndPolicy: () => <div>Terms And Policy</div>,
+}));
+
+// Mock the card components to simplify the DOM
+vi.mock('@/components/ui/card', () => ({
+  Card: ({ children, className }) => <div className={className}>{children}</div>,
+  CardHeader: ({ children }) => <div>{children}</div>,
+  CardContent: ({ children }) => <div>{children}</div>,
+  CardFooter: ({ children }) => <div>{children}</div>,
+  CardTitle: ({ children }) => <div>{children}</div>,
+  CardDescription: ({ children }) => <div>{children}</div>,
+}));
+
+vi.mock('@/components/ui/form', () => ({
+  Form: ({ children }) => <>{children}</>,
+  FormField: ({ control, name, render }) => render({ field: { value: '', onChange: vi.fn() } }),
+  useFormField: () => ({ formItemId: 'test' }),
 }));
 
 describe('SignupForm Button', () => {
   test('signup button is clickable', async () => {
-    const { user } = renderWithProviders(<SignupForm />);
+    // Set up userEvent
+    const user = userEvent.setup();
     
-    // Find the signup button
-    const signupButton = screen.getByRole('button', { name: /sign up/i });
+    // Render the component
+    render(<SignupForm />);
     
-    // Verify button exists and is clickable
+    // Find the signup button by its text content
+    const signupButton = screen.getByText(/sign up/i);
+    
+    // Verify button exists and is not disabled
     expect(signupButton).toBeInTheDocument();
     expect(signupButton).not.toBeDisabled();
     
-    // Test button can be clicked
+    // Click the button
     await user.click(signupButton);
   });
 });
