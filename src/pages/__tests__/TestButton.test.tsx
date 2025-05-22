@@ -3,6 +3,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Test from '../Test';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 describe('Test Button', () => {
   test('test button is clickable', async () => {
@@ -12,8 +13,12 @@ describe('Test Button', () => {
     // Mock console.log to verify it's called
     const consoleSpy = vi.spyOn(console, 'log');
     
-    // Render the component
-    render(<Test />);
+    // Render the component with ThemeProvider
+    render(
+      <ThemeProvider defaultTheme="light">
+        <Test />
+      </ThemeProvider>
+    );
     
     // Find the button by test ID
     const testButton = screen.getByTestId("test-button");
