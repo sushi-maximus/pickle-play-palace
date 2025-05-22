@@ -1,6 +1,7 @@
 
-import { InputField } from "@/components/auth/form-fields/InputField";
 import { DatePickerField } from "../form-fields/DatePickerField";
+import { PhoneInputField } from "../form-fields/PhoneInputField";
+import { InputField } from "@/components/auth/form-fields/InputField";
 import { Control } from "react-hook-form";
 import { ProfileFormValues } from "../schemas/profileSchema";
 import { Info } from "lucide-react";
@@ -50,12 +51,11 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
               </Tooltip>
             </TooltipProvider>
           </div>
-          <InputField
+          <PhoneInputField
             control={control}
             name="phoneNumber"
             label=""
             hideLabel={true}
-            placeholder="(123) 456-7890"
           />
         </div>
       </div>
