@@ -36,22 +36,22 @@ const Groups = () => {
           {!user ? (
             <LoginPrompt />
           ) : (
-            <Tabs defaultValue="all" className="mt-8">
+            <Tabs defaultValue="my-groups" className="mt-8">
               <TabsList className="mb-6">
-                <TabsTrigger value="all">All Groups</TabsTrigger>
                 <TabsTrigger value="my-groups">My Groups</TabsTrigger>
+                <TabsTrigger value="all">All Groups</TabsTrigger>
               </TabsList>
-              <TabsContent value="all">
-                <GroupsList 
-                  user={user} 
-                  key={`all-${refreshTrigger}`} 
-                />
-              </TabsContent>
               <TabsContent value="my-groups">
                 <MyGroupsList 
                   user={user} 
                   onRefresh={handleRefreshGroups}
                   key={`my-${refreshTrigger}`} 
+                />
+              </TabsContent>
+              <TabsContent value="all">
+                <GroupsList 
+                  user={user} 
+                  key={`all-${refreshTrigger}`} 
                 />
               </TabsContent>
             </Tabs>
