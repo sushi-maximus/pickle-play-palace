@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -10,20 +10,30 @@ import { ProfileForm } from "@/components/profile/ProfileForm";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 const Profile = () => {
-  const { user, supabase, signout } = useAuth();
+  const { user, profile, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
     setIsLoading(true);
     try {
-      await signout();
+      await signOut();
       navigate("/");
     } catch (error) {
       console.error("Error logging out:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Function to get initials from first and last name
+  const getInitials = () => {
+    if (!profile) return "U";
+    
+    const firstInitial = profile.first_name ? profile.first_name.charAt(0) : "";
+    const lastInitial = profile.last_name ? profile.last_name.charAt(0) : "";
+    
+    return (firstInitial + lastInitial).toUpperCase() || "U";
   };
 
   // Define breadcrumb items for the profile page
@@ -50,8 +60,19 @@ const Profile = () => {
             
             <div className="w-full md:w-3/4">
               <div className="space-y-8">
-                <ProfileHeader />
-                <ProfileForm />
+                {user && profile && (
+                  <ProfileHeader 
+                    user={user}
+                    profile={profile}
+                    getInitials={getInitials}
+                  />
+                )}
+                {user && profile && (
+                  <ProfileForm 
+                    userId={user.id}
+                    profileData={profile}
+                  />
+                )}
               </div>
             </div>
           </div>

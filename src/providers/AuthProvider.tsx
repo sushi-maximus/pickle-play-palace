@@ -3,7 +3,7 @@ import { useState, useEffect, ReactNode, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/AuthContext";
-import { signIn, signOut, signUp, resendVerificationEmail } from "@/utils/auth-utils";
+import { signIn, signUp, signOut, resendVerificationEmail } from "@/utils/auth-utils";
 import { toast } from "@/hooks/use-toast";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
