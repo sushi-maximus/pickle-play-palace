@@ -13,7 +13,7 @@ export type ToasterToast = ToastProps & {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
-  duration?: number // Always use a number for duration
+  duration: number // Always require a duration
 }
 
 // Action types for reducer

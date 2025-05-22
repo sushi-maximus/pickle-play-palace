@@ -30,4 +30,3 @@ export function Toaster() {
     </ToastProvider>
   )
 }
-

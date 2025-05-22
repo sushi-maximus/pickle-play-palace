@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -32,6 +33,7 @@ export default function Profile() {
       title: "Success",
       description: "You have been logged out",
       variant: "default",
+      duration: 5000, // Explicitly set duration
     });
   };
 

@@ -26,7 +26,7 @@ const App = () => (
       <TooltipProvider>
         <AuthProvider>
           <Toaster />
-          <Sonner position="top-center" closeButton richColors />
+          <Sonner position="top-center" closeButton={false} richColors />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />

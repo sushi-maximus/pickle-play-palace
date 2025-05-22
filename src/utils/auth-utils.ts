@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -6,13 +5,14 @@ export const signOut = async () => {
   try {
     await supabase.auth.signOut();
     toast.success("Signed out", {
-      description: "You have been signed out successfully."
-      // Using default duration for auto-dismiss
+      description: "You have been signed out successfully.",
+      duration: 5000 // Explicitly set duration for auto-dismiss
     });
   } catch (error) {
     console.error("Error signing out:", error);
     toast.error("Error signing out", {
-      description: "An error occurred while signing out."
+      description: "An error occurred while signing out.",
+      duration: 5000 // Explicitly set duration for auto-dismiss
     });
   }
 };
@@ -56,7 +56,8 @@ export const signUp = async (email: string, password: string, metadata: any) => 
     if (result.error) {
       console.error("Signup error details:", result.error);
       toast.error("Signup error", {
-        description: result.error.message || "An error occurred during signup."
+        description: result.error.message || "An error occurred during signup.",
+        duration: 5000
       });
       return { error: result.error, data: null };
     }
@@ -65,7 +66,8 @@ export const signUp = async (email: string, password: string, metadata: any) => 
     if (!result.data?.user) {
       console.error("User not created. Response:", result);
       toast.error("Signup failed", {
-        description: "User account could not be created. Please try again."
+        description: "User account could not be created. Please try again.",
+        duration: 5000
       });
       return { error: { message: "User not created" }, data: null };
     }
@@ -93,13 +95,14 @@ export const signUp = async (email: string, password: string, metadata: any) => 
     
     toast.success("Account created", {
       description: "Please check your email to confirm your account before logging in.",
-      duration: 10000  // Longer duration but will still auto-dismiss after 10 seconds
+      duration: 10000  // 10 seconds auto-dismiss
     });
     return { error: null, data: result.data };
   } catch (error: any) {
     console.error("Unexpected signup error:", error);
     toast.error("Signup error", {
-      description: error.message || "An unexpected error occurred during signup."
+      description: error.message || "An unexpected error occurred during signup.",
+      duration: 5000
     });
     return { error, data: null };
   }
