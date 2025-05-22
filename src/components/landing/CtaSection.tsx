@@ -7,7 +7,7 @@ export function CtaSection() {
   return (
     <section className="py-24 px-4 relative overflow-hidden">
       <div className="container mx-auto max-w-6xl animate-[fade-in_0.8s_ease-out]">
-        <div className="bg-gradient-to-r from-pickle-600 to-secondary rounded-3xl p-10 md:p-16 text-white text-center overflow-hidden relative transform transition-transform hover:scale-[1.01]">
+        <div className="bg-gradient-to-r from-pickle-600 to-secondary rounded-3xl p-10 md:p-16 text-white text-center overflow-hidden relative transform transition-all duration-300 hover:scale-[1.01] hover:shadow-xl">
           {/* Background patterns */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9wYXR0ZXJuPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybildIi8+PC9zdmc+')] opacity-50 mix-blend-overlay"></div>
           <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>
@@ -18,16 +18,27 @@ export function CtaSection() {
             <p className="text-white/90 max-w-2xl mx-auto mb-10 text-lg animate-[fade-in_0.5s_ease-out_0.4s_both]">
               Create your free account and start playing!
             </p>
-            <Link to="/signup" className="inline-block animate-[fade-in_0.5s_ease-out_0.6s_both]">
-              <Button 
-                size="lg" 
-                variant="secondary" 
-                className="gap-2 text-base px-10 py-6 group shadow-lg hover:shadow-xl transition-all"
-              >
-                Sign Up Now
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-[fade-in_0.5s_ease-out_0.6s_both]">
+              <Link to="/signup">
+                <Button 
+                  size="lg" 
+                  variant="secondary" 
+                  className="gap-2 text-base px-8 py-6 group shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                >
+                  Sign Up Now
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <Link to="/about">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="gap-2 text-base border-white/20 bg-white/10 hover:bg-white/20 text-white px-8 py-6 transition-all w-full sm:w-auto"
+                >
+                  Learn More
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

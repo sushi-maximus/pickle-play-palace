@@ -1,181 +1,66 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { Navigate } from "react-router-dom";
-import { toast } from "@/components/ui/sonner";
+import { Footer } from "@/components/Footer";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
-import { ProfileForm } from "@/components/profile/ProfileForm";
-import { AccountInfo } from "@/components/profile/AccountInfo";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ProfileForm } from "@/components/profile/ProfileForm";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
-export default function Profile() {
-  const { user, signOut, profile, isLoading: authLoading } = useAuth();
-  const [profileData, setProfileData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Use profile data from AuthContext
-  useEffect(() => {
-    if (profile) {
-      setProfileData(profile);
-      // Add a small delay to make transitions smoother
-      setTimeout(() => setIsLoading(false), 300);
-    } else if (!authLoading) {
-      // If auth loading is complete but no profile, stop loading state
-      setIsLoading(false);
-    }
-  }, [profile, authLoading]);
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+const Profile = () => {
+  const { user, supabase, signout } = useAuth();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
-    await signOut();
-    toast.success("Logged out", {
-      description: "You have been logged out successfully",
-      duration: 5000,
-    });
-  };
-
-  const getInitials = () => {
-    if (profileData?.first_name && profileData?.last_name) {
-      return `${profileData.first_name.charAt(0)}${profileData.last_name.charAt(0)}`.toUpperCase();
+    setIsLoading(true);
+    try {
+      await signout();
+      navigate("/");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    } finally {
+      setIsLoading(false);
     }
-    return user.email?.charAt(0).toUpperCase() || "U";
   };
 
-  // Show skeleton UI while data is loading
-  const renderSkeletonContent = () => (
-    <div className="flex flex-col md:flex-row gap-8">
-      {/* Left Sidebar Skeleton */}
-      <div className="md:w-64 w-full">
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-4 py-2">
-              <Skeleton className="h-8 w-24" />
-              <div className="space-y-2">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Main Content Skeleton */}
-      <div className="flex-1 max-w-3xl">
-        {/* Profile Header Skeleton */}
-        <div className="flex flex-col md:flex-row md:items-start md:gap-6 mb-8 p-6 bg-card rounded-lg shadow-sm border border-border">
-          <Skeleton className="h-24 w-24 rounded-full" />
-          <div className="mt-4 md:mt-0 space-y-2">
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-64" />
-            <div className="flex flex-wrap gap-4 mt-3">
-              <Skeleton className="h-6 w-24 rounded-full" />
-              <Skeleton className="h-6 w-24 rounded-full" />
-            </div>
-          </div>
-        </div>
-        
-        {/* Profile Tabs Skeleton */}
-        <div className="mt-6">
-          <div className="mb-6">
-            <Skeleton className="h-10 w-[400px]" />
-          </div>
-          
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-48" />
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <Skeleton className="h-5 w-32" />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                  </div>
-                  <Skeleton className="h-10 w-full" />
-                </div>
-                <div className="space-y-4">
-                  <Skeleton className="h-5 w-32" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
+  // Define breadcrumb items for the profile page
+  const breadcrumbItems = [{ label: "Account", href: "/account" }, { label: "Profile" }];
+
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="container px-4 mx-auto py-8">
-        {isLoading ? (
-          renderSkeletonContent()
-        ) : (
+      
+      <main className="flex-1 py-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          {/* Breadcrumb navigation */}
+          <BreadcrumbNav items={breadcrumbItems} className="mb-8" />
+          
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Left Sidebar */}
-            <div className="md:w-64 w-full">
+            <div className="w-full md:w-1/4">
               <ProfileSidebar onLogout={handleLogout} />
             </div>
             
-            {/* Main Content */}
-            <div className="flex-1 max-w-3xl">
-              {/* Profile Header with Avatar and Basic Info */}
-              {user && profileData && (
-                <ProfileHeader 
-                  user={user} 
-                  profile={profileData} 
-                  getInitials={getInitials} 
-                />
-              )}
-              
-              {/* Profile Tabs */}
-              <Tabs defaultValue="personal-info" className="mt-6">
-                <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
-                  <TabsTrigger value="personal-info">Personal Information</TabsTrigger>
-                  <TabsTrigger value="account">Account Settings</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="personal-info" className="mt-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-xl">Personal Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                      {user && profileData && (
-                        <ProfileForm userId={user.id} profileData={profileData} />
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                
-                <TabsContent value="account" className="mt-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-xl">Account Settings</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                      {user && profileData && (
-                        <AccountInfo user={user} profile={profileData} />
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+            <div className="w-full md:w-3/4">
+              <div className="space-y-8">
+                <ProfileHeader />
+                <ProfileForm />
+              </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   );
-}
+};
+
+export default Profile;

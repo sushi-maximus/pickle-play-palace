@@ -1,155 +1,49 @@
 
-import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Footer } from "@/components/Footer";
+import { Card } from "@/components/ui/card";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
-export default function Dashboard() {
-  const { user, profile, isLoading: authLoading } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
+const Dashboard = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  // Simulate data loading
-  useEffect(() => {
-    if (profile || !authLoading) {
-      // Add a small delay for smoother transition
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 300);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [profile, authLoading]);
+  // Define breadcrumb items for the dashboard page
+  const breadcrumbItems = [{ label: "Dashboard" }];
 
-  // Redirect to login if not authenticated
   if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  // Get greeting based on time of day
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-  };
-
-  const greeting = getGreeting();
-  const firstName = profile?.first_name || user.email?.split('@')[0] || 'User';
-
-  // Skeleton loading UI
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <main className="container px-4 mx-auto py-8">
-          <div className="border border-border rounded-lg p-6">
-            <Skeleton className="h-8 w-32 mb-6" />
-            
-            <div className="mb-6">
-              <Skeleton className="h-6 w-64 mb-4" />
-              <Skeleton className="h-4 w-72" />
-            </div>
-
-            {/* Quick Stats Skeletons */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-card rounded-lg p-4 border border-border">
-                  <Skeleton className="h-4 w-32 mb-2" />
-                  <Skeleton className="h-8 w-16" />
-                </div>
-              ))}
-            </div>
-
-            {/* Recent Activity Skeleton */}
-            <div className="mb-8">
-              <Skeleton className="h-6 w-40 mb-4" />
-              <div className="bg-card border border-border p-4 rounded-lg">
-                <Skeleton className="h-20 w-full" />
-              </div>
-            </div>
-
-            {/* Quick Actions Skeleton */}
-            <div>
-              <Skeleton className="h-6 w-36 mb-4" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="bg-card border border-border rounded-lg p-4">
-                    <Skeleton className="h-5 w-24 mx-auto mb-2" />
-                    <Skeleton className="h-4 w-32 mx-auto" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
+    navigate("/login");
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="container px-4 mx-auto py-8">
-        <div className="border border-border rounded-lg p-6">
-          <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      
+      <main className="flex-1 py-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          {/* Breadcrumb navigation */}
+          <BreadcrumbNav items={breadcrumbItems} className="mb-8" />
           
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4">{greeting}, {firstName}!</h2>
-            <p className="text-muted-foreground">Welcome to your personal dashboard.</p>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                {profile?.dupr_rating ? "Your DUPR Rating" : "Your Skill Level"}
-              </h3>
-              <p className="text-2xl font-bold">
-                {profile?.dupr_rating ? profile.dupr_rating : (profile?.skill_level || "2.5")}
+          <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Welcome to Your Dashboard</h2>
+              <p className="text-muted-foreground">
+                This is your pickleball activity hub. Your games, stats, and communities will appear here.
               </p>
-            </div>
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">Account Status</h3>
-              <p className="text-2xl font-bold">Active</p>
-            </div>
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">Profile Completion</h3>
-              <div className="w-full bg-muted rounded-full h-2.5 mt-2">
-                <div className="bg-pickle-500 h-2.5 rounded-full" style={{ width: '75%' }}></div>
-              </div>
-              <p className="text-sm mt-1">75% complete</p>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="mb-8">
-            <h3 className="text-lg font-medium mb-4">Recent Activity</h3>
-            <div className="bg-card border border-border p-4 rounded-lg">
-              <p className="text-muted-foreground text-center py-8">No recent activity to show.</p>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div>
-            <h3 className="text-lg font-medium mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <a href="/profile" className="bg-card hover:bg-card/80 border border-border rounded-lg p-4 text-center transition-colors">
-                <h4 className="font-medium">Edit Profile</h4>
-                <p className="text-sm text-muted-foreground mt-1">Update your personal information</p>
-              </a>
-              <div className="bg-card hover:bg-card/80 border border-border rounded-lg p-4 text-center transition-colors">
-                <h4 className="font-medium">Find Games</h4>
-                <p className="text-sm text-muted-foreground mt-1">Discover matches near you</p>
-              </div>
-              <div className="bg-card hover:bg-card/80 border border-border rounded-lg p-4 text-center transition-colors">
-                <h4 className="font-medium">Training Tips</h4>
-                <p className="text-sm text-muted-foreground mt-1">Improve your skills</p>
-              </div>
-            </div>
+            </Card>
+            {/* Additional dashboard cards would go here */}
           </div>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
-}
+};
+
+export default Dashboard;

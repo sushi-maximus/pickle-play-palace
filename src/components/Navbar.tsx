@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -10,6 +11,12 @@ import { skillLevelColors, getSkillLevelColor } from "@/lib/constants/skill-leve
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, profile } = useAuth();
+  const location = useLocation();
+  
+  // Close mobile menu when changing routes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
 
   // Get user initials for avatar fallback
   const getInitials = () => {
@@ -21,6 +28,11 @@ export function Navbar() {
 
   // Get the appropriate color based on DUPR or skill level
   const borderColor = getSkillLevelColor(profile?.dupr_rating, profile?.skill_level);
+
+  // Check if the current path matches the given path
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
     <nav className="w-full bg-background border-b border-border py-3">
@@ -35,7 +47,12 @@ export function Navbar() {
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-6">
           {user && (
-            <Link to="/dashboard" className="text-foreground hover:text-primary transition-colors">
+            <Link 
+              to="/dashboard" 
+              className={`relative transition-colors ${isActive('/dashboard') 
+                ? 'text-primary font-medium after:content-[""] after:absolute after:w-full after:h-0.5 after:bg-primary after:bottom-[-8px] after:left-0' 
+                : 'text-foreground hover:text-primary'}`}
+            >
               Dashboard
             </Link>
           )}
@@ -43,7 +60,11 @@ export function Navbar() {
             <ThemeToggle />
             {user ? (
               <Link to="/profile">
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={`rounded-full ${isActive('/profile') ? 'bg-accent' : ''}`}
+                >
                   <AvatarWithBorder className="h-8 w-8" borderColor={borderColor} borderWidth={2}>
                     <AvatarImage 
                       src={profile?.avatar_url || ""} 
@@ -57,10 +78,10 @@ export function Navbar() {
             ) : (
               <>
                 <Link to="/login">
-                  <Button variant="outline">Log In</Button>
+                  <Button variant={isActive('/login') ? "default" : "outline"}>Log In</Button>
                 </Link>
                 <Link to="/signup">
-                  <Button>Sign Up</Button>
+                  <Button variant={isActive('/signup') ? "secondary" : "default"}>Sign Up</Button>
                 </Link>
               </>
             )}
@@ -81,38 +102,60 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="md:hidden px-4 py-4 bg-background border-b border-border">
+      {/* Mobile menu with improved transitions */}
+      <div 
+        className={`md:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-sm transition-all duration-300 transform ${
+          isMenuOpen 
+            ? 'translate-x-0 opacity-100'
+            : 'translate-x-full opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="flex justify-end p-4">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setIsMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+        <div className="px-4 py-4">
           <div className="flex flex-col gap-4">
             {user ? (
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="flex flex-col gap-3 mt-2">
                 <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="ghost" className="justify-start w-full">
+                  <Button 
+                    variant="ghost" 
+                    className={`justify-start w-full ${isActive('/dashboard') ? 'bg-accent text-accent-foreground' : ''}`}
+                  >
                     <LayoutDashboard className="h-4 w-4 mr-2" />
                     Dashboard
                   </Button>
                 </Link>
                 <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="ghost" className="justify-start w-full">
+                  <Button 
+                    variant="ghost" 
+                    className={`justify-start w-full ${isActive('/profile') ? 'bg-accent text-accent-foreground' : ''}`}
+                  >
                     <User className="h-4 w-4 mr-2" />
                     Profile
                   </Button>
                 </Link>
               </div>
             ) : (
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="flex flex-col gap-3 mt-2">
                 <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">Log In</Button>
+                  <Button variant={isActive('/login') ? "default" : "outline"} className="w-full">Log In</Button>
                 </Link>
                 <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full">Sign Up</Button>
+                  <Button variant={isActive('/signup') ? "secondary" : "default"} className="w-full">Sign Up</Button>
                 </Link>
               </div>
             )}
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
