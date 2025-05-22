@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Lock } from "lucide-react";
+import { Lock, Globe } from "lucide-react";
 import { DialogFooter } from "@/components/ui/dialog";
 import { createGroupSchema, CreateGroupFormValues } from "../schemas/groupSchemas";
 
@@ -81,11 +81,22 @@ export function CreateGroupForm({ isLoading, onCancel, onSubmit }: CreateGroupFo
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base flex items-center">
-                    <Lock className="w-4 h-4 mr-2" />
-                    Private Group
+                    {field.value ? (
+                      <>
+                        <Lock className="w-4 h-4 mr-2" />
+                        Private Group
+                      </>
+                    ) : (
+                      <>
+                        <Globe className="w-4 h-4 mr-2" />
+                        Public Group
+                      </>
+                    )}
                   </FormLabel>
                   <FormDescription>
-                    Private groups require approval to join
+                    {field.value 
+                      ? "Private groups require approval to join" 
+                      : "Public groups can be joined by anyone"}
                   </FormDescription>
                 </div>
                 <FormControl>
