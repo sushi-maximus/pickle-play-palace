@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -181,30 +180,41 @@ export const fetchUserMemberships = async (userId: string) => {
 };
 
 /**
- * A utility function to fetch group details including members
+ * Fetches detailed information for a specific group by ID
+ * @param groupId The UUID of the group to fetch
+ * @returns Group details or null if not found
  */
-export const fetchGroupDetails = async (groupId: string): Promise<any> => {
+export const fetchGroupDetails = async (groupId: string) => {
   try {
-    // First get the group details
+    // Fetch group data
     const { data: groupData, error: groupError } = await supabase
       .from("groups")
-      .select("*")
+      .select(`
+        id,
+        name,
+        description,
+        created_at,
+        created_by,
+        updated_at,
+        avatar_url,
+        location,
+        is_private,
+        skill_level_min,
+        skill_level_max,
+        max_members
+      `)
       .eq("id", groupId)
       .single();
-      
-    if (groupError) {
-      console.error('Error fetching group details:', groupError);
-      throw groupError;
-    }
     
-    if (!groupData) {
+    if (groupError) {
+      console.error(`Error fetching group ${groupId}:`, groupError);
       return null;
     }
     
-    // Count active members
+    // Get member count
     const { count: memberCount, error: countError } = await supabase
       .from("group_members")
-      .select("*", { count: "exact", head: true })
+      .select('id', { count: 'exact', head: true })
       .eq("group_id", groupId)
       .eq("status", "active");
       
@@ -235,7 +245,7 @@ export const fetchGroupDetails = async (groupId: string): Promise<any> => {
       
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, first_name, last_name, avatar_url")
+        .select("id, first_name, last_name, avatar_url, skill_level, dupr_rating, birthday")
         .in("id", userIds);
         
       if (profilesError) {
@@ -266,6 +276,6 @@ export const fetchGroupDetails = async (groupId: string): Promise<any> => {
     };
   } catch (error) {
     console.error('Error fetching group details:', error);
-    throw error;
+    return null;
   }
 };
