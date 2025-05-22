@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, User, LayoutDashboard } from "lucide-react";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
-import { skillLevelColors } from "@/lib/constants/skill-levels";
+import { skillLevelColors, getSkillLevelColor } from "@/lib/constants/skill-levels";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,9 +19,8 @@ export function Navbar() {
     return user?.email?.charAt(0).toUpperCase() || 'U';
   };
 
-  // Get the skill level for border color
-  const skillLevel = profile?.skill_level || "2.5";
-  const borderColor = skillLevelColors[skillLevel];
+  // Get the appropriate color based on DUPR or skill level
+  const borderColor = getSkillLevelColor(profile?.dupr_rating, profile?.skill_level);
 
   return (
     <nav className="w-full bg-background border-b border-border py-3">

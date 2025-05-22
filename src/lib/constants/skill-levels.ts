@@ -1,4 +1,3 @@
-
 export const skillLevelOptions = [
   { value: "2.5", label: "2.5 - Beginner" },
   { value: "3.0", label: "3.0 - Intermediate" },
@@ -18,4 +17,29 @@ export const skillLevelColors: Record<string, string> = {
   "4.5": "#8B4513", // Brown - Highly Advanced
   "5.0": "#000000", // Black - Expert/Pro
   "5.5": "#FF0000", // Red - Professional/Elite
+};
+
+// Function to map DUPR rating to skill level color
+export const duprToSkillLevel = (duprRating: number | null): string => {
+  if (!duprRating) return "2.5";
+  
+  if (duprRating < 3.0) return "2.5";
+  else if (duprRating < 3.5) return "3.0";
+  else if (duprRating < 4.0) return "3.5";
+  else if (duprRating < 4.5) return "4.0";
+  else if (duprRating < 5.0) return "4.5";
+  else if (duprRating < 5.5) return "5.0";
+  else return "5.5";
+};
+
+// Function to get the appropriate color based on DUPR or skill level
+export const getSkillLevelColor = (duprRating: number | null | undefined, skillLevel: string | undefined): string => {
+  if (duprRating) {
+    // If DUPR rating exists, use that to determine the color
+    const mappedSkillLevel = duprToSkillLevel(duprRating);
+    return skillLevelColors[mappedSkillLevel];
+  }
+  
+  // Otherwise use the skill level or default to 2.5
+  return skillLevelColors[skillLevel || "2.5"];
 };

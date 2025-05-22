@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { skillLevelColors } from "@/lib/constants/skill-levels";
+import { getSkillLevelColor } from "@/lib/constants/skill-levels";
 
 interface ProfileAvatarProps {
   userId: string;
@@ -17,9 +18,8 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
   const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(avatarUrl);
   const { refreshProfile, profile } = useAuth();
 
-  // Get the skill level for border color
-  const skillLevel = profile?.skill_level || "2.5";
-  const borderColor = skillLevelColors[skillLevel];
+  // Get the appropriate color based on DUPR or skill level
+  const borderColor = getSkillLevelColor(profile?.dupr_rating, profile?.skill_level);
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {

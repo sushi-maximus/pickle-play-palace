@@ -3,7 +3,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { User } from "@supabase/supabase-js";
 import { differenceInYears } from "date-fns";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { skillLevelColors } from "@/lib/constants/skill-levels";
+import { skillLevelColors, getSkillLevelColor } from "@/lib/constants/skill-levels";
 import {
   Tooltip,
   TooltipContent,
@@ -40,10 +40,8 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
   const age = calculateAge();
   const ratingDisplay = getRatingDisplay();
 
-  // Get the color for the current skill level
-  const skillLevelColor = profile?.skill_level ? 
-    skillLevelColors[profile.skill_level] : 
-    skillLevelColors["2.5"];
+  // Get the appropriate color based on DUPR or skill level
+  const skillLevelColor = getSkillLevelColor(profile?.dupr_rating, profile?.skill_level);
 
   return (
     <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6 mb-8 p-6 bg-card rounded-lg shadow-sm border border-border">
