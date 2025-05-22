@@ -8,7 +8,7 @@ import { CtaSection } from "@/components/landing/CtaSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
       
       <main className="flex-1">
