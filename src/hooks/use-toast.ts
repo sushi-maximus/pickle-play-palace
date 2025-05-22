@@ -1,14 +1,15 @@
 
 // Re-export Sonner toast for backward compatibility
-import { toast } from "@/components/ui/sonner";
+import { toast, toastWithCloseButton } from "@/components/ui/sonner";
 
 // Export Sonner's toast as default
-export { toast };
+export { toast, toastWithCloseButton };
 
 // For components still using the old useToast hook pattern
 export const useToast = () => {
   return {
     toast,
+    toastWithCloseButton,
     // Provide empty functions to maintain API compatibility
     toasts: [],
     dismiss: () => {},

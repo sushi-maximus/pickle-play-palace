@@ -11,7 +11,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
-      closeButton={false}
+      // Remove the global closeButton={false} to allow per-toast configuration
       toastOptions={{
         classNames: {
           toast:
@@ -28,4 +28,21 @@ const Toaster = ({ ...props }: ToasterProps) => {
   )
 }
 
-export { Toaster, toast }
+// Extend the toast object with a version that shows the close button
+const toastWithCloseButton = (message: string, opts: any = {}) => {
+  return toast(message, {
+    ...opts,
+    closeButton: true
+  });
+};
+
+// Add the persistent method that shows a close button by default
+toast.persistent = (message: string, opts: any = {}) => {
+  return toast(message, {
+    ...opts,
+    duration: undefined, // No auto-dismiss
+    closeButton: true, // Always show close button
+  });
+};
+
+export { Toaster, toast, toastWithCloseButton }

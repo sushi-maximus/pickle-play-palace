@@ -24,7 +24,7 @@ const App = () => (
     <ThemeProvider defaultTheme="light">
       <TooltipProvider>
         <AuthProvider>
-          <Sonner position="top-center" closeButton={false} richColors />
+          <Sonner position="top-center" richColors />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
