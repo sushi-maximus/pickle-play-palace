@@ -108,7 +108,7 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
             </div>
           </HoverCardTrigger>
           
-          <HoverCardContent className="w-80 p-0">
+          <HoverCardContent className="w-80 p-0 fixed-center-popup">
             <div className="flex flex-col">
               <div className="flex items-center gap-4 p-4">
                 <Avatar className="h-16 w-16 border-2" style={{ 
