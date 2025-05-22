@@ -4,7 +4,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
-import { fetchPublicGroups, fetchUserGroups, joinGroup, leaveGroup } from "@/services/groupService";
+import { 
+  fetchPublicGroups, 
+  fetchUserGroups, 
+  joinGroup, 
+  leaveGroup 
+} from "@/services/groups";
 import { GroupWithMemberCount } from "@/types/group";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

@@ -17,7 +17,7 @@ import {
   checkIfUserIsAdmin,
   joinGroup,
   leaveGroup
-} from "@/services/groupService";
+} from "@/services/groups";
 import { Group, MemberWithProfile } from "@/types/group";
 
 const GroupDetail = () => {
