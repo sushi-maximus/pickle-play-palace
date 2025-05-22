@@ -14,9 +14,9 @@ export function CtaSection() {
           <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-white/5 blur-3xl"></div>
           
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 animate-[fade-in_0.5s_ease-out_0.2s_both]">Ready to Join the Pickle Community?</h2>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 animate-[fade-in_0.5s_ease-out_0.2s_both]">Join the Pickle Community Today</h2>
             <p className="text-white/90 max-w-2xl mx-auto mb-10 text-lg animate-[fade-in_0.5s_ease-out_0.4s_both]">
-              Create your free account today and start connecting with other pickleball enthusiasts in your area.
+              Create your free account and start playing!
             </p>
             <Link to="/signup" className="inline-block animate-[fade-in_0.5s_ease-out_0.6s_both]">
               <Button 

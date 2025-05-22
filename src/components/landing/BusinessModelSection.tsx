@@ -9,11 +9,11 @@ export function BusinessModelSection() {
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center mb-16 animate-[fade-in_0.6s_ease-out]">
-          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">Our approach</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2">Free to Use, Fair for All</h2>
+          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">Our Model</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2">Free to Play, Fair for All</h2>
           <div className="w-24 h-1 bg-primary mx-auto mt-6 mb-8"></div>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Pickle Ninja is completely free for individual players. We only charge a small commission on paid events and tournaments.
+            Free for individual players. Small commission only on paid events.
           </p>
         </div>
         
@@ -26,19 +26,19 @@ export function BusinessModelSection() {
             <ul className="space-y-5">
               <li className="flex items-start gap-3">
                 <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 mt-0.5">✓</span>
-                <span className="text-lg">Create your player profile for free</span>
+                <span className="text-lg">Free player profiles</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 mt-0.5">✓</span>
-                <span className="text-lg">Join groups and chat with other players</span>
+                <span className="text-lg">Connect with local players</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 mt-0.5">✓</span>
-                <span className="text-lg">Track your matches and progress</span>
+                <span className="text-lg">Match and progress tracking</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 mt-0.5">✓</span>
-                <span className="text-lg">Join free events and games</span>
+                <span className="text-lg">Join free events</span>
               </li>
             </ul>
           </div>
@@ -55,7 +55,7 @@ export function BusinessModelSection() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 mt-0.5">✓</span>
-                <span className="text-lg">Create paid tournaments with easy payment processing</span>
+                <span className="text-lg">Easy payment processing</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="inline-block px-2.5 py-0.5 bg-primary text-primary-foreground rounded text-sm font-medium">FAIR</span>
@@ -63,7 +63,7 @@ export function BusinessModelSection() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 mt-0.5">✓</span>
-                <span className="text-lg">Powerful tools for managing registrations</span>
+                <span className="text-lg">Powerful registration tools</span>
               </li>
             </ul>
           </div>

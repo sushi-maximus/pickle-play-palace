@@ -9,11 +9,11 @@ export function FeaturesSection() {
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center mb-16 animate-[fade-in_0.6s_ease-out]">
-          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">What we offer</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2">Powerful Features for Pickle Players</h2>
+          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">Features</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2">Elevate Your Pickleball Experience</h2>
           <div className="w-24 h-1 bg-primary mx-auto mt-6"></div>
           <p className="mt-6 text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to organize, track, and enjoy your pickleball journey
+            Everything you need to play, compete, and connect
           </p>
         </div>
         
@@ -21,37 +21,37 @@ export function FeaturesSection() {
           {[
             { 
               title: "Communities", 
-              description: "Connect with players, join groups, and organize events with your local pickleball community.",
+              description: "Connect with local players and organize events together.",
               icon: Users,
               delay: 0
             },
             { 
               title: "Ladder Leagues", 
-              description: "Earn points, climb rankings, and prove your skills against players at your level.",
+              description: "Compete, earn points, and climb the rankings.",
               icon: Activity,
               delay: 100
             },
             { 
               title: "Tournaments", 
-              description: "Compete in elimination events and win prizes. Easily manage brackets and schedules.",
+              description: "Join elimination events with automated brackets.",
               icon: Trophy,
               delay: 200
             },
             { 
               title: "King's Court", 
-              description: "Battle for the top court and defend your position in this competitive format.",
+              description: "Battle for the top court and defend your position.",
               icon: Crown,
               delay: 300
             },
             { 
               title: "Round Robin", 
-              description: "Enjoy flexible matches with diverse opponents for balanced play and maximum court time.",
+              description: "Enjoy diverse matches with maximum court time.",
               icon: Repeat,
               delay: 400
             },
             { 
               title: "Score Tracking", 
-              description: "Track stats, analyze performance, and update your DUPR rating after every match.",
+              description: "Track stats and update your DUPR rating.",
               icon: AreaChart,
               delay: 500
             }
