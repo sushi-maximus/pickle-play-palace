@@ -1,13 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Lock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
+import { fetchAllGroups } from "./utils/groupUtils";
 
 type Group = {
   id: string;
@@ -58,16 +57,7 @@ export const GroupsList = ({ user }: GroupsListProps) => {
     try {
       // Only fetch groups if the user is logged in
       if (user) {
-        // Direct query with no joins to prevent RLS recursion issues
-        const { data, error } = await supabase
-          .from("groups")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error("Error details:", error);
-          throw error;
-        }
+        const data = await fetchAllGroups();
         setGroups(data || []);
       } else {
         setGroups([]);

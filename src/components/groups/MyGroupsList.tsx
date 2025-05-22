@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { fetchUserMemberships } from "./utils/groupUtils";
 
 type GroupMembership = {
   id: string;
@@ -64,83 +64,8 @@ export const MyGroupsList = ({ user, onRefresh }: MyGroupsListProps) => {
         return;
       }
       
-      // First get the groups this user has created
-      const { data: createdGroups, error: createdError } = await supabase
-        .from("groups")
-        .select("*")
-        .eq("created_by", user.id);
-        
-      if (createdError) {
-        console.error("Error fetching created groups:", createdError);
-        throw createdError;
-      }
-      
-      // Then get group memberships separately to avoid recursion
-      const { data: membershipData, error: membershipError } = await supabase
-        .from("group_members")
-        .select("id, role, group_id, user_id")
-        .eq("user_id", user.id)
-        .eq("status", "active");
-      
-      if (membershipError) {
-        console.error("Error fetching memberships:", membershipError);
-        throw membershipError;
-      }
-      
-      // If we have memberships, get the group details
-      let memberships: GroupMembership[] = [];
-      
-      if (membershipData && membershipData.length > 0) {
-        // Extract group IDs from memberships
-        const groupIds = membershipData.map(m => m.group_id);
-        
-        // Get those groups' details
-        const { data: groupsData, error: groupsError } = await supabase
-          .from("groups")
-          .select("*")
-          .in("id", groupIds);
-        
-        if (groupsError) {
-          console.error("Error fetching member groups:", groupsError);
-          throw groupsError;
-        }
-        
-        if (groupsData) {
-          // Combine membership data with group data
-          memberships = membershipData.map(membership => {
-            const group = groupsData.find(g => g.id === membership.group_id);
-            return {
-              id: membership.id,
-              role: membership.role,
-              group: group || {
-                id: membership.group_id,
-                name: "Unknown Group",
-                description: null,
-                location: null,
-                created_at: new Date().toISOString(),
-                is_private: false
-              }
-            };
-          });
-        }
-      }
-      
-      // Add created groups as admin memberships
-      const createdMemberships = (createdGroups || []).map(group => ({
-        id: `created-${group.id}`,
-        role: "admin",
-        group
-      }));
-      
-      // Combine and deduplicate (in case user is both creator and member)
-      const allMemberships = [...memberships];
-      createdMemberships.forEach(cm => {
-        if (!allMemberships.some(m => m.group.id === cm.group.id)) {
-          allMemberships.push(cm);
-        }
-      });
-      
-      setGroupMemberships(allMemberships);
+      const memberships = await fetchUserMemberships(user.id);
+      setGroupMemberships(memberships);
     } catch (error) {
       console.error("Error fetching my groups:", error);
       toast.error("Failed to load your groups");

@@ -2,8 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * A utility function to safely check if a user is a member of a group
- * without triggering RLS recursion
+ * A utility function to check if a user is a member of a group
  */
 export const checkGroupMembership = async (userId: string, groupId: string): Promise<boolean> => {
   try {
@@ -13,10 +12,9 @@ export const checkGroupMembership = async (userId: string, groupId: string): Pro
       .eq("user_id", userId)
       .eq("group_id", groupId)
       .eq("status", "active")
-      .single();
+      .maybeSingle();
       
-    if (error && error.code !== "PGRST116") {
-      // PGRST116 is the error code for "no rows returned"
+    if (error) {
       console.error("Error checking group membership:", error);
       return false;
     }
@@ -29,8 +27,7 @@ export const checkGroupMembership = async (userId: string, groupId: string): Pro
 };
 
 /**
- * A utility function to safely check if a user is an admin of a group
- * without triggering RLS recursion
+ * A utility function to check if a user is an admin of a group
  */
 export const checkGroupAdmin = async (userId: string, groupId: string): Promise<boolean> => {
   try {
@@ -39,10 +36,14 @@ export const checkGroupAdmin = async (userId: string, groupId: string): Promise<
       .from("groups")
       .select("created_by")
       .eq("id", groupId)
-      .single();
+      .maybeSingle();
       
     if (groupData && groupData.created_by === userId) {
       return true;
+    }
+    
+    if (groupError) {
+      console.error("Error checking group creator:", groupError);
     }
     
     // Then check if user is an admin member
@@ -53,9 +54,9 @@ export const checkGroupAdmin = async (userId: string, groupId: string): Promise<
       .eq("group_id", groupId)
       .eq("status", "active")
       .eq("role", "admin")
-      .single();
+      .maybeSingle();
       
-    if (error && error.code !== "PGRST116") {
+    if (error) {
       console.error("Error checking admin status:", error);
       return false;
     }
@@ -64,5 +65,98 @@ export const checkGroupAdmin = async (userId: string, groupId: string): Promise<
   } catch (error) {
     console.error("Exception checking admin status:", error);
     return false;
+  }
+};
+
+/**
+ * A utility function to fetch all groups
+ */
+export const fetchAllGroups = async () => {
+  const { data, error } = await supabase
+    .from("groups")
+    .select("*")
+    .order("created_at", { ascending: false });
+    
+  if (error) {
+    console.error("Error fetching groups:", error);
+    throw error;
+  }
+  
+  return data || [];
+};
+
+/**
+ * A utility function to fetch groups where user is a member
+ */
+export const fetchUserMemberships = async (userId: string) => {
+  try {
+    // Get groups created by the user
+    const { data: createdGroups, error: createdError } = await supabase
+      .from("groups")
+      .select("*")
+      .eq("created_by", userId);
+      
+    if (createdError) {
+      console.error("Error fetching created groups:", createdError);
+      throw createdError;
+    }
+    
+    // Get groups where user is a member
+    const { data: membershipData, error: membershipError } = await supabase
+      .from("group_members")
+      .select("id, role, group_id")
+      .eq("user_id", userId)
+      .eq("status", "active");
+      
+    if (membershipError) {
+      console.error("Error fetching memberships:", membershipError);
+      throw membershipError;
+    }
+    
+    // If there are memberships, get the group details
+    let memberships = [];
+    if (membershipData && membershipData.length > 0) {
+      const groupIds = membershipData.map(m => m.group_id);
+      
+      const { data: groupsData, error: groupsError } = await supabase
+        .from("groups")
+        .select("*")
+        .in("id", groupIds);
+        
+      if (groupsError) {
+        console.error("Error fetching member groups:", groupsError);
+        throw groupsError;
+      }
+      
+      // Combine membership data with group data
+      memberships = membershipData.map(membership => {
+        const group = groupsData.find(g => g.id === membership.group_id);
+        return {
+          id: membership.id,
+          role: membership.role,
+          group: group || null
+        };
+      }).filter(m => m.group !== null);
+    }
+    
+    // Add created groups as admin memberships
+    const createdMemberships = (createdGroups || []).map(group => ({
+      id: `created-${group.id}`,
+      role: "admin",
+      group
+    }));
+    
+    // Combine and deduplicate
+    const allMemberships = [...memberships];
+    createdMemberships.forEach(cm => {
+      if (!allMemberships.some(m => m.group.id === cm.group.id)) {
+        allMemberships.push(cm);
+      }
+    });
+    
+    return allMemberships;
+  } catch (error) {
+    console.error("Error fetching user memberships:", error);
+    throw error;
   }
 };
