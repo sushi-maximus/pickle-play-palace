@@ -17,6 +17,7 @@ interface SelectFieldProps {
   options: SelectOption[] | { value: string; label: string }[];
   labelSuffix?: ReactNode;
   hideLabel?: boolean;
+  required?: boolean; // Added required prop
 }
 
 export const SelectField = ({
@@ -27,6 +28,7 @@ export const SelectField = ({
   options,
   labelSuffix,
   hideLabel = false,
+  required = false, // Default to false
 }: SelectFieldProps) => {
   return (
     <FormField
@@ -37,6 +39,7 @@ export const SelectField = ({
           {!hideLabel && (
             <FormLabel className="block mb-2">
               {label}
+              {required && <span className="text-destructive ml-1">*</span>}
               {labelSuffix && <span className="ml-1">{labelSuffix}</span>}
             </FormLabel>
           )}
