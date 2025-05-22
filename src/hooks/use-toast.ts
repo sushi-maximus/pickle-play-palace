@@ -151,12 +151,9 @@ function toast({ ...props }: Toast) {
   // Otherwise, use the provided duration or the default
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
-  // Only show close button if the toast won't auto-dismiss
-  // If showCloseButton is explicitly provided, use that value
-  // Otherwise, show close button only for toasts that don't auto-dismiss
-  const showCloseButton = props.showCloseButton !== undefined 
-    ? Boolean(props.showCloseButton) 
-    : (duration === null);
+  // Explicitly determine if we should show the close button
+  // Only show it if showCloseButton is true or if the toast won't auto-dismiss
+  const showCloseButton = props.showCloseButton === true || duration === null;
 
   const update = (props: ToasterToast) =>
     dispatch({

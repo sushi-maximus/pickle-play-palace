@@ -24,7 +24,7 @@ export function Toaster() {
               )}
             </div>
             {action}
-            {showCloseButton === true && <ToastClose />}
+            {showCloseButton === true ? <ToastClose /> : null}
           </Toast>
         )
       })}
