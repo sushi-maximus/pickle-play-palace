@@ -93,7 +93,7 @@ export const signUp = async (email: string, password: string, metadata: any) => 
     
     toast.success("Account created", {
       description: "Please check your email to confirm your account before logging in.",
-      duration: Infinity  // Make this toast persist until manually closed
+      duration: 10000  // Longer duration but will still auto-dismiss after 10 seconds
     });
     return { error: null, data: result.data };
   } catch (error: any) {

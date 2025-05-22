@@ -15,18 +15,15 @@ type Toast = Omit<ToasterToast, "id">
 function toast({ ...props }: Toast) {
   const id = genId()
   
-  // Determine if toast should auto-dismiss or be permanent
-  const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
+  // Always use a duration (either provided or default)
+  const duration = props.duration || DEFAULT_TOAST_DURATION;
   
-  // Auto-dismiss logic is now handled conditionally based on duration
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
-  // Set up auto-dismiss timer only for toasts with a duration
-  if (duration !== null) {
-    setTimeout(() => {
-      dismiss();
-    }, duration);
-  }
+  // Always set up auto-dismiss timer
+  setTimeout(() => {
+    dismiss();
+  }, duration);
 
   dispatch({
     type: "ADD_TOAST",
