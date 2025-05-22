@@ -71,7 +71,7 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
 
   return (
     <div className="relative mb-4 md:mb-0">
-      <AvatarWithBorder className="h-24 w-24" borderColor={borderColor}>
+      <AvatarWithBorder className="h-24 w-24" borderColor={borderColor} borderWidth={4}>
         {localAvatarUrl || avatarUrl ? (
           <AvatarImage src={localAvatarUrl || avatarUrl} alt="Profile" />
         ) : null}

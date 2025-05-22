@@ -46,7 +46,7 @@ const AvatarFallback = React.forwardRef<
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
-// Add a new Avatar component with border
+// Updated AvatarWithBorder component with proper rounded styling and black outer edge
 const AvatarWithBorder = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & { 
@@ -62,6 +62,8 @@ const AvatarWithBorder = React.forwardRef<
     style={{ 
       padding: borderWidth,
       background: borderColor || 'transparent',
+      border: '1px solid black', // Add thin black outside edge
+      boxSizing: 'content-box', // Ensure padding doesn't affect the overall dimensions
     }}
   >
     <AvatarPrimitive.Root
