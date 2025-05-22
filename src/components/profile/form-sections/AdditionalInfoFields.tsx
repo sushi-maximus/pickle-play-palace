@@ -22,10 +22,13 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
       {/* First row: DUPR Rating and DUPR Profile Link */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            DUPR Rating
+          </label>
           <InputField
             control={control}
             name="duprRating"
-            label="DUPR Rating"
+            label=""
             placeholder="4.5"
             validateFn={(value) => {
               if (!value) return { valid: true };
@@ -39,7 +42,7 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
         </div>
         
         <div className="space-y-2">
-          <div className="mb-2 flex items-center">
+          <div className="flex items-center">
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               DUPR Profile Link
             </label>
@@ -68,14 +71,19 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
       
       {/* Second row: Birthday and Phone Number */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DatePickerField
-          control={control}
-          name="birthday"
-          label="Birthday"
-        />
+        <div className="space-y-2">
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Birthday
+          </label>
+          <DatePickerField
+            control={control}
+            name="birthday"
+            label=""
+          />
+        </div>
         
         <div className="space-y-2">
-          <div className="mb-2 flex items-center">
+          <div className="flex items-center">
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               Phone Number
             </label>
