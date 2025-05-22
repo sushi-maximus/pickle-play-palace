@@ -24,7 +24,7 @@ export function Toaster() {
               )}
             </div>
             {action}
-            {/* Completely remove close button element when not explicitly enabled */}
+            {/* Only render close button when explicitly enabled */}
             {showCloseButton === true && <ToastClose />}
           </Toast>
         )

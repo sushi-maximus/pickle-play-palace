@@ -18,9 +18,8 @@ function toast({ ...props }: Toast) {
   // Determine if toast should auto-dismiss or be permanent
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
-  // CRITICAL: Set showCloseButton to false by default
-  // Only show for permanent toasts (null duration) unless explicitly overridden
-  const showCloseButton = props.showCloseButton === true ? true : false;
+  // CRITICAL: By default, showCloseButton is false unless explicitly set to true
+  const showCloseButton = props.showCloseButton === true;
   
   const update = (props: ToasterToast) =>
     dispatch({
