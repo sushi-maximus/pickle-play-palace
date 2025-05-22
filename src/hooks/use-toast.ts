@@ -1,4 +1,3 @@
-
 import * as React from "react"
 
 import type {
@@ -153,9 +152,10 @@ function toast({ ...props }: Toast) {
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
   // Only show close button if the toast won't auto-dismiss
-  // Allow override via explicit showCloseButton prop
+  // If showCloseButton is explicitly provided, use that value
+  // Otherwise, show close button only for toasts that don't auto-dismiss
   const showCloseButton = props.showCloseButton !== undefined 
-    ? props.showCloseButton 
+    ? Boolean(props.showCloseButton) 
     : (duration === null);
 
   const update = (props: ToasterToast) =>
