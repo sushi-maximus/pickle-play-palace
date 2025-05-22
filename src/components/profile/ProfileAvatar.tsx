@@ -61,7 +61,7 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
       toast({
         title: "Success",
         description: "Avatar updated successfully",
-        showCloseButton: false
+        showCloseButton: false // Explicitly set to false
       });
       
     } catch (error: any) {
@@ -70,7 +70,7 @@ export const ProfileAvatar = ({ userId, avatarUrl, getInitials }: ProfileAvatarP
         title: "Error",
         description: `Error uploading avatar: ${error.message}`,
         variant: "destructive",
-        showCloseButton: false
+        showCloseButton: false // Explicitly set to false
       });
     } finally {
       setUploading(false);
