@@ -8,6 +8,7 @@ import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { Tables } from "@/integrations/supabase/types"; // Import Tables type from Supabase
 
 const Profile = () => {
   const { user, profile, signOut, refreshProfile } = useAuth();
@@ -63,7 +64,7 @@ const Profile = () => {
                 {user && profile && (
                   <ProfileHeader 
                     user={user}
-                    profile={profile}
+                    profile={profile as Tables<"profiles">}
                     getInitials={getInitials}
                   />
                 )}
