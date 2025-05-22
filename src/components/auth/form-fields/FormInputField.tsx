@@ -23,7 +23,6 @@ export interface FormInputFieldProps<
   minLength?: number;
   className?: string;
   isPassword?: boolean;
-  "data-testid"?: string; // For the input element
 }
 
 export function FormInputField<
@@ -42,8 +41,7 @@ export function FormInputField<
     pattern,
     maxLength,
     minLength,
-    className,
-    "data-testid": dataTestId
+    className
   } = props;
 
   // If this is a password field, use the dedicated PasswordInputField component
@@ -58,7 +56,6 @@ export function FormInputField<
         disabled={disabled}
         autoComplete={autoComplete}
         className={className}
-        data-testid={dataTestId}
       />
     );
   }
@@ -91,7 +88,6 @@ export function FormInputField<
                     error ? "border-destructive/50 focus:border-destructive" : "",
                     !error && fieldState.isDirty ? "border-primary/50 focus:border-primary" : ""
                   )}
-                  data-testid={dataTestId} // Pass data-testid to the Input component
                   {...field}
                 />
                 {fieldState.isDirty && (
@@ -99,7 +95,7 @@ export function FormInputField<
                 )}
               </div>
             </FormControl>
-            <FormMessage data-testid={`${name}-error`} />
+            <FormMessage />
           </FormItem>
         );
       }}

@@ -9,9 +9,6 @@ export const signupSchema = z.object({
   lastName: z.string().min(1, "Last name is required").max(50, "Last name cannot exceed 50 characters"),
   gender: z.enum(["Male", "Female"], { required_error: "Please select your gender" }),
   skillLevel: z.enum(["2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5"], { required_error: "Please select your skill level" }),
-  agreeToTerms: z.boolean().refine(val => val === true, {
-    message: "You must agree to the terms and privacy policy",
-  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],

@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Form } from "@/components/ui/form";
+import { 
+  Form,
+} from "@/components/ui/form";
 import { useAuth } from "@/contexts/AuthContext";
 import { SignupSchema, signupSchema } from "@/lib/validation/auth";
 import { 
@@ -37,15 +39,22 @@ export const SignupForm = () => {
       lastName: "",
       gender: undefined,
       skillLevel: undefined,
-      agreeToTerms: false,
     },
-    mode: "onSubmit",
   });
 
   const onSubmit = async (values: SignupSchema) => {
     try {
       setIsLoading(true);
       setSignupError(null);
+      
+      // Log form values to ensure they're correct
+      console.log("Form values submitted:", {
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        gender: values.gender,
+        skillLevel: values.skillLevel,
+      });
       
       const userData = {
         firstName: values.firstName,
@@ -62,8 +71,9 @@ export const SignupForm = () => {
         return;
       }
       
-      // Navigate to login page on success
+      // Navigate to login page
       navigate("/login");
+      // Reset scroll position to the top of the page
       window.scrollTo(0, 0);
       
     } catch (error) {
@@ -83,7 +93,7 @@ export const SignupForm = () => {
         </CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-6 pt-4">
             {signupError && (
               <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
@@ -100,7 +110,6 @@ export const SignupForm = () => {
               className="w-full transition-all" 
               type="submit" 
               disabled={isLoading}
-              data-testid="signup-button"
             >
               {isLoading ? "Creating account..." : "Sign Up"}
             </Button>
