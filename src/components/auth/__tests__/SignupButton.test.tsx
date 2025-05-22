@@ -75,7 +75,7 @@ describe('SignupForm Button', () => {
     render(<SignupForm />);
     
     // Find the signup button by its text content
-    const signupButton = screen.getByText(/sign up/i);
+    const signupButton = screen.getByTestId("signup-button");
     
     // Verify button exists and is not disabled
     expect(signupButton).toBeInTheDocument();
