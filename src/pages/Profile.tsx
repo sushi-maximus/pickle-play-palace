@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -70,9 +69,11 @@ export default function Profile() {
                     <CardTitle className="text-xl">Personal Information</CardTitle>
                   </CardHeader>
                   <CardContent className="p-6">
-                    {user && profileData && (
-                      <ProfileForm userId={user.id} profileData={profileData} />
-                    )}
+                    <div className="w-full">
+                      {user && profileData && (
+                        <ProfileForm userId={user.id} profileData={profileData} />
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

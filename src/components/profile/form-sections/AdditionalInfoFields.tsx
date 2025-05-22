@@ -18,47 +18,53 @@ interface AdditionalInfoFieldsProps {
 
 export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => {
   return (
-    <div className="w-full mt-6">
+    <div className="space-y-6 mt-6">
       {/* Birthday and DUPR Rating Row */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
-        <DatePickerField
-          control={control}
-          name="birthday"
-          label="Birthday"
-        />
-        <InputField
-          control={control}
-          name="duprRating"
-          label="DUPR Rating"
-          placeholder="4.5"
-        />
+      <div className="grid grid-cols-2 gap-6">
+        <div className="col-span-1 w-full">
+          <DatePickerField
+            control={control}
+            name="birthday"
+            label="Birthday"
+          />
+        </div>
+        <div className="col-span-1 w-full">
+          <InputField
+            control={control}
+            name="duprRating"
+            label="DUPR Rating"
+            placeholder="4.5"
+          />
+        </div>
       </div>
       
       {/* Phone Number Row */}
-      <div className="space-y-2">
-        <div className="flex items-center">
-          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            Phone Number
-          </label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="inline-flex items-center cursor-pointer text-muted-foreground ml-1">
-                  <Info className="h-4 w-4" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>This is available to anyone in a group you are in so leave it blank if you don't want anyone to know your phone number and contact you.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+      <div className="w-full">
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Phone Number
+            </label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center cursor-pointer text-muted-foreground ml-1">
+                    <Info className="h-4 w-4" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>This is available to anyone in a group you are in so leave it blank if you don't want anyone to know your phone number and contact you.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <PhoneInputField
+            control={control}
+            name="phoneNumber"
+            label=""
+            hideLabel={true}
+          />
         </div>
-        <PhoneInputField
-          control={control}
-          name="phoneNumber"
-          label=""
-          hideLabel={true}
-        />
       </div>
     </div>
   );

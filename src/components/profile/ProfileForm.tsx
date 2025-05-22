@@ -77,15 +77,17 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <div className="max-w-3xl mx-auto">
-          <PersonalInfoFields control={form.control} />
-          <AdditionalInfoFields control={form.control} />
-          
-          <div className="flex justify-end mt-8">
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Updating..." : "Save Changes"}
-            </Button>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="w-full max-w-3xl mx-auto">
+          <div className="space-y-6">
+            <PersonalInfoFields control={form.control} />
+            <AdditionalInfoFields control={form.control} />
+            
+            <div className="flex justify-end mt-6">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Updating..." : "Save Changes"}
+              </Button>
+            </div>
           </div>
         </div>
       </form>

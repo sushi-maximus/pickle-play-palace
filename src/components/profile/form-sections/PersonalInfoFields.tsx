@@ -21,60 +21,68 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
   const genderOptions = GENDER_VALUES.map(value => ({ value, label: value }));
 
   return (
-    <div className="w-full">
+    <div className="space-y-6">
       {/* First and Last Name Row */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
-        <InputField
-          control={control}
-          name="firstName"
-          label="First Name"
-          placeholder="John"
-        />
-        <InputField
-          control={control}
-          name="lastName"
-          label="Last Name"
-          placeholder="Doe"
-        />
+      <div className="grid grid-cols-2 gap-6">
+        <div className="col-span-1 w-full">
+          <InputField
+            control={control}
+            name="firstName"
+            label="First Name"
+            placeholder="John"
+          />
+        </div>
+        <div className="col-span-1 w-full">
+          <InputField
+            control={control}
+            name="lastName"
+            label="Last Name"
+            placeholder="Doe"
+          />
+        </div>
       </div>
       
       {/* Gender and Skill Level Row */}
       <div className="grid grid-cols-2 gap-6">
-        <SelectField
-          control={control}
-          name="gender"
-          label="Gender"
-          placeholder="Select gender"
-          options={genderOptions}
-        />
-        <div className="space-y-2">
-          <div className="flex items-center">
-            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Skill Level
-            </label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="inline-flex items-center cursor-pointer text-primary ml-1">
-                    <SkillLevelGuide triggerElement={
-                      <HelpCircle className="h-4 w-4" />
-                    } />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Learn about skill levels</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+        <div className="col-span-1 w-full">
           <SelectField
             control={control}
-            name="skillLevel"
-            label=""
-            hideLabel={true}
-            placeholder="Select skill level"
-            options={skillLevelOptions}
+            name="gender"
+            label="Gender"
+            placeholder="Select gender"
+            options={genderOptions}
           />
+        </div>
+        <div className="col-span-1 w-full">
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Skill Level
+              </label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex items-center cursor-pointer text-primary ml-1">
+                      <SkillLevelGuide triggerElement={
+                        <HelpCircle className="h-4 w-4" />
+                      } />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Learn about skill levels</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <SelectField
+              control={control}
+              name="skillLevel"
+              label=""
+              hideLabel={true}
+              placeholder="Select skill level"
+              options={skillLevelOptions}
+            />
+          </div>
         </div>
       </div>
     </div>
