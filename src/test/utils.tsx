@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { AuthContext } from '@/contexts/AuthContext';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 
 // Define default mock values for AuthContext
 const defaultAuthContextValue = {
