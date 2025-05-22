@@ -33,7 +33,7 @@ export const InputField = ({
       name={name}
       render={({ field }) => (
         <FormItem className="w-full">
-          {!hideLabel && <FormLabel>{label}</FormLabel>}
+          {!hideLabel && <FormLabel className="block mb-2">{label}</FormLabel>}
           <FormControl>
             {isPassword ? (
               <div className="relative w-full">

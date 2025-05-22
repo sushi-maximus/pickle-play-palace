@@ -20,49 +20,41 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
-        <div className="w-full">
-          <InputField 
-            control={control}
-            name="firstName"
-            label="First Name"
-            placeholder="John"
-          />
-        </div>
-        <div className="w-full">
-          <InputField 
-            control={control}
-            name="lastName"
-            label="Last Name"
-            placeholder="Doe"
-          />
-        </div>
-      </div>
-      
-      <div className="w-full">
         <InputField 
           control={control}
-          name="email"
-          label="Email"
-          placeholder="you@example.com"
-          type="email"
+          name="firstName"
+          label="First Name"
+          placeholder="John"
+        />
+        <InputField 
+          control={control}
+          name="lastName"
+          label="Last Name"
+          placeholder="Doe"
         />
       </div>
+      
+      <InputField 
+        control={control}
+        name="email"
+        label="Email"
+        placeholder="you@example.com"
+        type="email"
+      />
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="w-full">
-          <SelectField
-            control={control}
-            name="gender"
-            label="Gender"
-            placeholder="Select gender"
-            options={[
-              { value: "Male", label: "Male" },
-              { value: "Female", label: "Female" }
-            ]}
-          />
-        </div>
+        <SelectField
+          control={control}
+          name="gender"
+          label="Gender"
+          placeholder="Select gender"
+          options={[
+            { value: "Male", label: "Male" },
+            { value: "Female", label: "Female" }
+          ]}
+        />
         
-        <div className="w-full space-y-2">
+        <div className="space-y-2">
           <div className="flex items-center">
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               Skill Level
