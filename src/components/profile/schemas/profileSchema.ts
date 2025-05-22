@@ -20,6 +20,7 @@ export const profileSchema = z.object({
     const parsed = parseFloat(val);
     return !isNaN(parsed) && parsed >= 2.0 && parsed <= 8.0;
   }, "DUPR rating must be between 2.0 and 8.0"),
+  phoneNumber: z.string().optional(),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;

@@ -8,7 +8,8 @@ export const formatProfileDataForUpdate = (values: ProfileFormValues) => {
     gender: values.gender,
     skill_level: values.skillLevel,
     birthday: values.birthday ? values.birthday.toISOString().split('T')[0] : null,
-    dupr_rating: values.duprRating ? parseFloat(values.duprRating) : null
+    dupr_rating: values.duprRating ? parseFloat(values.duprRating) : null,
+    phone_number: values.phoneNumber || null
   };
 };
 
@@ -21,6 +22,7 @@ export const mapProfileDataToFormValues = (profileData: any): Partial<ProfileFor
     gender: profileData.gender || "Male",
     skillLevel: profileData.skill_level || "2.5",
     birthday: profileData.birthday ? new Date(profileData.birthday) : undefined,
-    duprRating: profileData.dupr_rating ? String(profileData.dupr_rating) : ""
+    duprRating: profileData.dupr_rating ? String(profileData.dupr_rating) : "",
+    phoneNumber: profileData.phone_number || ""
   };
 };
