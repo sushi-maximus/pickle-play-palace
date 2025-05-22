@@ -9,95 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      group_members: {
-        Row: {
-          group_id: string
-          id: string
-          joined_at: string
-          role: Database["public"]["Enums"]["group_member_role"]
-          status: Database["public"]["Enums"]["group_member_status"]
-          user_id: string
-        }
-        Insert: {
-          group_id: string
-          id?: string
-          joined_at?: string
-          role?: Database["public"]["Enums"]["group_member_role"]
-          status?: Database["public"]["Enums"]["group_member_status"]
-          user_id: string
-        }
-        Update: {
-          group_id?: string
-          id?: string
-          joined_at?: string
-          role?: Database["public"]["Enums"]["group_member_role"]
-          status?: Database["public"]["Enums"]["group_member_status"]
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_members_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "group_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      groups: {
-        Row: {
-          avatar_url: string | null
-          created_at: string
-          creator_id: string
-          description: string | null
-          id: string
-          invite_code: string | null
-          is_private: boolean
-          location: string | null
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string
-          creator_id: string
-          description?: string | null
-          id?: string
-          invite_code?: string | null
-          is_private?: boolean
-          location?: string | null
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string
-          creator_id?: string
-          description?: string | null
-          id?: string
-          invite_code?: string | null
-          is_private?: boolean
-          location?: string | null
-          name?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "groups_creator_id_fkey"
-            columns: ["creator_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -178,8 +89,6 @@ export type Database = {
     }
     Enums: {
       gender: "Male" | "Female"
-      group_member_role: "admin" | "member"
-      group_member_status: "active" | "inactive" | "pending"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -296,8 +205,6 @@ export const Constants = {
   public: {
     Enums: {
       gender: ["Male", "Female"],
-      group_member_role: ["admin", "member"],
-      group_member_status: ["active", "inactive", "pending"],
     },
   },
 } as const
