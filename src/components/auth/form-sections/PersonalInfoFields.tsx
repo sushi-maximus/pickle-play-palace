@@ -54,19 +54,17 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
           ]}
         />
         
-        <SelectField
-          control={control}
-          name="skillLevel"
-          label="Skill Level"
-          placeholder="Select skill"
-          options={skillLevelOptions}
-          labelSuffix={
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Skill Level
+            </label>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="inline-flex items-center cursor-pointer text-primary">
+                  <span className="inline-flex items-center cursor-pointer text-primary ml-1">
                     <SkillLevelGuide triggerElement={
-                      <HelpCircle className="h-4 w-4 ml-1" />
+                      <HelpCircle className="h-4 w-4" />
                     } />
                   </span>
                 </TooltipTrigger>
@@ -75,8 +73,16 @@ export const PersonalInfoFields = ({ control }: PersonalInfoFieldsProps) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          }
-        />
+          </div>
+          <SelectField
+            control={control}
+            name="skillLevel"
+            label=""
+            hideLabel={true}
+            placeholder="Select skill"
+            options={skillLevelOptions}
+          />
+        </div>
       </div>
     </>
   );

@@ -2,7 +2,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control } from "react-hook-form";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 
 interface SelectOption {
   value: string;
@@ -16,6 +16,7 @@ interface SelectFieldProps {
   placeholder: string;
   options: SelectOption[] | { value: string; label: string }[];
   labelSuffix?: ReactNode;
+  hideLabel?: boolean;
 }
 
 export const SelectField = ({
@@ -25,6 +26,7 @@ export const SelectField = ({
   placeholder,
   options,
   labelSuffix,
+  hideLabel = false,
 }: SelectFieldProps) => {
   return (
     <FormField
@@ -32,10 +34,12 @@ export const SelectField = ({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>
-            {label}
-            {labelSuffix && <span className="ml-1">{labelSuffix}</span>}
-          </FormLabel>
+          {!hideLabel && (
+            <FormLabel>
+              {label}
+              {labelSuffix && <span className="ml-1">{labelSuffix}</span>}
+            </FormLabel>
+          )}
           <Select 
             onValueChange={field.onChange} 
             value={field.value}
