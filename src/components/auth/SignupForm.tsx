@@ -44,7 +44,11 @@ export const SignupForm = () => {
       agreeToTerms: false,
     },
     mode: "onSubmit", // Only validate on submit
+    reValidateMode: "onSubmit", // Only revalidate on submit
   });
+
+  console.log("Form errors:", form.formState.errors);
+  console.log("Form values:", form.getValues());
 
   const onSubmit = async (values: SignupSchema) => {
     try {

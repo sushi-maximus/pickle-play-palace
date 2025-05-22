@@ -1,4 +1,3 @@
-
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '@/test/utils';
