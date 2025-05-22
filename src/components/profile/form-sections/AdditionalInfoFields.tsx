@@ -19,25 +19,26 @@ interface AdditionalInfoFieldsProps {
 export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => {
   return (
     <div className="space-y-6">
-      {/* First row: DUPR Rating and DUPR Profile Link */}
-      <div className="grid grid-cols-2 gap-4">
-        <InputField
-          control={control}
-          name="duprRating"
-          label="DUPR Rating"
-          placeholder="4.5"
-          validateFn={(value) => {
-            if (!value) return { valid: true };
-            const parsed = parseFloat(value);
-            return {
-              valid: !isNaN(parsed) && parsed >= 2.0 && parsed <= 8.0,
-              message: "DUPR rating must be between 2.0 and 8.0"
-            };
-          }}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <InputField
+            control={control}
+            name="duprRating"
+            label="DUPR Rating"
+            placeholder="4.5"
+            validateFn={(value) => {
+              if (!value) return { valid: true };
+              const parsed = parseFloat(value);
+              return {
+                valid: !isNaN(parsed) && parsed >= 2.0 && parsed <= 8.0,
+                message: "DUPR rating must be between 2.0 and 8.0"
+              };
+            }}
+          />
+        </div>
         
-        <div className="space-y-2">
-          <div className="flex items-center">
+        <div>
+          <div className="flex items-center mb-2">
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               DUPR Profile Link
             </label>
@@ -58,23 +59,23 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
             control={control}
             name="duprProfileLink"
             label=""
-            hideLabel={true}
             type="url"
             placeholder="https://dupr.com/player/your-profile"
           />
         </div>
       </div>
       
-      {/* Second row: Birthday and Phone Number */}
-      <div className="grid grid-cols-2 gap-4">
-        <DatePickerField
-          control={control}
-          name="birthday"
-          label="Birthday"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <DatePickerField
+            control={control}
+            name="birthday"
+            label="Birthday"
+          />
+        </div>
         
-        <div className="space-y-2">
-          <div className="flex items-center">
+        <div>
+          <div className="flex items-center mb-2">
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               Phone Number
             </label>
@@ -95,7 +96,6 @@ export const AdditionalInfoFields = ({ control }: AdditionalInfoFieldsProps) => 
             control={control}
             name="phoneNumber"
             label=""
-            hideLabel={true}
           />
         </div>
       </div>
