@@ -94,9 +94,9 @@ export const signUp = async (email: string, password: string, metadata: any) => 
       console.error("Exception checking profile:", profileCheckError);
     }
     
-    toast.success("Account created", {
-      description: "Please check your email to confirm your account before logging in.",
-      duration: 10000  // 10 seconds auto-dismiss
+    // Use persistent toast for important messages that should remain visible
+    toast.persistent("Account created", {
+      description: "Please check your email to confirm your account before logging in."
     });
     return { error: null, data: result.data };
   } catch (error: any) {

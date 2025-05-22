@@ -1,6 +1,7 @@
 
 import { useTheme } from "next-themes"
-import { Toaster as Sonner, toast } from "sonner"
+import { Toaster as Sonner, toast as sonnerToast, type ExternalToast } from "sonner"
+import { ReactNode } from "react"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
@@ -29,16 +30,35 @@ const Toaster = ({ ...props }: ToasterProps) => {
 }
 
 // Extend the toast object with a version that shows the close button
-const toastWithCloseButton = (message: string, opts: any = {}) => {
-  return toast(message, {
+const toastWithCloseButton = (message: string, opts: ExternalToast = {}) => {
+  return sonnerToast(message, {
     ...opts,
     closeButton: true
   });
 };
 
-// Add the persistent method that shows a close button by default
-toast.persistent = (message: string, opts: any = {}) => {
-  return toast(message, {
+// Create our custom toast interface that extends the original
+interface CustomToast {
+  (message: ReactNode, data?: ExternalToast): string | number;
+  success: typeof sonnerToast.success;
+  error: typeof sonnerToast.error;
+  warning: typeof sonnerToast.warning;
+  info: typeof sonnerToast.info;
+  message: typeof sonnerToast.message;
+  promise: typeof sonnerToast.promise;
+  loading: typeof sonnerToast.loading;
+  dismiss: typeof sonnerToast.dismiss;
+  custom: typeof sonnerToast.custom;
+  // Add our persistent method
+  persistent: (message: ReactNode, data?: ExternalToast) => string | number;
+}
+
+// Create our custom toast object
+const toast = sonnerToast as CustomToast;
+
+// Add the persistent method
+toast.persistent = (message: ReactNode, opts: ExternalToast = {}) => {
+  return sonnerToast(message, {
     ...opts,
     duration: undefined, // No auto-dismiss
     closeButton: true, // Always show close button
