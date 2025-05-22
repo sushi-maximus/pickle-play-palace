@@ -11,8 +11,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 interface ProfileHeaderProps {
   user: User;
@@ -111,6 +112,17 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
             <div className="bg-secondary/10 text-secondary rounded-full px-3 py-1 text-sm font-medium">
               Age: {age}
             </div>
+          )}
+          {profile?.dupr_profile_link && (
+            <a 
+              href={profile.dupr_profile_link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-blue-500/10 text-blue-500 rounded-full px-3 py-1 text-sm font-medium flex items-center gap-1 hover:bg-blue-500/20 transition-colors"
+            >
+              View DUPR Profile 
+              <ExternalLink className="h-3 w-3" />
+            </a>
           )}
         </div>
       </div>
