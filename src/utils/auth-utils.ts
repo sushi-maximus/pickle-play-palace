@@ -7,6 +7,7 @@ export const signOut = async () => {
     await supabase.auth.signOut();
     toast.success("Signed out", {
       description: "You have been signed out successfully."
+      // Using default duration for auto-dismiss
     });
   } catch (error) {
     console.error("Error signing out:", error);

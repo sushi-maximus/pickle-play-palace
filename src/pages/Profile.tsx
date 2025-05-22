@@ -27,6 +27,7 @@ export default function Profile() {
 
   const handleLogout = async () => {
     await signOut();
+    // Use standard duration toast that auto-dismisses
     toast({
       title: "Success",
       description: "You have been logged out",

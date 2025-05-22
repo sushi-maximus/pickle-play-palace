@@ -18,18 +18,10 @@ function toast({ ...props }: Toast) {
   // Determine if toast should auto-dismiss or be permanent
   const duration = props.duration === null ? null : props.duration || DEFAULT_TOAST_DURATION;
   
-  // Close button functionality is now disabled through the Toaster component
-  // This property is maintained for compatibility but has no effect
-  
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
-    })
-    
+  // Auto-dismiss logic is now handled conditionally based on duration
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
-  // Auto-dismiss logic for toasts with duration
+  // Set up auto-dismiss timer only for toasts with a duration
   if (duration !== null) {
     setTimeout(() => {
       dismiss();
@@ -52,7 +44,11 @@ function toast({ ...props }: Toast) {
   return {
     id: id,
     dismiss,
-    update,
+    update: (props: ToasterToast) =>
+      dispatch({
+        type: "UPDATE_TOAST",
+        toast: { ...props, id },
+      }),
   }
 }
 
