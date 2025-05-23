@@ -10,3 +10,4 @@ export * from "./useDeleteComment";
 export * from "./useCommentReactions";
 export * from "./usePostReactions";
 export * from "./types";
+export * from "./types/commentTypes";
