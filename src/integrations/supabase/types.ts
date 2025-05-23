@@ -14,6 +14,7 @@ export type Database = {
           group_id: string
           id: string
           joined_at: string
+          request_message: string | null
           role: Database["public"]["Enums"]["group_member_role"]
           status: Database["public"]["Enums"]["group_member_status"]
           user_id: string
@@ -22,6 +23,7 @@ export type Database = {
           group_id: string
           id?: string
           joined_at?: string
+          request_message?: string | null
           role?: Database["public"]["Enums"]["group_member_role"]
           status?: Database["public"]["Enums"]["group_member_status"]
           user_id: string
@@ -30,6 +32,7 @@ export type Database = {
           group_id?: string
           id?: string
           joined_at?: string
+          request_message?: string | null
           role?: Database["public"]["Enums"]["group_member_role"]
           status?: Database["public"]["Enums"]["group_member_status"]
           user_id?: string
@@ -185,7 +188,7 @@ export type Database = {
     Enums: {
       gender: "Male" | "Female"
       group_member_role: "admin" | "member"
-      group_member_status: "invited" | "active" | "declined"
+      group_member_status: "invited" | "pending" | "active" | "declined"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -303,7 +306,7 @@ export const Constants = {
     Enums: {
       gender: ["Male", "Female"],
       group_member_role: ["admin", "member"],
-      group_member_status: ["invited", "active", "declined"],
+      group_member_status: ["invited", "pending", "active", "declined"],
     },
   },
 } as const
