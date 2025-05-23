@@ -4,7 +4,8 @@ import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
-import { Settings } from "lucide-react";
+import { GroupPostsFeed } from "@/components/groups/posts/GroupPostsFeed";
+import { MessageSquare, Settings, Users } from "lucide-react";
 
 interface GroupDetailsTabsProps {
   group: any;
@@ -32,14 +33,19 @@ export const GroupDetailsTabs = ({
     if (membershipStatus.isAdmin && hasPendingRequests) {
       return "requests";
     }
-    return "members";
+    return "posts";
   };
 
   return (
     <Tabs defaultValue={getDefaultTab()} className="w-full">
       <TabsList className="mb-4">
-        <TabsTrigger value="members">
-          Members ({group?.member_count || 0})
+        <TabsTrigger value="posts" className="flex items-center gap-1">
+          <MessageSquare className="h-4 w-4" />
+          <span>Posts</span>
+        </TabsTrigger>
+        <TabsTrigger value="members" className="flex items-center gap-1">
+          <Users className="h-4 w-4" />
+          <span>Members ({group?.member_count || 0})</span>
         </TabsTrigger>
         {membershipStatus.isAdmin && (
           <TabsTrigger value="requests">Requests</TabsTrigger>
@@ -52,6 +58,14 @@ export const GroupDetailsTabs = ({
           </TabsTrigger>
         )}
       </TabsList>
+
+      <TabsContent value="posts">
+        <GroupPostsFeed 
+          groupId={group?.id} 
+          user={user}
+          membershipStatus={membershipStatus}
+        />
+      </TabsContent>
 
       <TabsContent value="members">
         <h3 className="text-lg font-medium mb-4">Group Members</h3>
