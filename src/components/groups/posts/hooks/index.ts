@@ -8,14 +8,12 @@ export * from "./useComments";
 export * from "./useAddComment";
 export * from "./useEditComment";
 export * from "./useDeleteComment";
-export * from "./useCommentReactions";
 export * from "./usePostReactions";
 
-// Export types - using more specific exports to avoid naming conflicts
-// Export the base types
+// Export the base types directly
 export * from "./types";
 
-// Export reaction types with their namespace
+// Export reaction types with their namespace to avoid conflicts
 export type {
   PostReactionType,
   UsePostReactionsProps,
@@ -23,4 +21,13 @@ export type {
 } from "./types/reactionTypes";
 
 // Export comment types with their namespace
-export * from "./types/commentTypes";
+export type {
+  ReactionType as CommentReactionType,
+  Comment,
+  UseCommentsResult,
+  OptimisticComment
+} from "./types/commentTypes";
+
+// Re-export useCommentReactions but rename the ReactionType to avoid conflict
+export { useCommentReactions } from "./useCommentReactions";
+export type { ReactionType } from "./useCommentReactions";
