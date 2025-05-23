@@ -15,7 +15,7 @@ type PostReactionCountsResponse = {
   error: any;
 };
 
-// Define the parameters type for the RPC function
+// Define the parameters type for the RPC function with proper typing
 interface PostReactionCountsParams {
   post_id: string;
 }
@@ -60,8 +60,7 @@ export const usePostReactions = ({
           
           // Re-fetch reaction counts since we don't know from the event which type changed
           try {
-            // Fix: Explicitly cast the parameters to any to avoid TypeScript error
-            const params: any = { post_id: postId };
+            const params: PostReactionCountsParams = { post_id: postId };
             const { data: countData, error } = await supabase.rpc(
               'get_post_reaction_counts', 
               params
