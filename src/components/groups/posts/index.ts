@@ -5,3 +5,4 @@ export * from './GroupPostsFeed';
 export * from './GroupPostsLoading';
 export * from './GroupPostsEmpty';
 export * from './hooks/useGroupPosts';
+export * from './hooks/useCreatePost';

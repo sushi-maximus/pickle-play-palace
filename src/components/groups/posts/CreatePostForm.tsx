@@ -1,12 +1,10 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImagePlus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useCreatePost } from "./hooks/useCreatePost";
 
 interface CreatePostFormProps {
   groupId: string;
@@ -20,46 +18,20 @@ interface CreatePostFormProps {
 }
 
 export const CreatePostForm = ({ groupId, user, onPostCreated }: CreatePostFormProps) => {
-  const [content, setContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   if (!user) {
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!content.trim()) {
-      toast.error("Post content cannot be empty");
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      const { error } = await supabase
-        .from("posts")
-        .insert({
-          group_id: groupId,
-          user_id: user.id,
-          content: content.trim()
-        });
-        
-      if (error) {
-        throw error;
-      }
-      
-      toast.success("Post created successfully");
-      setContent("");
-      onPostCreated?.();
-    } catch (error) {
-      console.error("Error creating post:", error);
-      toast.error("Failed to create post. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    content,
+    setContent,
+    isSubmitting,
+    handleSubmit
+  } = useCreatePost({
+    groupId,
+    userId: user.id,
+    onPostCreated
+  });
   
   return (
     <Card className="mb-6">
