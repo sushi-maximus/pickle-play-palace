@@ -25,6 +25,9 @@ export const FeedHeader = memo(({
   toggleAutoRefresh,
   handleRefresh,
 }: FeedHeaderProps) => {
+  // Determine if any loading state is active
+  const isLoading = loading || isRefreshing;
+  
   return (
     <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent flex flex-row items-center justify-between">
       <div className="flex items-center gap-2">
@@ -56,7 +59,7 @@ export const FeedHeader = memo(({
                   id="auto-refresh"
                   checked={isAutoRefreshEnabled}
                   onCheckedChange={toggleAutoRefresh}
-                  disabled={loading}
+                  disabled={loading} // Only disable during initial loading, not during background refresh
                   aria-label={isAutoRefreshEnabled ? "Disable auto-refresh" : "Enable auto-refresh"}
                 />
               </div>
@@ -74,24 +77,34 @@ export const FeedHeader = memo(({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
-                variant="ghost" 
+                variant={isLoading ? "outline" : "ghost"} 
                 size="sm" 
                 onClick={handleRefresh}
-                disabled={isRefreshing || loading}
-                className="hover:bg-primary/10"
+                disabled={isLoading}
+                className={cn(
+                  "hover:bg-primary/10 transition-all",
+                  isLoading && "border-primary/30"
+                )}
               >
-                {loading || isRefreshing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                {isLoading ? (
+                  <Loader2 className={cn(
+                    "h-4 w-4 animate-spin",
+                    isRefreshing && "text-primary" // Highlight with primary color during background refresh
+                  )} />
                 ) : (
                   <RefreshCw className="h-4 w-4" />
                 )}
-                <span className="ml-1 sr-only md:not-sr-only">Refresh</span>
+                <span className="ml-1 sr-only md:not-sr-only">
+                  {isRefreshing ? "Refreshing" : isLoading ? "Loading" : "Refresh"}
+                </span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              {loading || isRefreshing
-                ? "Content is currently refreshing"
-                : "Click to refresh content manually"}
+              {isRefreshing
+                ? "Content is refreshing in the background"
+                : loading
+                  ? "Content is loading"
+                  : "Click to refresh content manually"}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
