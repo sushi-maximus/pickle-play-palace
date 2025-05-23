@@ -13,16 +13,17 @@ type PostReactionCountsResponse = {
 };
 
 // Define the parameters type for the RPC function
-type PostReactionCountsParams = {
+interface PostReactionCountsParams {
   post_id: string;
-};
+}
 
 export const fetchPostReactionCounts = async (postId: string): Promise<Record<PostReactionType, number>> => {
   try {
     // Try to use the SQL function if it exists
-    const { data, error } = await supabase.rpc('get_post_reaction_counts', { 
-      post_id: postId 
-    } as PostReactionCountsParams) as PostReactionCountsResponse;
+    const { data, error } = await supabase.rpc(
+      'get_post_reaction_counts', 
+      { post_id: postId }
+    ) as PostReactionCountsResponse;
     
     if (!error && data) {
       return {

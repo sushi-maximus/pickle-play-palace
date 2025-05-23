@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,9 +15,9 @@ type PostReactionCountsResponse = {
 };
 
 // Define the parameters type for the RPC function
-type PostReactionCountsParams = {
+interface PostReactionCountsParams {
   post_id: string;
-};
+}
 
 export type { PostReactionType } from "./types/reactionTypes";
 
@@ -60,9 +59,10 @@ export const usePostReactions = ({
           
           // Re-fetch reaction counts since we don't know from the event which type changed
           try {
-            const { data: countData, error } = await supabase.rpc('get_post_reaction_counts', { 
-              post_id: postId 
-            } as PostReactionCountsParams) as PostReactionCountsResponse;
+            const { data: countData, error } = await supabase.rpc(
+              'get_post_reaction_counts', 
+              { post_id: postId }
+            ) as PostReactionCountsResponse;
             
             if (!error && countData) {
               setReactions({
@@ -99,7 +99,6 @@ export const usePostReactions = ({
               });
             }
             
-            // If current user triggered this change, update their reactions
             if (userId && (payload.new as any)?.user_id === userId) {
               const reactionType = (payload.new as any)?.reaction_type as PostReactionType;
               
