@@ -4,7 +4,7 @@ import { AlertCircle, Settings } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import { updateGroup } from "@/components/groups/utils/groupDetailsUtils";
+import { updateGroup } from "@/components/groups/utils"; // Updated import path
 import { updateGroupSchema, UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
 import { toast } from "sonner";
 import { BasicInfoCard, AdvancedSettingsCard } from "./settings";

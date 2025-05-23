@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getSkillLevelColor } from "@/lib/constants/skill-levels";
 import { toast } from "sonner";
-import { promoteMemberToAdmin } from "../utils/groupDetailsUtils";
+import { promoteMemberToAdmin } from "../utils"; // Updated import path
 import { MemberHoverCardProps } from "./types";
 
 export const MemberHoverCard = ({

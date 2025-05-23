@@ -2,7 +2,7 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { updateGroupAvatar } from "@/components/groups/utils/groupDetailsUtils";
+import { updateGroupAvatar } from "@/components/groups/utils"; // Updated import path
 import { Upload, X, Check, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";

@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { removeMemberFromGroup } from "../utils/groupDetailsUtils";
+import { removeMemberFromGroup } from "../utils"; // Updated import path
 import { RemoveMemberDialogProps } from "./types";
 
 export const RemoveMemberDialog = ({
