@@ -1,4 +1,3 @@
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react";
@@ -63,13 +62,7 @@ export const MobileChatFeed = ({
 
   return (
     <div className="flex-1 px-4 py-6 overflow-y-auto">
-      {refreshing && (
-        <div className="text-center py-2">
-          <div className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
-      
-      {/* Add Post Creation Form for members */}
+      {/* Post Creation Form at the very top for members */}
       {membershipStatus?.isMember && user && groupId && (
         <div className="mb-6">
           <CreatePostForm 
@@ -78,6 +71,12 @@ export const MobileChatFeed = ({
             onPostCreated={onPostCreated}
             refreshing={refreshing}
           />
+        </div>
+      )}
+      
+      {refreshing && (
+        <div className="text-center py-2 mb-4">
+          <div className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
       
