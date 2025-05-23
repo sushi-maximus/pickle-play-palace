@@ -15,3 +15,4 @@ export * from './hooks/useComments';
 export * from './hooks/useAddComment';
 export * from './hooks/useCommentReactions';
 export * from './hooks/usePostReactions';
+export * from './post-card';
