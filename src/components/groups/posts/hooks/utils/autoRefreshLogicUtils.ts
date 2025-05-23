@@ -15,6 +15,7 @@ export const useAutoRefreshLogic = (
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const initialRefreshCompletedRef = useRef<boolean>(false);
   
+  // Single useEffect for setting up and cleaning up the refresh interval
   useEffect(() => {
     // Clear existing interval when autoRefresh state changes
     if (refreshIntervalRef.current) {
@@ -26,21 +27,26 @@ export const useAutoRefreshLogic = (
     if (isAutoRefreshEnabled) {
       console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
       
-      // Execute one refresh immediately when enabled (if not loading and not already done)
-      if (!isLoading && isVisibleRef.current && !userInteractingRef.current && !initialRefreshCompletedRef.current) {
-        console.log('Initial refresh when auto-refresh enabled');
-        initialRefreshCompletedRef.current = true;
-        setLastAutoRefresh(new Date());
-        setNextRefreshIn(interval / 1000);
-        refreshFunction().catch(error => {
-          console.error('Error during initial auto-refresh:', error);
-        });
-      }
-      
       // Set up the recurring interval
       refreshIntervalRef.current = setInterval(() => {
         // Only proceed if all conditions are met
         if (
+          isComponentMountedRef.current && 
+          isAutoRefreshEnabled &&
+          !isLoading && 
+          !userInteractingRef.current && 
+          isVisibleRef.current &&
+          !initialRefreshCompletedRef.current
+        ) {
+          console.log('Initial refresh when auto-refresh enabled');
+          initialRefreshCompletedRef.current = true;
+          setLastAutoRefresh(new Date());
+          setNextRefreshIn(interval / 1000);
+          refreshFunction().catch(error => {
+            console.error('Error during initial auto-refresh:', error);
+          });
+        } 
+        else if (
           isComponentMountedRef.current && 
           isAutoRefreshEnabled &&
           !isLoading && 
@@ -72,6 +78,11 @@ export const useAutoRefreshLogic = (
       }, interval);
     }
 
+    // Reset initialRefreshCompletedRef when auto-refresh is toggled
+    if (!isAutoRefreshEnabled) {
+      initialRefreshCompletedRef.current = false;
+    }
+
     return () => {
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
@@ -86,13 +97,6 @@ export const useAutoRefreshLogic = (
     setLastAutoRefresh,
     setNextRefreshIn
   ]);
-
-  // Reset the initial refresh flag when auto-refresh is disabled
-  useEffect(() => {
-    if (!isAutoRefreshEnabled) {
-      initialRefreshCompletedRef.current = false;
-    }
-  }, [isAutoRefreshEnabled]);
 
   return { refreshIntervalRef };
 };

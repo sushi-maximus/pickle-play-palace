@@ -18,6 +18,12 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
   useEffect(() => {
     console.log("RefreshProgressIndicator - refreshing state changed to:", refreshing);
     
+    // Clean up any existing interval
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
+    
     // When refreshing starts and we're not already in a refresh cycle
     if (refreshing && !isRefreshingRef.current) {
       console.log("RefreshProgressIndicator - starting progress animation");
@@ -28,11 +34,6 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       
       // Reset progress to start from beginning
       setProgress(0);
-      
-      // Clear any existing interval
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
       
       // Start increasing the progress
       const newIntervalId = setInterval(() => {
@@ -46,24 +47,11 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       }, 100);
       
       setIntervalId(newIntervalId);
-      
-      return () => {
-        if (newIntervalId) {
-          console.log("RefreshProgressIndicator - clearing progress interval (refresh started)");
-          clearInterval(newIntervalId);
-        }
-      };
     } 
     // When refreshing stops
     else if (!refreshing && isRefreshingRef.current) {
       console.log("RefreshProgressIndicator - completing progress animation");
       isRefreshingRef.current = false;
-      
-      // Clear the progress interval
-      if (intervalId) {
-        clearInterval(intervalId);
-        setIntervalId(null);
-      }
       
       // Quickly fill to 100%
       setProgress(100);
@@ -74,17 +62,15 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
         setVisible(false);
         
         // Reset progress after fade out animation completes
-        const resetTimeout = setTimeout(() => {
+        setTimeout(() => {
           console.log("RefreshProgressIndicator - resetting progress");
           setProgress(0);
         }, 500);
-        
-        return () => clearTimeout(resetTimeout);
       }, 600);
       
       return () => clearTimeout(hideTimeout);
     }
-  }, [refreshing, intervalId]);
+  }, [refreshing]);
 
   // Clean up on unmount
   useEffect(() => {

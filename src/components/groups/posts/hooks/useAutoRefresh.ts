@@ -23,24 +23,24 @@ export const useAutoRefresh = ({
   // Ref to prevent overlapping refreshes
   const isRefreshingRef = useRef(false);
 
-  // Track visibility using Page Visibility API
+  // Track visibility using Page Visibility API - ALWAYS call hooks at the top level
   const { isVisibleRef } = useVisibilityTracking();
   
-  // Track user interaction
+  // Track user interaction - ALWAYS call hooks at the top level
   const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
   
-  // Setup countdown timer
+  // Setup countdown timer - ALWAYS call hooks at the top level
   const { countdownIntervalRef } = useCountdownTimer(
     isAutoRefreshEnabled, 
-    loading || isRefreshing, // Consider both loading and isRefreshing
+    loading || isRefreshing,
     interval, 
     setNextRefreshIn
   );
   
-  // Setup auto-refresh logic
+  // Setup auto-refresh logic - ALWAYS call hooks at the top level
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
-    loading || isRefreshing, // Consider both loading and isRefreshing
+    loading || isRefreshing,
     interval,
     async () => {
       // Prevent overlapping refreshes
@@ -77,7 +77,7 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
 
-  // Component mount/unmount lifecycle
+  // Component mount/unmount lifecycle - need to create this useEffect before the debug one to maintain hook order
   useEffect(() => {
     isComponentMountedRef.current = true;
     
