@@ -8,10 +8,12 @@ import { GroupDetailsContainer } from "@/components/groups/details/GroupDetailsC
 import { GroupPostsFeed } from "@/components/groups/posts/GroupPostsFeed";
 import { GroupDetailsHeader } from "@/components/groups/GroupDetailsHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState("posts");
   
   const breadcrumbItems = [
     { label: "Groups", href: "/groups" },
@@ -32,27 +34,35 @@ const GroupDetails = () => {
             breadcrumbItems={breadcrumbItems} 
           />
           
-          <Tabs defaultValue="posts" className="w-full mt-6">
+          <Tabs 
+            defaultValue="posts" 
+            className="w-full mt-6"
+            onValueChange={(value) => setActiveTab(value)}
+          >
             <TabsList className="mb-6 w-full justify-start bg-card border shadow-sm">
               <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
               <TabsTrigger value="details" className="flex-1">Group Details</TabsTrigger>
             </TabsList>
             
             <TabsContent value="posts" className="mt-0">
-              <GroupPostsFeed
-                groupId={id}
-                user={user}
-                membershipStatus={{ isMember: true, isPending: false, isAdmin: false }}
-                standalone={true}
-              />
+              {activeTab === "posts" && (
+                <GroupPostsFeed
+                  groupId={id}
+                  user={user}
+                  membershipStatus={{ isMember: true, isPending: false, isAdmin: false }}
+                  standalone={true}
+                />
+              )}
             </TabsContent>
             
             <TabsContent value="details" className="mt-0">
-              <GroupDetailsContainer
-                id={id}
-                user={user}
-                breadcrumbItems={breadcrumbItems}
-              />
+              {activeTab === "details" && (
+                <GroupDetailsContainer
+                  id={id}
+                  user={user}
+                  breadcrumbItems={breadcrumbItems}
+                />
+              )}
             </TabsContent>
           </Tabs>
         </div>
