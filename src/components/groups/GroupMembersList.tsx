@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { User } from "lucide-react";
@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { getSkillLevelColor } from "@/lib/constants/skill-levels";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type GroupMember = {
   id: string;
@@ -36,6 +37,8 @@ type GroupMembersListProps = {
 
 export const GroupMembersList = ({ members, className }: GroupMembersListProps) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const [openMemberId, setOpenMemberId] = useState<string | null>(null);
 
   if (!members || members.length === 0) {
     return (
@@ -73,10 +76,21 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
   return (
     <div className={`space-y-4 ${className || ""}`}>
       {sortedMembers.map((member) => (
-        <HoverCard key={member.id}>
+        <HoverCard 
+          key={member.id} 
+          open={openMemberId === member.id}
+          onOpenChange={(open) => {
+            if (open) {
+              setOpenMemberId(member.id);
+            } else {
+              setOpenMemberId(null);
+            }
+          }}
+        >
           <HoverCardTrigger asChild>
             <div 
               className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/10 cursor-pointer transition-colors"
+              onClick={() => setOpenMemberId(openMemberId === member.id ? null : member.id)}
             >
               <div className="flex items-center space-x-3">
                 <Avatar className="h-10 w-10">
@@ -149,7 +163,10 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => navigate(`/profile/${member.user_id}`)}
+                  onClick={() => {
+                    setOpenMemberId(null);
+                    navigate(`/profile/${member.user_id}`);
+                  }}
                 >
                   View Full Profile
                 </Button>
