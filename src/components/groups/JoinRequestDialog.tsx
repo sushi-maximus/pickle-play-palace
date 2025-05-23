@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { requestToJoinGroup } from "./services/groupService";
+import { requestToJoinGroup } from "./services/membershipService";
 import { toast } from "sonner";
 
 interface JoinRequestDialogProps {
@@ -64,7 +64,7 @@ export const JoinRequestDialog = ({
         
         <div className="my-4">
           <label htmlFor="message" className="text-sm font-medium mb-2 block">
-            Message (Optional)
+            Introduce yourself to the group admins...
           </label>
           <Textarea
             id="message"
