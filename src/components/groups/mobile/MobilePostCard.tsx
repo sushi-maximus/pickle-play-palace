@@ -1,10 +1,13 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MessageCircle } from "lucide-react";
 import { usePostReactions2 } from "../posts/hooks/usePostReactions2";
 import { PostHeader } from "../posts/post-card/PostHeader";
 import { PostContent } from "../posts/post-card/PostContent";
 import { PostReactions2 } from "../posts/post-card/PostReactions2";
+import { CommentsSection2 } from "../posts/post-card/CommentsSection2";
 
 interface MobilePostCardProps {
   post: any;
@@ -33,6 +36,7 @@ export const MobilePostCard = ({
   onSaveEditing,
   onDeleteClick
 }: MobilePostCardProps) => {
+  const [showComments, setShowComments] = useState(false);
   const isAuthor = user?.id === post.user?.id;
   const isEditingThisPost = isEditing && currentPostId === post.id;
 
@@ -64,16 +68,35 @@ export const MobilePostCard = ({
       {!isEditingThisPost && (
         <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4">
           <div className="w-full ml-12 md:ml-14">
-            <PostReactions2Component 
-              postId={post.id}
-              userId={user?.id}
-              initialThumbsUp={post.reactions?.thumbsup || 0}
-              initialThumbsDown={post.reactions?.thumbsdown || 0}
-              initialUserThumbsUp={post.user_reactions?.thumbsup || false}
-              initialUserThumbsDown={post.user_reactions?.thumbsdown || false}
-            />
+            <div className="flex items-center justify-between">
+              <PostReactions2Component 
+                postId={post.id}
+                userId={user?.id}
+                initialThumbsUp={post.reactions?.thumbsup || 0}
+                initialThumbsDown={post.reactions?.thumbsdown || 0}
+                initialUserThumbsUp={post.user_reactions?.thumbsup || false}
+                initialUserThumbsDown={post.user_reactions?.thumbsdown || false}
+              />
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-auto px-2 md:h-9 md:px-3 flex items-center gap-1 md:gap-2 text-gray-600 hover:text-primary hover:bg-primary/10"
+                onClick={() => setShowComments(!showComments)}
+              >
+                <MessageCircle className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="text-xs md:text-sm font-medium">
+                  {post.comments_count > 0 ? post.comments_count : ""}
+                </span>
+              </Button>
+            </div>
           </div>
         </CardFooter>
+      )}
+
+      {/* Comments Section */}
+      {showComments && !isEditingThisPost && (
+        <CommentsSection2 postId={post.id} user={user} />
       )}
     </Card>
   );
