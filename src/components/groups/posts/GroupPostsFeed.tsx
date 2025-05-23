@@ -24,18 +24,10 @@ export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFe
     try {
       setLoading(true);
       
-      // Get posts for this group
+      // Get posts for this group using two separate queries instead of joins
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
-        .select(`
-          *,
-          user:user_id (
-            id,
-            first_name,
-            last_name,
-            avatar_url
-          )
-        `)
+        .select(`*`)
         .eq("group_id", groupId)
         .order("created_at", { ascending: false });
 
@@ -46,12 +38,24 @@ export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFe
       // If no posts, return early
       if (!postsData || postsData.length === 0) {
         setPosts([]);
+        setLoading(false);
         return;
       }
 
-      // Get reactions counts for these posts
-      const postsWithCounts = await Promise.all(
+      // For each post, fetch the user info separately
+      const postsWithData = await Promise.all(
         postsData.map(async (post) => {
+          // Fetch user data
+          const { data: userData, error: userError } = await supabase
+            .from("profiles")
+            .select("id, first_name, last_name, avatar_url")
+            .eq("id", post.user_id)
+            .single();
+
+          if (userError) {
+            console.error("Error fetching user data:", userError);
+          }
+
           // Count total reactions
           const { count: reactionsCount, error: reactionsError } = await supabase
             .from("reactions")
@@ -82,6 +86,11 @@ export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFe
 
           return {
             ...post,
+            user: userData || { 
+              id: post.user_id, 
+              first_name: "Unknown", 
+              last_name: "User" 
+            },
             reactions_count: reactionsCount || 0,
             comments_count: commentsCount || 0,
             user_has_reacted: !!userReaction
@@ -89,7 +98,7 @@ export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFe
         })
       );
 
-      setPosts(postsWithCounts);
+      setPosts(postsWithData);
     } catch (err) {
       console.error("Error fetching posts:", err);
       setError("Failed to load posts. Please try again later.");
@@ -136,6 +145,9 @@ export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFe
             reaction_type: "like"
           });
       }
+      
+      // Refresh posts to update reactions
+      fetchPosts();
     } catch (err) {
       console.error("Error toggling reaction:", err);
     }

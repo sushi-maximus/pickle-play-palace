@@ -46,8 +46,8 @@ export const GroupPostCard = ({ post, onReactionToggle }: GroupPostCardProps) =>
                 <AvatarImage src={post.user.avatar_url} alt={`${post.user.first_name} ${post.user.last_name}`} />
               ) : (
                 <AvatarFallback>
-                  {post.user.first_name[0]}
-                  {post.user.last_name[0]}
+                  {post.user.first_name?.[0] || '?'}
+                  {post.user.last_name?.[0] || '?'}
                 </AvatarFallback>
               )}
             </Avatar>
