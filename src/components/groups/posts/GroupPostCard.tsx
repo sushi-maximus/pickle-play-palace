@@ -101,60 +101,62 @@ export const GroupPostCard = ({
   const isEditingThisPost = isEditing && currentPostId === post.id;
 
   return (
-    <Card className="mb-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/30 overflow-visible">
-      <CardHeader className="p-4 pb-3 overflow-visible relative">
-        <PostHeader 
-          post={post}
-          isAuthor={isAuthor}
-          isEditing={isEditingThisPost}
-          onStartEditing={handleStartEditing}
-          onDeleteClick={handleDeleteClick}
-        />
-      </CardHeader>
-      
-      <CardContent className="px-4 pb-4">
-        <PostContent 
-          content={post.content}
-          mediaUrls={post.media_urls}
-          isEditing={isEditingThisPost}
-          editableContent={editableContent}
-          setEditableContent={setEditableContent}
-          onCancelEditing={cancelEditing}
-          onSaveEditing={handleUpdate}
-          isEditSubmitting={isEditSubmitting}
-        />
-      </CardContent>
-      
-      {!isEditingThisPost && (
-        <CardFooter className="border-t border-gray-100 pt-3 px-4 pb-4 flex flex-col">
-          <div className="w-full flex flex-col space-y-2">
-            <div className="w-full flex justify-start">
-              <PostReactions 
-                reactions={reactions}
-                userReactions={userReactions}
-                isSubmitting={isSubmitting}
-                onReactionToggle={handleReactionToggle}
-                currentUserId={currentUserId}
-              />
+    <div className="mb-4">
+      <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/30">
+        <CardHeader className="p-4 pb-3">
+          <PostHeader 
+            post={post}
+            isAuthor={isAuthor}
+            isEditing={isEditingThisPost}
+            onStartEditing={handleStartEditing}
+            onDeleteClick={handleDeleteClick}
+          />
+        </CardHeader>
+        
+        <CardContent className="px-4 pb-4">
+          <PostContent 
+            content={post.content}
+            mediaUrls={post.media_urls}
+            isEditing={isEditingThisPost}
+            editableContent={editableContent}
+            setEditableContent={setEditableContent}
+            onCancelEditing={cancelEditing}
+            onSaveEditing={handleUpdate}
+            isEditSubmitting={isEditSubmitting}
+          />
+        </CardContent>
+        
+        {!isEditingThisPost && (
+          <CardFooter className="border-t border-gray-100 pt-3 px-4 pb-4 flex flex-col">
+            <div className="w-full flex flex-col space-y-2">
+              <div className="w-full flex justify-start">
+                <PostReactions 
+                  reactions={reactions}
+                  userReactions={userReactions}
+                  isSubmitting={isSubmitting}
+                  onReactionToggle={handleReactionToggle}
+                  currentUserId={currentUserId}
+                />
+              </div>
+              
+              <div className="w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
+                <CommentsSection 
+                  postId={post.id}
+                  userId={currentUserId}
+                  commentsCount={post.comments_count || 0}
+                />
+              </div>
             </div>
-            
-            <div className="w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
-              <CommentsSection 
-                postId={post.id}
-                userId={currentUserId}
-                commentsCount={post.comments_count || 0}
-              />
-            </div>
-          </div>
-        </CardFooter>
-      )}
+          </CardFooter>
+        )}
 
-      <DeletePostDialog 
-        isOpen={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirmDelete={confirmDelete}
-        isDeleting={isDeleting}
-      />
-    </Card>
+        <DeletePostDialog 
+          isOpen={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          onConfirmDelete={confirmDelete}
+          isDeleting={isDeleting}
+        />
+      </Card>
+    </div>
   );
 };

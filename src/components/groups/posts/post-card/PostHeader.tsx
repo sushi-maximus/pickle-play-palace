@@ -8,7 +8,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
+  DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
 
 interface PostHeaderProps {
@@ -41,8 +42,8 @@ export const PostHeader = ({
   const isEdited = post.created_at !== post.updated_at;
   
   return (
-    <div className="flex items-center justify-between w-full relative">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-3 flex-1">
         <Avatar className="h-10 w-10">
           {post.user.avatar_url ? (
             <AvatarImage src={post.user.avatar_url} alt={displayName} />
@@ -60,40 +61,43 @@ export const PostHeader = ({
       </div>
       
       {isAuthor && !isEditing && (
-        <div className="absolute right-0 top-0">
+        <div className="flex-shrink-0 ml-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="h-8 w-8 rounded-full hover:bg-gray-100 shrink-0"
+                className="h-8 w-8 rounded-full hover:bg-gray-100"
               >
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Post options</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end" 
-              side="bottom"
-              className="w-40"
-              sideOffset={4}
-            >
-              <DropdownMenuItem 
-                onClick={onStartEditing}
-                className="cursor-pointer"
+            <DropdownMenuPortal>
+              <DropdownMenuContent 
+                align="end" 
+                side="bottom"
+                className="w-40 z-[10000]"
+                sideOffset={8}
+                avoidCollisions={true}
               >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit post
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={onDeleteClick}
-                className="cursor-pointer text-red-600 focus:text-red-600"
-              >
-                <Trash className="mr-2 h-4 w-4" />
-                Delete post
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+                <DropdownMenuItem 
+                  onClick={onStartEditing}
+                  className="cursor-pointer"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit post
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={onDeleteClick}
+                  className="cursor-pointer text-red-600 focus:text-red-600"
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete post
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuPortal>
           </DropdownMenu>
         </div>
       )}
