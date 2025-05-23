@@ -36,7 +36,7 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
       is_private: group.is_private || false,
       skill_level_min: group.skill_level_min || "",
       skill_level_max: group.skill_level_max || "",
-      max_members: group.max_members || 0,
+      max_members: group.max_members || undefined,
     },
   });
 
@@ -69,10 +69,44 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
 
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
-          <CardDescription>
-            Manage the basic details of your group.
-          </CardDescription>
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            <div className="flex-shrink-0">
+              {showAvatarUpload ? (
+                <GroupAvatarUpload
+                  groupId={group.id}
+                  onSuccess={handleAvatarUploaded}
+                  onCancel={() => setShowAvatarUpload(false)}
+                />
+              ) : (
+                <div className="flex flex-col items-center">
+                  <Avatar className="h-24 w-24 cursor-pointer" onClick={() => setShowAvatarUpload(true)}>
+                    {group.avatar_url ? (
+                      <AvatarImage src={group.avatar_url} alt={group.name} />
+                    ) : (
+                      <AvatarFallback className="text-2xl">
+                        {group.name?.substring(0, 2).toUpperCase() || "GP"}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="mt-2" 
+                    onClick={() => setShowAvatarUpload(true)}
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    Change Avatar
+                  </Button>
+                </div>
+              )}
+            </div>
+            <div className="flex-grow">
+              <CardTitle>Basic Information</CardTitle>
+              <CardDescription>
+                Manage the basic details of your group.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -221,11 +255,15 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
                           max="1000"
                           placeholder="Enter maximum number of members"
                           {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          value={field.value === undefined || field.value === 0 ? "" : field.value}
+                          onChange={(e) => {
+                            const value = e.target.value === "" ? undefined : Number(e.target.value);
+                            field.onChange(value);
+                          }}
                         />
                       </FormControl>
                       <FormDescription>
-                        Set the maximum number of members allowed in this group
+                        Set the maximum number of members allowed in this group (leave empty for unlimited)
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -245,53 +283,6 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
               </Button>
             </form>
           </Form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Upload className="h-5 w-5 mr-2" />
-            Group Avatar
-          </CardTitle>
-          <CardDescription>
-            Upload or update your group's avatar image
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <div className="flex flex-col items-center">
-              <Avatar className="h-24 w-24">
-                {group.avatar_url ? (
-                  <AvatarImage src={group.avatar_url} alt={group.name} />
-                ) : (
-                  <AvatarFallback className="text-2xl">
-                    {group.name?.substring(0, 2).toUpperCase() || "GP"}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <p className="text-sm text-muted-foreground mt-2">Current Avatar</p>
-            </div>
-            
-            <div className="flex flex-col items-center">
-              {showAvatarUpload ? (
-                <GroupAvatarUpload
-                  groupId={group.id}
-                  onSuccess={handleAvatarUploaded}
-                  onCancel={() => setShowAvatarUpload(false)}
-                />
-              ) : (
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => setShowAvatarUpload(true)}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload New Avatar
-                </Button>
-              )}
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
