@@ -4,7 +4,20 @@ import { PostReactionType } from "../types/reactionTypes";
 
 export const fetchPostReactionCounts = async (postId: string): Promise<Record<PostReactionType, number>> => {
   try {
-    // Count different types of reactions
+    // Try to use the SQL function if it exists
+    const { data, error } = await supabase.rpc('get_post_reaction_counts', { 
+      post_id: postId 
+    });
+    
+    if (!error && data) {
+      return {
+        like: data.like_count || 0,
+        thumbsup: data.thumbsup_count || 0,
+        thumbsdown: data.thumbsdown_count || 0
+      };
+    }
+    
+    // Fallback to separate queries if the function doesn't exist
     const { count: likeCount } = await supabase
       .from("reactions")
       .select("*", { count: "exact", head: true })
