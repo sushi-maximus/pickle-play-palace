@@ -17,7 +17,7 @@ import {
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("chat");
+  const [activeTab, setActiveTab] = useState("home");
 
   const {
     group,
@@ -61,7 +61,7 @@ const GroupDetails = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "chat":
+      case "home":
         return (
           <MobileChatFeed
             posts={posts}
