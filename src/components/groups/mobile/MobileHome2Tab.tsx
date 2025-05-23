@@ -116,16 +116,18 @@ export const MobileHome2Tab = ({
           const isEditingThisPost = isEditing && currentPostId === post.id;
 
           return (
-            <div key={post.id} className="flex flex-col">
-              <PostHeader 
-                post={post}
-                isAuthor={isAuthor}
-                isEditing={isEditingThisPost}
-                onStartEditing={() => startEditing(post.id, post.content)}
-                onDeleteClick={() => handleDeleteClick(post.id)}
-              />
+            <div key={post.id} className="bg-white border border-gray-200 shadow-sm rounded-lg">
+              <div className="p-4 pb-3">
+                <PostHeader 
+                  post={post}
+                  isAuthor={isAuthor}
+                  isEditing={isEditingThisPost}
+                  onStartEditing={() => startEditing(post.id, post.content)}
+                  onDeleteClick={() => handleDeleteClick(post.id)}
+                />
+              </div>
               
-              <div className="mt-1 ml-13">
+              <div className="px-4 pb-4">
                 <PostContent 
                   content={post.content}
                   mediaUrls={post.media_urls}
