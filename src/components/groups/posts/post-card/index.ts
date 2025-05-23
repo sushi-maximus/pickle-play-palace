@@ -12,3 +12,4 @@ export * from './Comment2';
 export * from './CommentForm2';
 export * from './CommentsSection2';
 export * from './DeleteCommentDialog2';
+export * from './CommentThumbsUp2';

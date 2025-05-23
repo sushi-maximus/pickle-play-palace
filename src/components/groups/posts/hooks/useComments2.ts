@@ -15,6 +15,8 @@ interface Comment2 {
     last_name: string;
     avatar_url?: string | null;
   };
+  thumbsup_count: number;
+  user_thumbsup: boolean;
 }
 
 interface UseComments2Props {
@@ -57,12 +59,48 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
 
       if (profilesError) throw profilesError;
 
-      // Create a map of user profiles
+      // Get comment IDs for reaction queries
+      const commentIds = commentsData.map(comment => comment.id);
+
+      // Fetch thumbsup reactions count for all comments
+      const { data: thumbsupData, error: thumbsupError } = await supabase
+        .from('comment_reactions')
+        .select('comment_id')
+        .in('comment_id', commentIds)
+        .eq('reaction_type', 'thumbsup');
+
+      if (thumbsupError) throw thumbsupError;
+
+      // Get user's thumbsup reactions if userId is provided
+      let userThumbsupData = [];
+      if (userId) {
+        const { data, error: userThumbsupError } = await supabase
+          .from('comment_reactions')
+          .select('comment_id')
+          .in('comment_id', commentIds)
+          .eq('reaction_type', 'thumbsup')
+          .eq('user_id', userId);
+
+        if (userThumbsupError) throw userThumbsupError;
+        userThumbsupData = data || [];
+      }
+
+      // Create maps for efficient lookups
       const profilesMap = new Map(
         (profilesData || []).map(profile => [profile.id, profile])
       );
 
-      // Combine comments with user data
+      const thumbsupCountMap = new Map();
+      (thumbsupData || []).forEach(reaction => {
+        const current = thumbsupCountMap.get(reaction.comment_id) || 0;
+        thumbsupCountMap.set(reaction.comment_id, current + 1);
+      });
+
+      const userThumbsupSet = new Set(
+        userThumbsupData.map(reaction => reaction.comment_id)
+      );
+
+      // Combine comments with user data and reaction data
       const transformedComments = commentsData
         .map(comment => {
           const user = profilesMap.get(comment.user_id);
@@ -70,7 +108,9 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
           
           return {
             ...comment,
-            user
+            user,
+            thumbsup_count: thumbsupCountMap.get(comment.id) || 0,
+            user_thumbsup: userThumbsupSet.has(comment.id)
           };
         })
         .filter(comment => comment !== null) as Comment2[];
@@ -88,7 +128,7 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
     if (postId) {
       fetchComments();
     }
-  }, [postId]);
+  }, [postId, userId]);
 
   return {
     comments,

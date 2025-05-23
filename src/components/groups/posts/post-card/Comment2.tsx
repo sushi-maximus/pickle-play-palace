@@ -10,6 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CommentThumbsUp2 } from "./CommentThumbsUp2";
+import { useCommentReactions2 } from "../hooks/useCommentReactions2";
 
 interface Comment2Props {
   comment: {
@@ -24,6 +26,8 @@ interface Comment2Props {
       last_name: string;
       avatar_url?: string | null;
     };
+    thumbsup_count: number;
+    user_thumbsup: boolean;
   };
   currentUserId?: string;
   isEditing: boolean;
@@ -51,6 +55,18 @@ export const Comment2 = ({
   const isOwner = currentUserId === comment.user_id;
   const fullName = `${comment.user.first_name || ''} ${comment.user.last_name || ''}`;
   const initials = `${(comment.user.first_name && comment.user.first_name[0]) || ''}${(comment.user.last_name && comment.user.last_name[0]) || ''}`;
+
+  const {
+    thumbsUpCount,
+    isThumbsUpActive,
+    isThumbsUpSubmitting,
+    toggleThumbsUp
+  } = useCommentReactions2({
+    commentId: comment.id,
+    userId: currentUserId,
+    initialThumbsUp: comment.thumbsup_count,
+    initialUserThumbsUp: comment.user_thumbsup
+  });
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -123,9 +139,20 @@ export const Comment2 = ({
             </div>
           </div>
         ) : (
-          <p className="text-xs md:text-sm text-gray-700 whitespace-pre-wrap">
-            {comment.content}
-          </p>
+          <>
+            <p className="text-xs md:text-sm text-gray-700 whitespace-pre-wrap">
+              {comment.content}
+            </p>
+            <div className="mt-2 flex items-center">
+              <CommentThumbsUp2
+                count={thumbsUpCount}
+                isActive={isThumbsUpActive}
+                isSubmitting={isThumbsUpSubmitting}
+                onClick={toggleThumbsUp}
+                disabled={!currentUserId}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
