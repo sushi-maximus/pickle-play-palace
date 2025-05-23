@@ -70,14 +70,8 @@ export const MobilePostCard = ({
           <div className="w-full ml-12 md:ml-14">
             <div className="flex items-center gap-2 md:gap-3">
               <PostReactions2Component 
-                postId={post.id}
-                userId={user?.id}
-                initialThumbsUp={post.reactions?.thumbsup || 0}
-                initialThumbsDown={post.reactions?.thumbsdown || 0}
-                initialHeart={post.reactions?.heart || 0}
-                initialUserThumbsUp={post.user_reactions?.thumbsup || false}
-                initialUserThumbsDown={post.user_reactions?.thumbsdown || false}
-                initialUserHeart={post.user_reactions?.heart || false}
+                post={post}
+                user={user}
               />
               
               <Button
@@ -106,24 +100,24 @@ export const MobilePostCard = ({
 
 // Helper component to encapsulate reactions logic for each post
 const PostReactions2Component = ({ 
-  postId, 
-  userId, 
-  initialThumbsUp,
-  initialThumbsDown,
-  initialHeart,
-  initialUserThumbsUp,
-  initialUserThumbsDown,
-  initialUserHeart
+  post, 
+  user
 }: {
-  postId: string;
-  userId?: string;
-  initialThumbsUp: number;
-  initialThumbsDown: number;
-  initialHeart: number;
-  initialUserThumbsUp: boolean;
-  initialUserThumbsDown: boolean;
-  initialUserHeart: boolean;
+  post: any;
+  user: any;
 }) => {
+  // Always call hooks at the top level, never conditionally
+  const reactionsHook = usePostReactions2({
+    postId: post.id,
+    userId: user?.id,
+    initialThumbsUp: post.reactions?.thumbsup || 0,
+    initialThumbsDown: post.reactions?.thumbsdown || 0,
+    initialHeart: post.reactions?.heart || 0,
+    initialUserThumbsUp: post.user_reactions?.thumbsup || false,
+    initialUserThumbsDown: post.user_reactions?.thumbsdown || false,
+    initialUserHeart: post.user_reactions?.heart || false,
+  });
+
   const { 
     thumbsUpCount, 
     thumbsDownCount,
@@ -137,16 +131,7 @@ const PostReactions2Component = ({
     toggleThumbsUp,
     toggleThumbsDown,
     toggleHeart
-  } = usePostReactions2({
-    postId,
-    userId,
-    initialThumbsUp,
-    initialThumbsDown,
-    initialHeart,
-    initialUserThumbsUp,
-    initialUserThumbsDown,
-    initialUserHeart
-  });
+  } = reactionsHook;
 
   return (
     <PostReactions2
@@ -162,7 +147,7 @@ const PostReactions2Component = ({
       onThumbsUpClick={toggleThumbsUp}
       onThumbsDownClick={toggleThumbsDown}
       onHeartClick={toggleHeart}
-      disabled={!userId}
+      disabled={!user?.id}
     />
   );
 };
