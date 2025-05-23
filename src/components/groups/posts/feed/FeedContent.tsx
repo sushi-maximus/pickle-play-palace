@@ -1,3 +1,4 @@
+
 import { CreatePostForm } from "../CreatePostForm";
 import { GroupPostCard } from "../GroupPostCard";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
@@ -92,6 +93,7 @@ export const FeedContent = ({
           groupId={groupId} 
           user={user}
           onPostCreated={onPostCreated}
+          refreshing={refreshing}
         />
       )}
       

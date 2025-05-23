@@ -2,9 +2,10 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreatePost } from "./hooks/useCreatePost";
+import { cn } from "@/lib/utils";
 
 interface CreatePostFormProps {
   groupId: string;
@@ -15,9 +16,15 @@ interface CreatePostFormProps {
     avatar_url?: string | null;
   } | null;
   onPostCreated?: () => void;
+  refreshing?: boolean;
 }
 
-export const CreatePostForm = ({ groupId, user, onPostCreated }: CreatePostFormProps) => {
+export const CreatePostForm = ({ 
+  groupId, 
+  user, 
+  onPostCreated,
+  refreshing = false
+}: CreatePostFormProps) => {
   if (!user) {
     return null;
   }
@@ -33,8 +40,14 @@ export const CreatePostForm = ({ groupId, user, onPostCreated }: CreatePostFormP
     onPostCreated
   });
   
+  // Determine if the form should be disabled (when submitting or during background refresh)
+  const isDisabled = isSubmitting || refreshing;
+  
   return (
-    <Card className="mb-6">
+    <Card className={cn(
+      "mb-6 transition-opacity duration-300",
+      refreshing ? "opacity-70" : "opacity-100"
+    )}>
       <form onSubmit={handleSubmit}>
         <CardContent className="pt-6">
           <div className="flex gap-3">
@@ -49,22 +62,48 @@ export const CreatePostForm = ({ groupId, user, onPostCreated }: CreatePostFormP
               )}
             </Avatar>
             <Textarea
-              placeholder={`Write something to the group...`}
-              className="flex-1 resize-none"
+              placeholder={refreshing ? "Please wait while content refreshes..." : `Write something to the group...`}
+              className={cn(
+                "flex-1 resize-none",
+                refreshing && "bg-muted cursor-not-allowed"
+              )}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={3}
+              disabled={isDisabled}
             />
           </div>
         </CardContent>
         
         <CardFooter className="flex justify-between border-t pt-3">
-          <Button type="button" variant="outline" size="sm" disabled={isSubmitting}>
+          <Button 
+            type="button" 
+            variant="outline" 
+            size="sm" 
+            disabled={isDisabled}
+            className={refreshing ? "opacity-50" : ""}
+          >
             <ImagePlus className="h-4 w-4 mr-2" />
             Add Image
           </Button>
-          <Button type="submit" disabled={!content.trim() || isSubmitting}>
-            {isSubmitting ? 'Posting...' : 'Post'}
+          <Button 
+            type="submit" 
+            disabled={!content.trim() || isDisabled}
+            className={refreshing ? "opacity-75" : ""}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
+                Posting...
+              </>
+            ) : refreshing ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin text-primary-foreground/70" />
+                Wait...
+              </>
+            ) : (
+              'Post'
+            )}
           </Button>
         </CardFooter>
       </form>

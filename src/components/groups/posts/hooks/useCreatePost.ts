@@ -26,6 +26,8 @@ export const useCreatePost = ({ groupId, userId, onPostCreated }: UseCreatePostP
     setIsSubmitting(true);
     
     try {
+      const toastId = toast.loading("Creating your post...");
+      
       const { error } = await supabase
         .from("posts")
         .insert({
@@ -38,12 +40,12 @@ export const useCreatePost = ({ groupId, userId, onPostCreated }: UseCreatePostP
         throw error;
       }
       
-      toast.success("Post created successfully");
+      toast.success("Post created successfully", { id: toastId });
       setContent("");
       onPostCreated?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating post:", error);
-      toast.error("Failed to create post. Please try again.");
+      toast.error(`Failed to create post: ${error.message || "Please try again."}`);
     } finally {
       setIsSubmitting(false);
     }
