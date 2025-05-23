@@ -16,7 +16,7 @@ export const MobileIconMenu = ({ activeTab, onTabChange }: MobileIconMenuProps) 
   ];
 
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b px-4 py-2">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t px-4 py-2">
       <div className="flex justify-center gap-8">
         {menuItems.map((item) => (
           <Button

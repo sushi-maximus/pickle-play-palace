@@ -48,15 +48,18 @@ export const MobileChatFeed = ({
         {posts.map((post) => (
           <div key={post.id} className="flex gap-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={post.author_avatar_url || ""} />
+              <AvatarImage src={post.user?.avatar_url || ""} />
               <AvatarFallback>
-                {post.author_name?.substring(0, 2).toUpperCase() || "U"}
+                {post.user?.first_name?.substring(0, 1).toUpperCase() || ""}
+                {post.user?.last_name?.substring(0, 1).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-medium text-sm">{post.author_name}</span>
+                <span className="font-medium text-sm">
+                  {post.user?.first_name} {post.user?.last_name}
+                </span>
                 <span className="text-xs text-slate-500">
                   {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
                 </span>

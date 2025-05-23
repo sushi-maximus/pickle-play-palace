@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -64,26 +63,17 @@ const GroupDetails = () => {
     switch (activeTab) {
       case "chat":
         return (
-          <>
-            <MobileChatFeed
-              posts={posts}
-              loading={postsLoading}
-              refreshing={refreshing}
-              currentUserId={user?.id}
-            />
-            {membershipStatus.isMember && (
-              <MobileComposeArea
-                groupId={id}
-                user={user}
-                onPostCreated={handlePostCreated}
-              />
-            )}
-          </>
+          <MobileChatFeed
+            posts={posts}
+            loading={postsLoading}
+            refreshing={refreshing}
+            currentUserId={user?.id}
+          />
         );
       
       case "users":
         return (
-          <div className="flex-1 px-4 py-6 pb-20">
+          <div className="flex-1 px-4 py-6">
             <h3 className="text-lg font-medium mb-4">Group Members</h3>
             <GroupMembersList
               members={group?.members || []}
@@ -97,7 +87,7 @@ const GroupDetails = () => {
       
       case "settings":
         return (
-          <div className="flex-1 px-4 py-6 pb-20">
+          <div className="flex-1 px-4 py-6">
             <GroupDetailsTabs
               group={group}
               membershipStatus={membershipStatus}
@@ -111,7 +101,7 @@ const GroupDetails = () => {
       
       default:
         return (
-          <div className="flex-1 px-4 py-6 pb-20">
+          <div className="flex-1 px-4 py-6">
             <p className="text-center text-slate-500">Coming soon...</p>
           </div>
         );
@@ -125,14 +115,22 @@ const GroupDetails = () => {
         groupCode={group.code || undefined}
       />
       
+      {membershipStatus.isMember && (
+        <MobileComposeArea
+          groupId={id}
+          user={user}
+          onPostCreated={handlePostCreated}
+        />
+      )}
+      
+      <div className="flex-1 mt-16 pt-20 pb-20 overflow-hidden">
+        {renderContent()}
+      </div>
+      
       <MobileIconMenu 
         activeTab={activeTab} 
         onTabChange={setActiveTab} 
       />
-      
-      <div className="flex-1 mt-28 mb-20 overflow-hidden">
-        {renderContent()}
-      </div>
     </div>
   );
 };
