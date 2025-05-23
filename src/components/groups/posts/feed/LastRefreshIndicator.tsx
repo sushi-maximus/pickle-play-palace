@@ -5,6 +5,7 @@ import { memo } from "react";
 
 interface LastRefreshIndicatorProps {
   loading: boolean;
+  refreshing?: boolean; // New prop for background refreshes
   lastAutoRefresh: Date | null;
   isAutoRefreshEnabled?: boolean;
   nextRefreshIn?: number;
@@ -12,6 +13,7 @@ interface LastRefreshIndicatorProps {
 
 export const LastRefreshIndicator = memo(({ 
   loading, 
+  refreshing = false, // Default to false
   lastAutoRefresh,
   isAutoRefreshEnabled = true,
   nextRefreshIn
@@ -25,10 +27,15 @@ export const LastRefreshIndicator = memo(({
 
   return (
     <div className="px-6 pt-3 pb-0 flex justify-end items-center text-xs text-muted-foreground">
-      {loading ? (
+      {loading && !refreshing ? (
         <div className="flex items-center gap-1">
           <Loader2 className="h-3 w-3 animate-spin" />
-          <span>Refreshing content...</span>
+          <span>Loading content...</span>
+        </div>
+      ) : refreshing ? (
+        <div className="flex items-center gap-1">
+          <Loader2 className="h-3 w-3 animate-spin text-primary" />
+          <span>Refreshing content in background...</span>
         </div>
       ) : (
         <div className="flex items-center gap-1">

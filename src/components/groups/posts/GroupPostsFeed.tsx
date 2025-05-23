@@ -25,6 +25,7 @@ export const GroupPostsFeed = ({
   const { 
     posts, 
     loading, 
+    refreshing, // Access the new refreshing state
     error, 
     groupName, 
     refreshPosts 
@@ -46,7 +47,7 @@ export const GroupPostsFeed = ({
     handleManualRefresh
   } = useAutoRefresh({
     refreshFunction: refreshPosts,
-    loading
+    loading: loading || refreshing // Consider either loading or refreshing for auto-refresh logic
   });
 
   const handlePostCreated = () => {
@@ -93,6 +94,7 @@ export const GroupPostsFeed = ({
   const renderContent = () => (
     <FeedContent
       loading={loading}
+      refreshing={refreshing} // Pass the new refreshing state
       error={error}
       posts={posts}
       user={user}
@@ -111,7 +113,7 @@ export const GroupPostsFeed = ({
       <Card ref={feedRef} className="w-full mb-6 overflow-hidden border-2 border-primary/10 shadow-lg">
         <FeedHeader
           groupName={groupName}
-          isRefreshing={isRefreshing}
+          isRefreshing={isRefreshing || refreshing} // Update with new refreshing state
           loading={loading}
           isAutoRefreshEnabled={isAutoRefreshEnabled}
           toggleAutoRefresh={toggleAutoRefresh}
@@ -120,6 +122,7 @@ export const GroupPostsFeed = ({
         
         <LastRefreshIndicator 
           loading={loading} 
+          refreshing={refreshing} // Pass the new refreshing state
           lastAutoRefresh={lastAutoRefresh} 
           isAutoRefreshEnabled={isAutoRefreshEnabled}
           nextRefreshIn={nextRefreshIn}

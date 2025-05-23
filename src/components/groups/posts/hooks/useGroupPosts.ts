@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PostReactionType } from "./usePostReactions";
@@ -27,15 +26,34 @@ interface UseGroupPostsProps {
   userId?: string;
 }
 
-export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
+interface UseGroupPostsResult {
+  posts: GroupPost[];
+  loading: boolean;
+  refreshing: boolean; // New state for background refreshes
+  error: string | null;
+  groupName: string;
+  refreshPosts: () => Promise<void>;
+}
+
+export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps): UseGroupPostsResult => {
   const [posts, setPosts] = useState<GroupPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // New state for background refreshes
   const [error, setError] = useState<string | null>(null);
   const [groupName, setGroupName] = useState<string>("");
 
   const fetchPosts = async () => {
     try {
-      setLoading(true);
+      // Only set loading to true if this is the initial fetch (no posts yet)
+      // Otherwise, set refreshing to true for background updates
+      if (posts.length === 0) {
+        setLoading(true);
+        setRefreshing(false);
+      } else {
+        setRefreshing(true);
+        // Keep loading false so we don't show loading skeletons
+        setLoading(false);
+      }
       
       // Get posts for this group using two separate queries instead of joins
       const { data: postsData, error: postsError } = await supabase
@@ -63,6 +81,7 @@ export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
       if (!postsData || postsData.length === 0) {
         setPosts([]);
         setLoading(false);
+        setRefreshing(false);
         return;
       }
 
@@ -168,6 +187,7 @@ export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
       setError("Failed to load posts. Please try again later.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -180,6 +200,7 @@ export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
   return {
     posts,
     loading,
+    refreshing, // Return the new refreshing state
     error,
     groupName,
     refreshPosts: fetchPosts

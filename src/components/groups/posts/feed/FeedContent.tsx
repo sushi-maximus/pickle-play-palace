@@ -1,13 +1,14 @@
-
 import { CreatePostForm } from "../CreatePostForm";
 import { GroupPostCard } from "../GroupPostCard";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { GroupPostsLoading } from "../GroupPostsLoading";
 import type { GroupPost } from "../hooks/useGroupPosts";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 interface FeedContentProps {
   loading: boolean;
+  refreshing?: boolean; // New optional prop for background refreshes
   error: string | null;
   posts: GroupPost[];
   user: any;
@@ -25,6 +26,7 @@ interface FeedContentProps {
 
 export const FeedContent = ({ 
   loading, 
+  refreshing = false, // Default to false
   error, 
   posts, 
   user,
@@ -35,8 +37,9 @@ export const FeedContent = ({
   onPostUpdated,
   onPostDeleted
 }: FeedContentProps) => {
-  // Loading state
-  if (loading) {
+  // Only show loading state on initial load
+  // For refreshes, we'll keep displaying the existing content
+  if (loading && !refreshing && posts.length === 0) {
     return <GroupPostsLoading />;
   }
 
@@ -64,6 +67,14 @@ export const FeedContent = ({
         <GroupPostsEmpty isMember={membershipStatus.isMember} />
       ) : (
         <div className="space-y-6 animate-fade-in">
+          {/* Show a subtle refreshing indicator at the top if actively refreshing */}
+          {refreshing && (
+            <div className="flex items-center justify-center text-xs text-muted-foreground py-1">
+              <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+              Updating content...
+            </div>
+          )}
+          
           {posts.map((post) => (
             <GroupPostCard 
               key={post.id} 
