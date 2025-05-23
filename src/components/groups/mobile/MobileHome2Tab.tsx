@@ -9,6 +9,7 @@ import { useDeletePost } from "../posts/hooks/useDeletePost";
 import { PostHeader } from "../posts/post-card/PostHeader";
 import { PostContent } from "../posts/post-card/PostContent";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface MobileHome2TabProps {
   groupId: string;
@@ -116,29 +117,31 @@ export const MobileHome2Tab = ({
           const isEditingThisPost = isEditing && currentPostId === post.id;
 
           return (
-            <div key={post.id} className="bg-white border border-gray-200 shadow-sm rounded-lg">
-              <div className="p-4 pb-3">
-                <PostHeader 
-                  post={post}
-                  isAuthor={isAuthor}
-                  isEditing={isEditingThisPost}
-                  onStartEditing={() => startEditing(post.id, post.content)}
-                  onDeleteClick={() => handleDeleteClick(post.id)}
-                />
-              </div>
-              
-              <div className="px-4 pb-4">
-                <PostContent 
-                  content={post.content}
-                  mediaUrls={post.media_urls}
-                  isEditing={isEditingThisPost}
-                  editableContent={editableContent}
-                  setEditableContent={setEditableContent}
-                  onCancelEditing={cancelEditing}
-                  onSaveEditing={handleUpdate}
-                  isEditSubmitting={isEditSubmitting}
-                />
-              </div>
+            <div className="mb-4" key={post.id}>
+              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/30">
+                <CardHeader className="p-4 pb-3">
+                  <PostHeader 
+                    post={post}
+                    isAuthor={isAuthor}
+                    isEditing={isEditingThisPost}
+                    onStartEditing={() => startEditing(post.id, post.content)}
+                    onDeleteClick={() => handleDeleteClick(post.id)}
+                  />
+                </CardHeader>
+                
+                <CardContent className="px-4 pb-4">
+                  <PostContent 
+                    content={post.content}
+                    mediaUrls={post.media_urls}
+                    isEditing={isEditingThisPost}
+                    editableContent={editableContent}
+                    setEditableContent={setEditableContent}
+                    onCancelEditing={cancelEditing}
+                    onSaveEditing={handleUpdate}
+                    isEditSubmitting={isEditSubmitting}
+                  />
+                </CardContent>
+              </Card>
             </div>
           );
         })}
