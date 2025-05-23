@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Users, Lock, MapPin, Calendar, Clock, Settings } from "lucide-react";
+import { ArrowLeft, Users, Lock, MapPin, Calendar, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GroupMembersList } from "@/components/groups/GroupMembersList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -144,17 +145,6 @@ const GroupDetails = () => {
                     <Lock className="h-5 w-5 ml-2 text-muted-foreground" />
                   )}
                 </CardTitle>
-                
-                {membershipStatus.isAdmin && (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => navigate(`/groups/${group.id}/settings`)}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Group Settings
-                  </Button>
-                )}
               </div>
               
               <div className="flex flex-wrap gap-2 mt-2">
