@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +11,6 @@ import {
   MobileGroupHeader,
   MobileIconMenu,
   MobileChatFeed,
-  MobileComposeArea,
   MobileHome2Tab,
 } from "@/components/groups/mobile";
 
@@ -140,15 +138,7 @@ const GroupDetails = () => {
         groupCode={group.code || undefined}
       />
       
-      {membershipStatus.isMember && (
-        <MobileComposeArea
-          groupId={id}
-          user={user}
-          onPostCreated={handlePostCreated}
-        />
-      )}
-      
-      <div className="flex-1 mt-16 pt-20 pb-20 overflow-hidden relative">
+      <div className="flex-1 mt-16 pb-20 overflow-hidden relative">
         {renderTabContent()}
       </div>
       
