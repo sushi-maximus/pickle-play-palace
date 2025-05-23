@@ -1,7 +1,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Heart, ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react";
 import { GroupPost } from "../posts/hooks/types/groupPostTypes";
 import { formatDistanceToNow } from "date-fns";
 import { usePostReactions } from "../posts/hooks/usePostReactions";
@@ -109,9 +109,10 @@ export const MobileChatFeed = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="p-0 h-auto text-slate-500"
+                  className="p-0 h-auto text-slate-500 hover:text-blue-500"
                   onClick={() => toggleComments(post.id)}
                 >
+                  <MessageCircle className="h-4 w-4 mr-1" />
                   <span className="text-xs">
                     {post.comments_count || 0} comments
                   </span>
