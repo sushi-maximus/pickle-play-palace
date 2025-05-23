@@ -82,6 +82,10 @@ const GroupDetails = () => {
               loading={postsLoading}
               refreshing={refreshing}
               currentUserId={user?.id}
+              user={user}
+              groupId={id}
+              membershipStatus={membershipStatus}
+              onPostCreated={handlePostCreated}
             />
           </div>
         );

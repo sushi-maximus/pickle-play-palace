@@ -6,6 +6,7 @@ import { GroupPost } from "../posts/hooks/types/groupPostTypes";
 import { formatDistanceToNow } from "date-fns";
 import { usePostReactions } from "../posts/hooks/usePostReactions";
 import { CommentsSection } from "../posts/CommentsSection";
+import { CreatePostForm } from "../posts/CreatePostForm";
 import { useState } from "react";
 
 interface MobileChatFeedProps {
@@ -13,13 +14,25 @@ interface MobileChatFeedProps {
   loading: boolean;
   refreshing: boolean;
   currentUserId?: string;
+  user?: any;
+  groupId?: string;
+  membershipStatus?: {
+    isMember: boolean;
+    isPending: boolean;
+    isAdmin: boolean;
+  };
+  onPostCreated?: () => void;
 }
 
 export const MobileChatFeed = ({ 
   posts, 
   loading, 
   refreshing,
-  currentUserId 
+  currentUserId,
+  user,
+  groupId,
+  membershipStatus,
+  onPostCreated
 }: MobileChatFeedProps) => {
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
 
@@ -53,6 +66,18 @@ export const MobileChatFeed = ({
       {refreshing && (
         <div className="text-center py-2">
           <div className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      
+      {/* Add Post Creation Form for members */}
+      {membershipStatus?.isMember && user && groupId && (
+        <div className="mb-6">
+          <CreatePostForm 
+            groupId={groupId} 
+            user={user}
+            onPostCreated={onPostCreated}
+            refreshing={refreshing}
+          />
         </div>
       )}
       
