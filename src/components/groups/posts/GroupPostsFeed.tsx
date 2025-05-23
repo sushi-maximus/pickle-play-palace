@@ -22,7 +22,10 @@ export const GroupPostsFeed = ({
   membershipStatus,
   standalone = false
 }: GroupPostsFeedProps) => {
-  // Always call hooks in the same order - move all hooks to the top
+  // ALL hooks must be declared first, before any conditional logic
+  const feedRef = useRef<HTMLDivElement>(null);
+  const isInViewportRef = useRef(true);
+
   const { 
     posts, 
     loading, 
@@ -46,10 +49,6 @@ export const GroupPostsFeed = ({
     refreshFunction: refreshPosts,
     loading: loading
   });
-
-  // Refs must be declared before any conditional logic
-  const feedRef = useRef<HTMLDivElement>(null);
-  const isInViewportRef = useRef(true);
 
   // Combine both refresh indicators
   const isRefreshing = postsRefreshing || autoRefreshRunning;
