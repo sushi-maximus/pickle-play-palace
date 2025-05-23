@@ -16,7 +16,9 @@ interface Comment2 {
     avatar_url?: string | null;
   };
   thumbsup_count: number;
+  thumbsdown_count: number;
   user_thumbsup: boolean;
+  user_thumbsdown: boolean;
 }
 
 interface UseComments2Props {
@@ -62,27 +64,25 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
       // Get comment IDs for reaction queries
       const commentIds = commentsData.map(comment => comment.id);
 
-      // Fetch thumbsup reactions count for all comments
-      const { data: thumbsupData, error: thumbsupError } = await supabase
+      // Fetch all reactions for all comments
+      const { data: reactionsData, error: reactionsError } = await supabase
         .from('comment_reactions')
-        .select('comment_id')
-        .in('comment_id', commentIds)
-        .eq('reaction_type', 'thumbsup');
+        .select('comment_id, reaction_type')
+        .in('comment_id', commentIds);
 
-      if (thumbsupError) throw thumbsupError;
+      if (reactionsError) throw reactionsError;
 
-      // Get user's thumbsup reactions if userId is provided
-      let userThumbsupData = [];
+      // Get user's reactions if userId is provided
+      let userReactionsData = [];
       if (userId) {
-        const { data, error: userThumbsupError } = await supabase
+        const { data, error: userReactionsError } = await supabase
           .from('comment_reactions')
-          .select('comment_id')
+          .select('comment_id, reaction_type')
           .in('comment_id', commentIds)
-          .eq('reaction_type', 'thumbsup')
           .eq('user_id', userId);
 
-        if (userThumbsupError) throw userThumbsupError;
-        userThumbsupData = data || [];
+        if (userReactionsError) throw userReactionsError;
+        userReactionsData = data || [];
       }
 
       // Create maps for efficient lookups
@@ -91,14 +91,26 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
       );
 
       const thumbsupCountMap = new Map();
-      (thumbsupData || []).forEach(reaction => {
-        const current = thumbsupCountMap.get(reaction.comment_id) || 0;
-        thumbsupCountMap.set(reaction.comment_id, current + 1);
+      const thumbsdownCountMap = new Map();
+      (reactionsData || []).forEach(reaction => {
+        if (reaction.reaction_type === 'thumbsup') {
+          const current = thumbsupCountMap.get(reaction.comment_id) || 0;
+          thumbsupCountMap.set(reaction.comment_id, current + 1);
+        } else if (reaction.reaction_type === 'thumbsdown') {
+          const current = thumbsdownCountMap.get(reaction.comment_id) || 0;
+          thumbsdownCountMap.set(reaction.comment_id, current + 1);
+        }
       });
 
-      const userThumbsupSet = new Set(
-        userThumbsupData.map(reaction => reaction.comment_id)
-      );
+      const userThumbsupSet = new Set();
+      const userThumbsdownSet = new Set();
+      userReactionsData.forEach(reaction => {
+        if (reaction.reaction_type === 'thumbsup') {
+          userThumbsupSet.add(reaction.comment_id);
+        } else if (reaction.reaction_type === 'thumbsdown') {
+          userThumbsdownSet.add(reaction.comment_id);
+        }
+      });
 
       // Combine comments with user data and reaction data
       const transformedComments = commentsData
@@ -110,7 +122,9 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
             ...comment,
             user,
             thumbsup_count: thumbsupCountMap.get(comment.id) || 0,
-            user_thumbsup: userThumbsupSet.has(comment.id)
+            thumbsdown_count: thumbsdownCountMap.get(comment.id) || 0,
+            user_thumbsup: userThumbsupSet.has(comment.id),
+            user_thumbsdown: userThumbsdownSet.has(comment.id)
           };
         })
         .filter(comment => comment !== null) as Comment2[];

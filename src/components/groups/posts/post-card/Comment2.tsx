@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CommentThumbsUp2 } from "./CommentThumbsUp2";
+import { CommentThumbsDown2 } from "./CommentThumbsDown2";
 import { useCommentReactions2 } from "../hooks/useCommentReactions2";
 
 interface Comment2Props {
@@ -27,7 +28,9 @@ interface Comment2Props {
       avatar_url?: string | null;
     };
     thumbsup_count: number;
+    thumbsdown_count: number;
     user_thumbsup: boolean;
+    user_thumbsdown: boolean;
   };
   currentUserId?: string;
   isEditing: boolean;
@@ -58,14 +61,20 @@ export const Comment2 = ({
 
   const {
     thumbsUpCount,
+    thumbsDownCount,
     isThumbsUpActive,
+    isThumbsDownActive,
     isThumbsUpSubmitting,
-    toggleThumbsUp
+    isThumbsDownSubmitting,
+    toggleThumbsUp,
+    toggleThumbsDown
   } = useCommentReactions2({
     commentId: comment.id,
     userId: currentUserId,
     initialThumbsUp: comment.thumbsup_count,
-    initialUserThumbsUp: comment.user_thumbsup
+    initialThumbsDown: comment.thumbsdown_count,
+    initialUserThumbsUp: comment.user_thumbsup,
+    initialUserThumbsDown: comment.user_thumbsdown
   });
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -143,12 +152,19 @@ export const Comment2 = ({
             <p className="text-xs md:text-sm text-gray-700 whitespace-pre-wrap">
               {comment.content}
             </p>
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex items-center gap-2">
               <CommentThumbsUp2
                 count={thumbsUpCount}
                 isActive={isThumbsUpActive}
                 isSubmitting={isThumbsUpSubmitting}
                 onClick={toggleThumbsUp}
+                disabled={!currentUserId}
+              />
+              <CommentThumbsDown2
+                count={thumbsDownCount}
+                isActive={isThumbsDownActive}
+                isSubmitting={isThumbsDownSubmitting}
+                onClick={toggleThumbsDown}
                 disabled={!currentUserId}
               />
             </div>
