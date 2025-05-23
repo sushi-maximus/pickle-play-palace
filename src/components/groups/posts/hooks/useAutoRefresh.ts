@@ -169,13 +169,12 @@ export const useAutoRefresh = ({
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
     
-    // Call toast with the format it expects based on your implementation
+    // Fix: Use the correct toast format
     toast({
       title: newValue ? "Auto-refresh enabled" : "Auto-refresh disabled",
       description: newValue 
         ? `Posts will automatically refresh every ${interval/1000} seconds` 
         : "Posts will only refresh when you click the refresh button",
-      duration: 3000
     });
   };
 
