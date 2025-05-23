@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -36,10 +36,7 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
   const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
   const [action, setAction] = useState<'approve' | 'reject' | null>(null);
 
-  useState(() => {
-    fetchPendingRequests();
-  }, [groupId]);
-
+  // Define the fetchPendingRequests function before using it
   const fetchPendingRequests = async () => {
     setLoading(true);
     
@@ -74,11 +71,12 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
         console.error("Error fetching user profiles:", profilesError);
       }
       
-      // Combine request data with profiles
+      // Combine request data with profiles and map joined_at to created_at for type compatibility
       const requestsWithProfiles = requestsData.map(request => {
         const profile = profilesData?.find(p => p.id === request.user_id);
         return {
           ...request,
+          created_at: request.joined_at, // Map joined_at to created_at for type compatibility
           profile
         };
       });
@@ -91,6 +89,11 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
       setLoading(false);
     }
   };
+
+  // Use useEffect to call fetchPendingRequests when component mounts
+  useEffect(() => {
+    fetchPendingRequests();
+  }, [groupId]);
 
   const handleAction = (request: JoinRequest, actionType: 'approve' | 'reject') => {
     setSelectedRequest(request);
@@ -183,7 +186,7 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
                       {request.request_message || <span className="text-muted-foreground italic">No message</span>}
                     </TableCell>
                     <TableCell>
-                      {new Date(request.joined_at).toLocaleDateString()}
+                      {new Date(request.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
