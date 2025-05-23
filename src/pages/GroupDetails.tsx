@@ -15,6 +15,8 @@ import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
+import { Settings } from "lucide-react";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -147,6 +149,12 @@ const GroupDetails = () => {
                     <TabsTrigger value="requests">Requests</TabsTrigger>
                   )}
                   <TabsTrigger value="about">About</TabsTrigger>
+                  {membershipStatus.isAdmin && (
+                    <TabsTrigger value="settings" className="flex items-center gap-1">
+                      <Settings className="h-4 w-4" />
+                      <span>Settings</span>
+                    </TabsTrigger>
+                  )}
                 </TabsList>
                 
                 <TabsContent value="members">
@@ -171,6 +179,15 @@ const GroupDetails = () => {
                     onJoinRequest={handleJoinRequest}
                   />
                 </TabsContent>
+
+                {membershipStatus.isAdmin && (
+                  <TabsContent value="settings">
+                    <GroupSettingsTab 
+                      group={group}
+                      onGroupUpdate={(updatedGroup) => setGroup({...group, ...updatedGroup})}
+                    />
+                  </TabsContent>
+                )}
               </Tabs>
             </CardContent>
           </Card>
