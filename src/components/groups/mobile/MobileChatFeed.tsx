@@ -76,17 +76,6 @@ export const MobileChatFeed = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`p-0 h-auto text-slate-500 hover:text-red-500 ${userReactions.like ? "text-red-500" : ""}`}
-                  onClick={() => toggleReaction("like")}
-                  disabled={!currentUserId || isSubmitting.like}
-                >
-                  <Heart className={`h-4 w-4 mr-1 ${userReactions.like ? "fill-red-500" : ""}`} />
-                  <span className="text-xs">{reactions.like || 0}</span>
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
                   className={`p-0 h-auto text-slate-500 hover:text-blue-500 ${userReactions.thumbsup ? "text-blue-500" : ""}`}
                   onClick={() => toggleReaction("thumbsup")}
                   disabled={!currentUserId || isSubmitting.thumbsup}
@@ -104,6 +93,17 @@ export const MobileChatFeed = ({
                 >
                   <ThumbsDown className={`h-4 w-4 mr-1 ${userReactions.thumbsdown ? "fill-red-500" : ""}`} />
                   <span className="text-xs">{reactions.thumbsdown || 0}</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`p-0 h-auto text-slate-500 hover:text-red-500 ${userReactions.like ? "text-red-500" : ""}`}
+                  onClick={() => toggleReaction("like")}
+                  disabled={!currentUserId || isSubmitting.like}
+                >
+                  <Heart className={`h-4 w-4 mr-1 ${userReactions.like ? "fill-red-500" : ""}`} />
+                  <span className="text-xs">{reactions.like || 0}</span>
                 </Button>
                 
                 <Button

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export type ReactionType = "thumbsup" | "thumbsdown";
+export type ReactionType = "like" | "thumbsup" | "thumbsdown";
 
 interface UseCommentReactionsProps {
   commentId: string;
@@ -15,12 +15,13 @@ interface UseCommentReactionsProps {
 export const useCommentReactions = ({
   commentId,
   userId,
-  initialReactions = { thumbsup: 0, thumbsdown: 0 },
-  initialUserReactions = { thumbsup: false, thumbsdown: false }
+  initialReactions = { like: 0, thumbsup: 0, thumbsdown: 0 },
+  initialUserReactions = { like: false, thumbsup: false, thumbsdown: false }
 }: UseCommentReactionsProps) => {
   const [reactions, setReactions] = useState<Record<ReactionType, number>>(initialReactions);
   const [userReactions, setUserReactions] = useState<Record<ReactionType, boolean>>(initialUserReactions);
   const [isSubmitting, setIsSubmitting] = useState<Record<ReactionType, boolean>>({
+    like: false,
     thumbsup: false,
     thumbsdown: false
   });

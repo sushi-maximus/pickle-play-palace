@@ -60,6 +60,13 @@ export const useComments = (postId: string, userId?: string) => {
             console.error("Error fetching user data:", userError);
           }
 
+          // Get like reactions count
+          const { count: likeCount } = await supabase
+            .from("comment_reactions")
+            .select("*", { count: "exact", head: true })
+            .eq("comment_id", comment.id)
+            .eq("reaction_type", "like");
+
           // Get thumbsup reactions count
           const { count: thumbsUpCount } = await supabase
             .from("comment_reactions")
@@ -75,10 +82,19 @@ export const useComments = (postId: string, userId?: string) => {
             .eq("reaction_type", "thumbsdown");
 
           // Check if current user has reacted to this comment
+          let userLike = false;
           let userThumbsUp = false;
           let userThumbsDown = false;
           
           if (userId) {
+            const { data: likeReaction } = await supabase
+              .from("comment_reactions")
+              .select("*")
+              .eq("comment_id", comment.id)
+              .eq("user_id", userId)
+              .eq("reaction_type", "like")
+              .maybeSingle();
+
             const { data: thumbsUpReaction } = await supabase
               .from("comment_reactions")
               .select("*")
@@ -95,6 +111,7 @@ export const useComments = (postId: string, userId?: string) => {
               .eq("reaction_type", "thumbsdown")
               .maybeSingle();
             
+            userLike = !!likeReaction;
             userThumbsUp = !!thumbsUpReaction;
             userThumbsDown = !!thumbsDownReaction;
           }
@@ -107,10 +124,12 @@ export const useComments = (postId: string, userId?: string) => {
               last_name: "User" 
             },
             reactions: {
+              like: likeCount || 0,
               thumbsup: thumbsUpCount || 0,
               thumbsdown: thumbsDownCount || 0
             },
             user_reactions: {
+              like: userLike,
               thumbsup: userThumbsUp,
               thumbsdown: userThumbsDown
             }

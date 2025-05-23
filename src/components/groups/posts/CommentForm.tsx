@@ -1,8 +1,6 @@
 
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAddComment } from "./hooks/useAddComment";
-import { MessageCircle } from "lucide-react";
 
 interface CommentFormProps {
   postId: string;
@@ -20,30 +18,27 @@ export const CommentForm = ({ postId, userId, onCommentAdded }: CommentFormProps
     onCommentAdded
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleAddComment(postId, userId);
+  const handleSubmit = () => {
+    if (content.trim()) {
+      handleAddComment(postId, userId);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-2">
+    <div className="mt-2">
       <Textarea
         placeholder="Write a comment..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="min-h-[80px] text-sm"
+        className="min-h-[60px] text-sm rounded-xl border-slate-300"
         disabled={isSubmitting}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
       />
-      <div className="mt-2 flex justify-end">
-        <Button 
-          type="submit" 
-          size="sm"
-          disabled={!content.trim() || isSubmitting}
-        >
-          <MessageCircle className="h-4 w-4 mr-1" />
-          {isSubmitting ? "Posting..." : "Comment"}
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 };

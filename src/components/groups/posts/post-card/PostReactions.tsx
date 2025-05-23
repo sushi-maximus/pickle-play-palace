@@ -20,20 +20,6 @@ export const PostReactions = ({
 }: PostReactionsProps) => {
   return (
     <div className="flex gap-4">
-      {/* Like button */}
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={`flex items-center gap-1 ${userReactions.like ? "text-red-500" : ""}`}
-        onClick={() => onReactionToggle("like")}
-        disabled={!currentUserId || isSubmitting.like}
-      >
-        <Heart 
-          className={`h-4 w-4 ${userReactions.like ? "fill-red-500 text-red-500" : ""}`}
-        />
-        <span>{reactions.like > 0 ? reactions.like : ''}</span>
-      </Button>
-      
       {/* Thumbs Up button */}
       <Button 
         variant="ghost" 
@@ -60,6 +46,20 @@ export const PostReactions = ({
           className={`h-4 w-4 ${userReactions.thumbsdown ? "fill-red-500 text-red-500" : ""}`}
         />
         <span>{reactions.thumbsdown > 0 ? reactions.thumbsdown : ''}</span>
+      </Button>
+
+      {/* Like button */}
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className={`flex items-center gap-1 ${userReactions.like ? "text-red-500" : ""}`}
+        onClick={() => onReactionToggle("like")}
+        disabled={!currentUserId || isSubmitting.like}
+      >
+        <Heart 
+          className={`h-4 w-4 ${userReactions.like ? "fill-red-500 text-red-500" : ""}`}
+        />
+        <span>{reactions.like > 0 ? reactions.like : ''}</span>
       </Button>
     </div>
   );

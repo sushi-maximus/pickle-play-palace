@@ -4,12 +4,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from "date-fns";
-import { Edit, Trash2, Save, X, MoreHorizontal } from "lucide-react";
+import { Edit, Trash2, MoreHorizontal, Heart, ThumbsUp, ThumbsDown } from "lucide-react";
 import type { Comment as CommentType } from "./hooks/useComments";
 import { useCommentReactions } from "./hooks/useCommentReactions";
 import { useEditComment } from "./hooks/useEditComment";
 import { useDeleteComment } from "./hooks/useDeleteComment";
-import { DeleteCommentDialog, CommentReactions } from "./post-card";
+import { DeleteCommentDialog } from "./post-card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,7 +60,7 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
     onCommentDeleted: onCommentUpdated
   });
 
-  const handleReactionClick = (type: "thumbsup" | "thumbsdown") => {
+  const handleReactionClick = (type: "like" | "thumbsup" | "thumbsdown") => {
     toggleReaction(type);
   };
 
@@ -85,8 +85,13 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
       </Avatar>
       <div className="flex-1">
         <div className="bg-muted/50 rounded-lg p-3">
-          <div className="font-medium text-sm flex justify-between items-center">
-            <span>{comment.user.first_name} {comment.user.last_name}</span>
+          <div className="flex justify-between items-center mb-1">
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-sm">{comment.user.first_name} {comment.user.last_name}</span>
+              <span className="text-xs text-muted-foreground">
+                {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+              </span>
+            </div>
             {isAuthor && !isEditingThisComment && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -119,25 +124,13 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
                 onChange={(e) => setEditableContent(e.target.value)}
                 className="min-h-[60px] text-sm"
                 disabled={isEditSubmitting}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleUpdate();
+                  }
+                }}
               />
-              <div className="flex justify-end gap-2 mt-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={cancelEditing}
-                  disabled={isEditSubmitting}
-                >
-                  <X className="h-3.5 w-3.5 mr-1" /> Cancel
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={handleUpdate}
-                  disabled={!editableContent.trim() || isEditSubmitting}
-                >
-                  <Save className="h-3.5 w-3.5 mr-1" /> 
-                  {isEditSubmitting ? "Saving..." : "Save"}
-                </Button>
-              </div>
             </div>
           ) : (
             <p className="text-sm">{comment.content}</p>
@@ -145,18 +138,51 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
         </div>
         
         {!isEditingThisComment && (
-          <div className="flex items-center mt-1">
-            <div className="text-xs text-muted-foreground mr-auto">
-              {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-            </div>
+          <div className="flex items-center gap-2 mt-1">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`p-0 h-6 ${userReactions?.thumbsup ? "text-blue-500" : ""}`}
+              onClick={() => handleReactionClick("thumbsup")}
+              disabled={!userId || isSubmitting.thumbsup}
+            >
+              <ThumbsUp 
+                className={`h-3.5 w-3.5 ${userReactions?.thumbsup ? "fill-blue-500" : ""}`} 
+              />
+              {reactions.thumbsup > 0 && (
+                <span className="ml-1 text-xs">{reactions.thumbsup}</span>
+              )}
+            </Button>
             
-            <CommentReactions 
-              reactions={reactions}
-              userReactions={userReactions}
-              isSubmitting={isSubmitting}
-              onReactionToggle={handleReactionClick}
-              currentUserId={userId}
-            />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`p-0 h-6 ${userReactions?.thumbsdown ? "text-red-500" : ""}`}
+              onClick={() => handleReactionClick("thumbsdown")}
+              disabled={!userId || isSubmitting.thumbsdown}
+            >
+              <ThumbsDown 
+                className={`h-3.5 w-3.5 ${userReactions?.thumbsdown ? "fill-red-500" : ""}`} 
+              />
+              {reactions.thumbsdown > 0 && (
+                <span className="ml-1 text-xs">{reactions.thumbsdown}</span>
+              )}
+            </Button>
+
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`p-0 h-6 ${userReactions?.like ? "text-red-500" : ""}`}
+              onClick={() => handleReactionClick("like")}
+              disabled={!userId || isSubmitting.like}
+            >
+              <Heart 
+                className={`h-3.5 w-3.5 ${userReactions?.like ? "fill-red-500" : ""}`} 
+              />
+              {reactions.like > 0 && (
+                <span className="ml-1 text-xs">{reactions.like}</span>
+              )}
+            </Button>
           </div>
         )}
       </div>
