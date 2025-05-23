@@ -106,25 +106,16 @@ const GroupDetails = () => {
           
           <Card className="w-full mb-6 overflow-hidden">
             <CardContent className="pt-6">
-              <Tabs defaultValue="about" className="w-full">
+              <Tabs defaultValue="members" className="w-full">
                 <TabsList className="mb-4">
-                  <TabsTrigger value="about">About</TabsTrigger>
                   <TabsTrigger value="members">
                     Members ({group?.member_count || 0})
                   </TabsTrigger>
                   {membershipStatus.isAdmin && (
                     <TabsTrigger value="requests">Requests</TabsTrigger>
                   )}
+                  <TabsTrigger value="about">About</TabsTrigger>
                 </TabsList>
-                
-                <TabsContent value="about">
-                  <GroupAboutTab 
-                    description={group?.description} 
-                    user={user} 
-                    membershipStatus={membershipStatus}
-                    onJoinRequest={handleJoinRequest}
-                  />
-                </TabsContent>
                 
                 <TabsContent value="members">
                   <h3 className="text-lg font-medium mb-4">Group Members</h3>
@@ -139,6 +130,15 @@ const GroupDetails = () => {
                     />
                   </TabsContent>
                 )}
+                
+                <TabsContent value="about">
+                  <GroupAboutTab 
+                    description={group?.description} 
+                    user={user} 
+                    membershipStatus={membershipStatus}
+                    onJoinRequest={handleJoinRequest}
+                  />
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
