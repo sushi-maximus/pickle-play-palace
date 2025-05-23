@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useVisibilityTracking } from "./utils/visibilityUtils";
 import { useUserInteractionTracking } from "./utils/userInteractionUtils";
@@ -13,29 +13,28 @@ export const useAutoRefresh = ({
   loading,
   interval = DEFAULT_AUTO_REFRESH_INTERVAL
 }: UseAutoRefreshProps): UseAutoRefreshResult => {
-  // State hooks - using functional updates to avoid stale state issues
+  // All useState hooks first
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastAutoRefresh, setLastAutoRefresh] = useState<Date | null>(null);
   const [nextRefreshIn, setNextRefreshIn] = useState<number>(interval / 1000);
   
-  // Refs for tracking state to avoid stale closures
+  // All useRef hooks second
   const isComponentMountedRef = useRef(true);
   const isRefreshingRef = useRef(false);
   const isAutoRefreshEnabledRef = useRef(isAutoRefreshEnabled);
+
+  // All custom hooks third (in consistent order)
+  const { isVisibleRef } = useVisibilityTracking();
+  const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
 
   // Update ref when state changes
   useEffect(() => {
     isAutoRefreshEnabledRef.current = isAutoRefreshEnabled;
   }, [isAutoRefreshEnabled]);
 
-  // Track visibility, user interaction
-  const { isVisibleRef } = useVisibilityTracking();
-  const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
-  
   // Wrap refreshFunction to handle the refreshing state
-  const wrappedRefreshFunction = async () => {
-    // Prevent overlapping refreshes
+  const wrappedRefreshFunction = useCallback(async () => {
     if (isRefreshingRef.current || loading) {
       console.log("Auto refresh skipped, already refreshing or loading");
       return;
@@ -43,7 +42,6 @@ export const useAutoRefresh = ({
 
     console.log("Auto refresh triggered at", new Date().toLocaleTimeString());
     try {
-      // Set refreshing state before calling the refresh function
       isRefreshingRef.current = true;
       setIsRefreshing(true);
       await refreshFunction();
@@ -53,9 +51,7 @@ export const useAutoRefresh = ({
         toast("Error refreshing data. Please try again.");
       }
     } finally {
-      // Only update state if component is still mounted
       if (isComponentMountedRef.current) {
-        // Add a slight delay before setting isRefreshing to false for visual feedback
         setTimeout(() => {
           if (isComponentMountedRef.current) {
             console.log("Auto refresh completed, resetting state");
@@ -65,9 +61,9 @@ export const useAutoRefresh = ({
         }, 800);
       }
     }
-  };
+  }, [refreshFunction, loading]);
   
-  // Set up countdown timer
+  // Set up countdown timer (fourth)
   const { countdownIntervalRef } = useCountdownTimer(
     isAutoRefreshEnabled,
     loading || isRefreshing,
@@ -75,7 +71,7 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
   
-  // Set up auto-refresh logic
+  // Set up auto-refresh logic (fifth)
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
     loading || isRefreshing,
@@ -88,7 +84,7 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
 
-  // Component mount/unmount lifecycle
+  // Component mount/unmount lifecycle (last effect)
   useEffect(() => {
     console.log("useAutoRefresh - component mounted");
     isComponentMountedRef.current = true;
@@ -97,7 +93,6 @@ export const useAutoRefresh = ({
       console.log("useAutoRefresh - component unmounting, cleaning up");
       isComponentMountedRef.current = false;
       
-      // Clean up all intervals and timeouts when component unmounts
       if (countdownIntervalRef.current) {
         clearInterval(countdownIntervalRef.current);
       }
@@ -114,14 +109,13 @@ export const useAutoRefresh = ({
     };
   }, []);
 
-  // Toggle auto-refresh function with proper state updates
-  const toggleAutoRefresh = () => {
+  // Toggle auto-refresh function
+  const toggleAutoRefresh = useCallback(() => {
     setIsAutoRefreshEnabled(prevState => {
       const newValue = !prevState;
       
       if (newValue) {
         toast(`Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`);
-        // Reset the countdown timer when enabled
         setNextRefreshIn(interval / 1000);
       } else {
         toast("Auto-refresh disabled. Posts will only refresh when you click the refresh button.");
@@ -129,11 +123,10 @@ export const useAutoRefresh = ({
       
       return newValue;
     });
-  };
+  }, [interval]);
 
-  // Manual refresh function with proper state handling
-  const handleManualRefresh = async () => {
-    // Prevent overlapping refreshes
+  // Manual refresh function
+  const handleManualRefresh = useCallback(async () => {
     if (loading || isRefreshing || isRefreshingRef.current) {
       console.log("Manual refresh prevented - already loading or refreshing");
       return;
@@ -145,11 +138,8 @@ export const useAutoRefresh = ({
       isRefreshingRef.current = true;
       setIsRefreshing(true);
       await refreshFunction();
-      // Only update if component is still mounted
       if (isComponentMountedRef.current) {
-        // Set the last refresh time after successful refresh
         setLastAutoRefresh(new Date());
-        // Reset countdown after manual refresh
         setNextRefreshIn(interval / 1000);
       }
     } catch (error) {
@@ -158,9 +148,7 @@ export const useAutoRefresh = ({
         toast("Error refreshing data. Please try again.");
       }
     } finally {
-      // Only update state if component is still mounted
       if (isComponentMountedRef.current) {
-        // Add a slight delay for visual feedback before hiding the progress indicator
         setTimeout(() => {
           if (isComponentMountedRef.current) {
             setIsRefreshing(false);
@@ -169,7 +157,7 @@ export const useAutoRefresh = ({
         }, 1000);
       }
     }
-  };
+  }, [refreshFunction, loading, isRefreshing, interval]);
 
   return {
     isAutoRefreshEnabled,

@@ -22,10 +22,11 @@ export const GroupPostsFeed = ({
   membershipStatus,
   standalone = false
 }: GroupPostsFeedProps) => {
+  // Always call hooks in the same order - move all hooks to the top
   const { 
     posts, 
     loading, 
-    refreshing: postsRefreshing, // Renamed for clarity
+    refreshing: postsRefreshing,
     error, 
     groupName, 
     refreshPosts 
@@ -34,25 +35,26 @@ export const GroupPostsFeed = ({
     userId: user?.id 
   });
 
-  // Intersection Observer ref for checking if component is in viewport
-  const feedRef = useRef<HTMLDivElement>(null);
-  const isInViewportRef = useRef(true);
-
   const {
     isAutoRefreshEnabled,
-    isRefreshing: autoRefreshRunning, // Renamed for clarity
+    isRefreshing: autoRefreshRunning,
     lastAutoRefresh,
     nextRefreshIn,
     toggleAutoRefresh,
     handleManualRefresh
   } = useAutoRefresh({
     refreshFunction: refreshPosts,
-    loading: loading // Only pass loading, not refreshing here to avoid circular reference
+    loading: loading
   });
+
+  // Refs must be declared before any conditional logic
+  const feedRef = useRef<HTMLDivElement>(null);
+  const isInViewportRef = useRef(true);
 
   // Combine both refresh indicators
   const isRefreshing = postsRefreshing || autoRefreshRunning;
 
+  // Event handlers
   const handlePostCreated = () => {
     console.log("Post created, refreshing...");
     refreshPosts();
@@ -68,9 +70,8 @@ export const GroupPostsFeed = ({
     refreshPosts();
   };
 
-  // Set up intersection observer to detect if feed is visible
+  // Effects after all hooks and refs are declared
   useEffect(() => {
-    // Skip for non-standalone feeds or if IntersectionObserver is not available
     if (!standalone || !feedRef.current || typeof IntersectionObserver === 'undefined') return;
 
     const observer = new IntersectionObserver((entries) => {
@@ -78,7 +79,7 @@ export const GroupPostsFeed = ({
         isInViewportRef.current = entry.isIntersecting;
         console.log(`Feed visibility changed: ${isInViewportRef.current ? 'visible' : 'hidden'}`);
       });
-    }, { threshold: 0.1 }); // 10% visibility threshold
+    }, { threshold: 0.1 });
 
     observer.observe(feedRef.current);
 
@@ -88,7 +89,6 @@ export const GroupPostsFeed = ({
   }, [standalone]);
 
   useEffect(() => {
-    // Focus on creating a post when component mounts
     const textareaElement = document.querySelector('textarea');
     if (textareaElement && membershipStatus.isMember) {
       setTimeout(() => {
@@ -100,7 +100,7 @@ export const GroupPostsFeed = ({
   const renderContent = () => (
     <FeedContent
       loading={loading}
-      refreshing={isRefreshing} // Pass the combined refreshing state
+      refreshing={isRefreshing}
       error={error}
       posts={posts}
       user={user}
@@ -113,13 +113,12 @@ export const GroupPostsFeed = ({
     />
   );
 
-  // If standalone, wrap in a card
   if (standalone) {
     return (
       <Card ref={feedRef} className="w-full mb-6 overflow-hidden border-2 border-primary/10 shadow-lg">
         <FeedHeader
           groupName={groupName}
-          isRefreshing={isRefreshing} // Pass the combined refreshing state
+          isRefreshing={isRefreshing}
           loading={loading}
           isAutoRefreshEnabled={isAutoRefreshEnabled}
           toggleAutoRefresh={toggleAutoRefresh}
@@ -128,7 +127,7 @@ export const GroupPostsFeed = ({
         
         <LastRefreshIndicator 
           loading={loading} 
-          refreshing={isRefreshing} // Pass the combined refreshing state
+          refreshing={isRefreshing}
           lastAutoRefresh={lastAutoRefresh} 
           isAutoRefreshEnabled={isAutoRefreshEnabled}
           nextRefreshIn={nextRefreshIn}
@@ -141,6 +140,5 @@ export const GroupPostsFeed = ({
     );
   }
 
-  // Otherwise, return just the content (for tabs)
   return renderContent();
 };
