@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,8 +15,8 @@ type PostReactionCountsResponse = {
   error: any;
 };
 
-// Define the parameters type for the RPC function with proper typing
-interface PostReactionCountsParams {
+// Define proper parameter type for the RPC function
+interface GetPostReactionCountsParams {
   post_id: string;
 }
 
