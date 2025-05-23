@@ -52,7 +52,7 @@ export const PostReactions = ({
   const isDisabled = !currentUserId;
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 relative z-10">
       <ReactionButton
         type="thumbsup"
         Icon={ThumbsUp}

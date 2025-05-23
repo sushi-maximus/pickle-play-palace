@@ -32,7 +32,7 @@ export const CommentForm = ({ postId, userId, onCommentAdded }: CommentFormProps
   };
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 relative z-10">
       <Textarea
         placeholder="Write a comment..."
         value={content}

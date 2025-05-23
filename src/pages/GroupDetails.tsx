@@ -76,17 +76,19 @@ const GroupDetails = () => {
     switch (activeTab) {
       case "home":
         return (
-          <MobileChatFeed
-            posts={posts}
-            loading={postsLoading}
-            refreshing={refreshing}
-            currentUserId={user?.id}
-          />
+          <div className="relative z-0">
+            <MobileChatFeed
+              posts={posts}
+              loading={postsLoading}
+              refreshing={refreshing}
+              currentUserId={user?.id}
+            />
+          </div>
         );
       
       case "users":
         return (
-          <div className="flex-1 px-4 py-6">
+          <div className="flex-1 px-4 py-6 relative z-0">
             <h3 className="text-lg font-medium mb-4">Group Members</h3>
             <GroupMembersList
               members={group?.members || []}
@@ -100,7 +102,7 @@ const GroupDetails = () => {
       
       case "settings":
         return (
-          <div className="flex-1 px-4 py-6">
+          <div className="flex-1 px-4 py-6 relative z-0">
             <GroupDetailsTabs
               group={group}
               membershipStatus={membershipStatus}
@@ -114,7 +116,7 @@ const GroupDetails = () => {
       
       default:
         return (
-          <div className="flex-1 px-4 py-6">
+          <div className="flex-1 px-4 py-6 relative z-0">
             <p className="text-center text-slate-500">Coming soon...</p>
           </div>
         );
@@ -136,7 +138,7 @@ const GroupDetails = () => {
         />
       )}
       
-      <div className="flex-1 mt-16 pt-20 pb-20 overflow-hidden">
+      <div className="flex-1 mt-16 pt-20 pb-20 overflow-hidden relative">
         {renderTabContent()}
       </div>
       

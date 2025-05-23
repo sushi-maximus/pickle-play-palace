@@ -34,7 +34,7 @@ export const MobileComposeArea = ({
   };
 
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b p-4">
+    <div className="fixed top-16 left-0 right-0 z-[45] bg-white border-b p-4">
       <div className="flex gap-3 items-end">
         <div className="flex-1">
           <Textarea

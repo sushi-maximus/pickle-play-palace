@@ -29,7 +29,7 @@ export const FeedHeader = memo(({
   const isLoading = loading || isRefreshing;
   
   return (
-    <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent flex flex-row items-center justify-between">
+    <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent flex flex-row items-center justify-between relative z-10">
       <div className="flex items-center gap-2">
         <MessageCircle className="h-6 w-6 text-primary" />
         <CardTitle>{groupName ? `${groupName} Discussion` : 'Group Discussion'}</CardTitle>
