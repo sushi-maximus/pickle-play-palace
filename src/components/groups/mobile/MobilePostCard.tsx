@@ -68,7 +68,7 @@ export const MobilePostCard = ({
       {!isEditingThisPost && (
         <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4">
           <div className="w-full ml-12 md:ml-14">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 md:gap-3">
               <PostReactions2Component 
                 postId={post.id}
                 userId={user?.id}
