@@ -7,3 +7,4 @@ export * from './GroupPostsEmpty';
 export * from './hooks/useGroupPosts';
 export * from './hooks/useCreatePost';
 export * from './hooks/useEditPost';
+export * from './hooks/useDeletePost';

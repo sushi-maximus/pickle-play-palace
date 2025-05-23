@@ -3,16 +3,29 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, MoreHorizontal, Edit, X, Check } from "lucide-react";
+import { Heart, MessageSquare, MoreHorizontal, Edit, X, Check, Trash } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useEditPost } from "./hooks/useEditPost";
+import { useDeletePost } from "./hooks/useDeletePost";
 import { Textarea } from "@/components/ui/textarea";
 import { 
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface GroupPostCardProps {
   post: {
@@ -34,16 +47,19 @@ interface GroupPostCardProps {
   currentUserId?: string;
   onReactionToggle?: (postId: string) => void;
   onPostUpdated?: () => void;
+  onPostDeleted?: () => void;
 }
 
 export const GroupPostCard = ({ 
   post, 
   currentUserId,
   onReactionToggle, 
-  onPostUpdated 
+  onPostUpdated,
+  onPostDeleted
 }: GroupPostCardProps) => {
   const [isReacted, setIsReacted] = useState(post.user_has_reacted || false);
   const [reactionsCount, setReactionsCount] = useState(post.reactions_count || 0);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isAuthor = currentUserId === post.user.id;
   
   const {
@@ -57,6 +73,16 @@ export const GroupPostCard = ({
     currentPostId
   } = useEditPost({ onPostUpdated });
 
+  const {
+    isDeleting,
+    handleDelete
+  } = useDeletePost({ 
+    onPostDeleted: () => {
+      setIsDeleteDialogOpen(false);
+      onPostDeleted?.();
+    }
+  });
+
   const handleReactionToggle = () => {
     setIsReacted(!isReacted);
     setReactionsCount(isReacted ? reactionsCount - 1 : reactionsCount + 1);
@@ -64,6 +90,10 @@ export const GroupPostCard = ({
   };
 
   const isEditingThisPost = isEditing && currentPostId === post.id;
+  
+  const confirmDelete = () => {
+    handleDelete(post.id);
+  };
 
   return (
     <Card className="mb-4">
@@ -102,6 +132,14 @@ export const GroupPostCard = ({
                 <DropdownMenuItem onClick={() => startEditing(post.id, post.content)}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit post
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete post
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -182,6 +220,28 @@ export const GroupPostCard = ({
           </div>
         </CardFooter>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your post and remove it from the group.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

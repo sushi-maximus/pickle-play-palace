@@ -42,6 +42,10 @@ export const GroupPostsFeed = ({
   const handlePostUpdated = () => {
     refreshPosts();
   };
+  
+  const handlePostDeleted = () => {
+    refreshPosts();
+  };
 
   const handleReactionToggle = async (postId: string) => {
     if (!user) return;
@@ -111,6 +115,7 @@ export const GroupPostsFeed = ({
                 currentUserId={user?.id}
                 onReactionToggle={handleReactionToggle}
                 onPostUpdated={handlePostUpdated}
+                onPostDeleted={handlePostDeleted}
               />
             ))}
           </div>
