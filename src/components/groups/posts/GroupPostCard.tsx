@@ -1,10 +1,14 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useEditPost } from "./hooks/useEditPost";
 import { useDeletePost } from "./hooks/useDeletePost";
 import { CommentsSection } from "./CommentsSection";
 import { usePostReactions } from "./hooks/usePostReactions";
-import { PostHeader, PostContent, PostReactions, DeletePostDialog } from "./post-card";
+import { PostHeader } from "./post-card/PostHeader";
+import { PostContent } from "./post-card/PostContent";
+import { PostReactions } from "./post-card/PostReactions";
+import { DeletePostDialog } from "./post-card/DeletePostDialog";
 import { PostReactionType } from "./hooks/usePostReactions";
 
 interface GroupPostCardProps {
@@ -80,6 +84,9 @@ export const GroupPostCard = ({
   const confirmDelete = () => {
     handleDelete(post.id);
   };
+
+  console.log("GroupPostCard - isAuthor:", isAuthor, "currentUserId:", currentUserId, "post.user.id:", post.user.id);
+  console.log("GroupPostCard - isEditingThisPost:", isEditingThisPost);
 
   return (
     <Card className="mb-4 hover:shadow-md transition-all duration-200 border-l-4 border-l-primary/30">
