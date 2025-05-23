@@ -59,7 +59,7 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
       )}
       
       {comments.length > 0 && (
-        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 flex flex-col items-center">
           {comments.map((comment) => (
             <Comment 
               key={comment.id} 

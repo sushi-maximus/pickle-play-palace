@@ -4,12 +4,19 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from "date-fns";
-import { ThumbsUp, ThumbsDown, Edit, Trash2, Save, X } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Edit, Trash2, Save, X, MoreHorizontal } from "lucide-react";
 import type { Comment as CommentType } from "./hooks/useComments";
 import { useCommentReactions, ReactionType } from "./hooks/useCommentReactions";
 import { useEditComment } from "./hooks/useEditComment";
 import { useDeleteComment } from "./hooks/useDeleteComment";
 import { DeleteCommentDialog } from "./post-card/DeleteCommentDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
 
 interface CommentProps {
   comment: CommentType;
@@ -65,7 +72,7 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
   };
 
   return (
-    <div className="flex gap-3 py-2">
+    <div className="flex gap-3 py-2 w-[70%]">
       <Avatar className="h-8 w-8">
         {comment.user.avatar_url ? (
           <AvatarImage src={comment.user.avatar_url} alt={`${comment.user.first_name} ${comment.user.last_name}`} />
@@ -81,26 +88,27 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
           <div className="font-medium text-sm flex justify-between items-center">
             <span>{comment.user.first_name} {comment.user.last_name}</span>
             {isAuthor && !isEditingThisComment && (
-              <div className="flex gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 w-6 p-0" 
-                  onClick={() => startEditing(comment.id, comment.content)}
-                >
-                  <Edit className="h-3.5 w-3.5" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 w-6 p-0 text-destructive hover:text-destructive" 
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => startEditing(comment.id, comment.content)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit comment
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete comment
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
           
