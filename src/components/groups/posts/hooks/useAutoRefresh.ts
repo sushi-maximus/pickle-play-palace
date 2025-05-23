@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 
@@ -169,13 +168,12 @@ export const useAutoRefresh = ({
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
     
-    // Fix: Use the correct toast format
-    toast({
-      title: newValue ? "Auto-refresh enabled" : "Auto-refresh disabled",
-      description: newValue 
-        ? `Posts will automatically refresh every ${interval/1000} seconds` 
-        : "Posts will only refresh when you click the refresh button",
-    });
+    // Fix: Use the correct format for Sonner toast (simple message with optional description)
+    if (newValue) {
+      toast(`Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`);
+    } else {
+      toast("Auto-refresh disabled. Posts will only refresh when you click the refresh button.");
+    }
   };
 
   const handleManualRefresh = async () => {
