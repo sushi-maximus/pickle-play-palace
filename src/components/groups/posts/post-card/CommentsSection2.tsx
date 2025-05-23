@@ -76,7 +76,7 @@ export const CommentsSection2 = ({ postId, user }: CommentsSection2Props) => {
   }
 
   return (
-    <div className="border-t border-gray-100">
+    <div className="border-t border-gray-100 ml-12 md:ml-14">
       {/* Comments List */}
       {comments.length > 0 && (
         <div className="max-h-96 overflow-y-auto">
