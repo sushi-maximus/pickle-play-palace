@@ -102,13 +102,11 @@ export const useAutoRefresh = ({
     
     if (newValue) {
       toast({
-        title: "Auto-refresh enabled",
-        description: `Posts will refresh every ${interval/1000} seconds.`
+        description: `Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`
       });
     } else {
       toast({
-        title: "Auto-refresh disabled",
-        description: "Posts will only refresh when you click the refresh button."
+        description: "Auto-refresh disabled. Posts will only refresh when you click the refresh button."
       });
     }
   };
