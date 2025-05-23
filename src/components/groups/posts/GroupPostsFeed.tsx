@@ -61,6 +61,29 @@ export const GroupPostsFeed = ({
     refreshPosts();
   };
 
+  // Auto-refresh effect
+  useEffect(() => {
+    // Don't set up auto-refresh if it's disabled
+    if (!isAutoRefreshEnabled) return;
+    
+    console.log("Setting up auto-refresh interval");
+    
+    // Set up the interval for auto-refresh
+    const intervalId = setInterval(async () => {
+      if (isAutoRefreshEnabled && !loading) {
+        console.log("Auto-refreshing posts");
+        await refreshPosts();
+        setLastAutoRefresh(new Date());
+      }
+    }, autoRefreshInterval);
+    
+    // Clean up the interval when the component unmounts
+    return () => {
+      console.log("Cleaning up auto-refresh interval");
+      clearInterval(intervalId);
+    };
+  }, [isAutoRefreshEnabled, loading, refreshPosts, autoRefreshInterval]);
+
   useEffect(() => {
     // Focus on creating a post when component mounts
     const textareaElement = document.querySelector('textarea');
