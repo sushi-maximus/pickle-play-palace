@@ -32,6 +32,12 @@ export const useThumbsUpReaction = ({
 
     setIsThumbsUpSubmitting(true);
     
+    // Store original states for potential rollback
+    const originalIsActive = isThumbsUpActive;
+    const originalCount = thumbsUpCount;
+    const originalThumbsDownActive = isThumbsDownActive;
+    const originalThumbsDownCount = thumbsDownCount;
+    
     // Optimistic update
     const newIsActive = !isThumbsUpActive;
     const newCount = newIsActive ? thumbsUpCount + 1 : thumbsUpCount - 1;
@@ -39,20 +45,15 @@ export const useThumbsUpReaction = ({
     // If activating thumbsup, ensure thumbsdown is deactivated
     if (newIsActive && isThumbsDownActive) {
       setIsThumbsDownActive(false);
-      setThumbsDownCount(thumbsDownCount - 1);
+      setThumbsDownCount(Math.max(0, thumbsDownCount - 1));
     }
     
     setIsThumbsUpActive(newIsActive);
-    setThumbsUpCount(newCount);
+    setThumbsUpCount(Math.max(0, newCount));
 
     try {
       if (newIsActive) {
-        // Remove thumbsdown if it exists
-        if (isThumbsDownActive) {
-          await reactionService.deleteReaction(postId, userId, 'thumbsdown');
-        }
-        
-        // Add thumbsup reaction
+        // Use the upsert method which handles existing reactions
         await reactionService.addReaction(postId, userId, 'thumbsup');
       } else {
         // Remove thumbsup reaction
@@ -61,14 +62,10 @@ export const useThumbsUpReaction = ({
     } catch (error) {
       console.error('Error toggling thumbs up reaction:', error);
       // Revert optimistic update on error
-      setIsThumbsUpActive(!newIsActive);
-      setThumbsUpCount(newIsActive ? thumbsUpCount : thumbsUpCount + 1);
-      
-      // Also revert thumbs down changes if they were made
-      if (newIsActive && isThumbsDownActive) {
-        setIsThumbsDownActive(true);
-        setThumbsDownCount(thumbsDownCount);
-      }
+      setIsThumbsUpActive(originalIsActive);
+      setThumbsUpCount(originalCount);
+      setIsThumbsDownActive(originalThumbsDownActive);
+      setThumbsDownCount(originalThumbsDownCount);
     } finally {
       setIsThumbsUpSubmitting(false);
     }

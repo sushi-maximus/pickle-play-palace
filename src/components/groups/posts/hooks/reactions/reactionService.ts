@@ -36,12 +36,16 @@ export const reactionService = {
 
   async addReaction(postId: string, userId: string, reactionType: PostReactionType2) {
     console.log(`Adding ${reactionType} reaction for post ${postId} user ${userId}`);
+    
+    // Use upsert to handle the unique constraint properly
     const { error } = await supabase
       .from('reactions')
-      .insert({
+      .upsert({
         post_id: postId,
         user_id: userId,
         reaction_type: reactionType
+      }, {
+        onConflict: 'post_id,user_id'
       });
 
     if (error) {

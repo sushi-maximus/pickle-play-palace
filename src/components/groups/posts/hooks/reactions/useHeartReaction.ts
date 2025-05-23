@@ -69,10 +69,7 @@ export const useHeartReaction = ({
 
     try {
       if (newIsActive) {
-        // First, delete all existing reactions for this user and post to avoid duplicates
-        await reactionService.deleteAllUserReactions(postId, userId);
-        
-        // Then add the heart reaction
+        // Use the upsert method which handles existing reactions
         await reactionService.addReaction(postId, userId, 'heart');
       } else {
         // Just remove the heart reaction
