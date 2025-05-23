@@ -32,3 +32,22 @@ export interface UseGroupPostsResult {
   groupName: string;
   refreshPosts: () => Promise<void>;
 }
+
+// Add PostReaction types
+export interface PostReactions {
+  like: number;
+  thumbsup: number;
+  thumbsdown: number;
+}
+
+export interface PostUserReactions {
+  like: boolean;
+  thumbsup: boolean;
+  thumbsdown: boolean;
+}
+
+export interface PostReactionSubmitting {
+  like: boolean;
+  thumbsup: boolean;
+  thumbsdown: boolean;
+}

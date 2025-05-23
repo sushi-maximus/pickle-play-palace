@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Heart, ThumbsUp, ThumbsDown } from "lucide-react";
-import { PostReactionType } from "../hooks/usePostReactions";
+import { PostReactionType } from "../hooks/types/reactionTypes";
 
 interface PostReactionsProps {
   reactions: Record<PostReactionType, number>;
