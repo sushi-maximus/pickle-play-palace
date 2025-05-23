@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { PostReactionType } from "./usePostReactions";
 
 interface PostUser {
   id: string;
@@ -16,9 +17,9 @@ export interface GroupPost {
   updated_at: string;
   media_urls?: string[] | null;
   user: PostUser;
-  reactions_count: number;
+  reactions: Record<PostReactionType, number>;
   comments_count: number;
-  user_has_reacted: boolean;
+  user_reactions: Record<PostReactionType, boolean>;
 }
 
 interface UseGroupPostsProps {
@@ -79,40 +80,64 @@ export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
             console.error("Error fetching user data:", userError);
           }
 
-          // Count total reactions
-          const { count: reactionsCount, error: reactionsError } = await supabase
+          // Count different types of reactions
+          const { count: likeCount } = await supabase
             .from("reactions")
             .select("*", { count: "exact", head: true })
-            .eq("post_id", post.id);
+            .eq("post_id", post.id)
+            .eq("reaction_type", "like");
+
+          const { count: thumbsUpCount } = await supabase
+            .from("reactions")
+            .select("*", { count: "exact", head: true })
+            .eq("post_id", post.id)
+            .eq("reaction_type", "thumbsup");
+
+          const { count: thumbsDownCount } = await supabase
+            .from("reactions")
+            .select("*", { count: "exact", head: true })
+            .eq("post_id", post.id)
+            .eq("reaction_type", "thumbsdown");
 
           // Count comments
-          const { count: commentsCount, error: commentsError } = await supabase
+          const { count: commentsCount } = await supabase
             .from("comments")
             .select("*", { count: "exact", head: true })
             .eq("post_id", post.id);
 
           // Check if current user has reacted to this post
-          let userHasReacted = false;
+          let userLike = false;
+          let userThumbsUp = false;
+          let userThumbsDown = false;
+          
           if (userId) {
-            const { data: userReaction, error: userReactionError } = await supabase
+            const { data: likeReaction } = await supabase
               .from("reactions")
               .select("*")
               .eq("post_id", post.id)
               .eq("user_id", userId)
+              .eq("reaction_type", "like")
               .maybeSingle();
             
-            userHasReacted = !!userReaction;
-
-            if (userReactionError) {
-              console.error("Error fetching user reaction:", userReactionError);
-            }
-          }
-
-          if (reactionsError || commentsError) {
-            console.error("Error fetching post metadata", {
-              reactionsError,
-              commentsError
-            });
+            const { data: thumbsUpReaction } = await supabase
+              .from("reactions")
+              .select("*")
+              .eq("post_id", post.id)
+              .eq("user_id", userId)
+              .eq("reaction_type", "thumbsup")
+              .maybeSingle();
+            
+            const { data: thumbsDownReaction } = await supabase
+              .from("reactions")
+              .select("*")
+              .eq("post_id", post.id)
+              .eq("user_id", userId)
+              .eq("reaction_type", "thumbsdown")
+              .maybeSingle();
+            
+            userLike = !!likeReaction;
+            userThumbsUp = !!thumbsUpReaction;
+            userThumbsDown = !!thumbsDownReaction;
           }
 
           return {
@@ -122,9 +147,17 @@ export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
               first_name: "Unknown", 
               last_name: "User" 
             },
-            reactions_count: reactionsCount || 0,
+            reactions: {
+              like: likeCount || 0,
+              thumbsup: thumbsUpCount || 0,
+              thumbsdown: thumbsDownCount || 0
+            },
             comments_count: commentsCount || 0,
-            user_has_reacted: userHasReacted
+            user_reactions: {
+              like: userLike,
+              thumbsup: userThumbsUp,
+              thumbsdown: userThumbsDown
+            }
           };
         })
       );

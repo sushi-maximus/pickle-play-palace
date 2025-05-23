@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ReactionType } from "./useCommentReactions";
 
 export interface Comment {
   id: string;
@@ -14,9 +15,11 @@ export interface Comment {
     last_name: string;
     avatar_url?: string | null;
   };
+  reactions?: Record<ReactionType, number>;
+  user_reactions?: Record<ReactionType, boolean>;
 }
 
-export const useComments = (postId: string) => {
+export const useComments = (postId: string, userId?: string) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +46,8 @@ export const useComments = (postId: string) => {
         return;
       }
 
-      // For each comment, fetch the user info separately
-      const commentsWithUserData = await Promise.all(
+      // For each comment, fetch the user info and reactions
+      const commentsWithData = await Promise.all(
         commentsData.map(async (comment) => {
           // Fetch user data
           const { data: userData, error: userError } = await supabase
@@ -57,18 +60,65 @@ export const useComments = (postId: string) => {
             console.error("Error fetching user data:", userError);
           }
 
+          // Get thumbsup reactions count
+          const { count: thumbsUpCount } = await supabase
+            .from("comment_reactions")
+            .select("*", { count: "exact", head: true })
+            .eq("comment_id", comment.id)
+            .eq("reaction_type", "thumbsup");
+
+          // Get thumbsdown reactions count
+          const { count: thumbsDownCount } = await supabase
+            .from("comment_reactions")
+            .select("*", { count: "exact", head: true })
+            .eq("comment_id", comment.id)
+            .eq("reaction_type", "thumbsdown");
+
+          // Check if current user has reacted to this comment
+          let userThumbsUp = false;
+          let userThumbsDown = false;
+          
+          if (userId) {
+            const { data: thumbsUpReaction } = await supabase
+              .from("comment_reactions")
+              .select("*")
+              .eq("comment_id", comment.id)
+              .eq("user_id", userId)
+              .eq("reaction_type", "thumbsup")
+              .maybeSingle();
+            
+            const { data: thumbsDownReaction } = await supabase
+              .from("comment_reactions")
+              .select("*")
+              .eq("comment_id", comment.id)
+              .eq("user_id", userId)
+              .eq("reaction_type", "thumbsdown")
+              .maybeSingle();
+            
+            userThumbsUp = !!thumbsUpReaction;
+            userThumbsDown = !!thumbsDownReaction;
+          }
+
           return {
             ...comment,
             user: userData || { 
               id: comment.user_id, 
               first_name: "Unknown", 
               last_name: "User" 
+            },
+            reactions: {
+              thumbsup: thumbsUpCount || 0,
+              thumbsdown: thumbsDownCount || 0
+            },
+            user_reactions: {
+              thumbsup: userThumbsUp,
+              thumbsdown: userThumbsDown
             }
           };
         })
       );
 
-      setComments(commentsWithUserData);
+      setComments(commentsWithData);
     } catch (err) {
       console.error("Error fetching comments:", err);
       setError("Failed to load comments. Please try again later.");
@@ -81,7 +131,7 @@ export const useComments = (postId: string) => {
     if (postId) {
       fetchComments();
     }
-  }, [postId]);
+  }, [postId, userId]);
 
   return {
     comments,

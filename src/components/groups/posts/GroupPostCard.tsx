@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, MoreHorizontal, Edit, X, Check, Trash } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Edit, X, Check, Trash, ThumbsUp, ThumbsDown } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useEditPost } from "./hooks/useEditPost";
 import { useDeletePost } from "./hooks/useDeletePost";
 import { Textarea } from "@/components/ui/textarea";
 import { CommentsSection } from "./CommentsSection";
+import { usePostReactions, PostReactionType } from "./hooks/usePostReactions";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -40,12 +41,11 @@ interface GroupPostCardProps {
       last_name: string;
       avatar_url?: string | null;
     };
-    reactions_count?: number;
+    reactions: Record<PostReactionType, number>;
     comments_count?: number;
-    user_has_reacted?: boolean;
+    user_reactions: Record<PostReactionType, boolean>;
   };
   currentUserId?: string;
-  onReactionToggle?: (postId: string) => void;
   onPostUpdated?: () => void;
   onPostDeleted?: () => void;
 }
@@ -53,21 +53,29 @@ interface GroupPostCardProps {
 export const GroupPostCard = ({ 
   post, 
   currentUserId,
-  onReactionToggle, 
   onPostUpdated,
   onPostDeleted
 }: GroupPostCardProps) => {
-  const [isReacted, setIsReacted] = useState(post.user_has_reacted || false);
-  const [reactionsCount, setReactionsCount] = useState(post.reactions_count || 0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [showComments, setShowComments] = useState(false);
   const isAuthor = currentUserId === post.user.id;
   
+  const {
+    reactions,
+    userReactions,
+    isSubmitting,
+    toggleReaction
+  } = usePostReactions({
+    postId: post.id,
+    userId: currentUserId,
+    initialReactions: post.reactions,
+    initialUserReactions: post.user_reactions
+  });
+
   const {
     isEditing,
     editableContent,
     setEditableContent,
-    isSubmitting,
+    isSubmitting: isEditSubmitting,
     startEditing,
     cancelEditing,
     handleUpdate,
@@ -84,10 +92,8 @@ export const GroupPostCard = ({
     }
   });
 
-  const handleReactionToggle = () => {
-    setIsReacted(!isReacted);
-    setReactionsCount(isReacted ? reactionsCount - 1 : reactionsCount + 1);
-    onReactionToggle?.(post.id);
+  const handleReactionToggle = (type: PostReactionType) => {
+    toggleReaction(type);
   };
 
   const isEditingThisPost = isEditing && currentPostId === post.id;
@@ -156,21 +162,21 @@ export const GroupPostCard = ({
               onChange={(e) => setEditableContent(e.target.value)}
               className="w-full resize-none"
               rows={3}
-              disabled={isSubmitting}
+              disabled={isEditSubmitting}
             />
             <div className="flex justify-end gap-2">
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={cancelEditing}
-                disabled={isSubmitting}
+                disabled={isEditSubmitting}
               >
                 <X className="h-4 w-4 mr-1" /> Cancel
               </Button>
               <Button 
                 size="sm" 
                 onClick={handleUpdate}
-                disabled={!editableContent.trim() || isSubmitting}
+                disabled={!editableContent.trim() || isEditSubmitting}
               >
                 <Check className="h-4 w-4 mr-1" /> Save
               </Button>
@@ -199,21 +205,50 @@ export const GroupPostCard = ({
       
       {!isEditingThisPost && (
         <CardFooter className="border-t pt-3 flex flex-col">
-          <div className="w-full flex">
-            <div className="flex space-x-1 items-center mr-6">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`flex items-center gap-1 ${isReacted ? "text-red-500" : ""}`}
-                onClick={handleReactionToggle}
-              >
-                <Heart 
-                  className={`h-4 w-4 ${isReacted ? "fill-red-500 text-red-500" : ""}`}
-                />
-                <span>{reactionsCount > 0 ? reactionsCount : ''}</span>
-              </Button>
-            </div>
+          <div className="w-full flex gap-4">
+            {/* Like button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`flex items-center gap-1 ${userReactions.like ? "text-red-500" : ""}`}
+              onClick={() => handleReactionToggle("like")}
+              disabled={!currentUserId || isSubmitting.like}
+            >
+              <Heart 
+                className={`h-4 w-4 ${userReactions.like ? "fill-red-500 text-red-500" : ""}`}
+              />
+              <span>{reactions.like > 0 ? reactions.like : ''}</span>
+            </Button>
             
+            {/* Thumbs Up button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`flex items-center gap-1 ${userReactions.thumbsup ? "text-blue-500" : ""}`}
+              onClick={() => handleReactionToggle("thumbsup")}
+              disabled={!currentUserId || isSubmitting.thumbsup}
+            >
+              <ThumbsUp 
+                className={`h-4 w-4 ${userReactions.thumbsup ? "fill-blue-500 text-blue-500" : ""}`}
+              />
+              <span>{reactions.thumbsup > 0 ? reactions.thumbsup : ''}</span>
+            </Button>
+            
+            {/* Thumbs Down button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`flex items-center gap-1 ${userReactions.thumbsdown ? "text-red-500" : ""}`}
+              onClick={() => handleReactionToggle("thumbsdown")}
+              disabled={!currentUserId || isSubmitting.thumbsdown}
+            >
+              <ThumbsDown 
+                className={`h-4 w-4 ${userReactions.thumbsdown ? "fill-red-500 text-red-500" : ""}`}
+              />
+              <span>{reactions.thumbsdown > 0 ? reactions.thumbsdown : ''}</span>
+            </Button>
+            
+            {/* Comments section */}
             <CommentsSection 
               postId={post.id}
               userId={currentUserId}

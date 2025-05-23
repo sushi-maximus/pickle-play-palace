@@ -1,11 +1,9 @@
-
 import { CreatePostForm } from "./CreatePostForm";
 import { GroupPostCard } from "./GroupPostCard";
 import { GroupPostsLoading } from "./GroupPostsLoading";
 import { GroupPostsEmpty } from "./GroupPostsEmpty";
 import { useGroupPosts } from "./hooks/useGroupPosts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 
 interface GroupPostsFeedProps {
   groupId: string;
@@ -47,42 +45,6 @@ export const GroupPostsFeed = ({
     refreshPosts();
   };
 
-  const handleReactionToggle = async (postId: string) => {
-    if (!user) return;
-
-    try {
-      // Check if user already reacted to this post
-      const { data: existingReaction } = await supabase
-        .from("reactions")
-        .select("*")
-        .eq("post_id", postId)
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (existingReaction) {
-        // If reaction exists, delete it
-        await supabase
-          .from("reactions")
-          .delete()
-          .eq("id", existingReaction.id);
-      } else {
-        // If no reaction, create one
-        await supabase
-          .from("reactions")
-          .insert({
-            post_id: postId,
-            user_id: user.id,
-            reaction_type: "like"
-          });
-      }
-      
-      // Refresh posts to update reactions
-      refreshPosts();
-    } catch (err) {
-      console.error("Error toggling reaction:", err);
-    }
-  };
-
   const renderContent = () => {
     // Loading state
     if (loading) {
@@ -113,7 +75,6 @@ export const GroupPostsFeed = ({
                 key={post.id} 
                 post={post}
                 currentUserId={user?.id}
-                onReactionToggle={handleReactionToggle}
                 onPostUpdated={handlePostUpdated}
                 onPostDeleted={handlePostDeleted}
               />

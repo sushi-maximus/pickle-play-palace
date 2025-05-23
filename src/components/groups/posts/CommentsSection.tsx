@@ -14,7 +14,7 @@ interface CommentsSectionProps {
 
 export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { comments, loading, error, refreshComments } = useComments(postId);
+  const { comments, loading, error, refreshComments } = useComments(postId, userId);
 
   const handleCommentAdded = () => {
     refreshComments();
@@ -57,7 +57,11 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
       {comments.length > 0 && (
         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
           {comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} />
+            <Comment 
+              key={comment.id} 
+              comment={comment}
+              userId={userId} 
+            />
           ))}
         </div>
       )}
