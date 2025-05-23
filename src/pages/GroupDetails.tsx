@@ -6,6 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { GroupDetailsContainer } from "@/components/groups/details/GroupDetailsContainer";
 import { GroupPostsFeed } from "@/components/groups/posts/GroupPostsFeed";
+import { GroupDetailsHeader } from "@/components/groups/GroupDetailsHeader";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,24 +25,36 @@ const GroupDetails = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 py-12 px-4">
-        <div className="container mx-auto max-w-4xl">
-          {/* Standalone Posts Feed Card */}
-          <div className="mb-8">
-            <GroupPostsFeed
-              groupId={id}
-              user={user}
-              membershipStatus={{ isMember: true, isPending: false, isAdmin: false }}
-              standalone={true}
-            />
-          </div>
-          
-          {/* Original Group Details Container */}
-          <GroupDetailsContainer
-            id={id}
-            user={user}
-            breadcrumbItems={breadcrumbItems}
+      <main className="flex-1 py-8 px-4 bg-slate-50 dark:bg-slate-900">
+        <div className="container mx-auto max-w-6xl">
+          <GroupDetailsHeader 
+            group={null} // Will be loaded by the container
+            breadcrumbItems={breadcrumbItems} 
           />
+          
+          <Tabs defaultValue="posts" className="w-full mt-6">
+            <TabsList className="mb-6 w-full justify-start bg-card border shadow-sm">
+              <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
+              <TabsTrigger value="details" className="flex-1">Group Details</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="posts" className="mt-0">
+              <GroupPostsFeed
+                groupId={id}
+                user={user}
+                membershipStatus={{ isMember: true, isPending: false, isAdmin: false }}
+                standalone={true}
+              />
+            </TabsContent>
+            
+            <TabsContent value="details" className="mt-0">
+              <GroupDetailsContainer
+                id={id}
+                user={user}
+                breadcrumbItems={breadcrumbItems}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       <Footer />

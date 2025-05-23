@@ -82,7 +82,7 @@ export const GroupPostCard = ({
   };
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 hover:shadow-md transition-all duration-200 border-l-4 border-l-primary/30">
       <CardHeader className="pb-3">
         <PostHeader 
           post={post}
@@ -109,7 +109,7 @@ export const GroupPostCard = ({
       {!isEditingThisPost && (
         <CardFooter className="border-t pt-3 flex flex-col">
           <div className="w-full flex flex-col space-y-2">
-            <div className="w-full flex">
+            <div className="w-full flex justify-start">
               <PostReactions 
                 reactions={reactions}
                 userReactions={userReactions}
@@ -119,7 +119,7 @@ export const GroupPostCard = ({
               />
             </div>
             
-            <div className="w-[80%] mx-auto">
+            <div className="w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
               <CommentsSection 
                 postId={post.id}
                 userId={currentUserId}
