@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -15,6 +14,7 @@ import { GroupDetailsHeader } from "@/components/groups/GroupDetailsHeader";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +28,7 @@ const GroupDetails = () => {
     isAdmin: false
   });
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
+  const [hasPendingRequests, setHasPendingRequests] = useState(false);
   
   const breadcrumbItems = [
     { label: "Groups", href: "/groups" },
@@ -76,6 +77,29 @@ const GroupDetails = () => {
     checkMembership();
   }, [user, group]);
   
+  useEffect(() => {
+    const checkPendingRequests = async () => {
+      if (user && group && membershipStatus.isAdmin) {
+        try {
+          const { data, error } = await supabase
+            .from("group_members")
+            .select("id")
+            .eq("group_id", group.id)
+            .eq("status", "pending")
+            .limit(1);
+            
+          if (!error && data) {
+            setHasPendingRequests(data.length > 0);
+          }
+        } catch (error) {
+          console.error("Error checking pending requests:", error);
+        }
+      }
+    };
+    
+    checkPendingRequests();
+  }, [group, user, membershipStatus.isAdmin]);
+  
   const handleJoinRequest = () => {
     if (!user) {
       toast.error("You need to be logged in to request to join");
@@ -88,6 +112,14 @@ const GroupDetails = () => {
   
   const handleJoinSuccess = () => {
     setMembershipStatus(prev => ({ ...prev, isPending: true }));
+  };
+
+  // Determine the default tab based on admin status and pending requests
+  const getDefaultTab = () => {
+    if (membershipStatus.isAdmin && hasPendingRequests) {
+      return "requests";
+    }
+    return "members";
   };
 
   if (loading) {
@@ -106,7 +138,7 @@ const GroupDetails = () => {
           
           <Card className="w-full mb-6 overflow-hidden">
             <CardContent className="pt-6">
-              <Tabs defaultValue="members" className="w-full">
+              <Tabs defaultValue={getDefaultTab()} className="w-full">
                 <TabsList className="mb-4">
                   <TabsTrigger value="members">
                     Members ({group?.member_count || 0})
