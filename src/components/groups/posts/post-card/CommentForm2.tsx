@@ -41,8 +41,8 @@ export const CommentForm2 = ({
 
   if (!user) return null;
 
-  const fullName = `${user.first_name} ${user.last_name}`;
-  const initials = `${user.first_name[0] || ''}${user.last_name[0] || ''}`;
+  const fullName = `${user.first_name || ''} ${user.last_name || ''}`;
+  const initials = `${(user.first_name && user.first_name[0]) || ''}${(user.last_name && user.last_name[0]) || ''}`;
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 md:gap-3 p-3 md:p-4 border-t border-gray-100">
