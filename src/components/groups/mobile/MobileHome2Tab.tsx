@@ -1,16 +1,12 @@
-import { useAuth } from "@/contexts/AuthContext";
+
+import { useState } from "react";
 import { CreatePostForm2 } from "../posts/CreatePostForm2";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
-import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
 import { useEditPost } from "../posts/hooks/useEditPost";
 import { useDeletePost } from "../posts/hooks/useDeletePost";
-import { usePostReactions2 } from "../posts/hooks/usePostReactions2";
-import { PostHeader } from "../posts/post-card/PostHeader";
-import { PostContent } from "../posts/post-card/PostContent";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
-import { ThumbsUp2 } from "../posts/post-card/ThumbsUp2";
-import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
+import { MobilePostsLoading } from "./MobilePostsLoading";
+import { MobilePostsList } from "./MobilePostsList";
 
 interface MobileHome2TabProps {
   groupId: string;
@@ -74,21 +70,7 @@ export const MobileHome2Tab = ({
   };
 
   if (loading) {
-    return (
-      <div className="flex-1 px-3 py-4 md:px-6 md:py-8">
-        <div className="space-y-3 md:space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex gap-2 md:gap-3 animate-pulse">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-slate-200 rounded-full"></div>
-              <div className="flex-1">
-                <div className="h-3 md:h-4 bg-slate-200 rounded w-1/3 mb-1 md:mb-2"></div>
-                <div className="h-10 md:h-12 bg-slate-200 rounded"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <MobilePostsLoading />;
   }
 
   return (
@@ -112,52 +94,19 @@ export const MobileHome2Tab = ({
       )}
       
       {/* Posts Feed - mobile first responsive */}
-      <div className="space-y-3 md:space-y-4">
-        {posts.map((post) => {
-          const isAuthor = user?.id === post.user?.id;
-          const isEditingThisPost = isEditing && currentPostId === post.id;
-
-          return (
-            <Card key={post.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-2 md:border-l-4 border-l-primary/30">
-              <CardHeader className="p-3 pb-2 md:p-4 md:pb-3">
-                <PostHeader 
-                  post={post}
-                  isAuthor={isAuthor}
-                  isEditing={isEditingThisPost}
-                  onStartEditing={() => startEditing(post.id, post.content)}
-                  onDeleteClick={() => handleDeleteClick(post.id)}
-                />
-              </CardHeader>
-              
-              <CardContent className="px-3 pb-0 md:px-4">
-                <PostContent 
-                  content={post.content}
-                  mediaUrls={post.media_urls}
-                  isEditing={isEditingThisPost}
-                  editableContent={editableContent}
-                  setEditableContent={setEditableContent}
-                  onCancelEditing={cancelEditing}
-                  onSaveEditing={handleUpdate}
-                  isEditSubmitting={isEditSubmitting}
-                />
-              </CardContent>
-              
-              {!isEditingThisPost && (
-                <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4">
-                  <div className="w-full ml-12 md:ml-14">
-                    <PostThumbsUp 
-                      postId={post.id}
-                      userId={user?.id}
-                      initialCount={post.reactions?.thumbsup || 0}
-                      initialUserReaction={post.user_reactions?.thumbsup || false}
-                    />
-                  </div>
-                </CardFooter>
-              )}
-            </Card>
-          );
-        })}
-      </div>
+      <MobilePostsList
+        posts={posts}
+        user={user}
+        isEditing={isEditing}
+        currentPostId={currentPostId}
+        editableContent={editableContent}
+        setEditableContent={setEditableContent}
+        isEditSubmitting={isEditSubmitting}
+        onStartEditing={startEditing}
+        onCancelEditing={cancelEditing}
+        onSaveEditing={handleUpdate}
+        onDeleteClick={handleDeleteClick}
+      />
 
       <DeletePostDialog 
         isOpen={deleteDialogPostId !== null}
@@ -166,35 +115,5 @@ export const MobileHome2Tab = ({
         isDeleting={isDeleting}
       />
     </div>
-  );
-};
-
-// Helper component to encapsulate thumbs up logic for each post
-const PostThumbsUp = ({ 
-  postId, 
-  userId, 
-  initialCount, 
-  initialUserReaction 
-}: {
-  postId: string;
-  userId?: string;
-  initialCount: number;
-  initialUserReaction: boolean;
-}) => {
-  const { count, isActive, isSubmitting, toggleReaction } = usePostReactions2({
-    postId,
-    userId,
-    initialCount,
-    initialUserReaction
-  });
-
-  return (
-    <ThumbsUp2
-      count={count}
-      isActive={isActive}
-      isSubmitting={isSubmitting}
-      onClick={toggleReaction}
-      disabled={!userId}
-    />
   );
 };
