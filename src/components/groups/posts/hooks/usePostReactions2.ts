@@ -183,6 +183,22 @@ export const usePostReactions2 = ({
 
     try {
       if (newIsActive) {
+        // First, check if any reaction exists for this user and post
+        const { data: existingReactions } = await supabase
+          .from('reactions')
+          .select('reaction_type')
+          .eq('post_id', postId)
+          .eq('user_id', userId);
+
+        // Delete any existing reactions first
+        if (existingReactions && existingReactions.length > 0) {
+          await supabase
+            .from('reactions')
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', userId);
+        }
+
         // Add heart reaction
         const { error } = await supabase
           .from('reactions')
