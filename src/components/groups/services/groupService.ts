@@ -1,7 +1,7 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { CreateGroupFormValues } from "../schemas/groupSchemas";
 import { toast } from "sonner";
+import { checkGroupMembership, checkGroupAdmin } from "../utils";
 
 export async function createGroup(values: CreateGroupFormValues, userId: string) {
   // Step 1: Create the group

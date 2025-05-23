@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { fetchAllGroups } from "./utils/groupUtils";
+import { fetchAllGroups } from "./utils";
 import { GroupsLoadingState } from "./ui/GroupsLoadingState";
 import { GroupsEmptyState } from "./ui/GroupsEmptyState";
 import { GroupsGrid } from "./ui/GroupsGrid";

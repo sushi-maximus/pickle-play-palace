@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { fetchGroupDetails } from "@/components/groups/utils/groupUtils";
+import { fetchGroupDetails } from "@/components/groups/utils";
 import { checkMembershipStatus } from "@/components/groups/services/groupService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";

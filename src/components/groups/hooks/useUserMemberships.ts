@@ -1,93 +1,46 @@
+import { useState, useEffect } from "react";
+import { fetchUserMemberships } from "../utils";
 
-import { useState, useEffect, useCallback } from "react";
-import { fetchUserMemberships } from "../utils/groupUtils";
-import { supabase } from "@/integrations/supabase/client";
-
-type Membership = {
+interface Membership {
   id: string;
   role: string;
-  group: {
-    id: string;
-    name: string;
-    description: string | null;
-    location: string | null;
-    created_at: string;
-    is_private: boolean;
-    member_count?: number;
-  };
-};
+  group: any; // Adjust type as needed
+}
 
-export const useUserMemberships = (userId: string, searchTerm: string = "") => {
+export const useUserMemberships = (userId: string, searchTerm: string) => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
+  const [filteredMemberships, setFilteredMemberships] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchMemberships = useCallback(async () => {
+  const refreshMemberships = async () => {
+    setLoading(true);
     try {
-      if (!userId) {
-        setMemberships([]);
-        return;
-      }
-
-      setLoading(true);
       const data = await fetchUserMemberships(userId);
-      
-      // For each group, get the member count
-      const membershipsWithCount = await Promise.all(
-        data.map(async (membership) => {
-          const { count, error } = await supabase
-            .from("group_members")
-            .select("*", { count: "exact", head: true })
-            .eq("group_id", membership.group.id)
-            .eq("status", "active");
-            
-          if (error) {
-            console.error(`Error counting members for group ${membership.group.id}:`, error);
-            return membership;
-          }
-          
-          return {
-            ...membership,
-            group: {
-              ...membership.group,
-              member_count: count || 0
-            }
-          };
-        })
-      );
-      
-      setMemberships(membershipsWithCount);
+      setMemberships(data);
     } catch (error) {
-      console.error("Error in useUserMemberships:", error);
-      setMemberships([]);
+      console.error("Error fetching user memberships:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    refreshMemberships();
   }, [userId]);
 
   useEffect(() => {
-    fetchMemberships();
-  }, [fetchMemberships]);
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const filtered = memberships.filter(membership => {
+      if (!membership.group) return false; // Skip if group is null
+      return membership.group.name.toLowerCase().includes(lowerCaseSearchTerm);
+    });
+    setFilteredMemberships(filtered);
+  }, [memberships, searchTerm]);
 
-  // Filter memberships based on searchTerm
-  const filteredMemberships = memberships.filter(membership => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      membership.group.name.toLowerCase().includes(searchLower) ||
-      (membership.group.description && 
-       membership.group.description.toLowerCase().includes(searchLower)) ||
-      (membership.group.location && 
-       membership.group.location.toLowerCase().includes(searchLower))
-    );
-  });
-
-  const refreshMemberships = async () => {
-    return fetchMemberships();
-  };
-
-  return { 
+  return {
     memberships,
     filteredMemberships,
     loading,
-    refreshMemberships 
+    refreshMemberships
   };
 };
