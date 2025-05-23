@@ -9,7 +9,7 @@ import { useDeletePost } from "../posts/hooks/useDeletePost";
 import { PostHeader } from "../posts/post-card/PostHeader";
 import { PostContent } from "../posts/post-card/PostContent";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 
 interface MobileHome2TabProps {
   groupId: string;
@@ -141,6 +141,20 @@ export const MobileHome2Tab = ({
                     isEditSubmitting={isEditSubmitting}
                   />
                 </CardContent>
+                
+                {!isEditingThisPost && (
+                  <CardFooter className="border-t border-gray-100 pt-3 px-4 pb-4 flex flex-col">
+                    <div className="w-full flex flex-col space-y-2">
+                      <div className="w-full flex justify-start">
+                        {/* Empty space to match GroupPostCard structure */}
+                      </div>
+                      
+                      <div className="w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
+                        {/* Empty space to match GroupPostCard structure */}
+                      </div>
+                    </div>
+                  </CardFooter>
+                )}
               </Card>
             </div>
           );
