@@ -1,9 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { GroupPostCard } from "./GroupPostCard";
 import { CreatePostForm } from "./CreatePostForm";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface GroupPostsFeedProps {
   groupId: string;
@@ -13,12 +13,19 @@ interface GroupPostsFeedProps {
     isPending: boolean;
     isAdmin: boolean;
   };
+  standalone?: boolean;
 }
 
-export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFeedProps) => {
+export const GroupPostsFeed = ({ 
+  groupId, 
+  user, 
+  membershipStatus,
+  standalone = false
+}: GroupPostsFeedProps) => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [groupName, setGroupName] = useState<string>("");
 
   const fetchPosts = async () => {
     try {
@@ -33,6 +40,19 @@ export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFe
 
       if (postsError) {
         throw postsError;
+      }
+
+      // If standalone, fetch group info to show name
+      if (standalone) {
+        const { data: groupData } = await supabase
+          .from("groups")
+          .select("name")
+          .eq("id", groupId)
+          .single();
+        
+        if (groupData) {
+          setGroupName(groupData.name);
+        }
       }
 
       // If no posts, return early
@@ -153,60 +173,79 @@ export const GroupPostsFeed = ({ groupId, user, membershipStatus }: GroupPostsFe
     }
   };
 
-  // Loading skeleton
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="space-y-3">
-            <div className="flex items-center space-x-4">
-              <Skeleton className="h-12 w-12 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
+  const renderContent = () => {
+    // Loading skeleton
+    if (loading) {
+      return (
+        <div className="space-y-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="space-y-3">
+              <div className="flex items-center space-x-4">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[250px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                </div>
               </div>
+              <Skeleton className="h-24 w-full" />
             </div>
-            <Skeleton className="h-24 w-full" />
+          ))}
+        </div>
+      );
+    }
+
+    // Error state
+    if (error) {
+      return <div className="p-4 text-center text-red-500">{error}</div>;
+    }
+
+    return (
+      <div>
+        {membershipStatus.isMember && (
+          <CreatePostForm 
+            groupId={groupId} 
+            user={user}
+            onPostCreated={handlePostCreated}
+          />
+        )}
+        
+        {posts.length === 0 ? (
+          <div className="text-center p-6 bg-muted/50 rounded-lg">
+            <p className="text-muted-foreground">
+              {membershipStatus.isMember 
+                ? "Be the first to create a post in this group!" 
+                : "No posts available in this group yet."}
+            </p>
           </div>
-        ))}
+        ) : (
+          <div>
+            {posts.map((post) => (
+              <GroupPostCard 
+                key={post.id} 
+                post={post} 
+                onReactionToggle={handleReactionToggle}
+              />
+            ))}
+          </div>
+        )}
       </div>
+    );
+  };
+
+  // If standalone, wrap in a card
+  if (standalone) {
+    return (
+      <Card className="w-full mb-6 overflow-hidden bg-gradient-to-r from-primary/10 to-transparent">
+        <CardHeader>
+          <CardTitle>Posts{groupName ? ` - ${groupName}` : ''}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {renderContent()}
+        </CardContent>
+      </Card>
     );
   }
 
-  // Error state
-  if (error) {
-    return <div className="p-4 text-center text-red-500">{error}</div>;
-  }
-
-  return (
-    <div>
-      {membershipStatus.isMember && (
-        <CreatePostForm 
-          groupId={groupId} 
-          user={user}
-          onPostCreated={handlePostCreated}
-        />
-      )}
-      
-      {posts.length === 0 ? (
-        <div className="text-center p-6 bg-muted/50 rounded-lg">
-          <p className="text-muted-foreground">
-            {membershipStatus.isMember 
-              ? "Be the first to create a post in this group!" 
-              : "No posts available in this group yet."}
-          </p>
-        </div>
-      ) : (
-        <div>
-          {posts.map((post) => (
-            <GroupPostCard 
-              key={post.id} 
-              post={post} 
-              onReactionToggle={handleReactionToggle}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  // Otherwise, return just the content (for tabs)
+  return renderContent();
 };

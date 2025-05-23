@@ -33,16 +33,12 @@ export const GroupDetailsTabs = ({
     if (membershipStatus.isAdmin && hasPendingRequests) {
       return "requests";
     }
-    return "posts";
+    return "members";
   };
 
   return (
     <Tabs defaultValue={getDefaultTab()} className="w-full">
       <TabsList className="mb-4">
-        <TabsTrigger value="posts" className="flex items-center gap-1">
-          <MessageSquare className="h-4 w-4" />
-          <span>Posts</span>
-        </TabsTrigger>
         <TabsTrigger value="members" className="flex items-center gap-1">
           <Users className="h-4 w-4" />
           <span>Members ({group?.member_count || 0})</span>
@@ -58,14 +54,6 @@ export const GroupDetailsTabs = ({
           </TabsTrigger>
         )}
       </TabsList>
-
-      <TabsContent value="posts">
-        <GroupPostsFeed 
-          groupId={group?.id} 
-          user={user}
-          membershipStatus={membershipStatus}
-        />
-      </TabsContent>
 
       <TabsContent value="members">
         <h3 className="text-lg font-medium mb-4">Group Members</h3>
