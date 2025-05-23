@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,7 +15,7 @@ interface UsePostReactionsProps {
 interface UsePostReactionsResult {
   reactions: Record<PostReactionType, number>;
   userReactions: Record<PostReactionType, boolean>;
-  isSubmitting: boolean;
+  isSubmitting: Record<PostReactionType, boolean>;
   toggleReaction: (type: PostReactionType) => Promise<void>;
 }
 
@@ -24,9 +25,13 @@ export const usePostReactions = ({
   initialReactions,
   initialUserReactions,
 }: UsePostReactionsProps): UsePostReactionsResult => {
-  const [reactions, setReactions] = useState(initialReactions);
-  const [userReactions, setUserReactions] = useState(initialUserReactions);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reactions, setReactions] = useState<Record<PostReactionType, number>>(initialReactions);
+  const [userReactions, setUserReactions] = useState<Record<PostReactionType, boolean>>(initialUserReactions);
+  const [isSubmitting, setIsSubmitting] = useState<Record<PostReactionType, boolean>>({
+    like: false,
+    thumbsup: false,
+    thumbsdown: false
+  });
 
   const toggleReaction = useCallback(async (type: PostReactionType) => {
     if (!userId) {
@@ -34,7 +39,7 @@ export const usePostReactions = ({
       return;
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(prev => ({ ...prev, [type]: true }));
     const hasReacted = userReactions[type];
     const increment = hasReacted ? -1 : 1;
 
@@ -70,11 +75,8 @@ export const usePostReactions = ({
       }));
     } catch (error: any) {
       console.error("Error toggling reaction:", error.message);
-      // Revert the state on error (optional, depends on UX)
-      // setReactions(initialReactions);
-      // setUserReactions(initialUserReactions);
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(prev => ({ ...prev, [type]: false }));
     }
   }, [postId, userId, userReactions]);
 

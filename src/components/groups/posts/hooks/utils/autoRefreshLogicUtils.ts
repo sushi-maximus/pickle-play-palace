@@ -1,65 +1,65 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, MutableRefObject } from 'react';
 
 export const useAutoRefreshLogic = (
   isAutoRefreshEnabled: boolean,
-  loading: boolean,
+  isLoading: boolean,
   interval: number,
   refreshFunction: () => Promise<void>,
-  userInteractingRef: React.RefObject<boolean>,
-  isComponentMountedRef: React.RefObject<boolean>,
-  isVisibleRef: React.RefObject<boolean>,
-  setLastAutoRefresh: React.Dispatch<React.SetStateAction<Date | null>>,
-  setNextRefreshIn: React.Dispatch<React.SetStateAction<number>>
+  userInteractingRef: MutableRefObject<boolean>,
+  isComponentMountedRef: MutableRefObject<boolean>,
+  isVisibleRef: MutableRefObject<boolean>,
+  setLastAutoRefresh: (date: Date) => void,
+  setNextRefreshIn: (seconds: number) => void
 ) => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
+  
   useEffect(() => {
-    // Don't set up auto-refresh if it's disabled
-    if (!isAutoRefreshEnabled) {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-        refreshIntervalRef.current = null;
-      }
-      return;
+    // Clear existing interval when autoRefresh state changes
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
     }
-    
-    console.log("Setting up auto-refresh interval");
-    
-    // Set up the interval for auto-refresh
-    refreshIntervalRef.current = setInterval(async () => {
-      const shouldRefresh = 
-        isAutoRefreshEnabled && 
-        !loading && 
-        !userInteractingRef.current && 
-        isComponentMountedRef.current &&
-        isVisibleRef.current;
+
+    // Only set up the interval if auto-refresh is enabled
+    if (isAutoRefreshEnabled) {
+      console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
       
-      if (shouldRefresh) {
-        console.log("Auto-refreshing posts at", new Date().toLocaleTimeString());
-        try {
-          await refreshFunction();
+      refreshIntervalRef.current = setInterval(() => {
+        // Only proceed if all conditions are met
+        if (
+          isComponentMountedRef.current && 
+          isAutoRefreshEnabled &&
+          !isLoading && 
+          !userInteractingRef.current && 
+          isVisibleRef.current
+        ) {
+          console.log('Auto-refresh conditions met, refreshing data...');
           
-          // Only update state if component is still mounted
-          if (isComponentMountedRef.current) {
-            setLastAutoRefresh(new Date());
-            setNextRefreshIn(interval / 1000); // Reset countdown after refresh
-          }
-        } catch (error) {
-          console.error("Error during auto-refresh:", error);
+          // Update last refresh timestamp first for immediate UI feedback
+          setLastAutoRefresh(new Date());
+          
+          // Reset the countdown timer
+          setNextRefreshIn(interval / 1000);
+          
+          // Execute the refresh function
+          refreshFunction()
+            .catch(error => {
+              console.error('Error during auto-refresh:', error);
+            });
+        } else {
+          console.log('Auto-refresh conditions not met:', {
+            mounted: isComponentMountedRef.current,
+            enabled: isAutoRefreshEnabled,
+            loading: isLoading,
+            userInteracting: userInteractingRef.current,
+            visible: isVisibleRef.current
+          });
         }
-      } else {
-        console.log(
-          `Skipping auto-refresh: ${!isAutoRefreshEnabled ? 'disabled' : ''} ${loading ? 'loading' : ''} ` +
-          `${userInteractingRef.current ? 'user-interacting' : ''} ${!isComponentMountedRef.current ? 'unmounted' : ''} ` +
-          `${!isVisibleRef.current ? 'page-hidden' : ''}`
-        );
-      }
-    }, interval);
-    
-    // Clean up the interval when the component unmounts or dependencies change
+      }, interval);
+    }
+
     return () => {
-      console.log("Cleaning up auto-refresh interval");
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
         refreshIntervalRef.current = null;
@@ -67,13 +67,10 @@ export const useAutoRefreshLogic = (
     };
   }, [
     isAutoRefreshEnabled, 
-    loading, 
-    refreshFunction, 
-    interval, 
-    userInteractingRef, 
-    isComponentMountedRef, 
-    isVisibleRef, 
-    setLastAutoRefresh, 
+    interval,
+    isLoading,
+    refreshFunction,
+    setLastAutoRefresh,
     setNextRefreshIn
   ]);
 

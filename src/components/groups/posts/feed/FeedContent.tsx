@@ -4,7 +4,7 @@ import { GroupPostCard } from "../GroupPostCard";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { GroupPostsLoading } from "../GroupPostsLoading";
 import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
-import type { GroupPost } from "../hooks/useGroupPosts";
+import type { GroupPost } from "../hooks/types/groupPostTypes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useEditPost } from "./hooks/useEditPost";
@@ -6,6 +5,7 @@ import { useDeletePost } from "./hooks/useDeletePost";
 import { CommentsSection } from "./CommentsSection";
 import { usePostReactions } from "./hooks/usePostReactions";
 import { PostHeader, PostContent, PostReactions, DeletePostDialog } from "./post-card";
+import { PostReactionType } from "./hooks/usePostReactions";
 
 interface GroupPostCardProps {
   post: {
@@ -20,9 +20,9 @@ interface GroupPostCardProps {
       last_name: string;
       avatar_url?: string | null;
     };
-    reactions: Record<"like" | "thumbsup" | "thumbsdown", number>;
+    reactions: Record<PostReactionType, number>;
     comments_count?: number;
-    user_reactions: Record<"like" | "thumbsup" | "thumbsdown", boolean>;
+    user_reactions: Record<PostReactionType, boolean>;
   };
   currentUserId?: string;
   onPostUpdated?: () => void;
@@ -71,7 +71,7 @@ export const GroupPostCard = ({
     }
   });
 
-  const handleReactionToggle = (type: "like" | "thumbsup" | "thumbsdown") => {
+  const handleReactionToggle = (type: PostReactionType) => {
     toggleReaction(type);
   };
 
