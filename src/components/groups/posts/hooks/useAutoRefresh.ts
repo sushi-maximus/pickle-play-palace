@@ -20,6 +20,8 @@ export const useAutoRefresh = ({
   
   // Reference to track if component is mounted
   const isComponentMountedRef = useRef(true);
+  // Ref to prevent overlapping refreshes
+  const isRefreshingRef = useRef(false);
 
   // Track visibility using Page Visibility API
   const { isVisibleRef } = useVisibilityTracking();
@@ -41,9 +43,16 @@ export const useAutoRefresh = ({
     loading || isRefreshing, // Consider both loading and isRefreshing
     interval,
     async () => {
+      // Prevent overlapping refreshes
+      if (isRefreshingRef.current) {
+        console.log("Auto refresh skipped, already refreshing");
+        return;
+      }
+
       console.log("Auto refresh triggered at", new Date().toLocaleTimeString());
       try {
         // Set refreshing state before calling the refresh function
+        isRefreshingRef.current = true;
         setIsRefreshing(true);
         await refreshFunction();
       } catch (error) {
@@ -55,6 +64,7 @@ export const useAutoRefresh = ({
           setTimeout(() => {
             if (isComponentMountedRef.current) {
               setIsRefreshing(false);
+              isRefreshingRef.current = false;
             }
           }, 800);
         }
@@ -101,7 +111,8 @@ export const useAutoRefresh = ({
   };
 
   const handleManualRefresh = async () => {
-    if (loading || isRefreshing) {
+    // Prevent overlapping refreshes
+    if (loading || isRefreshing || isRefreshingRef.current) {
       console.log("Manual refresh prevented - already loading or refreshing");
       return;
     }
@@ -109,6 +120,7 @@ export const useAutoRefresh = ({
     console.log("Manual refresh triggered at", new Date().toLocaleTimeString());
     
     try {
+      isRefreshingRef.current = true;
       setIsRefreshing(true);
       await refreshFunction();
     } catch (error) {
@@ -123,6 +135,7 @@ export const useAutoRefresh = ({
         setTimeout(() => {
           if (isComponentMountedRef.current) {
             setIsRefreshing(false);
+            isRefreshingRef.current = false;
           }
         }, 1000); // Longer visual feedback
       }

@@ -1,6 +1,6 @@
 
 import { Progress } from "@/components/ui/progress";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface RefreshProgressIndicatorProps {
   refreshing: boolean;
@@ -11,13 +11,17 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
   const [visible, setVisible] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   
+  // Track whether we're in the middle of a refresh cycle
+  const isRefreshingRef = useRef(false);
+  
   // Effect for refreshing state changes
   useEffect(() => {
     console.log("RefreshProgressIndicator - refreshing state changed to:", refreshing);
     
-    // When refreshing starts
-    if (refreshing) {
+    // When refreshing starts and we're not already in a refresh cycle
+    if (refreshing && !isRefreshingRef.current) {
       console.log("RefreshProgressIndicator - starting progress animation");
+      isRefreshingRef.current = true;
       
       // Make indicator visible immediately
       setVisible(true);
@@ -51,8 +55,9 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       };
     } 
     // When refreshing stops
-    else if (visible) {
+    else if (!refreshing && isRefreshingRef.current) {
       console.log("RefreshProgressIndicator - completing progress animation");
+      isRefreshingRef.current = false;
       
       // Clear the progress interval
       if (intervalId) {
@@ -79,7 +84,7 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       
       return () => clearTimeout(hideTimeout);
     }
-  }, [refreshing, visible, intervalId]);
+  }, [refreshing, intervalId]);
 
   // Clean up on unmount
   useEffect(() => {

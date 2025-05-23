@@ -13,6 +13,7 @@ export const useAutoRefreshLogic = (
   setNextRefreshIn: (seconds: number) => void
 ) => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const initialRefreshCompletedRef = useRef<boolean>(false);
   
   useEffect(() => {
     // Clear existing interval when autoRefresh state changes
@@ -25,9 +26,10 @@ export const useAutoRefreshLogic = (
     if (isAutoRefreshEnabled) {
       console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
       
-      // Execute one refresh immediately when enabled (if not loading)
-      if (!isLoading && isVisibleRef.current && !userInteractingRef.current) {
+      // Execute one refresh immediately when enabled (if not loading and not already done)
+      if (!isLoading && isVisibleRef.current && !userInteractingRef.current && !initialRefreshCompletedRef.current) {
         console.log('Initial refresh when auto-refresh enabled');
+        initialRefreshCompletedRef.current = true;
         setLastAutoRefresh(new Date());
         setNextRefreshIn(interval / 1000);
         refreshFunction().catch(error => {
@@ -84,6 +86,13 @@ export const useAutoRefreshLogic = (
     setLastAutoRefresh,
     setNextRefreshIn
   ]);
+
+  // Reset the initial refresh flag when auto-refresh is disabled
+  useEffect(() => {
+    if (!isAutoRefreshEnabled) {
+      initialRefreshCompletedRef.current = false;
+    }
+  }, [isAutoRefreshEnabled]);
 
   return { refreshIntervalRef };
 };
