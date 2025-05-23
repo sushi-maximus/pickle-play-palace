@@ -58,7 +58,7 @@ export const PostContent = ({
 
   return (
     <>
-      <p className="whitespace-pre-line">{content}</p>
+      <p className="text-sm whitespace-pre-line">{content}</p>
       
       {mediaUrls && mediaUrls.length > 0 && (
         <div className="mt-3 grid gap-2 grid-cols-1 sm:grid-cols-2">
