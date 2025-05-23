@@ -41,7 +41,7 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
           updated_at,
           user_id,
           post_id,
-          user:profiles!comments_user_id_fkey (
+          user:user_id (
             id,
             first_name,
             last_name,
