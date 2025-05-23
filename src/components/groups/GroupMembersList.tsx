@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -119,9 +120,7 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
                 </div>
               </div>
               
-              <Badge variant={member.role === "admin" ? "default" : "outline"} className="capitalize">
-                {member.role}
-              </Badge>
+              {/* Removed duplicate Admin badge here */}
             </div>
           </HoverCardTrigger>
           
