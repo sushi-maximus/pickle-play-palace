@@ -2,6 +2,8 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, RefreshCcw, Clock } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface FeedHeaderProps {
   groupName: string | undefined;
@@ -26,20 +28,19 @@ export const FeedHeader = ({
         <MessageCircle className="h-6 w-6 text-primary" />
         <CardTitle>{groupName ? `${groupName} Discussion` : 'Group Discussion'}</CardTitle>
       </div>
-      <div className="flex items-center gap-2">
-        {/* Auto-refresh toggle button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleAutoRefresh}
-          className={`hover:bg-primary/10 ${isAutoRefreshEnabled ? 'text-primary' : 'text-muted-foreground'}`}
-          title={isAutoRefreshEnabled ? "Disable auto-refresh" : "Enable auto-refresh"}
-        >
-          <Clock className={`h-4 w-4 ${isAutoRefreshEnabled ? 'text-primary' : 'text-muted-foreground'}`} />
-          <span className="ml-1 sr-only md:not-sr-only">
-            {isAutoRefreshEnabled ? "Auto" : "Manual"}
-          </span>
-        </Button>
+      <div className="flex items-center gap-4">
+        {/* Auto-refresh toggle with Switch */}
+        <div className="flex items-center gap-2">
+          <Label htmlFor="auto-refresh" className="text-xs font-medium cursor-pointer">
+            Auto
+          </Label>
+          <Switch
+            id="auto-refresh"
+            checked={isAutoRefreshEnabled}
+            onCheckedChange={toggleAutoRefresh}
+            aria-label={isAutoRefreshEnabled ? "Disable auto-refresh" : "Enable auto-refresh"}
+          />
+        </div>
 
         {/* Manual refresh button */}
         <Button 

@@ -1,13 +1,18 @@
 
-import { Clock } from "lucide-react";
+import { Clock, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface LastRefreshIndicatorProps {
   loading: boolean;
   lastAutoRefresh: Date | null;
+  isAutoRefreshEnabled?: boolean;
 }
 
-export const LastRefreshIndicator = ({ loading, lastAutoRefresh }: LastRefreshIndicatorProps) => {
+export const LastRefreshIndicator = ({ 
+  loading, 
+  lastAutoRefresh,
+  isAutoRefreshEnabled = true
+}: LastRefreshIndicatorProps) => {
   const formatLastRefreshTime = () => {
     if (!lastAutoRefresh) return "Never refreshed";
     
@@ -18,11 +23,22 @@ export const LastRefreshIndicator = ({ loading, lastAutoRefresh }: LastRefreshIn
   return (
     <div className="px-6 pt-3 pb-0 flex justify-end items-center text-xs text-muted-foreground">
       {loading ? (
-        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-4 w-36" />
       ) : (
         <div className="flex items-center gap-1">
-          <Clock className="h-3 w-3" />
-          <span>Last updated: {formatLastRefreshTime()}</span>
+          {isAutoRefreshEnabled ? (
+            <>
+              <RefreshCw className="h-3 w-3 animate-pulse text-primary" />
+              <span className="flex items-center gap-1">
+                Auto-refresh active • Last updated: {formatLastRefreshTime()}
+              </span>
+            </>
+          ) : (
+            <>
+              <Clock className="h-3 w-3" />
+              <span>Last updated: {formatLastRefreshTime()}</span>
+            </>
+          )}
         </div>
       )}
     </div>

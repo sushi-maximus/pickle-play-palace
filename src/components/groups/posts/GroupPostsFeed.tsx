@@ -96,6 +96,7 @@ export const GroupPostsFeed = ({
         <LastRefreshIndicator 
           loading={loading} 
           lastAutoRefresh={lastAutoRefresh} 
+          isAutoRefreshEnabled={isAutoRefreshEnabled}
         />
         
         <CardContent className="p-6">
