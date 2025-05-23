@@ -26,12 +26,6 @@ export const useAutoRefresh = ({
   // Track visibility, user interaction and manage countdown
   const { isVisibleRef } = useVisibilityTracking();
   const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
-  const { countdownIntervalRef } = useCountdownTimer(
-    isAutoRefreshEnabled, 
-    loading || isRefreshing,
-    interval, 
-    setNextRefreshIn
-  );
   
   // Wrap refreshFunction to handle the refreshing state
   const wrappedRefreshFunction = async () => {
@@ -62,6 +56,13 @@ export const useAutoRefresh = ({
       }
     }
   };
+
+  const { countdownIntervalRef } = useCountdownTimer(
+    isAutoRefreshEnabled, 
+    loading || isRefreshing,
+    interval, 
+    setNextRefreshIn
+  );
   
   // Set up auto-refresh logic
   const { refreshIntervalRef } = useAutoRefreshLogic(

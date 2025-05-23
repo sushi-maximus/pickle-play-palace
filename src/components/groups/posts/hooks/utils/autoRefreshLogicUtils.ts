@@ -26,7 +26,7 @@ export const useAutoRefreshLogic = (
     console.log(`Auto-refresh ${isAutoRefreshEnabled ? 'enabled' : 'disabled'}`);
     
     // Only set up the interval if auto-refresh is enabled
-    if (isAutoRefreshEnabled && isComponentMountedRef.current) {
+    if (isAutoRefreshEnabled) {
       console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
       
       // Set up the recurring interval
@@ -62,15 +62,19 @@ export const useAutoRefreshLogic = (
           });
         }
       }, interval);
-    }
 
-    return () => {
-      if (refreshIntervalRef.current) {
-        console.log("Cleaning up refresh interval on effect cleanup");
-        clearInterval(refreshIntervalRef.current);
-        refreshIntervalRef.current = null;
-      }
-    };
+      // Return cleanup function for this specific interval setup
+      return () => {
+        if (refreshIntervalRef.current) {
+          console.log("Cleaning up refresh interval on effect cleanup");
+          clearInterval(refreshIntervalRef.current);
+          refreshIntervalRef.current = null;
+        }
+      };
+    }
+    
+    // Return empty cleanup if no interval was set
+    return () => {};
   }, [
     isAutoRefreshEnabled, 
     interval,
