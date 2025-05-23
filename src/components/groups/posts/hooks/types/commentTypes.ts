@@ -12,6 +12,8 @@ export interface Comment {
   user: PostUser;
   reactions?: Record<ReactionType, number>;
   user_reactions?: Record<ReactionType, boolean>;
+  isOptimistic?: boolean;
+  tempId?: string;
 }
 
 export interface UseCommentsResult {
