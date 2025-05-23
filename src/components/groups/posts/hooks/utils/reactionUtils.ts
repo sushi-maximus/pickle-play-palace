@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { PostReactionType } from "../types/reactionTypes";
 
@@ -23,9 +24,9 @@ export const fetchPostReactionCounts = async (postId: string): Promise<Record<Po
       like_count: number;
       thumbsup_count: number;
       thumbsdown_count: number;
-    }>(
+    }, GetPostReactionCountsParams>(
       'get_post_reaction_counts',
-      { post_id: postId } as GetPostReactionCountsParams
+      { post_id: postId }
     );
     
     if (!error && data) {

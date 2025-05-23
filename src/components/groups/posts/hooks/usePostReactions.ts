@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PostReactionType, UsePostReactionsProps, UsePostReactionsResult } from "./types/reactionTypes";
-import { fetchPostReactionCounts } from "./utils/reactionUtils";
+import { fetchPostReactionCounts, togglePostReaction } from "./utils/reactionUtils";
 
 // Define the return type for the RPC function
 type PostReactionCountsResponse = {
@@ -63,9 +64,9 @@ export const usePostReactions = ({
               like_count: number;
               thumbsup_count: number;
               thumbsdown_count: number;
-            }>(
+            }, GetPostReactionCountsParams>(
               'get_post_reaction_counts', 
-              { post_id: postId } as GetPostReactionCountsParams
+              { post_id: postId } 
             );
             
             if (!error && countData) {
