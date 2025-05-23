@@ -27,6 +27,10 @@ export const GroupPostsFeed = ({
   standalone = false
 }: GroupPostsFeedProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  // Auto-refresh state variables
+  const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(true);
+  const [lastAutoRefresh, setLastAutoRefresh] = useState<Date | null>(null);
+  const autoRefreshInterval = 30000; // 30 seconds in milliseconds
   
   const { 
     posts, 
