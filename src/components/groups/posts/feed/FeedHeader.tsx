@@ -1,9 +1,10 @@
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, RefreshCcw, Clock } from "lucide-react";
+import { MessageCircle, RefreshCcw, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface FeedHeaderProps {
   groupName: string | undefined;
@@ -29,30 +30,57 @@ export const FeedHeader = ({
         <CardTitle>{groupName ? `${groupName} Discussion` : 'Group Discussion'}</CardTitle>
       </div>
       <div className="flex items-center gap-4">
-        {/* Auto-refresh toggle with Switch */}
-        <div className="flex items-center gap-2">
-          <Label htmlFor="auto-refresh" className="text-xs font-medium cursor-pointer">
-            Auto
-          </Label>
-          <Switch
-            id="auto-refresh"
-            checked={isAutoRefreshEnabled}
-            onCheckedChange={toggleAutoRefresh}
-            aria-label={isAutoRefreshEnabled ? "Disable auto-refresh" : "Enable auto-refresh"}
-          />
-        </div>
+        {/* Auto-refresh toggle with Switch and tooltip */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="auto-refresh" className="text-xs font-medium cursor-pointer">
+                  Auto
+                </Label>
+                <Switch
+                  id="auto-refresh"
+                  checked={isAutoRefreshEnabled}
+                  onCheckedChange={toggleAutoRefresh}
+                  disabled={loading}
+                  aria-label={isAutoRefreshEnabled ? "Disable auto-refresh" : "Enable auto-refresh"}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {isAutoRefreshEnabled 
+                ? "Auto-refresh is enabled. Content will refresh automatically." 
+                : "Auto-refresh is disabled. Click refresh to update content."}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
-        {/* Manual refresh button */}
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleRefresh}
-          disabled={isRefreshing || loading}
-          className="hover:bg-primary/10"
-        >
-          <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          <span className="ml-1 sr-only md:not-sr-only">Refresh</span>
-        </Button>
+        {/* Manual refresh button with appropriate icons for different states */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleRefresh}
+                disabled={isRefreshing || loading}
+                className="hover:bg-primary/10"
+              >
+                {loading || isRefreshing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCcw className="h-4 w-4" />
+                )}
+                <span className="ml-1 sr-only md:not-sr-only">Refresh</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {loading || isRefreshing
+                ? "Content is currently refreshing"
+                : "Click to refresh content manually"}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </CardHeader>
   );

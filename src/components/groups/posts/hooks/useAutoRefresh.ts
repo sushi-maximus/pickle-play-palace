@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 
 interface UseAutoRefreshProps {
@@ -16,6 +16,37 @@ export const useAutoRefresh = ({
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastAutoRefresh, setLastAutoRefresh] = useState<Date | null>(null);
+  const userInteractingRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Track user interaction
+  useEffect(() => {
+    const handleUserActivity = () => {
+      userInteractingRef.current = true;
+      
+      // Reset after a short delay
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        userInteractingRef.current = false;
+      }, 5000); // Reset after 5 seconds of inactivity
+    };
+    
+    // Add event listeners for user interaction
+    document.addEventListener('mousedown', handleUserActivity);
+    document.addEventListener('keydown', handleUserActivity);
+    document.addEventListener('scroll', handleUserActivity);
+    document.addEventListener('touchstart', handleUserActivity);
+    
+    return () => {
+      // Clean up event listeners
+      document.removeEventListener('mousedown', handleUserActivity);
+      document.removeEventListener('keydown', handleUserActivity);
+      document.removeEventListener('scroll', handleUserActivity);
+      document.removeEventListener('touchstart', handleUserActivity);
+      
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
   
   const toggleAutoRefresh = () => {
     const newValue = !isAutoRefreshEnabled;
@@ -33,8 +64,11 @@ export const useAutoRefresh = ({
   };
 
   const handleManualRefresh = async () => {
+    if (loading || isRefreshing) return;
+    
     setIsRefreshing(true);
     await refreshFunction();
+    setLastAutoRefresh(new Date());
     setTimeout(() => setIsRefreshing(false), 500); // Give visual feedback
   };
 
@@ -47,10 +81,14 @@ export const useAutoRefresh = ({
     
     // Set up the interval for auto-refresh
     const intervalId = setInterval(async () => {
-      if (isAutoRefreshEnabled && !loading) {
+      if (isAutoRefreshEnabled && !loading && !userInteractingRef.current) {
         console.log("Auto-refreshing posts");
         await refreshFunction();
         setLastAutoRefresh(new Date());
+      } else if (userInteractingRef.current) {
+        console.log("Skipping auto-refresh: user is interacting with the page");
+      } else if (loading) {
+        console.log("Skipping auto-refresh: content is already loading");
       }
     }, interval);
     

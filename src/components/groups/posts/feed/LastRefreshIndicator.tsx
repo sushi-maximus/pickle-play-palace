@@ -1,5 +1,5 @@
 
-import { Clock, RefreshCw } from "lucide-react";
+import { Clock, RefreshCw, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface LastRefreshIndicatorProps {
@@ -23,7 +23,10 @@ export const LastRefreshIndicator = ({
   return (
     <div className="px-6 pt-3 pb-0 flex justify-end items-center text-xs text-muted-foreground">
       {loading ? (
-        <Skeleton className="h-4 w-36" />
+        <div className="flex items-center gap-1">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          <span>Refreshing content...</span>
+        </div>
       ) : (
         <div className="flex items-center gap-1">
           {isAutoRefreshEnabled ? (
