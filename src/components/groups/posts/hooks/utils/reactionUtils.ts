@@ -9,11 +9,6 @@ interface PostReactionCountsResponse {
   thumbsdown_count: number;
 }
 
-// Define parameter type for the RPC function arguments
-interface GetPostReactionCountsParams {
-  post_id: string;
-}
-
 export const fetchPostReactionCounts = async (postId: string): Promise<Record<PostReactionType, number>> => {
   try {
     // Try to use the SQL function if it exists
