@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { usePostReactions2 } from "../posts/hooks/usePostReactions2";
 import { PostHeader } from "../posts/post-card/PostHeader";
 import { PostContent } from "../posts/post-card/PostContent";
-import { ThumbsUp2 } from "../posts/post-card/ThumbsUp2";
+import { PostReactions2 } from "../posts/post-card/PostReactions2";
 
 interface MobilePostCardProps {
   post: any;
@@ -64,11 +64,13 @@ export const MobilePostCard = ({
       {!isEditingThisPost && (
         <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4">
           <div className="w-full ml-12 md:ml-14">
-            <PostThumbsUp 
+            <PostReactions2Component 
               postId={post.id}
               userId={user?.id}
-              initialCount={post.reactions?.thumbsup || 0}
-              initialUserReaction={post.user_reactions?.thumbsup || false}
+              initialThumbsUp={post.reactions?.thumbsup || 0}
+              initialThumbsDown={post.reactions?.thumbsdown || 0}
+              initialUserThumbsUp={post.user_reactions?.thumbsup || false}
+              initialUserThumbsDown={post.user_reactions?.thumbsdown || false}
             />
           </div>
         </CardFooter>
@@ -77,31 +79,50 @@ export const MobilePostCard = ({
   );
 };
 
-// Helper component to encapsulate thumbs up logic for each post
-const PostThumbsUp = ({ 
+// Helper component to encapsulate reactions logic for each post
+const PostReactions2Component = ({ 
   postId, 
   userId, 
-  initialCount, 
-  initialUserReaction 
+  initialThumbsUp,
+  initialThumbsDown,
+  initialUserThumbsUp,
+  initialUserThumbsDown
 }: {
   postId: string;
   userId?: string;
-  initialCount: number;
-  initialUserReaction: boolean;
+  initialThumbsUp: number;
+  initialThumbsDown: number;
+  initialUserThumbsUp: boolean;
+  initialUserThumbsDown: boolean;
 }) => {
-  const { count, isActive, isSubmitting, toggleReaction } = usePostReactions2({
+  const { 
+    thumbsUpCount, 
+    thumbsDownCount,
+    isThumbsUpActive, 
+    isThumbsDownActive,
+    isThumbsUpSubmitting,
+    isThumbsDownSubmitting,
+    toggleThumbsUp,
+    toggleThumbsDown
+  } = usePostReactions2({
     postId,
     userId,
-    initialCount,
-    initialUserReaction
+    initialThumbsUp,
+    initialThumbsDown,
+    initialUserThumbsUp,
+    initialUserThumbsDown
   });
 
   return (
-    <ThumbsUp2
-      count={count}
-      isActive={isActive}
-      isSubmitting={isSubmitting}
-      onClick={toggleReaction}
+    <PostReactions2
+      thumbsUpCount={thumbsUpCount}
+      thumbsDownCount={thumbsDownCount}
+      isThumbsUpActive={isThumbsUpActive}
+      isThumbsDownActive={isThumbsDownActive}
+      isThumbsUpSubmitting={isThumbsUpSubmitting}
+      isThumbsDownSubmitting={isThumbsDownSubmitting}
+      onThumbsUpClick={toggleThumbsUp}
+      onThumbsDownClick={toggleThumbsDown}
       disabled={!userId}
     />
   );
