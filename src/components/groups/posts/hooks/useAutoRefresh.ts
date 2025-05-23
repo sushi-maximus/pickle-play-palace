@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useVisibilityTracking } from "./utils/visibilityUtils";
@@ -101,13 +100,9 @@ export const useAutoRefresh = ({
     setIsAutoRefreshEnabled(newValue);
     
     if (newValue) {
-      toast({
-        description: `Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`
-      });
+      toast(`Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`);
     } else {
-      toast({
-        description: "Auto-refresh disabled. Posts will only refresh when you click the refresh button."
-      });
+      toast("Auto-refresh disabled. Posts will only refresh when you click the refresh button.");
     }
   };
 
