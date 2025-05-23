@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User } from "lucide-react";
+import { User, Shield, UserMinus, AlertCircle } from "lucide-react";
 import { formatDistanceToNow, differenceInYears } from "date-fns";
 import { 
   HoverCard, 
@@ -13,6 +13,18 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { getSkillLevelColor } from "@/lib/constants/skill-levels";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { promoteMemberToAdmin, removeMemberFromGroup } from "./utils/groupDetailsUtils";
+import { toast } from "sonner";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type GroupMember = {
   id: string;
@@ -33,13 +45,27 @@ type GroupMember = {
 type GroupMembersListProps = {
   members: GroupMember[];
   className?: string;
+  isAdmin: boolean;
+  currentUserId: string;
+  groupId: string;
+  onMemberUpdate?: () => void;
 };
 
-export const GroupMembersList = ({ members, className }: GroupMembersListProps) => {
+export const GroupMembersList = ({ 
+  members, 
+  className, 
+  isAdmin, 
+  currentUserId, 
+  groupId,
+  onMemberUpdate 
+}: GroupMembersListProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [openMemberId, setOpenMemberId] = useState<string | null>(null);
-
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [removeDialogOpen, setRemoveDialogOpen] = useState<boolean>(false);
+  const [memberToRemove, setMemberToRemove] = useState<GroupMember | null>(null);
+  
   if (!members || members.length === 0) {
     return (
       <div className={`text-center py-6 ${className || ""}`}>
@@ -73,110 +99,216 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
     }
   };
 
+  // Handle promoting a member to admin
+  const handlePromoteToAdmin = async (memberId: string) => {
+    try {
+      setActionLoading(memberId);
+      await promoteMemberToAdmin(memberId, groupId);
+      toast.success("Member has been promoted to admin");
+      if (onMemberUpdate) onMemberUpdate();
+    } catch (error) {
+      console.error("Error promoting member:", error);
+      toast.error("Failed to promote member");
+    } finally {
+      setActionLoading(null);
+      setOpenMemberId(null);
+    }
+  };
+
+  // Handle confirming member removal
+  const handleConfirmRemoval = (member: GroupMember) => {
+    setMemberToRemove(member);
+    setRemoveDialogOpen(true);
+    setOpenMemberId(null);
+  };
+
+  // Handle removing a member
+  const handleRemoveMember = async () => {
+    if (!memberToRemove) return;
+    
+    try {
+      setActionLoading(memberToRemove.id);
+      await removeMemberFromGroup(memberToRemove.id, groupId);
+      toast.success("Member has been removed from the group");
+      if (onMemberUpdate) onMemberUpdate();
+    } catch (error) {
+      console.error("Error removing member:", error);
+      toast.error("Failed to remove member");
+    } finally {
+      setActionLoading(null);
+      setMemberToRemove(null);
+      setRemoveDialogOpen(false);
+    }
+  };
+
   return (
-    <div className={`space-y-4 ${className || ""}`}>
-      {sortedMembers.map((member) => (
-        <HoverCard 
-          key={member.id} 
-          open={openMemberId === member.id}
-          onOpenChange={(open) => {
-            // Only handle close events from the HoverCard component
-            // Open events are controlled by the onClick handler on the trigger element
-            if (!open) {
-              setOpenMemberId(null);
-            }
-          }}
-        >
-          <HoverCardTrigger asChild>
-            <div 
-              className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/10 cursor-pointer transition-colors"
+    <>
+      <div className={`space-y-4 ${className || ""}`}>
+        {sortedMembers.map((member) => (
+          <HoverCard 
+            key={member.id} 
+            open={openMemberId === member.id}
+            onOpenChange={(open) => {
+              // Only handle close events from the HoverCard component
+              // Open events are controlled by the onClick handler on the trigger element
+              if (!open) {
+                setOpenMemberId(null);
+              }
+            }}
+          >
+            <HoverCardTrigger asChild>
+              <div 
+                className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/10 cursor-pointer transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setOpenMemberId(openMemberId === member.id ? null : member.id);
+                }}
+              >
+                <div className="flex items-center space-x-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage 
+                      src={member.profiles.avatar_url || ""} 
+                      alt={`${member.profiles.first_name} ${member.profiles.last_name}`}
+                    />
+                    <AvatarFallback className="bg-primary/10">
+                      <User className="h-5 w-5 text-primary" />
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <div>
+                    <div className="font-medium flex items-center gap-2">
+                      <span>{member.profiles.first_name} {member.profiles.last_name}</span>
+                      {member.role === "admin" && (
+                        <Badge className="text-xs">Admin</Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Joined {formatDistanceToNow(new Date(member.joined_at), { addSuffix: true })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </HoverCardTrigger>
+            
+            <HoverCardContent className="w-80 p-0 fixed-center-popup" onClick={(e) => e.stopPropagation()}>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-4 p-4">
+                  <Avatar className="h-16 w-16 border-2" style={{ 
+                    borderColor: getSkillLevelColor(member.profiles.dupr_rating, member.profiles.skill_level) 
+                  }}>
+                    <AvatarImage 
+                      src={member.profiles.avatar_url || ""} 
+                      alt={`${member.profiles.first_name} ${member.profiles.last_name}`}
+                    />
+                    <AvatarFallback className="bg-primary/10 text-lg">
+                      {member.profiles.first_name?.charAt(0)}{member.profiles.last_name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <div>
+                    <h3 className="font-medium text-lg">
+                      {member.profiles.first_name} {member.profiles.last_name}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {/* Skill Level or DUPR Rating */}
+                      {getRatingDisplay(member).value && (
+                        <Badge variant="outline" className="bg-primary/5">
+                          {getRatingDisplay(member).label}: {getRatingDisplay(member).value}
+                        </Badge>
+                      )}
+                      
+                      {/* Age (if available) */}
+                      {member.profiles.birthday && (
+                        <Badge variant="outline" className="bg-secondary/5">
+                          Age: {calculateAge(member.profiles.birthday)}
+                        </Badge>
+                      )}
+
+                      {/* Role Badge */}
+                      <Badge variant={member.role === "admin" ? "default" : "outline"}>
+                        {member.role === "admin" ? "Admin" : "Member"}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Admin actions section */}
+                {isAdmin && member.user_id !== currentUserId && (
+                  <div className="border-t p-3 flex flex-col gap-2">
+                    <p className="text-sm font-medium mb-1">Admin Actions:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {member.role !== "admin" && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="flex gap-1"
+                          disabled={!!actionLoading}
+                          onClick={() => handlePromoteToAdmin(member.id)}
+                        >
+                          <Shield className="h-4 w-4" />
+                          {actionLoading === member.id ? "Processing..." : "Promote to Admin"}
+                        </Button>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant="destructive"
+                        className="flex gap-1"
+                        disabled={!!actionLoading}
+                        onClick={() => handleConfirmRemoval(member)}
+                      >
+                        <UserMinus className="h-4 w-4" />
+                        {actionLoading === member.id ? "Processing..." : "Remove Member"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="border-t p-3 bg-muted/30 flex justify-end">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => {
+                      setOpenMemberId(null);
+                      navigate(`/profile/${member.user_id}`);
+                    }}
+                  >
+                    View Full Profile
+                  </Button>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        ))}
+      </div>
+
+      {/* Confirmation dialog for removing a member */}
+      <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              Remove Member
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{memberToRemove?.profiles.first_name} {memberToRemove?.profiles.last_name}</strong> from this group? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!actionLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!!actionLoading}
               onClick={(e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                setOpenMemberId(openMemberId === member.id ? null : member.id);
+                handleRemoveMember();
               }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              <div className="flex items-center space-x-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage 
-                    src={member.profiles.avatar_url || ""} 
-                    alt={`${member.profiles.first_name} ${member.profiles.last_name}`}
-                  />
-                  <AvatarFallback className="bg-primary/10">
-                    <User className="h-5 w-5 text-primary" />
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div>
-                  <div className="font-medium flex items-center gap-2">
-                    <span>{member.profiles.first_name} {member.profiles.last_name}</span>
-                    {member.role === "admin" && (
-                      <Badge className="text-xs">Admin</Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Joined {formatDistanceToNow(new Date(member.joined_at), { addSuffix: true })}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Removed duplicate Admin badge here */}
-            </div>
-          </HoverCardTrigger>
-          
-          <HoverCardContent className="w-80 p-0 fixed-center-popup" onClick={(e) => e.stopPropagation()}>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-4 p-4">
-                <Avatar className="h-16 w-16 border-2" style={{ 
-                  borderColor: getSkillLevelColor(member.profiles.dupr_rating, member.profiles.skill_level) 
-                }}>
-                  <AvatarImage 
-                    src={member.profiles.avatar_url || ""} 
-                    alt={`${member.profiles.first_name} ${member.profiles.last_name}`}
-                  />
-                  <AvatarFallback className="bg-primary/10 text-lg">
-                    {member.profiles.first_name?.charAt(0)}{member.profiles.last_name?.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div>
-                  <h3 className="font-medium text-lg">
-                    {member.profiles.first_name} {member.profiles.last_name}
-                  </h3>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {/* Skill Level or DUPR Rating */}
-                    {getRatingDisplay(member).value && (
-                      <Badge variant="outline" className="bg-primary/5">
-                        {getRatingDisplay(member).label}: {getRatingDisplay(member).value}
-                      </Badge>
-                    )}
-                    
-                    {/* Age (if available) */}
-                    {member.profiles.birthday && (
-                      <Badge variant="outline" className="bg-secondary/5">
-                        Age: {calculateAge(member.profiles.birthday)}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border-t p-3 bg-muted/30 flex justify-end">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => {
-                    setOpenMemberId(null);
-                    navigate(`/profile/${member.user_id}`);
-                  }}
-                >
-                  View Full Profile
-                </Button>
-              </div>
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      ))}
-    </div>
+              {actionLoading ? "Removing..." : "Remove Member"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };

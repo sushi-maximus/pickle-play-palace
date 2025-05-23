@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -124,6 +125,16 @@ const GroupDetails = () => {
     return "members";
   };
 
+  // Handler for member updates (promotion/removal)
+  const handleMemberUpdate = async () => {
+    if (id) {
+      const updatedGroup = await fetchGroupDetails(id);
+      if (updatedGroup) {
+        setGroup(updatedGroup);
+      }
+    }
+  };
+
   if (loading) {
     return <GroupDetailsLoading />;
   }
@@ -159,7 +170,13 @@ const GroupDetails = () => {
                 
                 <TabsContent value="members">
                   <h3 className="text-lg font-medium mb-4">Group Members</h3>
-                  <GroupMembersList members={group?.members || []} />
+                  <GroupMembersList 
+                    members={group?.members || []}
+                    isAdmin={membershipStatus.isAdmin}
+                    currentUserId={user?.id || ""}
+                    groupId={group?.id}
+                    onMemberUpdate={handleMemberUpdate}
+                  />
                 </TabsContent>
                 
                 {membershipStatus.isAdmin && (
