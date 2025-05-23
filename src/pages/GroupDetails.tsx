@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { fetchGroupDetails } from "@/components/groups/utils";
-import { checkMembershipStatus } from "@/components/groups/services/groupService";
+import { checkMembershipStatus } from "@/components/groups/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { GroupMembersList } from "@/components/groups/GroupMembersList";

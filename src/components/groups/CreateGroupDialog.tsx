@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Dialog,
@@ -13,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { CreateGroupForm } from "./forms/CreateGroupForm";
-import { createGroup } from "./services/groupService";
+import { createGroup } from "./services";
 import { CreateGroupFormValues } from "./schemas/groupSchemas";
 
 interface CreateGroupDialogProps {
