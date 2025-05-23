@@ -14,32 +14,44 @@ export const useAutoRefreshLogic = (
 ) => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Set up and clean up the refresh interval
-  useEffect(() => {
-    // Always clear existing interval first to prevent duplicates
+  // Helper function to clear interval
+  const clearRefreshInterval = () => {
     if (refreshIntervalRef.current) {
       console.log("Clearing existing refresh interval");
       clearInterval(refreshIntervalRef.current);
       refreshIntervalRef.current = null;
     }
+  };
+  
+  // Effect for setting up and cleaning up the refresh interval
+  useEffect(() => {
+    // Always clear existing interval first to prevent duplicates
+    clearRefreshInterval();
 
     // Only set up the interval if component is mounted and auto-refresh is enabled
     if (!isComponentMountedRef.current || !isAutoRefreshEnabled) {
       console.log(`Auto-refresh ${!isComponentMountedRef.current ? 'component not mounted' : 'disabled'}`);
-      return () => {};
+      return clearRefreshInterval;
     }
 
     console.log(`Auto-refresh enabled, setting up interval: ${interval/1000}s`);
     
     // Set up the recurring interval
     refreshIntervalRef.current = setInterval(() => {
+      // Capture the current state values to prevent stale closures
+      const isCurrentlyEnabled = isAutoRefreshEnabled;
+      const isCurrentlyLoading = isLoading;
+      const isCurrentlyInteracting = userInteractingRef.current;
+      const isCurrentlyVisible = isVisibleRef.current;
+      const isCurrentlyMounted = isComponentMountedRef.current;
+      
       // Only proceed if all conditions are met
       if (
-        isComponentMountedRef.current && 
-        isAutoRefreshEnabled &&
-        !isLoading && 
-        !userInteractingRef.current && 
-        isVisibleRef.current
+        isCurrentlyMounted && 
+        isCurrentlyEnabled &&
+        !isCurrentlyLoading && 
+        !isCurrentlyInteracting && 
+        isCurrentlyVisible
       ) {
         console.log('Auto-refresh conditions met, refreshing data...');
         
@@ -56,23 +68,17 @@ export const useAutoRefreshLogic = (
           });
       } else {
         console.log('Auto-refresh conditions not met:', {
-          mounted: isComponentMountedRef.current,
-          enabled: isAutoRefreshEnabled,
-          loading: isLoading,
-          userInteracting: userInteractingRef.current,
-          visible: isVisibleRef.current
+          mounted: isCurrentlyMounted,
+          enabled: isCurrentlyEnabled,
+          loading: isCurrentlyLoading,
+          userInteracting: isCurrentlyInteracting,
+          visible: isCurrentlyVisible
         });
       }
     }, interval);
 
     // Return cleanup function
-    return () => {
-      if (refreshIntervalRef.current) {
-        console.log("Cleaning up refresh interval on effect cleanup");
-        clearInterval(refreshIntervalRef.current);
-        refreshIntervalRef.current = null;
-      }
-    };
+    return clearRefreshInterval;
   }, [
     isAutoRefreshEnabled, 
     interval,

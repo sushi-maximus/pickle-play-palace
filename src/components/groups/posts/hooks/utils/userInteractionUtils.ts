@@ -8,12 +8,21 @@ export const useUserInteractionTracking = () => {
 
   useEffect(() => {
     const handleUserActivity = () => {
-      userInteractingRef.current = true;
+      // Only update if changed to avoid unnecessary operations
+      if (!userInteractingRef.current) {
+        userInteractingRef.current = true;
+        console.log("User interaction detected, pausing auto-refresh");
+      }
       
-      // Reset after a short delay
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // Clear existing timeout to reset the delay
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Reset after delay
       timeoutRef.current = setTimeout(() => {
         userInteractingRef.current = false;
+        console.log("User interaction timeout - auto-refresh resumed");
       }, USER_INTERACTION_RESET_DELAY);
     };
     
@@ -30,7 +39,11 @@ export const useUserInteractionTracking = () => {
       document.removeEventListener('scroll', handleUserActivity);
       document.removeEventListener('touchstart', handleUserActivity);
       
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // Clean up timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
   }, []);
 

@@ -6,8 +6,11 @@ export const useVisibilityTracking = () => {
 
   // Check if the page is visible or hidden
   const checkVisibility = useCallback(() => {
-    isVisibleRef.current = document.visibilityState === 'visible';
-    console.log(`Page visibility changed: ${isVisibleRef.current ? 'visible' : 'hidden'}`);
+    const newVisibility = document.visibilityState === 'visible';
+    if (isVisibleRef.current !== newVisibility) {
+      isVisibleRef.current = newVisibility;
+      console.log(`Page visibility changed: ${newVisibility ? 'visible' : 'hidden'}`);
+    }
   }, []);
   
   // Setup visibility change listener

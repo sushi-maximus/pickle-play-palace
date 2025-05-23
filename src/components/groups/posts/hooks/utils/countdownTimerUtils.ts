@@ -8,22 +8,26 @@ export const useCountdownTimer = (
   setNextRefreshIn: React.Dispatch<React.SetStateAction<number>>
 ) => {
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    // Clear any existing interval first to prevent multiple countdowns running
+  
+  // Clear function to avoid code duplication
+  const clearCountdownInterval = () => {
     if (countdownIntervalRef.current) {
-      console.log("Clearing existing countdown timer");
       clearInterval(countdownIntervalRef.current);
       countdownIntervalRef.current = null;
     }
+  };
+
+  useEffect(() => {
+    // Always clear existing interval first
+    clearCountdownInterval();
     
-    // Only run countdown if enabled and not loading
+    // Only set up countdown if enabled and not loading
     if (!isEnabled || loading) {
       console.log("Countdown timer not started - disabled or loading");
-      return () => {};
+      return clearCountdownInterval; // Return cleanup function
     }
 
-    console.log("Setting up countdown timer");
+    console.log("Setting up countdown timer with interval:", interval);
     
     // Reset countdown when enabled
     setNextRefreshIn(interval / 1000);
@@ -31,7 +35,6 @@ export const useCountdownTimer = (
     // Set up countdown interval to run every second
     countdownIntervalRef.current = setInterval(() => {
       setNextRefreshIn(prev => {
-        // Decrement countdown by 1 second
         if (prev <= 1) {
           return interval / 1000; // Reset when reaches 0
         }
@@ -39,14 +42,8 @@ export const useCountdownTimer = (
       });
     }, 1000);
     
-    // Cleanup function
-    return () => {
-      console.log("Cleaning up countdown timer");
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-        countdownIntervalRef.current = null;
-      }
-    };
+    // Return cleanup function
+    return clearCountdownInterval;
   }, [isEnabled, loading, interval, setNextRefreshIn]);
 
   return { countdownIntervalRef };

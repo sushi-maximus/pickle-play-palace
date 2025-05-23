@@ -1,4 +1,3 @@
-
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState, useRef } from "react";
 
@@ -10,22 +9,30 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const isRefreshingRef = useRef(false);
+  const isRefreshingRef = useRef(refreshing);
+  
+  // Keep ref in sync with prop to avoid stale closures
+  useEffect(() => {
+    isRefreshingRef.current = refreshing;
+  }, [refreshing]);
   
   // Handle progress animation based on refreshing state
   useEffect(() => {
     console.log("RefreshProgressIndicator - refreshing state changed to:", refreshing);
     
     // Clean up any existing interval
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
+    const clearProgressInterval = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+    
+    clearProgressInterval();
     
     // When refreshing starts
-    if (refreshing && !isRefreshingRef.current) {
+    if (refreshing) {
       console.log("RefreshProgressIndicator - starting progress animation");
-      isRefreshingRef.current = true;
       
       // Make indicator visible immediately
       setVisible(true);
@@ -45,9 +52,8 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       }, 100);
     } 
     // When refreshing stops
-    else if (!refreshing && isRefreshingRef.current) {
+    else if (!refreshing && progress < 100) {
       console.log("RefreshProgressIndicator - completing progress animation");
-      isRefreshingRef.current = false;
       
       // Quickly fill to 100%
       setProgress(100);
@@ -62,13 +68,20 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
     }
     
     // Cleanup on unmount or refreshing state change
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [refreshing]);
+    return clearProgressInterval;
+  }, [refreshing, progress]);
+
+  // Reset progress after animation completes
+  useEffect(() => {
+    if (progress === 100 && !refreshing) {
+      const resetTimeout = setTimeout(() => {
+        console.log("RefreshProgressIndicator - resetting progress");
+        setProgress(0);
+      }, 1000);
+      
+      return () => clearTimeout(resetTimeout);
+    }
+  }, [progress, refreshing]);
 
   // Cleanup on component unmount
   useEffect(() => {
@@ -80,20 +93,6 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       }
     };
   }, []);
-
-  // Reset progress after animation completes
-  useEffect(() => {
-    if (progress === 100) {
-      const resetTimeout = setTimeout(() => {
-        if (!refreshing) {
-          console.log("RefreshProgressIndicator - resetting progress");
-          setProgress(0);
-        }
-      }, 1000);
-      
-      return () => clearTimeout(resetTimeout);
-    }
-  }, [progress, refreshing]);
 
   return visible || progress > 0 ? (
     <div 
