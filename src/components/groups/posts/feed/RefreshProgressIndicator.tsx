@@ -8,10 +8,14 @@ interface RefreshProgressIndicatorProps {
 
 export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicatorProps) => {
   const [progress, setProgress] = useState(0);
+  const [visible, setVisible] = useState(false);
   
   useEffect(() => {
-    // Reset progress when refreshing starts
+    // When refreshing starts
     if (refreshing) {
+      // Make indicator visible immediately
+      setVisible(true);
+      // Reset progress to start from beginning
       setProgress(0);
       
       // Start increasing the progress
@@ -27,13 +31,23 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       }, 100);
       
       return () => clearInterval(interval);
-    } else {
+    } else if (progress > 0) {
       // When refresh is complete, quickly fill to 100% and then fade out
       setProgress(100);
+      
+      // After animation completes, reset and hide for next cycle
+      const timeout = setTimeout(() => {
+        setVisible(false);
+        // Reset progress after fade out animation completes
+        setTimeout(() => setProgress(0), 500);
+      }, 600);
+      
+      return () => clearTimeout(timeout);
     }
-  }, [refreshing]);
+  }, [refreshing, progress]);
 
-  if (!refreshing && progress === 0) {
+  // Don't render anything if not visible and progress is reset
+  if (!visible && progress === 0) {
     return null;
   }
 

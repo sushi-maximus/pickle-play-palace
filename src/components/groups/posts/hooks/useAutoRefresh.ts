@@ -40,7 +40,10 @@ export const useAutoRefresh = ({
     isAutoRefreshEnabled,
     loading,
     interval,
-    refreshFunction,
+    async () => {
+      console.log("Auto refresh triggered at", new Date().toLocaleTimeString());
+      await refreshFunction();
+    },
     userInteractingRef,
     isComponentMountedRef,
     isVisibleRef,
@@ -79,6 +82,7 @@ export const useAutoRefresh = ({
   const handleManualRefresh = async () => {
     if (loading || isRefreshing) return;
     
+    console.log("Manual refresh triggered at", new Date().toLocaleTimeString());
     setIsRefreshing(true);
     await refreshFunction();
     
@@ -86,11 +90,13 @@ export const useAutoRefresh = ({
     if (isComponentMountedRef.current) {
       setLastAutoRefresh(new Date());
       setNextRefreshIn(interval / 1000); // Reset countdown after manual refresh
+      
+      // Add a slight delay for visual feedback before hiding the progress indicator
       setTimeout(() => {
         if (isComponentMountedRef.current) {
           setIsRefreshing(false);
         }
-      }, 500); // Give visual feedback
+      }, 800); // Give more visual feedback
     }
   };
 

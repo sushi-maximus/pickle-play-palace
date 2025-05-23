@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { useGroupPosts } from "./hooks/useGroupPosts";
 import { useAutoRefresh } from "./hooks/useAutoRefresh";
@@ -94,7 +93,7 @@ export const GroupPostsFeed = ({
   const renderContent = () => (
     <FeedContent
       loading={loading}
-      refreshing={refreshing} // Pass the new refreshing state
+      refreshing={refreshing || isRefreshing} // Combine both refreshing states to ensure progress indicator shows for both auto and manual refreshes
       error={error}
       posts={posts}
       user={user}
@@ -122,7 +121,7 @@ export const GroupPostsFeed = ({
         
         <LastRefreshIndicator 
           loading={loading} 
-          refreshing={refreshing} // Pass the new refreshing state
+          refreshing={refreshing || isRefreshing} // Pass the combined refreshing state
           lastAutoRefresh={lastAutoRefresh} 
           isAutoRefreshEnabled={isAutoRefreshEnabled}
           nextRefreshIn={nextRefreshIn}

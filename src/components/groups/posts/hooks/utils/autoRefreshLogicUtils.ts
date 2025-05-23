@@ -36,13 +36,17 @@ export const useAutoRefreshLogic = (
         isVisibleRef.current;
       
       if (shouldRefresh) {
-        console.log("Auto-refreshing posts");
-        await refreshFunction();
-        
-        // Only update state if component is still mounted
-        if (isComponentMountedRef.current) {
-          setLastAutoRefresh(new Date());
-          setNextRefreshIn(interval / 1000); // Reset countdown after refresh
+        console.log("Auto-refreshing posts at", new Date().toLocaleTimeString());
+        try {
+          await refreshFunction();
+          
+          // Only update state if component is still mounted
+          if (isComponentMountedRef.current) {
+            setLastAutoRefresh(new Date());
+            setNextRefreshIn(interval / 1000); // Reset countdown after refresh
+          }
+        } catch (error) {
+          console.error("Error during auto-refresh:", error);
         }
       } else {
         console.log(
