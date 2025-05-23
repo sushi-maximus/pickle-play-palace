@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -80,9 +79,9 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
           key={member.id} 
           open={openMemberId === member.id}
           onOpenChange={(open) => {
-            if (open) {
-              setOpenMemberId(member.id);
-            } else {
+            // Only handle close events from the HoverCard component
+            // Open events are controlled by the onClick handler on the trigger element
+            if (!open) {
               setOpenMemberId(null);
             }
           }}
@@ -90,7 +89,11 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
           <HoverCardTrigger asChild>
             <div 
               className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/10 cursor-pointer transition-colors"
-              onClick={() => setOpenMemberId(openMemberId === member.id ? null : member.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpenMemberId(openMemberId === member.id ? null : member.id);
+              }}
             >
               <div className="flex items-center space-x-3">
                 <Avatar className="h-10 w-10">
@@ -122,7 +125,7 @@ export const GroupMembersList = ({ members, className }: GroupMembersListProps) 
             </div>
           </HoverCardTrigger>
           
-          <HoverCardContent className="w-80 p-0 fixed-center-popup">
+          <HoverCardContent className="w-80 p-0 fixed-center-popup" onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col">
               <div className="flex items-center gap-4 p-4">
                 <Avatar className="h-16 w-16 border-2" style={{ 

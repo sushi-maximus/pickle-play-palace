@@ -6,7 +6,21 @@ import { cn } from "@/lib/utils"
 
 const HoverCard = HoverCardPrimitive.Root
 
-const HoverCardTrigger = HoverCardPrimitive.Trigger
+// Modified to completely disable hover functionality
+const HoverCardTrigger = React.forwardRef<
+  React.ElementRef<typeof HoverCardPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Trigger>
+>(({ ...props }, ref) => (
+  <HoverCardPrimitive.Trigger
+    ref={ref}
+    // Disable all hover-related events
+    onMouseEnter={(e) => e.preventDefault()}
+    onMouseLeave={(e) => e.preventDefault()}
+    onFocus={(e) => e.preventDefault()}
+    {...props}
+  />
+))
+HoverCardTrigger.displayName = HoverCardPrimitive.Trigger.displayName
 
 const HoverCardContent = React.forwardRef<
   React.ElementRef<typeof HoverCardPrimitive.Content>,
