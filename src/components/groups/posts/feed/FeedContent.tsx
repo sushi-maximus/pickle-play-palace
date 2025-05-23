@@ -1,4 +1,3 @@
-
 import { CreatePostForm } from "../CreatePostForm";
 import { GroupPostCard } from "../GroupPostCard";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
@@ -72,21 +71,29 @@ export const FeedContent = ({
         setDisplayedPosts(posts);
       }
     }
-  }, [posts, refreshing, loading, displayedPosts.length]);
+  }, [posts, refreshing, loading]);
 
   // Only show loading state on initial load
   // For refreshes, we'll keep displaying the existing content
   if (loading && !refreshing && displayedPosts.length === 0) {
-    return <GroupPostsLoading />;
+    return (
+      <>
+        <RefreshProgressIndicator refreshing={refreshing} />
+        <GroupPostsLoading />
+      </>
+    );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="p-8 text-center">
-        <div className="text-red-500 mb-4">{error}</div>
-        <Button variant="outline" onClick={refreshPosts}>Try Again</Button>
-      </div>
+      <>
+        <RefreshProgressIndicator refreshing={refreshing} />
+        <div className="p-8 text-center">
+          <div className="text-red-500 mb-4">{error}</div>
+          <Button variant="outline" onClick={refreshPosts}>Try Again</Button>
+        </div>
+      </>
     );
   }
 

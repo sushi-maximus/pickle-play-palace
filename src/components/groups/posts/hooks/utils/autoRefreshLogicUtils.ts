@@ -35,24 +35,20 @@ export const useAutoRefreshLogic = (
           isAutoRefreshEnabled &&
           !isLoading && 
           !userInteractingRef.current && 
-          isVisibleRef.current &&
-          !initialRefreshCompletedRef.current
-        ) {
-          console.log('Initial refresh when auto-refresh enabled');
-          initialRefreshCompletedRef.current = true;
-          setLastAutoRefresh(new Date());
-          setNextRefreshIn(interval / 1000);
-          refreshFunction().catch(error => {
-            console.error('Error during initial auto-refresh:', error);
-          });
-        } 
-        else if (
-          isComponentMountedRef.current && 
-          isAutoRefreshEnabled &&
-          !isLoading && 
-          !userInteractingRef.current && 
           isVisibleRef.current
         ) {
+          // Only perform initial refresh when transitioning from disabled to enabled
+          if (!initialRefreshCompletedRef.current) {
+            console.log('Initial refresh when auto-refresh enabled');
+            initialRefreshCompletedRef.current = true;
+            setLastAutoRefresh(new Date());
+            setNextRefreshIn(interval / 1000);
+            
+            // Don't call refreshFunction immediately to avoid UI jank
+            // Let it happen on the next interval
+            return;
+          }
+          
           console.log('Auto-refresh conditions met, refreshing data...');
           
           // Update last refresh timestamp first for immediate UI feedback

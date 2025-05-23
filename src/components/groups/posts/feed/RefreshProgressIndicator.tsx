@@ -9,19 +9,17 @@ interface RefreshProgressIndicatorProps {
 export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicatorProps) => {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
-  
-  // Track whether we're in the middle of a refresh cycle
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isRefreshingRef = useRef(false);
   
-  // Effect for refreshing state changes
+  // Effect for refreshing state changes - MUST be called unconditionally
   useEffect(() => {
     console.log("RefreshProgressIndicator - refreshing state changed to:", refreshing);
     
     // Clean up any existing interval
-    if (intervalId) {
-      clearInterval(intervalId);
-      setIntervalId(null);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
     
     // When refreshing starts and we're not already in a refresh cycle
@@ -36,7 +34,7 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       setProgress(0);
       
       // Start increasing the progress
-      const newIntervalId = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setProgress((prev) => {
           // Increase more slowly as we get closer to 90%
           if (prev < 30) return prev + 5;
@@ -45,8 +43,6 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
           return Math.min(prev + 0.5, 90); // Never reach 100% until actually complete
         });
       }, 100);
-      
-      setIntervalId(newIntervalId);
     } 
     // When refreshing stops
     else if (!refreshing && isRefreshingRef.current) {
@@ -72,22 +68,22 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
     }
   }, [refreshing]);
 
-  // Clean up on unmount
+  // Clean up on unmount - MUST be a separate useEffect
   useEffect(() => {
     return () => {
-      if (intervalId) {
+      if (intervalRef.current) {
         console.log("RefreshProgressIndicator - cleaning up on unmount");
-        clearInterval(intervalId);
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [intervalId]);
+  }, []);
 
-  // Don't render anything if not visible and progress is reset
-  if (!visible && progress === 0) {
-    return null;
-  }
+  // Don't use early return pattern here as it can cause hook count inconsistencies
+  // Instead, render null conditionally at the end
+  const shouldRender = visible || progress > 0;
 
-  return (
+  return shouldRender ? (
     <div 
       className={`w-full overflow-hidden transition-opacity duration-500 ${
         !refreshing && progress === 100 ? "opacity-0" : "opacity-100"
@@ -99,5 +95,5 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
         className="h-full rounded-none bg-slate-200 dark:bg-slate-800" 
       />
     </div>
-  );
+  ) : null;
 };

@@ -13,23 +13,19 @@ export const useAutoRefresh = ({
   loading,
   interval = DEFAULT_AUTO_REFRESH_INTERVAL
 }: UseAutoRefreshProps): UseAutoRefreshResult => {
+  // All state hooks MUST be called unconditionally at the top level
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastAutoRefresh, setLastAutoRefresh] = useState<Date | null>(null);
   const [nextRefreshIn, setNextRefreshIn] = useState<number>(interval / 1000);
   
-  // Reference to track if component is mounted
+  // All refs MUST be initialized at the top level
   const isComponentMountedRef = useRef(true);
-  // Ref to prevent overlapping refreshes
   const isRefreshingRef = useRef(false);
 
-  // Track visibility using Page Visibility API - ALWAYS call hooks at the top level
+  // All custom hooks MUST be called unconditionally at the top level
   const { isVisibleRef } = useVisibilityTracking();
-  
-  // Track user interaction - ALWAYS call hooks at the top level
   const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
-  
-  // Setup countdown timer - ALWAYS call hooks at the top level
   const { countdownIntervalRef } = useCountdownTimer(
     isAutoRefreshEnabled, 
     loading || isRefreshing,
@@ -37,7 +33,6 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
   
-  // Setup auto-refresh logic - ALWAYS call hooks at the top level
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
     loading || isRefreshing,
@@ -77,7 +72,7 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
 
-  // Component mount/unmount lifecycle - need to create this useEffect before the debug one to maintain hook order
+  // Component mount/unmount lifecycle - MUST be called after all other hooks
   useEffect(() => {
     isComponentMountedRef.current = true;
     
@@ -93,7 +88,7 @@ export const useAutoRefresh = ({
     };
   }, []);
 
-  // Log refresh state changes for debugging
+  // Log refresh state changes for debugging - MUST always be called
   useEffect(() => {
     console.log("useAutoRefresh - refreshing state changed:", isRefreshing);
   }, [isRefreshing]);
@@ -104,9 +99,15 @@ export const useAutoRefresh = ({
     
     // Use the correct format for Sonner toast
     if (newValue) {
-      toast(`Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`);
+      toast({
+        title: "Auto-refresh enabled",
+        description: `Posts will refresh every ${interval/1000} seconds.`
+      });
     } else {
-      toast("Auto-refresh disabled. Posts will only refresh when you click the refresh button.");
+      toast({
+        title: "Auto-refresh disabled",
+        description: "Posts will only refresh when you click the refresh button."
+      });
     }
   };
 
