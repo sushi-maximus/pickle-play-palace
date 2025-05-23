@@ -42,6 +42,14 @@ export const GroupPostCard = ({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isAuthor = currentUserId === post.user.id;
   
+  // Add detailed debugging
+  console.log("=== GroupPostCard Debug ===");
+  console.log("Post ID:", post.id);
+  console.log("Current User ID:", currentUserId);
+  console.log("Post User ID:", post.user.id);
+  console.log("Is Author:", isAuthor);
+  console.log("Post User:", post.user);
+  
   const {
     reactions,
     userReactions,
@@ -81,16 +89,25 @@ export const GroupPostCard = ({
 
   const isEditingThisPost = isEditing && currentPostId === post.id;
   
+  console.log("Is Editing This Post:", isEditingThisPost);
+  console.log("================================");
+  
   const confirmDelete = () => {
     handleDelete(post.id);
   };
 
-  console.log("GroupPostCard - isAuthor:", isAuthor, "currentUserId:", currentUserId, "post.user.id:", post.user.id);
-  console.log("GroupPostCard - isEditingThisPost:", isEditingThisPost);
-
   return (
     <Card className="mb-4 hover:shadow-md transition-all duration-200 border-l-4 border-l-primary/30">
       <CardHeader className="pb-3">
+        {/* Add visual debugging directly in the card */}
+        <div className="bg-yellow-100 p-2 text-xs mb-2 rounded">
+          <strong>DEBUG INFO:</strong><br/>
+          Current User: {currentUserId || 'null'}<br/>
+          Post User: {post.user.id}<br/>
+          Is Author: {String(isAuthor)}<br/>
+          Is Editing: {String(isEditingThisPost)}
+        </div>
+        
         <PostHeader 
           post={post}
           isAuthor={isAuthor}
