@@ -1,11 +1,10 @@
 
 import { Clock, RefreshCw, Loader2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { memo } from "react";
 
 interface LastRefreshIndicatorProps {
   loading: boolean;
-  refreshing?: boolean; // New prop for background refreshes
+  refreshing?: boolean;
   lastAutoRefresh: Date | null;
   isAutoRefreshEnabled?: boolean;
   nextRefreshIn?: number;
@@ -13,7 +12,7 @@ interface LastRefreshIndicatorProps {
 
 export const LastRefreshIndicator = memo(({ 
   loading, 
-  refreshing = false, // Default to false
+  refreshing = false,
   lastAutoRefresh,
   isAutoRefreshEnabled = true,
   nextRefreshIn
