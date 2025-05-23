@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useEditPost } from "./hooks/useEditPost";
@@ -108,16 +107,18 @@ export const GroupPostCard = ({
       
       {!isEditingThisPost && (
         <CardFooter className="border-t pt-3 flex flex-col">
-          <div className="w-full flex">
-            <PostReactions 
-              reactions={reactions}
-              userReactions={userReactions}
-              isSubmitting={isSubmitting}
-              onReactionToggle={handleReactionToggle}
-              currentUserId={currentUserId}
-            />
+          <div className="w-full flex flex-col space-y-2">
+            <div className="w-full flex">
+              <PostReactions 
+                reactions={reactions}
+                userReactions={userReactions}
+                isSubmitting={isSubmitting}
+                onReactionToggle={handleReactionToggle}
+                currentUserId={currentUserId}
+              />
+            </div>
             
-            <div className="ml-auto">
+            <div className="w-full">
               <CommentsSection 
                 postId={post.id}
                 userId={currentUserId}
