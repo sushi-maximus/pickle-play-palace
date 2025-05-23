@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,7 +19,7 @@ type ActiveTab = "home" | "home2" | "users" | "settings" | "calendar";
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<ActiveTab>("home");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("home2");
 
   // Group details and membership
   const {
