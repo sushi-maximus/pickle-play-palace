@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-import { forwardRef } from "react";
 
 interface PostHeaderProps {
   post: {
@@ -29,31 +28,31 @@ interface PostHeaderProps {
   onDeleteClick: () => void;
 }
 
-export const PostHeader = forwardRef<HTMLDivElement, PostHeaderProps>(({ 
+export const PostHeader = ({ 
   post, 
   isAuthor, 
   isEditing,
   onStartEditing,
   onDeleteClick
-}, ref) => {
+}: PostHeaderProps) => {
   const displayName = `${post.user.first_name} ${post.user.last_name}`;
   const avatarFallback = `${post.user.first_name?.[0] || '?'}${post.user.last_name?.[0] || '?'}`;
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
   const isEdited = post.created_at !== post.updated_at;
   
   return (
-    <div ref={ref} className="flex justify-between items-center relative z-10">
+    <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-3">
         <Avatar className="h-10 w-10">
           {post.user.avatar_url ? (
             <AvatarImage src={post.user.avatar_url} alt={displayName} />
           ) : (
-            <AvatarFallback>{avatarFallback}</AvatarFallback>
+            <AvatarFallback className="bg-gray-200 text-gray-700">{avatarFallback}</AvatarFallback>
           )}
         </Avatar>
-        <div>
-          <p className="font-medium">{displayName}</p>
-          <p className="text-xs text-muted-foreground">
+        <div className="flex flex-col">
+          <p className="font-medium text-gray-900">{displayName}</p>
+          <p className="text-xs text-gray-500">
             {timeAgo}
             {isEdited && <span className="ml-1">(edited)</span>}
           </p>
@@ -61,44 +60,41 @@ export const PostHeader = forwardRef<HTMLDivElement, PostHeaderProps>(({
       </div>
       
       {isAuthor && !isEditing && (
-        <div className="relative">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-8 w-8 rounded-full hover:bg-gray-100 z-10"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end" 
-              className="w-[160px] bg-white border shadow-lg"
-              sideOffset={5}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-8 w-8 rounded-full hover:bg-gray-100 shrink-0"
             >
-              <DropdownMenuItem 
-                className="cursor-pointer flex items-center hover:bg-gray-50" 
-                onClick={onStartEditing}
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit post
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                className="cursor-pointer flex items-center text-destructive hover:bg-red-50 focus:text-destructive" 
-                onClick={onDeleteClick}
-              >
-                <Trash className="mr-2 h-4 w-4" />
-                Delete post
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Post options</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            align="end" 
+            side="bottom"
+            className="w-40"
+            sideOffset={4}
+          >
+            <DropdownMenuItem 
+              onClick={onStartEditing}
+              className="cursor-pointer"
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Edit post
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={onDeleteClick}
+              className="cursor-pointer text-red-600 focus:text-red-600"
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Delete post
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );
-});
-
-PostHeader.displayName = "PostHeader";
+};

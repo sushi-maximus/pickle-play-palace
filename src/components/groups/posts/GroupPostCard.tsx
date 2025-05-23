@@ -101,8 +101,8 @@ export const GroupPostCard = ({
   const isEditingThisPost = isEditing && currentPostId === post.id;
 
   return (
-    <Card className="mb-4 hover:shadow-md transition-all duration-200 border-l-4 border-l-primary/30 overflow-visible">
-      <CardHeader className="pb-3 overflow-visible">
+    <Card className="mb-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/30">
+      <CardHeader className="p-4 pb-3">
         <PostHeader 
           post={post}
           isAuthor={isAuthor}
@@ -112,7 +112,7 @@ export const GroupPostCard = ({
         />
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="px-4 pb-4">
         <PostContent 
           content={post.content}
           mediaUrls={post.media_urls}
@@ -126,7 +126,7 @@ export const GroupPostCard = ({
       </CardContent>
       
       {!isEditingThisPost && (
-        <CardFooter className="border-t pt-3 flex flex-col">
+        <CardFooter className="border-t border-gray-100 pt-3 px-4 pb-4 flex flex-col">
           <div className="w-full flex flex-col space-y-2">
             <div className="w-full flex justify-start">
               <PostReactions 
