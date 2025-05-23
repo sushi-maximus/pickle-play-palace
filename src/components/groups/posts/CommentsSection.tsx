@@ -39,7 +39,7 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
   }
 
   return (
-    <div className="border-t mt-3 pt-3 w-[70%] mx-auto">
+    <div className="border-t mt-3 pt-3 w-full">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium">Comments ({comments.length})</h4>
         <Button 
@@ -81,3 +81,4 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
     </div>
   );
 };
+
