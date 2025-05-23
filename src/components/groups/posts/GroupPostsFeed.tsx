@@ -5,9 +5,11 @@ import { GroupPostsLoading } from "./GroupPostsLoading";
 import { GroupPostsEmpty } from "./GroupPostsEmpty";
 import { useGroupPosts } from "./hooks/useGroupPosts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, RefreshCcw } from "lucide-react";
+import { MessageCircle, RefreshCcw, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { toast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GroupPostsFeedProps {
   groupId: string;
@@ -59,6 +61,18 @@ export const GroupPostsFeed = ({
   
   const handlePostDeleted = () => {
     refreshPosts();
+  };
+
+  const toggleAutoRefresh = () => {
+    const newValue = !isAutoRefreshEnabled;
+    setIsAutoRefreshEnabled(newValue);
+    toast({
+      title: newValue ? "Auto-refresh enabled" : "Auto-refresh disabled",
+      description: newValue 
+        ? "Posts will automatically refresh every 30 seconds" 
+        : "Posts will only refresh when you click the refresh button",
+      duration: 3000
+    });
   };
 
   // Auto-refresh effect
@@ -139,6 +153,14 @@ export const GroupPostsFeed = ({
     );
   };
 
+  // Display last refresh time
+  const formatLastRefreshTime = () => {
+    if (!lastAutoRefresh) return "Never refreshed";
+    
+    // Format time in a user-friendly way (e.g., "5:30 PM")
+    return lastAutoRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   // If standalone, wrap in a card
   if (standalone) {
     return (
@@ -148,17 +170,47 @@ export const GroupPostsFeed = ({
             <MessageCircle className="h-6 w-6 text-primary" />
             <CardTitle>{groupName ? `${groupName} Discussion` : 'Group Discussion'}</CardTitle>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={isRefreshing || loading}
-            className="hover:bg-primary/10"
-          >
-            <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span className="ml-1 sr-only md:not-sr-only">Refresh</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Auto-refresh toggle button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleAutoRefresh}
+              className={`hover:bg-primary/10 ${isAutoRefreshEnabled ? 'text-primary' : 'text-muted-foreground'}`}
+              title={isAutoRefreshEnabled ? "Disable auto-refresh" : "Enable auto-refresh"}
+            >
+              <Clock className={`h-4 w-4 ${isAutoRefreshEnabled ? 'text-primary' : 'text-muted-foreground'}`} />
+              <span className="ml-1 sr-only md:not-sr-only">
+                {isAutoRefreshEnabled ? "Auto" : "Manual"}
+              </span>
+            </Button>
+
+            {/* Manual refresh button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleRefresh}
+              disabled={isRefreshing || loading}
+              className="hover:bg-primary/10"
+            >
+              <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span className="ml-1 sr-only md:not-sr-only">Refresh</span>
+            </Button>
+          </div>
         </CardHeader>
+        
+        {/* Last refresh indicator */}
+        <div className="px-6 pt-3 pb-0 flex justify-end items-center text-xs text-muted-foreground">
+          {loading ? (
+            <Skeleton className="h-4 w-32" />
+          ) : (
+            <div className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              <span>Last updated: {formatLastRefreshTime()}</span>
+            </div>
+          )}
+        </div>
+        
         <CardContent className="p-6">
           {renderContent()}
         </CardContent>
