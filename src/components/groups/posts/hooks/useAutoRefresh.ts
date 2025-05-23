@@ -79,11 +79,14 @@ export const useAutoRefresh = ({
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
     
-    toast({
-      title: newValue ? "Auto-refresh enabled" : "Auto-refresh disabled",
-      description: newValue 
-        ? `Posts will automatically refresh every ${interval/1000} seconds` 
-        : "Posts will only refresh when you click the refresh button",
+    const title = newValue ? "Auto-refresh enabled" : "Auto-refresh disabled";
+    const description = newValue 
+      ? `Posts will automatically refresh every ${interval/1000} seconds` 
+      : "Posts will only refresh when you click the refresh button";
+    
+    // Call toast with the format it expects based on your sonner.tsx implementation
+    toast(title, {
+      description,
       duration: 3000
     });
   };
