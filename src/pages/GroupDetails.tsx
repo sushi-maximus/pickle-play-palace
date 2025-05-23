@@ -13,9 +13,10 @@ import {
   MobileIconMenu,
   MobileChatFeed,
   MobileComposeArea,
+  MobileHome2Tab,
 } from "@/components/groups/mobile";
 
-type ActiveTab = "home" | "users" | "settings" | "calendar";
+type ActiveTab = "home" | "home2" | "users" | "settings" | "calendar";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -84,6 +85,15 @@ const GroupDetails = () => {
               currentUserId={user?.id}
             />
           </div>
+        );
+      
+      case "home2":
+        return (
+          <MobileHome2Tab
+            groupId={id}
+            user={user}
+            onPostCreated={handlePostCreated}
+          />
         );
       
       case "users":

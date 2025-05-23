@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Home, Calendar, Users, Settings } from "lucide-react";
+import { Home, Calendar, Users, Settings, MessageSquare } from "lucide-react";
 
 interface MobileIconMenuProps {
   activeTab: string;
@@ -10,6 +10,7 @@ interface MobileIconMenuProps {
 export const MobileIconMenu = ({ activeTab, onTabChange }: MobileIconMenuProps) => {
   const menuItems = [
     { id: "home", icon: Home, label: "Home" },
+    { id: "home2", icon: MessageSquare, label: "Home2" },
     { id: "calendar", icon: Calendar, label: "Calendar" },
     { id: "users", icon: Users, label: "Members" },
     { id: "settings", icon: Settings, label: "Settings" },
