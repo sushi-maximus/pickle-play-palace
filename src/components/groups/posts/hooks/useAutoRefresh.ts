@@ -48,30 +48,6 @@ export const useAutoRefresh = ({
     };
   }, []);
   
-  const toggleAutoRefresh = () => {
-    const newValue = !isAutoRefreshEnabled;
-    setIsAutoRefreshEnabled(newValue);
-    
-    toast(
-      newValue ? "Auto-refresh enabled" : "Auto-refresh disabled", 
-      {
-        description: newValue 
-          ? `Posts will automatically refresh every ${interval/1000} seconds` 
-          : "Posts will only refresh when you click the refresh button",
-        duration: 3000
-      }
-    );
-  };
-
-  const handleManualRefresh = async () => {
-    if (loading || isRefreshing) return;
-    
-    setIsRefreshing(true);
-    await refreshFunction();
-    setLastAutoRefresh(new Date());
-    setTimeout(() => setIsRefreshing(false), 500); // Give visual feedback
-  };
-
   // Auto-refresh effect
   useEffect(() => {
     // Don't set up auto-refresh if it's disabled
@@ -98,6 +74,28 @@ export const useAutoRefresh = ({
       clearInterval(intervalId);
     };
   }, [isAutoRefreshEnabled, loading, refreshFunction, interval]);
+
+  const toggleAutoRefresh = () => {
+    const newValue = !isAutoRefreshEnabled;
+    setIsAutoRefreshEnabled(newValue);
+    
+    toast({
+      title: newValue ? "Auto-refresh enabled" : "Auto-refresh disabled",
+      description: newValue 
+        ? `Posts will automatically refresh every ${interval/1000} seconds` 
+        : "Posts will only refresh when you click the refresh button",
+      duration: 3000
+    });
+  };
+
+  const handleManualRefresh = async () => {
+    if (loading || isRefreshing) return;
+    
+    setIsRefreshing(true);
+    await refreshFunction();
+    setLastAutoRefresh(new Date());
+    setTimeout(() => setIsRefreshing(false), 500); // Give visual feedback
+  };
 
   return {
     isAutoRefreshEnabled,

@@ -1,7 +1,7 @@
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, RefreshCcw, Loader2 } from "lucide-react";
+import { MessageCircle, RefreshCw, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -69,7 +69,7 @@ export const FeedHeader = ({
                 {loading || isRefreshing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <RefreshCcw className="h-4 w-4" />
+                  <RefreshCw className="h-4 w-4" />
                 )}
                 <span className="ml-1 sr-only md:not-sr-only">Refresh</span>
               </Button>
