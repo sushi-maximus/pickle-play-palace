@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -16,6 +15,7 @@ import { toast } from "sonner";
 import { GroupMembersList } from "@/components/groups/GroupMembersList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JoinRequestDialog } from "@/components/groups/JoinRequestDialog";
+import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -178,6 +178,9 @@ const GroupDetails = () => {
                   <TabsTrigger value="members">
                     Members ({group?.member_count || 0})
                   </TabsTrigger>
+                  {membershipStatus.isAdmin && (
+                    <TabsTrigger value="requests">Requests</TabsTrigger>
+                  )}
                 </TabsList>
                 
                 <TabsContent value="about">
@@ -218,6 +221,15 @@ const GroupDetails = () => {
                   <h3 className="text-lg font-medium mb-4">Group Members</h3>
                   <GroupMembersList members={group?.members || []} />
                 </TabsContent>
+                
+                {membershipStatus.isAdmin && (
+                  <TabsContent value="requests">
+                    <JoinRequestsManager 
+                      groupId={group?.id} 
+                      isAdmin={membershipStatus.isAdmin} 
+                    />
+                  </TabsContent>
+                )}
               </Tabs>
             </CardContent>
           </Card>
