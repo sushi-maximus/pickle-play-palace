@@ -1,14 +1,15 @@
+
 import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from "date-fns";
-import { ThumbsUp, ThumbsDown, Edit, Trash2, Save, X, MoreHorizontal } from "lucide-react";
+import { Edit, Trash2, Save, X, MoreHorizontal } from "lucide-react";
 import type { Comment as CommentType } from "./hooks/useComments";
-import { useCommentReactions, ReactionType } from "./hooks/useCommentReactions";
+import { useCommentReactions } from "./hooks/useCommentReactions";
 import { useEditComment } from "./hooks/useEditComment";
 import { useDeleteComment } from "./hooks/useDeleteComment";
-import { DeleteCommentDialog } from "./post-card/DeleteCommentDialog";
+import { DeleteCommentDialog, CommentReactions } from "./post-card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,7 +60,7 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
     onCommentDeleted: onCommentUpdated
   });
 
-  const handleReactionClick = (type: ReactionType) => {
+  const handleReactionClick = (type: "thumbsup" | "thumbsdown") => {
     toggleReaction(type);
   };
 
@@ -149,31 +150,13 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
               {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
             </div>
             
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={`p-0 h-6 ${userReactions?.thumbsup ? "text-blue-500" : ""}`} 
-              onClick={() => handleReactionClick("thumbsup")}
-              disabled={!userId || isSubmitting.thumbsup}
-            >
-              <ThumbsUp className={`h-3.5 w-3.5 ${userReactions?.thumbsup ? "fill-blue-500" : ""}`} />
-              {reactions.thumbsup > 0 && (
-                <span className="ml-1 text-xs">{reactions.thumbsup}</span>
-              )}
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={`p-0 h-6 ml-2 ${userReactions?.thumbsdown ? "text-red-500" : ""}`}
-              onClick={() => handleReactionClick("thumbsdown")}
-              disabled={!userId || isSubmitting.thumbsdown}
-            >
-              <ThumbsDown className={`h-3.5 w-3.5 ${userReactions?.thumbsdown ? "fill-red-500" : ""}`} />
-              {reactions.thumbsdown > 0 && (
-                <span className="ml-1 text-xs">{reactions.thumbsdown}</span>
-              )}
-            </Button>
+            <CommentReactions 
+              reactions={reactions}
+              userReactions={userReactions}
+              isSubmitting={isSubmitting}
+              onReactionToggle={handleReactionClick}
+              currentUserId={userId}
+            />
           </div>
         )}
       </div>
