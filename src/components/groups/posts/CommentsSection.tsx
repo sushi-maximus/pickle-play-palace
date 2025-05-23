@@ -15,7 +15,15 @@ interface CommentsSectionProps {
 
 export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { comments, loading, error, refreshComments } = useComments(postId, userId);
+  const { 
+    comments, 
+    loading, 
+    error, 
+    refreshComments, 
+    addOptimisticComment,
+    updateOptimisticComment,
+    removeOptimisticComment
+  } = useComments(postId, userId);
 
   const handleCommentAdded = () => {
     refreshComments();
@@ -92,6 +100,7 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
               comment={comment}
               userId={userId}
               onCommentUpdated={handleCommentUpdated}
+              isOptimistic={Boolean(comment.isOptimistic)}
             />
           ))}
         </div>
@@ -102,6 +111,7 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
           postId={postId}
           userId={userId}
           onCommentAdded={handleCommentAdded}
+          addOptimisticComment={addOptimisticComment}
         />
       )}
     </div>

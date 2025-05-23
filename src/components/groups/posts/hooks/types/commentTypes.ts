@@ -1,5 +1,7 @@
 
-import { ReactionType } from "../useCommentReactions";
+import { PostUser } from "../types";
+
+export type ReactionType = "thumbsup" | "thumbsdown";
 
 export interface Comment {
   id: string;
@@ -7,12 +9,7 @@ export interface Comment {
   created_at: string;
   post_id: string;
   user_id: string;
-  user: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    avatar_url?: string | null;
-  };
+  user: PostUser;
   reactions?: Record<ReactionType, number>;
   user_reactions?: Record<ReactionType, boolean>;
 }
@@ -22,4 +19,12 @@ export interface UseCommentsResult {
   loading: boolean;
   error: string | null;
   refreshComments: () => Promise<void>;
+  addOptimisticComment: (newComment: Partial<Comment>) => string;
+  updateOptimisticComment: (id: string, content: string) => void;
+  removeOptimisticComment: (id: string) => void;
+}
+
+export interface OptimisticComment extends Partial<Comment> {
+  isOptimistic?: boolean;
+  tempId?: string;
 }

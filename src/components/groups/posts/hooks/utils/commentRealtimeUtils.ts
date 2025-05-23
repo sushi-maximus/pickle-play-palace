@@ -1,9 +1,9 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Comment } from "../types/commentTypes";
+import { Comment, OptimisticComment } from "../types/commentTypes";
 import { enrichCommentData } from "./commentEnrichment";
 
-export type CommentsUpdateCallback = (updater: (comments: Comment[]) => Comment[]) => void;
+export type CommentsUpdateCallback = (updater: (comments: OptimisticComment[]) => OptimisticComment[]) => void;
 
 // Setup Supabase real-time subscription for comments
 export const setupCommentsRealtimeSubscription = (
@@ -17,7 +17,7 @@ export const setupCommentsRealtimeSubscription = (
   console.log('Setting up real-time subscription for comments...');
   
   const channel = supabase
-    .channel('comments-changes')
+    .channel(`comments-changes-${postId}`)
     .on(
       'postgres_changes',
       { 
@@ -32,7 +32,26 @@ export const setupCommentsRealtimeSubscription = (
         if (payload.eventType === 'INSERT') {
           // Add new comment
           const newComment = await enrichCommentData(payload.new, userId);
-          setComments(current => [...current, newComment]);
+          
+          // Check if we have an optimistic version of this comment to replace
+          setComments(current => {
+            const optimisticIndex = current.findIndex(c => 
+              c.isOptimistic && 
+              c.user_id === newComment.user_id && 
+              c.post_id === newComment.post_id && 
+              c.content === newComment.content
+            );
+            
+            if (optimisticIndex >= 0) {
+              // Replace optimistic comment with real one
+              const updated = [...current];
+              updated[optimisticIndex] = newComment;
+              return updated;
+            } else {
+              // No matching optimistic comment found, just add the new one
+              return [...current, newComment];
+            }
+          });
         } 
         else if (payload.eventType === 'UPDATE') {
           // Update existing comment
@@ -49,7 +68,9 @@ export const setupCommentsRealtimeSubscription = (
         }
       }
     )
-    .subscribe();
+    .subscribe((status) => {
+      console.log(`Comment subscription status for post ${postId}:`, status);
+    });
   
   return channel;
 };
