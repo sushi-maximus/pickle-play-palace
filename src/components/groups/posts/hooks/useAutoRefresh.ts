@@ -53,7 +53,9 @@ export const useAutoRefresh = ({
         if (isComponentMountedRef.current) {
           // Add a slight delay before setting isRefreshing to false for visual feedback
           setTimeout(() => {
-            setIsRefreshing(false);
+            if (isComponentMountedRef.current) {
+              setIsRefreshing(false);
+            }
           }, 800);
         }
       }
@@ -81,11 +83,16 @@ export const useAutoRefresh = ({
     };
   }, []);
 
+  // Log refresh state changes for debugging
+  useEffect(() => {
+    console.log("useAutoRefresh - refreshing state changed:", isRefreshing);
+  }, [isRefreshing]);
+
   const toggleAutoRefresh = () => {
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
     
-    // Use the correct format for Sonner toast (simple message with optional description)
+    // Use the correct format for Sonner toast
     if (newValue) {
       toast(`Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`);
     } else {

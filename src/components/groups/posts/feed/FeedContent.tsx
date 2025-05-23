@@ -92,7 +92,7 @@ export const FeedContent = ({
 
   return (
     <div className="space-y-6">
-      {/* Always render the progress indicator to ensure it's in the DOM */}
+      {/* Always render the progress indicator at the top of the feed */}
       <RefreshProgressIndicator refreshing={refreshing} />
       
       {membershipStatus.isMember && (
