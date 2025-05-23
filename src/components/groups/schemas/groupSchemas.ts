@@ -17,6 +17,9 @@ export const updateGroupSchema = z.object({
   description: z.string().optional(),
   location: z.string().optional(),
   is_private: z.boolean(),
+  skill_level_min: z.string().optional(),
+  skill_level_max: z.string().optional(),
+  max_members: z.number().optional().transform(val => val === 0 ? undefined : val),
 });
 
 export type UpdateGroupFormValues = z.infer<typeof updateGroupSchema>;
