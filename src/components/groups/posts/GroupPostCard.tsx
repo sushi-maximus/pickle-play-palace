@@ -101,8 +101,8 @@ export const GroupPostCard = ({
   const isEditingThisPost = isEditing && currentPostId === post.id;
 
   return (
-    <Card className="mb-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/30">
-      <CardHeader className="p-4 pb-3">
+    <Card className="mb-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/30 overflow-visible">
+      <CardHeader className="p-4 pb-3 overflow-visible relative">
         <PostHeader 
           post={post}
           isAuthor={isAuthor}
