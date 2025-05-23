@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useEditPost } from "./hooks/useEditPost";
@@ -118,7 +119,7 @@ export const GroupPostCard = ({
               />
             </div>
             
-            <div className="w-full">
+            <div className="w-[70%] mx-auto">
               <CommentsSection 
                 postId={post.id}
                 userId={currentUserId}
