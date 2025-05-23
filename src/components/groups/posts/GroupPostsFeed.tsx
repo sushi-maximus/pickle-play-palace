@@ -1,3 +1,4 @@
+
 import { CreatePostForm } from "./CreatePostForm";
 import { GroupPostCard } from "./GroupPostCard";
 import { GroupPostsLoading } from "./GroupPostsLoading";
@@ -35,6 +36,10 @@ export const GroupPostsFeed = ({
   });
 
   const handlePostCreated = () => {
+    refreshPosts();
+  };
+  
+  const handlePostUpdated = () => {
     refreshPosts();
   };
 
@@ -102,8 +107,10 @@ export const GroupPostsFeed = ({
             {posts.map((post) => (
               <GroupPostCard 
                 key={post.id} 
-                post={post} 
+                post={post}
+                currentUserId={user?.id}
                 onReactionToggle={handleReactionToggle}
+                onPostUpdated={handlePostUpdated}
               />
             ))}
           </div>
