@@ -1,5 +1,5 @@
 
-import { PostReactionType } from "./usePostReactions";
+import { PostReactionType } from "./types/reactionTypes";
 
 export interface PostUser {
   id: string;
@@ -33,20 +33,20 @@ export interface UseGroupPostsResult {
   refreshPosts: () => Promise<void>;
 }
 
-// Add PostReaction types
-export interface PostReactions {
+// Renamed types to avoid conflict with the PostReactions component
+export interface PostReactionsData {
   like: number;
   thumbsup: number;
   thumbsdown: number;
 }
 
-export interface PostUserReactions {
+export interface PostUserReactionsData {
   like: boolean;
   thumbsup: boolean;
   thumbsdown: boolean;
 }
 
-export interface PostReactionSubmitting {
+export interface PostReactionSubmittingData {
   like: boolean;
   thumbsup: boolean;
   thumbsdown: boolean;
