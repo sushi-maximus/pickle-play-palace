@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useVisibilityTracking } from "./utils/visibilityUtils";
@@ -76,21 +77,34 @@ export const useAutoRefresh = ({
 
   // Component mount/unmount lifecycle - MUST be called after all other hooks
   useEffect(() => {
+    console.log("useAutoRefresh - component mounted");
     isComponentMountedRef.current = true;
     
     return () => {
+      console.log("useAutoRefresh - component unmounting, cleaning up");
       isComponentMountedRef.current = false;
       
       // Clean up all intervals and timeouts when component unmounts
-      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+      
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+      
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
       
       console.log('Component unmounted, all intervals cleaned up');
     };
   }, []);
 
-  // Log refresh state changes for debugging - MUST always be called
+  // Log refresh state changes for debugging
   useEffect(() => {
     console.log("useAutoRefresh - refreshing state changed:", isRefreshing);
   }, [isRefreshing]);

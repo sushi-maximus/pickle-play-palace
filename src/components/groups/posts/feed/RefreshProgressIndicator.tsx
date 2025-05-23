@@ -23,7 +23,7 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
     }
     
     // When refreshing starts
-    if (refreshing) {
+    if (refreshing && !isRefreshingRef.current) {
       console.log("RefreshProgressIndicator - starting progress animation");
       isRefreshingRef.current = true;
       
@@ -97,10 +97,11 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
 
   return visible || progress > 0 ? (
     <div 
-      className={`w-full overflow-hidden transition-opacity duration-500 ${
-        !refreshing && progress === 100 ? "opacity-0" : "opacity-100"
-      }`}
-      style={{ height: "3px" }} // Slightly thicker for better visibility
+      className="w-full overflow-hidden transition-opacity duration-500"
+      style={{ 
+        height: "3px",
+        opacity: !refreshing && progress === 100 ? 0 : 1 
+      }}
     >
       <Progress 
         value={progress} 

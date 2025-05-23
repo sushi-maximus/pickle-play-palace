@@ -13,22 +13,21 @@ export const useAutoRefreshLogic = (
   setNextRefreshIn: (seconds: number) => void
 ) => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const initialRefreshCompletedRef = useRef<boolean>(false);
   
-  // Single useEffect for setting up and cleaning up the refresh interval
+  // Set up and clean up the refresh interval
   useEffect(() => {
-    // Skip effect if component is not mounted
-    if (!isComponentMountedRef.current) return;
+    console.log(`Auto-refresh ${isAutoRefreshEnabled ? 'enabled' : 'disabled'}, cleaning up existing intervals`);
     
-    // Clear existing interval when autoRefresh state changes
+    // Always clear existing interval first to prevent duplicates
     if (refreshIntervalRef.current) {
+      console.log("Clearing existing refresh interval");
       clearInterval(refreshIntervalRef.current);
       refreshIntervalRef.current = null;
     }
 
     // Only set up the interval if auto-refresh is enabled
-    if (isAutoRefreshEnabled) {
-      console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
+    if (isAutoRefreshEnabled && isComponentMountedRef.current) {
+      console.log(`Setting up NEW auto-refresh interval: ${interval/1000}s`);
       
       // Set up the recurring interval
       refreshIntervalRef.current = setInterval(() => {
@@ -65,13 +64,9 @@ export const useAutoRefreshLogic = (
       }, interval);
     }
 
-    // Reset initialRefreshCompletedRef when auto-refresh is toggled off
-    if (!isAutoRefreshEnabled) {
-      initialRefreshCompletedRef.current = false;
-    }
-
     return () => {
       if (refreshIntervalRef.current) {
+        console.log("Cleaning up refresh interval on effect cleanup");
         clearInterval(refreshIntervalRef.current);
         refreshIntervalRef.current = null;
       }
