@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,9 +60,11 @@ export const usePostReactions = ({
           
           // Re-fetch reaction counts since we don't know from the event which type changed
           try {
+            // Fix: Explicitly cast the parameters to any to avoid TypeScript error
+            const params: any = { post_id: postId };
             const { data: countData, error } = await supabase.rpc(
               'get_post_reaction_counts', 
-              { post_id: postId }
+              params
             ) as PostReactionCountsResponse;
             
             if (!error && countData) {

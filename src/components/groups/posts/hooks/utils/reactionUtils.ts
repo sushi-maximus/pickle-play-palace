@@ -20,9 +20,11 @@ interface PostReactionCountsParams {
 export const fetchPostReactionCounts = async (postId: string): Promise<Record<PostReactionType, number>> => {
   try {
     // Try to use the SQL function if it exists
+    // Fix: Explicitly cast the parameters to any to avoid TypeScript error
+    const params: any = { post_id: postId };
     const { data, error } = await supabase.rpc(
       'get_post_reaction_counts', 
-      { post_id: postId }
+      params
     ) as PostReactionCountsResponse;
     
     if (!error && data) {
