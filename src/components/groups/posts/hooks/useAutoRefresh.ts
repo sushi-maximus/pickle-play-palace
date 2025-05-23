@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 
 interface UseAutoRefreshProps {
@@ -17,9 +17,19 @@ export const useAutoRefresh = ({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastAutoRefresh, setLastAutoRefresh] = useState<Date | null>(null);
   const [nextRefreshIn, setNextRefreshIn] = useState<number>(interval / 1000);
+  
   const userInteractingRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isComponentMountedRef = useRef(true);
+  const isVisibleRef = useRef(true);
+
+  // Check if the page is visible or hidden
+  const checkVisibility = useCallback(() => {
+    isVisibleRef.current = document.visibilityState === 'visible';
+    console.log(`Page visibility changed: ${isVisibleRef.current ? 'visible' : 'hidden'}`);
+  }, []);
   
   // Track user interaction
   useEffect(() => {
@@ -39,14 +49,37 @@ export const useAutoRefresh = ({
     document.addEventListener('scroll', handleUserActivity);
     document.addEventListener('touchstart', handleUserActivity);
     
+    // Add visibility change listener
+    document.addEventListener('visibilitychange', checkVisibility);
+    
+    // Set initial visibility state
+    checkVisibility();
+    
     return () => {
       // Clean up event listeners
       document.removeEventListener('mousedown', handleUserActivity);
       document.removeEventListener('keydown', handleUserActivity);
       document.removeEventListener('scroll', handleUserActivity);
       document.removeEventListener('touchstart', handleUserActivity);
+      document.removeEventListener('visibilitychange', checkVisibility);
       
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [checkVisibility]);
+
+  // Component mount/unmount lifecycle
+  useEffect(() => {
+    isComponentMountedRef.current = true;
+    
+    return () => {
+      isComponentMountedRef.current = false;
+      
+      // Clean up all intervals and timeouts when component unmounts
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      
+      console.log('Component unmounted, all intervals cleaned up');
     };
   }, []);
 
@@ -77,6 +110,7 @@ export const useAutoRefresh = ({
     return () => {
       if (countdownIntervalRef.current) {
         clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
       }
     };
   }, [isAutoRefreshEnabled, loading, interval]);
@@ -84,28 +118,50 @@ export const useAutoRefresh = ({
   // Auto-refresh effect
   useEffect(() => {
     // Don't set up auto-refresh if it's disabled
-    if (!isAutoRefreshEnabled) return;
+    if (!isAutoRefreshEnabled) {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+      return;
+    }
     
     console.log("Setting up auto-refresh interval");
     
     // Set up the interval for auto-refresh
-    const intervalId = setInterval(async () => {
-      if (isAutoRefreshEnabled && !loading && !userInteractingRef.current) {
+    refreshIntervalRef.current = setInterval(async () => {
+      const shouldRefresh = 
+        isAutoRefreshEnabled && 
+        !loading && 
+        !userInteractingRef.current && 
+        isComponentMountedRef.current &&
+        isVisibleRef.current;
+      
+      if (shouldRefresh) {
         console.log("Auto-refreshing posts");
         await refreshFunction();
-        setLastAutoRefresh(new Date());
-        setNextRefreshIn(interval / 1000); // Reset countdown after refresh
-      } else if (userInteractingRef.current) {
-        console.log("Skipping auto-refresh: user is interacting with the page");
-      } else if (loading) {
-        console.log("Skipping auto-refresh: content is already loading");
+        
+        // Only update state if component is still mounted
+        if (isComponentMountedRef.current) {
+          setLastAutoRefresh(new Date());
+          setNextRefreshIn(interval / 1000); // Reset countdown after refresh
+        }
+      } else {
+        console.log(
+          `Skipping auto-refresh: ${!isAutoRefreshEnabled ? 'disabled' : ''} ${loading ? 'loading' : ''} ` +
+          `${userInteractingRef.current ? 'user-interacting' : ''} ${!isComponentMountedRef.current ? 'unmounted' : ''} ` +
+          `${!isVisibleRef.current ? 'page-hidden' : ''}`
+        );
       }
     }, interval);
     
-    // Clean up the interval when the component unmounts
+    // Clean up the interval when the component unmounts or dependencies change
     return () => {
       console.log("Cleaning up auto-refresh interval");
-      clearInterval(intervalId);
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
     };
   }, [isAutoRefreshEnabled, loading, refreshFunction, interval]);
 
@@ -113,14 +169,12 @@ export const useAutoRefresh = ({
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
     
-    const title = newValue ? "Auto-refresh enabled" : "Auto-refresh disabled";
-    const description = newValue 
-      ? `Posts will automatically refresh every ${interval/1000} seconds` 
-      : "Posts will only refresh when you click the refresh button";
-    
-    // Call toast with the format it expects based on your sonner.tsx implementation
-    toast(title, {
-      description,
+    // Call toast with the format it expects based on your implementation
+    toast({
+      title: newValue ? "Auto-refresh enabled" : "Auto-refresh disabled",
+      description: newValue 
+        ? `Posts will automatically refresh every ${interval/1000} seconds` 
+        : "Posts will only refresh when you click the refresh button",
       duration: 3000
     });
   };
@@ -130,9 +184,17 @@ export const useAutoRefresh = ({
     
     setIsRefreshing(true);
     await refreshFunction();
-    setLastAutoRefresh(new Date());
-    setNextRefreshIn(interval / 1000); // Reset countdown after manual refresh
-    setTimeout(() => setIsRefreshing(false), 500); // Give visual feedback
+    
+    // Only update state if component is still mounted
+    if (isComponentMountedRef.current) {
+      setLastAutoRefresh(new Date());
+      setNextRefreshIn(interval / 1000); // Reset countdown after manual refresh
+      setTimeout(() => {
+        if (isComponentMountedRef.current) {
+          setIsRefreshing(false);
+        }
+      }, 500); // Give visual feedback
+    }
   };
 
   return {

@@ -1,6 +1,7 @@
 
 import { Clock, RefreshCw, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { memo } from "react";
 
 interface LastRefreshIndicatorProps {
   loading: boolean;
@@ -9,7 +10,7 @@ interface LastRefreshIndicatorProps {
   nextRefreshIn?: number;
 }
 
-export const LastRefreshIndicator = ({ 
+export const LastRefreshIndicator = memo(({ 
   loading, 
   lastAutoRefresh,
   isAutoRefreshEnabled = true,
@@ -54,4 +55,6 @@ export const LastRefreshIndicator = ({
       )}
     </div>
   );
-};
+});
+
+LastRefreshIndicator.displayName = 'LastRefreshIndicator';

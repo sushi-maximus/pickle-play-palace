@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface FeedHeaderProps {
   groupName: string | undefined;
@@ -16,7 +17,7 @@ interface FeedHeaderProps {
   handleRefresh: () => void;
 }
 
-export const FeedHeader = ({
+export const FeedHeader = memo(({
   groupName,
   isRefreshing,
   loading,
@@ -97,4 +98,6 @@ export const FeedHeader = ({
       </div>
     </CardHeader>
   );
-};
+});
+
+FeedHeader.displayName = 'FeedHeader';

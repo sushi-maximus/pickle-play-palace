@@ -2,7 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useGroupPosts } from "./hooks/useGroupPosts";
 import { useAutoRefresh } from "./hooks/useAutoRefresh";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { FeedHeader, LastRefreshIndicator, FeedContent } from "./feed";
 
 interface GroupPostsFeedProps {
@@ -33,6 +33,10 @@ export const GroupPostsFeed = ({
     userId: user?.id 
   });
 
+  // Intersection Observer ref for checking if component is in viewport
+  const feedRef = useRef<HTMLDivElement>(null);
+  const isInViewportRef = useRef(true);
+
   const {
     isAutoRefreshEnabled,
     isRefreshing,
@@ -56,6 +60,25 @@ export const GroupPostsFeed = ({
   const handlePostDeleted = () => {
     refreshPosts();
   };
+
+  // Set up intersection observer to detect if feed is visible
+  useEffect(() => {
+    // Skip for non-standalone feeds or if IntersectionObserver is not available
+    if (!standalone || !feedRef.current || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isInViewportRef.current = entry.isIntersecting;
+        console.log(`Feed visibility changed: ${isInViewportRef.current ? 'visible' : 'hidden'}`);
+      });
+    }, { threshold: 0.1 }); // 10% visibility threshold
+
+    observer.observe(feedRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [standalone]);
 
   useEffect(() => {
     // Focus on creating a post when component mounts
@@ -85,7 +108,7 @@ export const GroupPostsFeed = ({
   // If standalone, wrap in a card
   if (standalone) {
     return (
-      <Card className="w-full mb-6 overflow-hidden border-2 border-primary/10 shadow-lg">
+      <Card ref={feedRef} className="w-full mb-6 overflow-hidden border-2 border-primary/10 shadow-lg">
         <FeedHeader
           groupName={groupName}
           isRefreshing={isRefreshing}
