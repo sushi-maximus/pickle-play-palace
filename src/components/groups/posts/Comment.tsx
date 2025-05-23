@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -72,7 +71,7 @@ export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => 
   };
 
   return (
-    <div className="flex gap-3 py-2 w-[70%]">
+    <div className="flex gap-3 py-2 w-full">
       <Avatar className="h-8 w-8">
         {comment.user.avatar_url ? (
           <AvatarImage src={comment.user.avatar_url} alt={`${comment.user.first_name} ${comment.user.last_name}`} />
