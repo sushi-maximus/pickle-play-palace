@@ -56,16 +56,16 @@ export const useHeartReaction = ({
     if (newIsActive) {
       if (isThumbsUpActive) {
         setIsThumbsUpActive(false);
-        setThumbsUpCount(thumbsUpCount - 1);
+        setThumbsUpCount(Math.max(0, thumbsUpCount - 1));
       }
       if (isThumbsDownActive) {
         setIsThumbsDownActive(false);
-        setThumbsDownCount(thumbsDownCount - 1);
+        setThumbsDownCount(Math.max(0, thumbsDownCount - 1));
       }
     }
     
     setIsHeartActive(newIsActive);
-    setHeartCount(newCount);
+    setHeartCount(Math.max(0, newCount));
 
     try {
       if (newIsActive) {

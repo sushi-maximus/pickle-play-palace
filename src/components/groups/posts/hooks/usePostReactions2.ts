@@ -17,105 +17,86 @@ export const usePostReactions2 = ({
   initialUserHeart
 }: UsePostReactions2Props) => {
   // Thumbs up reaction
-  const {
-    thumbsUpCount,
-    isThumbsUpActive,
-    isThumbsUpSubmitting,
-    toggleThumbsUp,
-    setThumbsUpCount,
-    setIsThumbsUpActive
-  } = useThumbsUpReaction({
-    postId,
-    userId,
-    initialCount: initialThumbsUp,
-    initialIsActive: initialUserThumbsUp,
-    isThumbsDownActive: false, // Will be set below
-    thumbsDownCount: 0, // Will be set below
-    setIsThumbsDownActive: () => {}, // Will be set below
-    setThumbsDownCount: () => {} // Will be set below
-  });
-
-  // Thumbs down reaction
-  const {
-    thumbsDownCount,
-    isThumbsDownActive,
-    isThumbsDownSubmitting,
-    toggleThumbsDown,
-    setThumbsDownCount,
-    setIsThumbsDownActive
-  } = useThumbsDownReaction({
-    postId,
-    userId,
-    initialCount: initialThumbsDown,
-    initialIsActive: initialUserThumbsDown,
-    isThumbsUpActive,
-    thumbsUpCount,
-    setIsThumbsUpActive,
-    setThumbsUpCount
-  });
-
-  // Update thumbs up with thumbs down dependencies
   const thumbsUpReaction = useThumbsUpReaction({
     postId,
     userId,
     initialCount: initialThumbsUp,
     initialIsActive: initialUserThumbsUp,
-    isThumbsDownActive,
-    thumbsDownCount,
-    setIsThumbsDownActive,
-    setThumbsDownCount
+    isThumbsDownActive: false, // Will be updated below
+    thumbsDownCount: 0, // Will be updated below
+    setIsThumbsDownActive: () => {}, // Will be updated below
+    setThumbsDownCount: () => {} // Will be updated below
+  });
+
+  // Thumbs down reaction
+  const thumbsDownReaction = useThumbsDownReaction({
+    postId,
+    userId,
+    initialCount: initialThumbsDown,
+    initialIsActive: initialUserThumbsDown,
+    isThumbsUpActive: thumbsUpReaction.isThumbsUpActive,
+    thumbsUpCount: thumbsUpReaction.thumbsUpCount,
+    setIsThumbsUpActive: thumbsUpReaction.setIsThumbsUpActive,
+    setThumbsUpCount: thumbsUpReaction.setThumbsUpCount
+  });
+
+  // Update thumbs up with thumbs down dependencies - we need to create a new instance
+  const finalThumbsUpReaction = useThumbsUpReaction({
+    postId,
+    userId,
+    initialCount: initialThumbsUp,
+    initialIsActive: initialUserThumbsUp,
+    isThumbsDownActive: thumbsDownReaction.isThumbsDownActive,
+    thumbsDownCount: thumbsDownReaction.thumbsDownCount,
+    setIsThumbsDownActive: thumbsDownReaction.setIsThumbsDownActive,
+    setThumbsDownCount: thumbsDownReaction.setThumbsDownCount
   });
 
   // Heart reaction
-  const {
-    heartCount,
-    isHeartActive,
-    isHeartSubmitting,
-    toggleHeart
-  } = useHeartReaction({
+  const heartReaction = useHeartReaction({
     postId,
     userId,
     initialCount: initialHeart,
     initialIsActive: initialUserHeart,
-    isThumbsUpActive,
-    isThumbsDownActive,
-    thumbsUpCount,
-    thumbsDownCount,
-    setIsThumbsUpActive,
-    setIsThumbsDownActive,
-    setThumbsUpCount,
-    setThumbsDownCount
+    isThumbsUpActive: finalThumbsUpReaction.isThumbsUpActive,
+    isThumbsDownActive: thumbsDownReaction.isThumbsDownActive,
+    thumbsUpCount: finalThumbsUpReaction.thumbsUpCount,
+    thumbsDownCount: thumbsDownReaction.thumbsDownCount,
+    setIsThumbsUpActive: finalThumbsUpReaction.setIsThumbsUpActive,
+    setIsThumbsDownActive: thumbsDownReaction.setIsThumbsDownActive,
+    setThumbsUpCount: finalThumbsUpReaction.setThumbsUpCount,
+    setThumbsDownCount: thumbsDownReaction.setThumbsDownCount
   });
 
   // Check if any reaction is currently being submitted
-  const isAnySubmitting = isThumbsUpSubmitting || isThumbsDownSubmitting || isHeartSubmitting;
+  const isAnySubmitting = finalThumbsUpReaction.isThumbsUpSubmitting || thumbsDownReaction.isThumbsDownSubmitting || heartReaction.isHeartSubmitting;
 
   // Wrapper functions that check for concurrent submissions
   const handleToggleThumbsUp = async () => {
     if (isAnySubmitting) return;
-    await thumbsUpReaction.toggleThumbsUp();
+    await finalThumbsUpReaction.toggleThumbsUp();
   };
 
   const handleToggleThumbsDown = async () => {
     if (isAnySubmitting) return;
-    await toggleThumbsDown();
+    await thumbsDownReaction.toggleThumbsDown();
   };
 
   const handleToggleHeart = async () => {
     if (isAnySubmitting) return;
-    await toggleHeart();
+    await heartReaction.toggleHeart();
   };
 
   return {
-    thumbsUpCount: thumbsUpReaction.thumbsUpCount,
-    thumbsDownCount,
-    heartCount,
-    isThumbsUpActive: thumbsUpReaction.isThumbsUpActive,
-    isThumbsDownActive,
-    isHeartActive,
-    isThumbsUpSubmitting: thumbsUpReaction.isThumbsUpSubmitting,
-    isThumbsDownSubmitting,
-    isHeartSubmitting,
+    thumbsUpCount: finalThumbsUpReaction.thumbsUpCount,
+    thumbsDownCount: thumbsDownReaction.thumbsDownCount,
+    heartCount: heartReaction.heartCount,
+    isThumbsUpActive: finalThumbsUpReaction.isThumbsUpActive,
+    isThumbsDownActive: thumbsDownReaction.isThumbsDownActive,
+    isHeartActive: heartReaction.isHeartActive,
+    isThumbsUpSubmitting: finalThumbsUpReaction.isThumbsUpSubmitting,
+    isThumbsDownSubmitting: thumbsDownReaction.isThumbsDownSubmitting,
+    isHeartSubmitting: heartReaction.isHeartSubmitting,
     toggleThumbsUp: handleToggleThumbsUp,
     toggleThumbsDown: handleToggleThumbsDown,
     toggleHeart: handleToggleHeart
