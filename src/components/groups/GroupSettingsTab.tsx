@@ -1,7 +1,18 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Save } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { updateGroup } from "@/components/groups/utils/groupDetailsUtils";
+import { updateGroupSchema, UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
+import { toast } from "sonner";
+import { Lock, Globe } from "lucide-react";
 
 interface GroupSettingsTabProps {
   group: any;
@@ -9,6 +20,32 @@ interface GroupSettingsTabProps {
 }
 
 export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps) => {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const form = useForm<UpdateGroupFormValues>({
+    resolver: zodResolver(updateGroupSchema),
+    defaultValues: {
+      name: group.name || "",
+      description: group.description || "",
+      location: group.location || "",
+      is_private: group.is_private || false,
+    },
+  });
+
+  const handleSubmit = async (values: UpdateGroupFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const updatedGroup = await updateGroup(group.id, values);
+      onGroupUpdate(updatedGroup);
+      toast.success("Group settings updated successfully");
+    } catch (error) {
+      console.error("Error updating group:", error);
+      toast.error("Failed to update group settings");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -24,10 +61,101 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            <AlertCircle className="h-4 w-4 inline-block mr-2" />
-            Coming soon: Edit group name, description, location, and privacy settings.
-          </p>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Group Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter group name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe what your group is about" 
+                        className="min-h-[100px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter location" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="is_private"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base flex items-center">
+                        {field.value ? (
+                          <>
+                            <Lock className="w-4 h-4 mr-2" />
+                            Private Group
+                          </>
+                        ) : (
+                          <>
+                            <Globe className="w-4 h-4 mr-2" />
+                            Public Group
+                          </>
+                        )}
+                      </FormLabel>
+                      <FormDescription>
+                        {field.value 
+                          ? "Private groups require approval to join" 
+                          : "Public groups can be joined by anyone"}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <Button type="submit" disabled={isSubmitting} className="mt-4">
+                {isSubmitting ? (
+                  "Saving..."
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
 

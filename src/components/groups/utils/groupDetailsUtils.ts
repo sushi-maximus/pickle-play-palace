@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { UpdateGroupFormValues } from "../schemas/groupSchemas";
 
 /**
  * Fetches detailed information for a specific group by ID
@@ -99,5 +100,38 @@ export const fetchGroupDetails = async (groupId: string) => {
   } catch (error) {
     console.error('Error fetching group details:', error);
     return null;
+  }
+};
+
+/**
+ * Updates a group with new information
+ * @param groupId The UUID of the group to update
+ * @param values The updated values for the group
+ * @returns The updated group data
+ */
+export const updateGroup = async (groupId: string, values: UpdateGroupFormValues) => {
+  try {
+    const { data: updatedGroup, error } = await supabase
+      .from("groups")
+      .update({
+        name: values.name,
+        description: values.description || null,
+        location: values.location || null,
+        is_private: values.is_private,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", groupId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error updating group:", error);
+      throw new Error(`Failed to update group: ${error.message}`);
+    }
+
+    return updatedGroup;
+  } catch (error) {
+    console.error("Error in updateGroup:", error);
+    throw error;
   }
 };
