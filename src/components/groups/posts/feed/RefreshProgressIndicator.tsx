@@ -11,6 +11,8 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
   const [visible, setVisible] = useState(false);
   
   useEffect(() => {
+    console.log("RefreshProgressIndicator - refreshing state:", refreshing);
+    
     // When refreshing starts
     if (refreshing) {
       // Make indicator visible immediately
@@ -31,20 +33,25 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       }, 100);
       
       return () => clearInterval(interval);
-    } else if (progress > 0) {
+    } else if (visible) { // Only proceed if currently visible
       // When refresh is complete, quickly fill to 100% and then fade out
+      console.log("RefreshProgressIndicator - completing progress animation");
       setProgress(100);
       
       // After animation completes, reset and hide for next cycle
       const timeout = setTimeout(() => {
+        console.log("RefreshProgressIndicator - hiding indicator");
         setVisible(false);
         // Reset progress after fade out animation completes
-        setTimeout(() => setProgress(0), 500);
+        setTimeout(() => {
+          console.log("RefreshProgressIndicator - resetting progress");
+          setProgress(0);
+        }, 500);
       }, 600);
       
       return () => clearTimeout(timeout);
     }
-  }, [refreshing, progress]);
+  }, [refreshing, visible]);
 
   // Don't render anything if not visible and progress is reset
   if (!visible && progress === 0) {

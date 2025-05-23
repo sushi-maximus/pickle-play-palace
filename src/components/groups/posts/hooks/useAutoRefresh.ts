@@ -30,7 +30,7 @@ export const useAutoRefresh = ({
   // Setup countdown timer
   const { countdownIntervalRef } = useCountdownTimer(
     isAutoRefreshEnabled, 
-    loading, 
+    loading || isRefreshing, // Consider both loading and isRefreshing
     interval, 
     setNextRefreshIn
   );
@@ -38,11 +38,25 @@ export const useAutoRefresh = ({
   // Setup auto-refresh logic
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
-    loading,
+    loading || isRefreshing, // Consider both loading and isRefreshing
     interval,
     async () => {
       console.log("Auto refresh triggered at", new Date().toLocaleTimeString());
-      await refreshFunction();
+      try {
+        // Set refreshing state before calling the refresh function
+        setIsRefreshing(true);
+        await refreshFunction();
+      } catch (error) {
+        console.error("Error during auto-refresh:", error);
+      } finally {
+        // Only update state if component is still mounted
+        if (isComponentMountedRef.current) {
+          // Add a slight delay before setting isRefreshing to false for visual feedback
+          setTimeout(() => {
+            setIsRefreshing(false);
+          }, 800);
+        }
+      }
     },
     userInteractingRef,
     isComponentMountedRef,
@@ -65,7 +79,7 @@ export const useAutoRefresh = ({
       
       console.log('Component unmounted, all intervals cleaned up');
     };
-  }, [countdownIntervalRef, refreshIntervalRef, timeoutRef]);
+  }, []);
 
   const toggleAutoRefresh = () => {
     const newValue = !isAutoRefreshEnabled;
@@ -80,23 +94,31 @@ export const useAutoRefresh = ({
   };
 
   const handleManualRefresh = async () => {
-    if (loading || isRefreshing) return;
+    if (loading || isRefreshing) {
+      console.log("Manual refresh prevented - already loading or refreshing");
+      return;
+    }
     
     console.log("Manual refresh triggered at", new Date().toLocaleTimeString());
-    setIsRefreshing(true);
-    await refreshFunction();
     
-    // Only update state if component is still mounted
-    if (isComponentMountedRef.current) {
-      setLastAutoRefresh(new Date());
-      setNextRefreshIn(interval / 1000); // Reset countdown after manual refresh
-      
-      // Add a slight delay for visual feedback before hiding the progress indicator
-      setTimeout(() => {
-        if (isComponentMountedRef.current) {
-          setIsRefreshing(false);
-        }
-      }, 800); // Give more visual feedback
+    try {
+      setIsRefreshing(true);
+      await refreshFunction();
+    } catch (error) {
+      console.error("Error during manual refresh:", error);
+    } finally {
+      // Only update state if component is still mounted
+      if (isComponentMountedRef.current) {
+        setLastAutoRefresh(new Date());
+        setNextRefreshIn(interval / 1000); // Reset countdown after manual refresh
+        
+        // Add a slight delay for visual feedback before hiding the progress indicator
+        setTimeout(() => {
+          if (isComponentMountedRef.current) {
+            setIsRefreshing(false);
+          }
+        }, 1000); // Longer visual feedback
+      }
     }
   };
 

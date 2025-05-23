@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { useGroupPosts } from "./hooks/useGroupPosts";
 import { useAutoRefresh } from "./hooks/useAutoRefresh";
@@ -24,7 +25,7 @@ export const GroupPostsFeed = ({
   const { 
     posts, 
     loading, 
-    refreshing, // Access the new refreshing state
+    refreshing: postsRefreshing, // Renamed for clarity
     error, 
     groupName, 
     refreshPosts 
@@ -39,25 +40,31 @@ export const GroupPostsFeed = ({
 
   const {
     isAutoRefreshEnabled,
-    isRefreshing,
+    isRefreshing: autoRefreshRunning, // Renamed for clarity
     lastAutoRefresh,
     nextRefreshIn,
     toggleAutoRefresh,
     handleManualRefresh
   } = useAutoRefresh({
     refreshFunction: refreshPosts,
-    loading: loading || refreshing // Consider either loading or refreshing for auto-refresh logic
+    loading: loading // Only pass loading, not refreshing here to avoid circular reference
   });
 
+  // Combine both refresh indicators
+  const isRefreshing = postsRefreshing || autoRefreshRunning;
+
   const handlePostCreated = () => {
+    console.log("Post created, refreshing...");
     refreshPosts();
   };
   
   const handlePostUpdated = () => {
+    console.log("Post updated, refreshing...");
     refreshPosts();
   };
   
   const handlePostDeleted = () => {
+    console.log("Post deleted, refreshing...");
     refreshPosts();
   };
 
@@ -93,7 +100,7 @@ export const GroupPostsFeed = ({
   const renderContent = () => (
     <FeedContent
       loading={loading}
-      refreshing={refreshing || isRefreshing} // Combine both refreshing states to ensure progress indicator shows for both auto and manual refreshes
+      refreshing={isRefreshing} // Pass the combined refreshing state
       error={error}
       posts={posts}
       user={user}
@@ -112,7 +119,7 @@ export const GroupPostsFeed = ({
       <Card ref={feedRef} className="w-full mb-6 overflow-hidden border-2 border-primary/10 shadow-lg">
         <FeedHeader
           groupName={groupName}
-          isRefreshing={isRefreshing || refreshing} // Update with new refreshing state
+          isRefreshing={isRefreshing} // Pass the combined refreshing state
           loading={loading}
           isAutoRefreshEnabled={isAutoRefreshEnabled}
           toggleAutoRefresh={toggleAutoRefresh}
@@ -121,7 +128,7 @@ export const GroupPostsFeed = ({
         
         <LastRefreshIndicator 
           loading={loading} 
-          refreshing={refreshing || isRefreshing} // Pass the combined refreshing state
+          refreshing={isRefreshing} // Pass the combined refreshing state
           lastAutoRefresh={lastAutoRefresh} 
           isAutoRefreshEnabled={isAutoRefreshEnabled}
           nextRefreshIn={nextRefreshIn}

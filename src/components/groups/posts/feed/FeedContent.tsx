@@ -6,7 +6,6 @@ import { GroupPostsLoading } from "../GroupPostsLoading";
 import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
 import type { GroupPost } from "../hooks/useGroupPosts";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
@@ -45,6 +44,11 @@ export const FeedContent = ({
   const [displayedPosts, setDisplayedPosts] = useState<GroupPost[]>(posts);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Log refresh state changes for debugging
+  useEffect(() => {
+    console.log("FeedContent - refreshing state changed:", refreshing);
+  }, [refreshing]);
+
   // Update displayed posts with transition when posts change
   useEffect(() => {
     if (posts.length > 0 && !loading) {
@@ -52,20 +56,23 @@ export const FeedContent = ({
       if (refreshing && displayedPosts.length > 0) {
         // Start transition
         setIsTransitioning(true);
+        console.log("FeedContent - starting transition for updated posts");
         
         // Wait for fade out animation to complete before updating posts
         const timer = setTimeout(() => {
           setDisplayedPosts(posts);
           setIsTransitioning(false);
+          console.log("FeedContent - transition complete, posts updated");
         }, 300); // Match this with the CSS transition duration
         
         return () => clearTimeout(timer);
       } else {
         // For initial load or non-refreshing updates, just update immediately
+        console.log("FeedContent - updating posts immediately (initial load or non-refreshing update)");
         setDisplayedPosts(posts);
       }
     }
-  }, [posts, refreshing, loading]);
+  }, [posts, refreshing, loading, displayedPosts.length]);
 
   // Only show loading state on initial load
   // For refreshes, we'll keep displaying the existing content
@@ -85,7 +92,7 @@ export const FeedContent = ({
 
   return (
     <div className="space-y-6">
-      {/* Make the progress indicator prominent at the top */}
+      {/* Always render the progress indicator to ensure it's in the DOM */}
       <RefreshProgressIndicator refreshing={refreshing} />
       
       {membershipStatus.isMember && (
