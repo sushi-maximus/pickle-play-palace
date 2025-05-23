@@ -2,7 +2,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { CreatePostForm2 } from "../posts/CreatePostForm2";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useEditPost } from "../posts/hooks/useEditPost";
@@ -117,36 +116,26 @@ export const MobileHome2Tab = ({
           const isEditingThisPost = isEditing && currentPostId === post.id;
 
           return (
-            <div key={post.id} className="flex gap-3">
-              <Avatar className="w-10 h-10">
-                <AvatarImage src={post.user?.avatar_url || ""} />
-                <AvatarFallback>
-                  {post.user?.first_name?.substring(0, 1).toUpperCase() || ""}
-                  {post.user?.last_name?.substring(0, 1).toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
+            <div key={post.id} className="flex flex-col">
+              <PostHeader 
+                post={post}
+                isAuthor={isAuthor}
+                isEditing={isEditingThisPost}
+                onStartEditing={() => startEditing(post.id, post.content)}
+                onDeleteClick={() => handleDeleteClick(post.id)}
+              />
               
-              <div className="flex-1 min-w-0">
-                <PostHeader 
-                  post={post}
-                  isAuthor={isAuthor}
+              <div className="mt-1 ml-13">
+                <PostContent 
+                  content={post.content}
+                  mediaUrls={post.media_urls}
                   isEditing={isEditingThisPost}
-                  onStartEditing={() => startEditing(post.id, post.content)}
-                  onDeleteClick={() => handleDeleteClick(post.id)}
+                  editableContent={editableContent}
+                  setEditableContent={setEditableContent}
+                  onCancelEditing={cancelEditing}
+                  onSaveEditing={handleUpdate}
+                  isEditSubmitting={isEditSubmitting}
                 />
-                
-                <div className="mt-1">
-                  <PostContent 
-                    content={post.content}
-                    mediaUrls={post.media_urls}
-                    isEditing={isEditingThisPost}
-                    editableContent={editableContent}
-                    setEditableContent={setEditableContent}
-                    onCancelEditing={cancelEditing}
-                    onSaveEditing={handleUpdate}
-                    isEditSubmitting={isEditSubmitting}
-                  />
-                </div>
               </div>
             </div>
           );
