@@ -42,7 +42,7 @@ export const PostHeader = forwardRef<HTMLDivElement, PostHeaderProps>(({
   const isEdited = post.created_at !== post.updated_at;
   
   return (
-    <div ref={ref} className="flex justify-between items-center relative">
+    <div ref={ref} className="flex justify-between items-center">
       <div className="flex items-center gap-3">
         <Avatar className="h-10 w-10">
           {post.user.avatar_url ? (
@@ -66,7 +66,7 @@ export const PostHeader = forwardRef<HTMLDivElement, PostHeaderProps>(({
             <Button 
               variant="ghost" 
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-gray-100 relative z-10"
+              className="h-8 w-8 rounded-full hover:bg-gray-100"
             >
               <MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">Open menu</span>
@@ -74,11 +74,11 @@ export const PostHeader = forwardRef<HTMLDivElement, PostHeaderProps>(({
           </DropdownMenuTrigger>
           <DropdownMenuContent 
             align="end" 
-            className="w-[160px] bg-white shadow-lg border z-[9999]"
+            className="w-[160px]"
             sideOffset={5}
           >
             <DropdownMenuItem 
-              className="cursor-pointer flex items-center hover:bg-gray-50" 
+              className="cursor-pointer flex items-center" 
               onClick={onStartEditing}
             >
               <Edit className="mr-2 h-4 w-4" />
@@ -86,7 +86,7 @@ export const PostHeader = forwardRef<HTMLDivElement, PostHeaderProps>(({
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
-              className="cursor-pointer flex items-center text-destructive hover:bg-red-50 focus:text-destructive" 
+              className="cursor-pointer flex items-center text-destructive focus:text-destructive" 
               onClick={onDeleteClick}
             >
               <Trash className="mr-2 h-4 w-4" />
