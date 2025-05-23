@@ -1,79 +1,87 @@
-
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
+// Only add this line at the top of usePostReactions.ts
 export type PostReactionType = "like" | "thumbsup" | "thumbsdown";
 
 interface UsePostReactionsProps {
   postId: string;
   userId?: string;
-  initialReactions?: Record<PostReactionType, number>;
-  initialUserReactions?: Record<PostReactionType, boolean>;
+  initialReactions: Record<PostReactionType, number>;
+  initialUserReactions: Record<PostReactionType, boolean>;
+}
+
+interface UsePostReactionsResult {
+  reactions: Record<PostReactionType, number>;
+  userReactions: Record<PostReactionType, boolean>;
+  isSubmitting: boolean;
+  toggleReaction: (type: PostReactionType) => Promise<void>;
 }
 
 export const usePostReactions = ({
   postId,
   userId,
-  initialReactions = { like: 0, thumbsup: 0, thumbsdown: 0 },
-  initialUserReactions = { like: false, thumbsup: false, thumbsdown: false }
-}: UsePostReactionsProps) => {
-  const [reactions, setReactions] = useState<Record<PostReactionType, number>>(initialReactions);
-  const [userReactions, setUserReactions] = useState<Record<PostReactionType, boolean>>(initialUserReactions);
-  const [isSubmitting, setIsSubmitting] = useState<Record<PostReactionType, boolean>>({
-    like: false,
-    thumbsup: false,
-    thumbsdown: false
-  });
+  initialReactions,
+  initialUserReactions,
+}: UsePostReactionsProps): UsePostReactionsResult => {
+  const [reactions, setReactions] = useState(initialReactions);
+  const [userReactions, setUserReactions] = useState(initialUserReactions);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const toggleReaction = async (reactionType: PostReactionType) => {
-    if (!userId || isSubmitting[reactionType]) return;
+  const toggleReaction = useCallback(async (type: PostReactionType) => {
+    if (!userId) {
+      console.log("User not logged in, cannot react.");
+      return;
+    }
 
-    setIsSubmitting(prev => ({ ...prev, [reactionType]: true }));
-    
+    setIsSubmitting(true);
+    const hasReacted = userReactions[type];
+    const increment = hasReacted ? -1 : 1;
+
     try {
-      const { data: existingReaction } = await supabase
-        .from("reactions")
-        .select("*")
-        .eq("post_id", postId)
-        .eq("user_id", userId)
-        .eq("reaction_type", reactionType)
-        .maybeSingle();
-
-      if (existingReaction) {
-        // Delete the reaction if it exists
-        await supabase
+      if (hasReacted) {
+        // Remove the reaction
+        const { error } = await supabase
           .from("reactions")
           .delete()
-          .eq("id", existingReaction.id);
+          .eq("post_id", postId)
+          .eq("user_id", userId)
+          .eq("reaction_type", type);
 
-        setUserReactions(prev => ({ ...prev, [reactionType]: false }));
-        setReactions(prev => ({ ...prev, [reactionType]: Math.max(0, prev[reactionType] - 1) }));
+        if (error) throw error;
       } else {
         // Add the reaction
-        await supabase
+        const { error } = await supabase
           .from("reactions")
-          .insert({
-            post_id: postId,
-            user_id: userId,
-            reaction_type: reactionType
-          });
+          .insert([{ post_id: postId, user_id: userId, reaction_type: type }]);
 
-        setUserReactions(prev => ({ ...prev, [reactionType]: true }));
-        setReactions(prev => ({ ...prev, [reactionType]: prev[reactionType] + 1 }));
+        if (error) throw error;
       }
-    } catch (error) {
-      console.error(`Error toggling ${reactionType} reaction:`, error);
-      toast.error(`Failed to update reaction. Please try again.`);
+
+      // Optimistically update the state
+      setReactions((prevReactions) => ({
+        ...prevReactions,
+        [type]: prevReactions[type] + increment,
+      }));
+
+      setUserReactions((prevUserReactions) => ({
+        ...prevUserReactions,
+        [type]: !prevUserReactions[type],
+      }));
+    } catch (error: any) {
+      console.error("Error toggling reaction:", error.message);
+      // Revert the state on error (optional, depends on UX)
+      // setReactions(initialReactions);
+      // setUserReactions(initialUserReactions);
     } finally {
-      setIsSubmitting(prev => ({ ...prev, [reactionType]: false }));
+      setIsSubmitting(false);
     }
-  };
+  }, [postId, userId, userReactions]);
 
   return {
     reactions,
     userReactions,
     isSubmitting,
-    toggleReaction
+    toggleReaction,
   };
 };
