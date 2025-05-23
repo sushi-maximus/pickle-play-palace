@@ -1,6 +1,5 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreatePost2 } from "./hooks/useCreatePost2";
 
@@ -33,30 +32,29 @@ export const CreatePostForm2 = ({
     await handleSubmit();
   };
 
+  const handleKeyPress = async (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (content.trim()) {
+        await handleSubmit();
+      }
+    }
+  };
+
   if (!user) {
     return null;
   }
 
   return (
-    <form onSubmit={onFormSubmit} className="flex gap-2">
+    <form onSubmit={onFormSubmit}>
       <Input
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        onKeyPress={handleKeyPress}
         placeholder="What's on your mind?"
-        className="flex-1 rounded-full border-gray-300"
+        className="w-full rounded-full border-gray-300"
         disabled={isSubmitting || refreshing}
       />
-      <Button
-        type="submit"
-        disabled={!content.trim() || isSubmitting || refreshing}
-        className="px-6 bg-green-500 hover:bg-green-600 text-white rounded-full"
-      >
-        {isSubmitting ? (
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-        ) : (
-          "Post"
-        )}
-      </Button>
     </form>
   );
 };
