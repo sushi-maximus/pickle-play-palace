@@ -16,7 +16,7 @@ export * from "./usePostReactions";
 export * from "./types";
 
 // Export reaction types with their namespace
-export {
+export type {
   PostReactionType,
   UsePostReactionsProps,
   UsePostReactionsResult
