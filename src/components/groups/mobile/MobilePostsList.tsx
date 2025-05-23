@@ -1,5 +1,5 @@
 
-import { MobilePostCard } from "./MobilePostCard";
+import { MobilePostCard2 } from "./MobilePostCard2";
 
 interface MobilePostsListProps {
   posts: any[];
@@ -31,7 +31,7 @@ export const MobilePostsList = ({
   return (
     <div className="space-y-3 md:space-y-4">
       {posts.map((post) => (
-        <MobilePostCard
+        <MobilePostCard2
           key={post.id}
           post={post}
           user={user}
