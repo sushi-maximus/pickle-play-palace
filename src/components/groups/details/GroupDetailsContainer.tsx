@@ -1,14 +1,12 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { GroupDetailsHeader } from "@/components/groups/GroupDetailsHeader";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
-import { JoinRequestDialog } from "@/components/groups/JoinRequestDialog";
-import { fetchGroupDetails } from "@/components/groups/utils";
-import { checkMembershipStatus } from "@/components/groups/services";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { GroupJoinRequest } from "./GroupJoinRequest";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useGroupDetails } from "./hooks/useGroupDetails";
 
 interface GroupDetailsContainerProps {
   id: string;
@@ -22,80 +20,15 @@ export const GroupDetailsContainer = ({
   breadcrumbItems 
 }: GroupDetailsContainerProps) => {
   const navigate = useNavigate();
-  const [group, setGroup] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [membershipStatus, setMembershipStatus] = useState({
-    isMember: false,
-    isPending: false,
-    isAdmin: false
-  });
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
-  const [hasPendingRequests, setHasPendingRequests] = useState(false);
   
-  useEffect(() => {
-    const loadGroupDetails = async () => {
-      setLoading(true);
-      
-      try {
-        if (!id) {
-          toast.error("Group ID is missing");
-          navigate("/groups");
-          return;
-        }
-        
-        const groupData = await fetchGroupDetails(id);
-        
-        if (!groupData) {
-          toast.error("Group not found");
-          navigate("/groups");
-          return;
-        }
-        
-        setGroup(groupData);
-      } catch (error) {
-        console.error("Failed to load group details:", error);
-        toast.error("Failed to load group details");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadGroupDetails();
-  }, [id, navigate]);
-  
-  useEffect(() => {
-    const checkMembership = async () => {
-      if (user && group) {
-        const status = await checkMembershipStatus(user.id, group.id);
-        setMembershipStatus(status);
-      }
-    };
-    
-    checkMembership();
-  }, [user, group]);
-  
-  useEffect(() => {
-    const checkPendingRequests = async () => {
-      if (user && group && membershipStatus.isAdmin) {
-        try {
-          const { data, error } = await supabase
-            .from("group_members")
-            .select("id")
-            .eq("group_id", group.id)
-            .eq("status", "pending")
-            .limit(1);
-            
-          if (!error && data) {
-            setHasPendingRequests(data.length > 0);
-          }
-        } catch (error) {
-          console.error("Error checking pending requests:", error);
-        }
-      }
-    };
-    
-    checkPendingRequests();
-  }, [group, user, membershipStatus.isAdmin]);
+  const {
+    group,
+    loading,
+    membershipStatus,
+    hasPendingRequests,
+    handleMemberUpdate
+  } = useGroupDetails(id, user?.id);
   
   const handleJoinRequest = () => {
     if (!user) {
@@ -108,17 +41,7 @@ export const GroupDetailsContainer = ({
   };
   
   const handleJoinSuccess = () => {
-    setMembershipStatus(prev => ({ ...prev, isPending: true }));
-  };
-
-  // Handler for member updates (promotion/removal)
-  const handleMemberUpdate = async () => {
-    if (id) {
-      const updatedGroup = await fetchGroupDetails(id);
-      if (updatedGroup) {
-        setGroup(updatedGroup);
-      }
-    }
+    const updatedStatus = { ...membershipStatus, isPending: true };
   };
 
   if (loading) {
@@ -146,7 +69,7 @@ export const GroupDetailsContainer = ({
       </Card>
       
       {group && user && (
-        <JoinRequestDialog
+        <GroupJoinRequest
           groupId={group.id}
           groupName={group.name}
           userId={user.id}
