@@ -118,7 +118,7 @@ export const Comment2 = ({
               disabled={isEditSubmitting}
               autoFocus
             />
-            <div className="mt-2 text-xs text-gray-500">
+            <div className="mt-2 text-xs text-gray-500 hidden md:block">
               Press Enter to save, Esc to cancel
             </div>
           </div>

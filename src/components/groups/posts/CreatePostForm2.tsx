@@ -38,6 +38,8 @@ export const CreatePostForm2 = ({
       if (content.trim()) {
         await handleSubmit();
       }
+    } else if (e.key === 'Escape') {
+      setContent("");
     }
   };
 
@@ -46,15 +48,22 @@ export const CreatePostForm2 = ({
   }
 
   return (
-    <form onSubmit={onFormSubmit}>
-      <Input
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        onKeyPress={handleKeyPress}
-        placeholder="What's on your mind?"
-        className="w-full rounded-full border-gray-300"
-        disabled={isSubmitting || refreshing}
-      />
-    </form>
+    <div>
+      <form onSubmit={onFormSubmit}>
+        <Input
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="What's on your mind?"
+          className="w-full rounded-full border-gray-300"
+          disabled={isSubmitting || refreshing}
+        />
+      </form>
+      {content && (
+        <div className="mt-2 text-xs text-gray-500 hidden md:block">
+          Press Enter to post, Esc to clear
+        </div>
+      )}
+    </div>
   );
 };
