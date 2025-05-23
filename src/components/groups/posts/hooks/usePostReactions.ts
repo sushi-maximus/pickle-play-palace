@@ -3,21 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PostReactionType, UsePostReactionsProps, UsePostReactionsResult } from "./types/reactionTypes";
-import { fetchPostReactionCounts, togglePostReaction } from "./utils/reactionUtils";
+import { fetchPostReactionCounts, togglePostReaction, fetchUserReactions } from "./utils/reactionUtils";
 
-// Define the return type for the RPC function
-type PostReactionCountsResponse = {
-  data: {
-    like_count: number;
-    thumbsup_count: number;
-    thumbsdown_count: number;
-  } | null;
-  error: any;
-};
-
-// Define proper parameter type for the RPC function
-interface GetPostReactionCountsParams {
-  post_id: string;
+// Define response type for the RPC function return value
+interface PostReactionCountsResponse {
+  like_count: number;
+  thumbsup_count: number;
+  thumbsdown_count: number;
 }
 
 export type { PostReactionType } from "./types/reactionTypes";
@@ -60,48 +52,22 @@ export const usePostReactions = ({
           
           // Re-fetch reaction counts since we don't know from the event which type changed
           try {
-            const { data: countData, error } = await supabase.rpc<{
-              like_count: number;
-              thumbsup_count: number;
-              thumbsdown_count: number;
-            }, GetPostReactionCountsParams>(
-              'get_post_reaction_counts', 
-              { post_id: postId } 
-            );
+            const { data, error } = await supabase
+              .rpc('get_post_reaction_counts', { post_id: postId })
+              .returns<PostReactionCountsResponse>();
             
-            if (!error && countData) {
+            if (!error && data) {
               setReactions({
-                like: countData.like_count || 0,
-                thumbsup: countData.thumbsup_count || 0,
-                thumbsdown: countData.thumbsdown_count || 0
+                like: data.like_count || 0,
+                thumbsup: data.thumbsup_count || 0,
+                thumbsdown: data.thumbsdown_count || 0
               });
             } else {
               // Fallback to separate queries if the function has an error
               console.warn('Using fallback reaction count queries due to RPC error:', error);
               
-              const { count: likeCount } = await supabase
-                .from("reactions")
-                .select("*", { count: "exact", head: true })
-                .eq("post_id", postId)
-                .eq("reaction_type", "like");
-
-              const { count: thumbsUpCount } = await supabase
-                .from("reactions")
-                .select("*", { count: "exact", head: true })
-                .eq("post_id", postId)
-                .eq("reaction_type", "thumbsup");
-
-              const { count: thumbsDownCount } = await supabase
-                .from("reactions")
-                .select("*", { count: "exact", head: true })
-                .eq("post_id", postId)
-                .eq("reaction_type", "thumbsdown");
-                
-              setReactions({
-                like: likeCount || 0,
-                thumbsup: thumbsUpCount || 0,
-                thumbsdown: thumbsDownCount || 0
-              });
+              const updatedCounts = await fetchPostReactionCounts(postId);
+              setReactions(updatedCounts);
             }
             
             if (userId && (payload.new as any)?.user_id === userId) {
@@ -138,7 +104,7 @@ export const usePostReactions = ({
     };
   }, [postId, userId]);
 
-  const toggleReaction = async (reactionType: PostReactionType) => {
+  const handleToggleReaction = async (reactionType: PostReactionType) => {
     if (!userId || isSubmitting[reactionType]) return;
 
     setIsSubmitting(prev => ({ ...prev, [reactionType]: true }));
@@ -190,6 +156,6 @@ export const usePostReactions = ({
     reactions,
     userReactions,
     isSubmitting,
-    toggleReaction
+    toggleReaction: handleToggleReaction
   };
 };

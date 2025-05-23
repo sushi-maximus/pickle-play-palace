@@ -2,17 +2,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PostReactionType } from "../types/reactionTypes";
 
-// Define the return type for the RPC function
-type PostReactionCountsResponse = {
-  data: {
-    like_count: number;
-    thumbsup_count: number;
-    thumbsdown_count: number;
-  } | null;
-  error: any;
-};
+// Define response type for the RPC function return value
+interface PostReactionCountsResponse {
+  like_count: number;
+  thumbsup_count: number;
+  thumbsdown_count: number;
+}
 
-// Define proper parameter type for the RPC function
+// Define parameter type for the RPC function arguments
 interface GetPostReactionCountsParams {
   post_id: string;
 }
@@ -20,14 +17,9 @@ interface GetPostReactionCountsParams {
 export const fetchPostReactionCounts = async (postId: string): Promise<Record<PostReactionType, number>> => {
   try {
     // Try to use the SQL function if it exists
-    const { data, error } = await supabase.rpc<{
-      like_count: number;
-      thumbsup_count: number;
-      thumbsdown_count: number;
-    }, GetPostReactionCountsParams>(
-      'get_post_reaction_counts',
-      { post_id: postId }
-    );
+    const { data, error } = await supabase
+      .rpc('get_post_reaction_counts', { post_id: postId })
+      .returns<PostReactionCountsResponse>();
     
     if (!error && data) {
       return {
