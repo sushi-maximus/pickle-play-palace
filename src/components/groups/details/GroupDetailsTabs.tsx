@@ -1,7 +1,6 @@
 
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GroupMembersList } from "@/components/groups/GroupMembersList";
+import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
