@@ -161,13 +161,11 @@ export const MobileChatFeed = ({
                 <PostReactionsComponent post={post} />
                 
                 {expandedComments[post.id] && (
-                  <div className="mt-3">
-                    <CommentsSection 
-                      postId={post.id}
-                      userId={currentUserId}
-                      commentsCount={post.comments_count || 0}
-                    />
-                  </div>
+                  <CommentsSection 
+                    postId={post.id}
+                    userId={currentUserId}
+                    commentsCount={post.comments_count || 0}
+                  />
                 )}
               </div>
             </div>
