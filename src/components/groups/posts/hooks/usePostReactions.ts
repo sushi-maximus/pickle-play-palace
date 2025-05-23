@@ -61,7 +61,7 @@ export const usePostReactions = ({
           try {
             const { data: countData, error } = await supabase.rpc(
               'get_post_reaction_counts', 
-              { post_id: postId }
+              { post_id: postId } as any
             ) as PostReactionCountsResponse;
             
             if (!error && countData) {
