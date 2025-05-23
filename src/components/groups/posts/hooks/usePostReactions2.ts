@@ -174,30 +174,41 @@ export const usePostReactions2 = ({
 
     setIsHeartSubmitting(true);
     
+    // Store original states for potential rollback
+    const originalIsActive = isHeartActive;
+    const originalCount = heartCount;
+    const originalThumbsUpActive = isThumbsUpActive;
+    const originalThumbsDownActive = isThumbsDownActive;
+    const originalThumbsUpCount = thumbsUpCount;
+    const originalThumbsDownCount = thumbsDownCount;
+    
     // Optimistic update
     const newIsActive = !isHeartActive;
     const newCount = newIsActive ? heartCount + 1 : heartCount - 1;
+    
+    // If activating heart, deactivate both thumbs reactions
+    if (newIsActive) {
+      if (isThumbsUpActive) {
+        setIsThumbsUpActive(false);
+        setThumbsUpCount(thumbsUpCount - 1);
+      }
+      if (isThumbsDownActive) {
+        setIsThumbsDownActive(false);
+        setThumbsDownCount(thumbsDownCount - 1);
+      }
+    }
     
     setIsHeartActive(newIsActive);
     setHeartCount(newCount);
 
     try {
       if (newIsActive) {
-        // First, check if any reaction exists for this user and post
-        const { data: existingReactions } = await supabase
+        // Remove any existing reactions for this user and post first
+        await supabase
           .from('reactions')
-          .select('reaction_type')
+          .delete()
           .eq('post_id', postId)
           .eq('user_id', userId);
-
-        // Delete any existing reactions first
-        if (existingReactions && existingReactions.length > 0) {
-          await supabase
-            .from('reactions')
-            .delete()
-            .eq('post_id', postId)
-            .eq('user_id', userId);
-        }
 
         // Add heart reaction
         const { error } = await supabase
@@ -222,9 +233,13 @@ export const usePostReactions2 = ({
       }
     } catch (error) {
       console.error('Error toggling heart reaction:', error);
-      // Revert optimistic update on error
-      setIsHeartActive(!newIsActive);
-      setHeartCount(newIsActive ? heartCount : heartCount + 1);
+      // Revert all optimistic updates on error
+      setIsHeartActive(originalIsActive);
+      setHeartCount(originalCount);
+      setIsThumbsUpActive(originalThumbsUpActive);
+      setIsThumbsDownActive(originalThumbsDownActive);
+      setThumbsUpCount(originalThumbsUpCount);
+      setThumbsDownCount(originalThumbsDownCount);
     } finally {
       setIsHeartSubmitting(false);
     }
