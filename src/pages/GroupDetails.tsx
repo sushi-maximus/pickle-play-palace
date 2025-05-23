@@ -6,7 +6,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { GroupDetailsContainer } from "@/components/groups/details/GroupDetailsContainer";
 import { GroupPostsFeed } from "@/components/groups/posts/GroupPostsFeed";
-import { GroupDetailsHeader } from "@/components/groups/GroupDetailsHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GroupDetails = () => {
@@ -26,12 +25,7 @@ const GroupDetails = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1 py-8 px-4 bg-slate-50 dark:bg-slate-900">
-        <div className="container mx-auto max-w-6xl">
-          <GroupDetailsHeader 
-            group={null} // Will be loaded by the container
-            breadcrumbItems={breadcrumbItems} 
-          />
-          
+        <div className="container mx-auto max-w-6xl">          
           <Tabs defaultValue="posts" className="w-full mt-6">
             <TabsList className="mb-6 w-full justify-start bg-card border shadow-sm">
               <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
