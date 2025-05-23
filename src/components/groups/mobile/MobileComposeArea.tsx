@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Camera } from "lucide-react";
@@ -22,6 +21,18 @@ export const MobileComposeArea = ({
     onPostCreated
   });
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const handleCameraClick = () => {
+    // TODO: Implement image upload functionality
+    console.log("Camera functionality not yet implemented");
+  };
+
   return (
     <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b p-4">
       <div className="flex gap-3 items-end">
@@ -33,12 +44,7 @@ export const MobileComposeArea = ({
             className="min-h-[40px] max-h-[120px] resize-none border-slate-300 rounded-full px-4 py-2"
             rows={1}
             disabled={isSubmitting}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit();
-              }
-            }}
+            onKeyDown={handleKeyDown}
           />
         </div>
         
@@ -46,6 +52,9 @@ export const MobileComposeArea = ({
           variant="ghost"
           size="icon"
           className="text-slate-500 hover:text-slate-700"
+          onClick={handleCameraClick}
+          disabled={isSubmitting}
+          aria-label="Add image"
         >
           <Camera className="h-5 w-5" />
         </Button>

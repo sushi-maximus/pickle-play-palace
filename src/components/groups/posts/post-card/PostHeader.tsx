@@ -35,26 +35,26 @@ export const PostHeader = ({
   onStartEditing,
   onDeleteClick
 }: PostHeaderProps) => {
+  const displayName = `${post.user.first_name} ${post.user.last_name}`;
+  const avatarFallback = `${post.user.first_name?.[0] || '?'}${post.user.last_name?.[0] || '?'}`;
+  const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
+  const isEdited = post.created_at !== post.updated_at;
+  
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-3">
         <Avatar className="h-10 w-10">
           {post.user.avatar_url ? (
-            <AvatarImage src={post.user.avatar_url} alt={`${post.user.first_name} ${post.user.last_name}`} />
+            <AvatarImage src={post.user.avatar_url} alt={displayName} />
           ) : (
-            <AvatarFallback>
-              {post.user.first_name?.[0] || '?'}
-              {post.user.last_name?.[0] || '?'}
-            </AvatarFallback>
+            <AvatarFallback>{avatarFallback}</AvatarFallback>
           )}
         </Avatar>
         <div>
-          <p className="font-medium">{`${post.user.first_name} ${post.user.last_name}`}</p>
+          <p className="font-medium">{displayName}</p>
           <p className="text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-            {post.created_at !== post.updated_at && 
-              <span className="ml-1">(edited)</span>
-            }
+            {timeAgo}
+            {isEdited && <span className="ml-1">(edited)</span>}
           </p>
         </div>
       </div>

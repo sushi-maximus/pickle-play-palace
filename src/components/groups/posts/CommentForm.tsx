@@ -24,6 +24,13 @@ export const CommentForm = ({ postId, userId, onCommentAdded }: CommentFormProps
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
   return (
     <div className="mt-2">
       <Textarea
@@ -32,12 +39,7 @@ export const CommentForm = ({ postId, userId, onCommentAdded }: CommentFormProps
         onChange={(e) => setContent(e.target.value)}
         className="min-h-[60px] text-sm rounded-xl border-slate-300"
         disabled={isSubmitting}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSubmit();
-          }
-        }}
+        onKeyDown={handleKeyDown}
       />
     </div>
   );

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,11 +15,14 @@ import {
   MobileComposeArea,
 } from "@/components/groups/mobile";
 
+type ActiveTab = "home" | "users" | "settings" | "calendar";
+
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("home");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("home");
 
+  // Group details and membership
   const {
     group,
     loading: groupLoading,
@@ -27,6 +31,7 @@ const GroupDetails = () => {
     handleMemberUpdate
   } = useGroupDetails(id || "", user?.id);
 
+  // Posts management
   const { 
     posts, 
     loading: postsLoading, 
@@ -38,11 +43,22 @@ const GroupDetails = () => {
     userId: user?.id 
   });
 
+  // Auto refresh functionality
   const { handleManualRefresh } = useAutoRefresh({
     refreshFunction: refreshPosts,
     loading: postsLoading
   });
 
+  // Event handlers
+  const handlePostCreated = () => {
+    refreshPosts();
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab as ActiveTab);
+  };
+
+  // Loading and error states
   if (!id || groupLoading) {
     return <GroupDetailsLoading />;
   }
@@ -55,11 +71,8 @@ const GroupDetails = () => {
     );
   }
 
-  const handlePostCreated = () => {
-    refreshPosts();
-  };
-
-  const renderContent = () => {
+  // Tab content renderer
+  const renderTabContent = () => {
     switch (activeTab) {
       case "home":
         return (
@@ -124,12 +137,12 @@ const GroupDetails = () => {
       )}
       
       <div className="flex-1 mt-16 pt-20 pb-20 overflow-hidden">
-        {renderContent()}
+        {renderTabContent()}
       </div>
       
       <MobileIconMenu 
         activeTab={activeTab} 
-        onTabChange={setActiveTab} 
+        onTabChange={handleTabChange} 
       />
     </div>
   );

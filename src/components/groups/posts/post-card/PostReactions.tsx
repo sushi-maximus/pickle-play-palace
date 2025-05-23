@@ -11,6 +11,37 @@ interface PostReactionsProps {
   currentUserId?: string;
 }
 
+interface ReactionButtonProps {
+  type: PostReactionType;
+  Icon: React.ComponentType<{ className?: string }>;
+  count: number;
+  isActive: boolean;
+  isDisabled: boolean;
+  activeColor: string;
+  onClick: () => void;
+}
+
+const ReactionButton = ({ 
+  type, 
+  Icon, 
+  count, 
+  isActive, 
+  isDisabled, 
+  activeColor, 
+  onClick 
+}: ReactionButtonProps) => (
+  <Button 
+    variant="ghost" 
+    size="sm" 
+    className={`flex items-center gap-1 ${isActive ? activeColor : ""}`}
+    onClick={onClick}
+    disabled={isDisabled}
+  >
+    <Icon className={`h-4 w-4 ${isActive ? `fill-current` : ""}`} />
+    <span>{count > 0 ? count : ''}</span>
+  </Button>
+);
+
 export const PostReactions = ({
   reactions,
   userReactions,
@@ -18,49 +49,39 @@ export const PostReactions = ({
   onReactionToggle,
   currentUserId
 }: PostReactionsProps) => {
+  const isDisabled = !currentUserId;
+
   return (
     <div className="flex gap-4">
-      {/* Thumbs Up button */}
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={`flex items-center gap-1 ${userReactions.thumbsup ? "text-blue-500" : ""}`}
+      <ReactionButton
+        type="thumbsup"
+        Icon={ThumbsUp}
+        count={reactions.thumbsup}
+        isActive={userReactions.thumbsup}
+        isDisabled={isDisabled || isSubmitting.thumbsup}
+        activeColor="text-blue-500"
         onClick={() => onReactionToggle("thumbsup")}
-        disabled={!currentUserId || isSubmitting.thumbsup}
-      >
-        <ThumbsUp 
-          className={`h-4 w-4 ${userReactions.thumbsup ? "fill-blue-500 text-blue-500" : ""}`}
-        />
-        <span>{reactions.thumbsup > 0 ? reactions.thumbsup : ''}</span>
-      </Button>
+      />
       
-      {/* Thumbs Down button */}
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={`flex items-center gap-1 ${userReactions.thumbsdown ? "text-red-500" : ""}`}
+      <ReactionButton
+        type="thumbsdown"
+        Icon={ThumbsDown}
+        count={reactions.thumbsdown}
+        isActive={userReactions.thumbsdown}
+        isDisabled={isDisabled || isSubmitting.thumbsdown}
+        activeColor="text-red-500"
         onClick={() => onReactionToggle("thumbsdown")}
-        disabled={!currentUserId || isSubmitting.thumbsdown}
-      >
-        <ThumbsDown 
-          className={`h-4 w-4 ${userReactions.thumbsdown ? "fill-red-500 text-red-500" : ""}`}
-        />
-        <span>{reactions.thumbsdown > 0 ? reactions.thumbsdown : ''}</span>
-      </Button>
+      />
 
-      {/* Like button */}
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={`flex items-center gap-1 ${userReactions.like ? "text-red-500" : ""}`}
+      <ReactionButton
+        type="like"
+        Icon={Heart}
+        count={reactions.like}
+        isActive={userReactions.like}
+        isDisabled={isDisabled || isSubmitting.like}
+        activeColor="text-red-500"
         onClick={() => onReactionToggle("like")}
-        disabled={!currentUserId || isSubmitting.like}
-      >
-        <Heart 
-          className={`h-4 w-4 ${userReactions.like ? "fill-red-500 text-red-500" : ""}`}
-        />
-        <span>{reactions.like > 0 ? reactions.like : ''}</span>
-      </Button>
+      />
     </div>
   );
 };

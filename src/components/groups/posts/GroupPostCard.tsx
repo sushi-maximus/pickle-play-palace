@@ -40,8 +40,11 @@ export const GroupPostCard = ({
   onPostDeleted
 }: GroupPostCardProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
+  // Check if current user is the author
   const isAuthor = currentUserId === post.user.id;
   
+  // Post reactions hook
   const {
     reactions,
     userReactions,
@@ -54,6 +57,7 @@ export const GroupPostCard = ({
     initialUserReactions: post.user_reactions
   });
 
+  // Edit post functionality
   const {
     isEditing,
     editableContent,
@@ -65,6 +69,7 @@ export const GroupPostCard = ({
     currentPostId
   } = useEditPost({ onPostUpdated });
 
+  // Delete post functionality
   const {
     isDeleting,
     handleDelete
@@ -75,15 +80,25 @@ export const GroupPostCard = ({
     }
   });
 
+  // Event handlers
   const handleReactionToggle = (type: PostReactionType) => {
     toggleReaction(type);
   };
 
-  const isEditingThisPost = isEditing && currentPostId === post.id;
-  
+  const handleStartEditing = () => {
+    startEditing(post.id, post.content);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
   const confirmDelete = () => {
     handleDelete(post.id);
   };
+
+  // Check if this specific post is being edited
+  const isEditingThisPost = isEditing && currentPostId === post.id;
 
   return (
     <Card className="mb-4 hover:shadow-md transition-all duration-200 border-l-4 border-l-primary/30">
@@ -92,8 +107,8 @@ export const GroupPostCard = ({
           post={post}
           isAuthor={isAuthor}
           isEditing={isEditingThisPost}
-          onStartEditing={() => startEditing(post.id, post.content)}
-          onDeleteClick={() => setIsDeleteDialogOpen(true)}
+          onStartEditing={handleStartEditing}
+          onDeleteClick={handleDeleteClick}
         />
       </CardHeader>
       
