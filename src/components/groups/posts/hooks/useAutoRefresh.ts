@@ -23,7 +23,7 @@ export const useAutoRefresh = ({
   const isComponentMountedRef = useRef(true);
   const isRefreshingRef = useRef(false);
 
-  // Track visibility, user interaction and manage countdown
+  // Track visibility, user interaction
   const { isVisibleRef } = useVisibilityTracking();
   const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
   
@@ -49,6 +49,7 @@ export const useAutoRefresh = ({
         // Add a slight delay before setting isRefreshing to false for visual feedback
         setTimeout(() => {
           if (isComponentMountedRef.current) {
+            console.log("Auto refresh completed, resetting state");
             setIsRefreshing(false);
             isRefreshingRef.current = false;
           }
@@ -56,7 +57,8 @@ export const useAutoRefresh = ({
       }
     }
   };
-
+  
+  // Set up countdown timer - must be declared before useAutoRefreshLogic
   const { countdownIntervalRef } = useCountdownTimer(
     isAutoRefreshEnabled, 
     loading || isRefreshing,
@@ -64,7 +66,7 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
   
-  // Set up auto-refresh logic
+  // Set up auto-refresh logic after countdown timer is set up
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
     loading || isRefreshing,
@@ -118,6 +120,8 @@ export const useAutoRefresh = ({
     
     if (newValue) {
       toast(`Auto-refresh enabled. Posts will refresh every ${interval/1000} seconds.`);
+      // Reset the countdown timer when enabled
+      setNextRefreshIn(interval / 1000);
     } else {
       toast("Auto-refresh disabled. Posts will only refresh when you click the refresh button.");
     }

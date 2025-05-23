@@ -10,15 +10,17 @@ export const useCountdownTimer = (
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Clear any existing interval first
+    // Clear any existing interval first to prevent multiple countdowns running
     if (countdownIntervalRef.current) {
+      console.log("Clearing existing countdown timer");
       clearInterval(countdownIntervalRef.current);
       countdownIntervalRef.current = null;
     }
     
     // Only run countdown if enabled and not loading
     if (!isEnabled || loading) {
-      return;
+      console.log("Countdown timer not started - disabled or loading");
+      return () => {};
     }
 
     console.log("Setting up countdown timer");

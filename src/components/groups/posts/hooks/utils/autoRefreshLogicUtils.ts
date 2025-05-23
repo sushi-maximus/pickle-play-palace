@@ -23,58 +23,56 @@ export const useAutoRefreshLogic = (
       refreshIntervalRef.current = null;
     }
 
-    console.log(`Auto-refresh ${isAutoRefreshEnabled ? 'enabled' : 'disabled'}`);
-    
-    // Only set up the interval if auto-refresh is enabled
-    if (isAutoRefreshEnabled) {
-      console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
-      
-      // Set up the recurring interval
-      refreshIntervalRef.current = setInterval(() => {
-        // Only proceed if all conditions are met
-        if (
-          isComponentMountedRef.current && 
-          isAutoRefreshEnabled &&
-          !isLoading && 
-          !userInteractingRef.current && 
-          isVisibleRef.current
-        ) {
-          console.log('Auto-refresh conditions met, refreshing data...');
-          
-          // Update last refresh timestamp first for immediate UI feedback
-          setLastAutoRefresh(new Date());
-          
-          // Reset the countdown timer
-          setNextRefreshIn(interval / 1000);
-          
-          // Execute the refresh function
-          refreshFunction()
-            .catch(error => {
-              console.error('Error during auto-refresh:', error);
-            });
-        } else {
-          console.log('Auto-refresh conditions not met:', {
-            mounted: isComponentMountedRef.current,
-            enabled: isAutoRefreshEnabled,
-            loading: isLoading,
-            userInteracting: userInteractingRef.current,
-            visible: isVisibleRef.current
-          });
-        }
-      }, interval);
-
-      // Return cleanup function for this specific interval setup
-      return () => {
-        if (refreshIntervalRef.current) {
-          console.log("Cleaning up refresh interval on effect cleanup");
-          clearInterval(refreshIntervalRef.current);
-          refreshIntervalRef.current = null;
-        }
-      };
+    // Only set up the interval if component is mounted and auto-refresh is enabled
+    if (!isComponentMountedRef.current || !isAutoRefreshEnabled) {
+      console.log(`Auto-refresh ${!isComponentMountedRef.current ? 'component not mounted' : 'disabled'}`);
+      return () => {};
     }
+
+    console.log(`Auto-refresh enabled, setting up interval: ${interval/1000}s`);
     
-    // Return empty cleanup if no interval was set
-    return () => {};
+    // Set up the recurring interval
+    refreshIntervalRef.current = setInterval(() => {
+      // Only proceed if all conditions are met
+      if (
+        isComponentMountedRef.current && 
+        isAutoRefreshEnabled &&
+        !isLoading && 
+        !userInteractingRef.current && 
+        isVisibleRef.current
+      ) {
+        console.log('Auto-refresh conditions met, refreshing data...');
+        
+        // Update last refresh timestamp first for immediate UI feedback
+        setLastAutoRefresh(new Date());
+        
+        // Reset the countdown timer
+        setNextRefreshIn(interval / 1000);
+        
+        // Execute the refresh function
+        refreshFunction()
+          .catch(error => {
+            console.error('Error during auto-refresh:', error);
+          });
+      } else {
+        console.log('Auto-refresh conditions not met:', {
+          mounted: isComponentMountedRef.current,
+          enabled: isAutoRefreshEnabled,
+          loading: isLoading,
+          userInteracting: userInteractingRef.current,
+          visible: isVisibleRef.current
+        });
+      }
+    }, interval);
+
+    // Return cleanup function
+    return () => {
+      if (refreshIntervalRef.current) {
+        console.log("Cleaning up refresh interval on effect cleanup");
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    };
   }, [
     isAutoRefreshEnabled, 
     interval,
