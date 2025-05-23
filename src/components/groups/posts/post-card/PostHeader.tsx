@@ -35,6 +35,9 @@ export const PostHeader = ({
   onStartEditing,
   onDeleteClick
 }: PostHeaderProps) => {
+  console.log("PostHeader - isAuthor:", isAuthor, "isEditing:", isEditing);
+  console.log("PostHeader - Should show menu:", isAuthor && !isEditing);
+  
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-3">
@@ -60,27 +63,34 @@ export const PostHeader = ({
       </div>
       
       {isAuthor && !isEditing && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onStartEditing}>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit post
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={onDeleteClick}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              Delete post
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div>
+          <p className="text-xs text-red-500 mb-1">DEBUG: Menu should be visible</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onStartEditing}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit post
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={onDeleteClick}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete post
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
+      
+      {(!isAuthor || isEditing) && (
+        <p className="text-xs text-blue-500">DEBUG: Menu hidden - isAuthor: {String(isAuthor)}, isEditing: {String(isEditing)}</p>
       )}
     </div>
   );
