@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Lock, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 type Membership = {
   id: string;
@@ -15,6 +16,7 @@ type Membership = {
     created_at: string;
     is_private: boolean;
     member_count?: number;
+    avatar_url?: string;
   };
   role: string;
 };
@@ -31,12 +33,23 @@ export const MembershipCard = ({ membership }: MembershipCardProps) => {
     <Card className="h-full flex flex-col hover:shadow-md transition-shadow duration-300 border-2 border-transparent hover:border-primary/20">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl flex items-center">
-            {group.name}
-            {group.is_private && (
-              <Lock className="h-4 w-4 ml-2 text-muted-foreground" />
-            )}
-          </CardTitle>
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8">
+              {group.avatar_url ? (
+                <AvatarImage src={group.avatar_url} alt={group.name} />
+              ) : (
+                <AvatarFallback>
+                  {group.name?.substring(0, 2).toUpperCase() || "GP"}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <CardTitle className="text-xl flex items-center">
+              {group.name}
+              {group.is_private && (
+                <Lock className="h-4 w-4 ml-2 text-muted-foreground" />
+              )}
+            </CardTitle>
+          </div>
           <div className="p-2 bg-primary/10 rounded-full">
             <Users className="h-5 w-5 text-primary" />
           </div>
