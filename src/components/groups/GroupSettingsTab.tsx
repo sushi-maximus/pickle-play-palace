@@ -34,9 +34,9 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
       description: group.description || "",
       location: group.location || "",
       is_private: group.is_private || false,
-      skill_level_min: group.skill_level_min || "2.5",
-      skill_level_max: group.skill_level_max || "5.5",
-      max_members: group.max_members || 50,
+      skill_level_min: group.skill_level_min || "",
+      skill_level_max: group.skill_level_max || "",
+      max_members: group.max_members || 0,
     },
   });
 
