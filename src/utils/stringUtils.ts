@@ -12,3 +12,6 @@ export const getInitialsFromName = (name: string): string => {
   
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 };
+
+// Add an alias for backward compatibility
+export const getInitials = getInitialsFromName;

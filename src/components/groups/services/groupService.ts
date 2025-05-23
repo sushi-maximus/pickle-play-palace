@@ -127,7 +127,7 @@ export async function updateGroupSettings(groupId: string, values: any) {
         max_members: values.max_members,
         skill_level_min: values.skill_level_min,
         skill_level_max: values.skill_level_max,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       })
       .eq("id", groupId)
       .select()
@@ -158,7 +158,7 @@ export async function updateGroupPermissions(groupId: string, permissions: any) 
       .update({
         is_private: permissions.is_private,
         // Add more permissions as the schema evolves
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       })
       .eq("id", groupId)
       .select()
@@ -288,7 +288,7 @@ export async function handleJoinRequest(groupId: string, requestId: string, acti
         .from("group_members")
         .update({
           status: "active",
-          joined_at: new Date()
+          joined_at: new Date().toISOString()
         })
         .eq("id", requestId)
         .eq("group_id", groupId);
