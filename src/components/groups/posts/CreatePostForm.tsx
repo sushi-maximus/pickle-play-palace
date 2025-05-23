@@ -71,8 +71,8 @@ export const CreatePostForm = ({ groupId, user, onPostCreated }: CreatePostFormP
                 <AvatarImage src={user.avatar_url} alt={`${user.first_name} ${user.last_name}`} />
               ) : (
                 <AvatarFallback>
-                  {user.first_name[0]}
-                  {user.last_name[0]}
+                  {user.first_name?.[0] || ''}
+                  {user.last_name?.[0] || ''}
                 </AvatarFallback>
               )}
             </Avatar>
