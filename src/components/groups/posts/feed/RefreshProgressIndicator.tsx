@@ -12,7 +12,7 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isRefreshingRef = useRef(false);
   
-  // Consolidated effect for handling progress animation
+  // Handle progress animation based on refreshing state
   useEffect(() => {
     console.log("RefreshProgressIndicator - refreshing state changed to:", refreshing);
     
@@ -33,7 +33,7 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       // Reset progress to start from beginning
       setProgress(0);
       
-      // Start increasing the progress
+      // Start increasing the progress gradually
       intervalRef.current = setInterval(() => {
         setProgress((prev) => {
           // Increase more slowly as we get closer to 90%

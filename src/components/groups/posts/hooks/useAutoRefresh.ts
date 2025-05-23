@@ -13,17 +13,17 @@ export const useAutoRefresh = ({
   loading,
   interval = DEFAULT_AUTO_REFRESH_INTERVAL
 }: UseAutoRefreshProps): UseAutoRefreshResult => {
-  // All state hooks MUST be called unconditionally at the top level
+  // State hooks
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastAutoRefresh, setLastAutoRefresh] = useState<Date | null>(null);
   const [nextRefreshIn, setNextRefreshIn] = useState<number>(interval / 1000);
   
-  // All refs MUST be initialized at the top level
+  // Refs for tracking state
   const isComponentMountedRef = useRef(true);
   const isRefreshingRef = useRef(false);
 
-  // All custom hooks MUST be called unconditionally at the top level
+  // Track visibility, user interaction and manage countdown
   const { isVisibleRef } = useVisibilityTracking();
   const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
   const { countdownIntervalRef } = useCountdownTimer(
@@ -63,6 +63,7 @@ export const useAutoRefresh = ({
     }
   };
   
+  // Set up auto-refresh logic
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
     loading || isRefreshing,
@@ -75,7 +76,7 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
 
-  // Component mount/unmount lifecycle - MUST be called after all other hooks
+  // Component mount/unmount lifecycle
   useEffect(() => {
     console.log("useAutoRefresh - component mounted");
     isComponentMountedRef.current = true;
@@ -109,6 +110,7 @@ export const useAutoRefresh = ({
     console.log("useAutoRefresh - refreshing state changed:", isRefreshing);
   }, [isRefreshing]);
 
+  // Toggle auto-refresh function
   const toggleAutoRefresh = () => {
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
@@ -120,6 +122,7 @@ export const useAutoRefresh = ({
     }
   };
 
+  // Manual refresh function
   const handleManualRefresh = async () => {
     // Prevent overlapping refreshes
     if (loading || isRefreshing || isRefreshingRef.current) {

@@ -16,8 +16,6 @@ export const useAutoRefreshLogic = (
   
   // Set up and clean up the refresh interval
   useEffect(() => {
-    console.log(`Auto-refresh ${isAutoRefreshEnabled ? 'enabled' : 'disabled'}, cleaning up existing intervals`);
-    
     // Always clear existing interval first to prevent duplicates
     if (refreshIntervalRef.current) {
       console.log("Clearing existing refresh interval");
@@ -25,9 +23,11 @@ export const useAutoRefreshLogic = (
       refreshIntervalRef.current = null;
     }
 
+    console.log(`Auto-refresh ${isAutoRefreshEnabled ? 'enabled' : 'disabled'}`);
+    
     // Only set up the interval if auto-refresh is enabled
     if (isAutoRefreshEnabled && isComponentMountedRef.current) {
-      console.log(`Setting up NEW auto-refresh interval: ${interval/1000}s`);
+      console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
       
       // Set up the recurring interval
       refreshIntervalRef.current = setInterval(() => {

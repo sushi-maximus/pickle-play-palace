@@ -26,9 +26,10 @@ export const useCountdownTimer = (
     // Reset countdown when enabled
     setNextRefreshIn(interval / 1000);
     
-    // Set up countdown interval
+    // Set up countdown interval to run every second
     countdownIntervalRef.current = setInterval(() => {
       setNextRefreshIn(prev => {
+        // Decrement countdown by 1 second
         if (prev <= 1) {
           return interval / 1000; // Reset when reaches 0
         }
@@ -36,6 +37,7 @@ export const useCountdownTimer = (
       });
     }, 1000);
     
+    // Cleanup function
     return () => {
       console.log("Cleaning up countdown timer");
       if (countdownIntervalRef.current) {
