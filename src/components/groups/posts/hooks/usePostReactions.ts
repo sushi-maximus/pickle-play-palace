@@ -45,15 +45,42 @@ export const usePostReactions = ({
           
           // Re-fetch reaction counts since we don't know from the event which type changed
           try {
-            const { data: countData } = await supabase.rpc('get_post_reaction_counts', { 
+            const { data: countData, error } = await supabase.rpc('get_post_reaction_counts', { 
               post_id: postId 
-            });
+            }) as { data: { like_count: number, thumbsup_count: number, thumbsdown_count: number } | null, error: any };
             
-            if (countData) {
+            if (!error && countData) {
               setReactions({
                 like: countData.like_count || 0,
                 thumbsup: countData.thumbsup_count || 0,
                 thumbsdown: countData.thumbsdown_count || 0
+              });
+            } else {
+              // Fallback to separate queries if the function has an error
+              console.warn('Using fallback reaction count queries due to RPC error:', error);
+              
+              const { count: likeCount } = await supabase
+                .from("reactions")
+                .select("*", { count: "exact", head: true })
+                .eq("post_id", postId)
+                .eq("reaction_type", "like");
+
+              const { count: thumbsUpCount } = await supabase
+                .from("reactions")
+                .select("*", { count: "exact", head: true })
+                .eq("post_id", postId)
+                .eq("reaction_type", "thumbsup");
+
+              const { count: thumbsDownCount } = await supabase
+                .from("reactions")
+                .select("*", { count: "exact", head: true })
+                .eq("post_id", postId)
+                .eq("reaction_type", "thumbsdown");
+                
+              setReactions({
+                like: likeCount || 0,
+                thumbsup: thumbsUpCount || 0,
+                thumbsdown: thumbsDownCount || 0
               });
             }
             

@@ -7,7 +7,7 @@ export const fetchPostReactionCounts = async (postId: string): Promise<Record<Po
     // Try to use the SQL function if it exists
     const { data, error } = await supabase.rpc('get_post_reaction_counts', { 
       post_id: postId 
-    });
+    }) as { data: { like_count: number, thumbsup_count: number, thumbsdown_count: number } | null, error: any };
     
     if (!error && data) {
       return {
