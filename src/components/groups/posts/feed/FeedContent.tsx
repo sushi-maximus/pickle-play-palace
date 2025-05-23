@@ -2,13 +2,14 @@ import { CreatePostForm } from "../CreatePostForm";
 import { GroupPostCard } from "../GroupPostCard";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { GroupPostsLoading } from "../GroupPostsLoading";
+import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
 import type { GroupPost } from "../hooks/useGroupPosts";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 interface FeedContentProps {
   loading: boolean;
-  refreshing?: boolean; // New optional prop for background refreshes
+  refreshing?: boolean;
   error: string | null;
   posts: GroupPost[];
   user: any;
@@ -26,7 +27,7 @@ interface FeedContentProps {
 
 export const FeedContent = ({ 
   loading, 
-  refreshing = false, // Default to false
+  refreshing = false,
   error, 
   posts, 
   user,
@@ -55,6 +56,9 @@ export const FeedContent = ({
 
   return (
     <div className="space-y-6">
+      {/* Add the progress indicator at the top */}
+      <RefreshProgressIndicator refreshing={refreshing} />
+      
       {membershipStatus.isMember && (
         <CreatePostForm 
           groupId={groupId} 
@@ -67,13 +71,7 @@ export const FeedContent = ({
         <GroupPostsEmpty isMember={membershipStatus.isMember} />
       ) : (
         <div className="space-y-6 animate-fade-in">
-          {/* Show a subtle refreshing indicator at the top if actively refreshing */}
-          {refreshing && (
-            <div className="flex items-center justify-center text-xs text-muted-foreground py-1">
-              <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-              Updating content...
-            </div>
-          )}
+          {/* Remove the old refreshing indicator and rely on the progress bar */}
           
           {posts.map((post) => (
             <GroupPostCard 
