@@ -69,13 +69,13 @@ export const useHeartReaction = ({
 
     try {
       if (newIsActive) {
-        // Remove any existing reactions for this user and post first
+        // First, delete all existing reactions for this user and post to avoid duplicates
         await reactionService.deleteAllUserReactions(postId, userId);
-
-        // Add heart reaction
+        
+        // Then add the heart reaction
         await reactionService.addReaction(postId, userId, 'heart');
       } else {
-        // Remove heart reaction
+        // Just remove the heart reaction
         await reactionService.deleteReaction(postId, userId, 'heart');
       }
     } catch (error) {
