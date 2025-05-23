@@ -6,12 +6,14 @@ interface LastRefreshIndicatorProps {
   loading: boolean;
   lastAutoRefresh: Date | null;
   isAutoRefreshEnabled?: boolean;
+  nextRefreshIn?: number;
 }
 
 export const LastRefreshIndicator = ({ 
   loading, 
   lastAutoRefresh,
-  isAutoRefreshEnabled = true
+  isAutoRefreshEnabled = true,
+  nextRefreshIn
 }: LastRefreshIndicatorProps) => {
   const formatLastRefreshTime = () => {
     if (!lastAutoRefresh) return "Never refreshed";
@@ -33,7 +35,13 @@ export const LastRefreshIndicator = ({
             <>
               <RefreshCw className="h-3 w-3 animate-pulse text-primary" />
               <span className="flex items-center gap-1">
-                Auto-refresh active • Last updated: {formatLastRefreshTime()}
+                Auto-refresh active • 
+                {nextRefreshIn !== undefined && (
+                  <span className="text-primary font-medium">
+                    Next: {nextRefreshIn}s •
+                  </span>
+                )}
+                Last updated: {formatLastRefreshTime()}
               </span>
             </>
           ) : (

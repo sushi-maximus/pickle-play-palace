@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { useGroupPosts } from "./hooks/useGroupPosts";
 import { useAutoRefresh } from "./hooks/useAutoRefresh";
@@ -36,6 +37,7 @@ export const GroupPostsFeed = ({
     isAutoRefreshEnabled,
     isRefreshing,
     lastAutoRefresh,
+    nextRefreshIn,
     toggleAutoRefresh,
     handleManualRefresh
   } = useAutoRefresh({
@@ -97,6 +99,7 @@ export const GroupPostsFeed = ({
           loading={loading} 
           lastAutoRefresh={lastAutoRefresh} 
           isAutoRefreshEnabled={isAutoRefreshEnabled}
+          nextRefreshIn={nextRefreshIn}
         />
         
         <CardContent className="p-6">

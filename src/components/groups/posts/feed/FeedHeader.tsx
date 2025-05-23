@@ -5,6 +5,7 @@ import { MessageCircle, RefreshCw, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface FeedHeaderProps {
   groupName: string | undefined;
@@ -34,9 +35,21 @@ export const FeedHeader = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="auto-refresh" className="text-xs font-medium cursor-pointer">
+              <div className={cn(
+                "flex items-center gap-2 px-2 py-1 rounded-full transition-colors",
+                isAutoRefreshEnabled && "bg-primary/10"
+              )}>
+                <Label 
+                  htmlFor="auto-refresh" 
+                  className={cn(
+                    "text-xs font-medium cursor-pointer",
+                    isAutoRefreshEnabled && "text-primary"
+                  )}
+                >
                   Auto
+                  {isAutoRefreshEnabled && (
+                    <RefreshCw className="h-2 w-2 ml-1 inline animate-spin" />
+                  )}
                 </Label>
                 <Switch
                   id="auto-refresh"

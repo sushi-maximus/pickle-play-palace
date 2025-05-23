@@ -16,8 +16,10 @@ export const useAutoRefresh = ({
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastAutoRefresh, setLastAutoRefresh] = useState<Date | null>(null);
+  const [nextRefreshIn, setNextRefreshIn] = useState<number>(interval / 1000);
   const userInteractingRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Track user interaction
   useEffect(() => {
@@ -47,6 +49,37 @@ export const useAutoRefresh = ({
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
+
+  // Countdown timer effect
+  useEffect(() => {
+    // Only run countdown if auto-refresh is enabled and not loading
+    if (!isAutoRefreshEnabled || loading) {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+      return;
+    }
+
+    // Reset countdown when enabled
+    setNextRefreshIn(interval / 1000);
+    
+    // Set up countdown interval
+    countdownIntervalRef.current = setInterval(() => {
+      setNextRefreshIn(prev => {
+        if (prev <= 1) {
+          return interval / 1000; // Reset when reaches 0
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+    };
+  }, [isAutoRefreshEnabled, loading, interval]);
   
   // Auto-refresh effect
   useEffect(() => {
@@ -61,6 +94,7 @@ export const useAutoRefresh = ({
         console.log("Auto-refreshing posts");
         await refreshFunction();
         setLastAutoRefresh(new Date());
+        setNextRefreshIn(interval / 1000); // Reset countdown after refresh
       } else if (userInteractingRef.current) {
         console.log("Skipping auto-refresh: user is interacting with the page");
       } else if (loading) {
@@ -97,6 +131,7 @@ export const useAutoRefresh = ({
     setIsRefreshing(true);
     await refreshFunction();
     setLastAutoRefresh(new Date());
+    setNextRefreshIn(interval / 1000); // Reset countdown after manual refresh
     setTimeout(() => setIsRefreshing(false), 500); // Give visual feedback
   };
 
@@ -104,6 +139,7 @@ export const useAutoRefresh = ({
     isAutoRefreshEnabled,
     isRefreshing,
     lastAutoRefresh,
+    nextRefreshIn,
     toggleAutoRefresh,
     handleManualRefresh
   };
