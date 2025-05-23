@@ -5,6 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { PostReactionType, UsePostReactionsProps, UsePostReactionsResult } from "./types/reactionTypes";
 import { togglePostReaction } from "./utils/reactionUtils";
 
+// Define the return type for the RPC function
+type PostReactionCountsResponse = {
+  data: {
+    like_count: number;
+    thumbsup_count: number;
+    thumbsdown_count: number;
+  } | null;
+  error: any;
+};
+
 export type { PostReactionType } from "./types/reactionTypes";
 
 export const usePostReactions = ({
@@ -47,7 +57,7 @@ export const usePostReactions = ({
           try {
             const { data: countData, error } = await supabase.rpc('get_post_reaction_counts', { 
               post_id: postId 
-            }) as { data: { like_count: number, thumbsup_count: number, thumbsdown_count: number } | null, error: any };
+            }) as PostReactionCountsResponse;
             
             if (!error && countData) {
               setReactions({
