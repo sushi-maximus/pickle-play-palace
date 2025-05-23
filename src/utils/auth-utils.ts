@@ -1,3 +1,4 @@
+
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -93,10 +94,18 @@ export const signUp = async (email: string, password: string, metadata: any) => 
       console.error("Exception checking profile:", profileCheckError);
     }
     
-    // Use persistent toast for account verification instructions
-    toast.persistent("Account created", {
-      description: "Please check your email to confirm your account before logging in."
+    // COMMENTED OUT FOR DEVELOPMENT - Use persistent toast for account verification instructions
+    // TODO: Uncomment this when ready for production
+    // toast.persistent("Account created", {
+    //   description: "Please check your email to confirm your account before logging in."
+    // });
+    
+    // For development - show success message instead
+    toast.success("Account created", {
+      description: "Your account has been created successfully. You can now log in.",
+      duration: 5000
     });
+    
     return { error: null, data: result.data };
   } catch (error: any) {
     console.error("Unexpected signup error:", error);
@@ -116,15 +125,17 @@ export const signIn = async (email: string, password: string) => {
     });
 
     if (result.error) {
-      if (result.error.message.includes("Email not confirmed")) {
-        toast.error("Email not verified", {
-          description: "Please check your inbox and verify your email before logging in."
-        });
-      } else {
+      // COMMENTED OUT FOR DEVELOPMENT - Email verification check
+      // TODO: Uncomment this when ready for production
+      // if (result.error.message.includes("Email not confirmed")) {
+      //   toast.error("Email not verified", {
+      //     description: "Please check your inbox and verify your email before logging in."
+      //   });
+      // } else {
         toast.error("Login error", {
           description: result.error.message || "Invalid login credentials."
         });
-      }
+      // }
       return { error: result.error, data: null };
     }
 
