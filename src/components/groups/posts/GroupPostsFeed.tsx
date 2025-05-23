@@ -1,4 +1,3 @@
-
 import { CreatePostForm } from "./CreatePostForm";
 import { GroupPostCard } from "./GroupPostCard";
 import { GroupPostsLoading } from "./GroupPostsLoading";
@@ -66,13 +65,17 @@ export const GroupPostsFeed = ({
   const toggleAutoRefresh = () => {
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
-    toast({
-      title: newValue ? "Auto-refresh enabled" : "Auto-refresh disabled",
-      description: newValue 
-        ? "Posts will automatically refresh every 30 seconds" 
-        : "Posts will only refresh when you click the refresh button",
-      duration: 3000
-    });
+    
+    // Fix: Using the toast function with a string instead of an object with title property
+    toast(
+      newValue ? "Auto-refresh enabled" : "Auto-refresh disabled", 
+      {
+        description: newValue 
+          ? "Posts will automatically refresh every 30 seconds" 
+          : "Posts will only refresh when you click the refresh button",
+        duration: 3000
+      }
+    );
   };
 
   // Auto-refresh effect
