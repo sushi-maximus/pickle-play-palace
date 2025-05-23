@@ -25,6 +25,17 @@ export const useAutoRefreshLogic = (
     if (isAutoRefreshEnabled) {
       console.log(`Setting up auto-refresh interval: ${interval/1000}s`);
       
+      // Execute one refresh immediately when enabled (if not loading)
+      if (!isLoading && isVisibleRef.current && !userInteractingRef.current) {
+        console.log('Initial refresh when auto-refresh enabled');
+        setLastAutoRefresh(new Date());
+        setNextRefreshIn(interval / 1000);
+        refreshFunction().catch(error => {
+          console.error('Error during initial auto-refresh:', error);
+        });
+      }
+      
+      // Set up the recurring interval
       refreshIntervalRef.current = setInterval(() => {
         // Only proceed if all conditions are met
         if (
