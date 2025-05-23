@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/contexts/AuthContext";
 import { CreatePostForm2 } from "../posts/CreatePostForm2";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
@@ -6,12 +5,9 @@ import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useEditPost } from "../posts/hooks/useEditPost";
 import { useDeletePost } from "../posts/hooks/useDeletePost";
-import { usePostReactions } from "../posts/hooks/usePostReactions";
 import { PostHeader } from "../posts/post-card/PostHeader";
 import { PostContent } from "../posts/post-card/PostContent";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
-import { PostReactions2 } from "../posts/post-card/PostReactions2";
-import { CommentsSection2 } from "../posts/post-card/CommentsSection2";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 
 interface MobileHome2TabProps {
@@ -119,19 +115,6 @@ export const MobileHome2Tab = ({
           const isAuthor = user?.id === post.user?.id;
           const isEditingThisPost = isEditing && currentPostId === post.id;
 
-          // Use the post reactions hook for each post
-          const {
-            reactions,
-            userReactions,
-            isSubmitting,
-            toggleReaction
-          } = usePostReactions({
-            postId: post.id,
-            userId: user?.id,
-            initialReactions: post.reactions || { like: 0, thumbsup: 0, thumbsdown: 0 },
-            initialUserReactions: post.user_reactions || { like: false, thumbsup: false, thumbsdown: false }
-          });
-
           return (
             <Card key={post.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-2 md:border-l-4 border-l-primary/30">
               <CardHeader className="p-3 pb-2 md:p-4 md:pb-3">
@@ -159,18 +142,13 @@ export const MobileHome2Tab = ({
               
               {!isEditingThisPost && (
                 <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4 flex flex-col">
-                  <div className="w-full flex flex-col space-y-2">
-                    <div className="w-full flex justify-between items-center">
-                      <PostReactions2
-                        reactions={reactions}
-                        userReactions={userReactions}
-                        isSubmitting={isSubmitting}
-                        onReactionToggle={toggleReaction}
-                        currentUserId={user?.id}
-                      />
-                      <CommentsSection2
-                        commentsCount={post.comments_count || 0}
-                      />
+                  <div className="w-full flex flex-col space-y-1 md:space-y-2">
+                    <div className="w-full flex justify-start">
+                      {/* Empty space to match GroupPostCard structure */}
+                    </div>
+                    
+                    <div className="w-[85%] md:w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
+                      {/* Empty space to match GroupPostCard structure */}
                     </div>
                   </div>
                 </CardFooter>
