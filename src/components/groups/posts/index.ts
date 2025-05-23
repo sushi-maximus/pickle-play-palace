@@ -4,7 +4,7 @@ export * from './CreatePostForm';
 export * from './GroupPostsFeed';
 export * from './GroupPostsLoading';
 export * from './GroupPostsEmpty';
-export * from './Comment';
+export { Comment } from './Comment';
 export * from './CommentsSection';
 export * from './CommentForm';
 export * from './hooks/useGroupPosts';
