@@ -59,7 +59,7 @@ export const PostContent = ({
   }
 
   return (
-    <>
+    <div className="ml-12 md:ml-14">
       <p className="text-sm md:text-base text-gray-900 whitespace-pre-line leading-relaxed">{content}</p>
       
       {mediaUrls && mediaUrls.length > 0 && (
@@ -75,6 +75,6 @@ export const PostContent = ({
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };
