@@ -20,6 +20,10 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
     refreshComments();
   };
 
+  const handleCommentUpdated = () => {
+    refreshComments();
+  };
+
   if (!isExpanded) {
     return (
       <Button 
@@ -60,7 +64,8 @@ export const CommentsSection = ({ postId, userId, commentsCount }: CommentsSecti
             <Comment 
               key={comment.id} 
               comment={comment}
-              userId={userId} 
+              userId={userId}
+              onCommentUpdated={handleCommentUpdated}
             />
           ))}
         </div>
