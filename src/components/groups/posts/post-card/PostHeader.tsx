@@ -51,8 +51,9 @@ export const PostHeader = ({
             <AvatarFallback className="bg-gray-200 text-gray-700">{avatarFallback}</AvatarFallback>
           )}
         </Avatar>
-        <div className="flex flex-col">
+        <div className="flex items-center gap-2">
           <p className="font-medium text-gray-900">{displayName}</p>
+          <span className="text-gray-400">•</span>
           <p className="text-xs text-gray-500">
             {timeAgo}
             {isEdited && <span className="ml-1">(edited)</span>}
