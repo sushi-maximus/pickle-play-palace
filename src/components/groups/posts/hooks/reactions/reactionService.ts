@@ -5,6 +5,13 @@ import { PostReactionType2 } from "./types";
 export const reactionService = {
   async deleteReaction(postId: string, userId: string, reactionType: PostReactionType2) {
     console.log(`Deleting ${reactionType} reaction for post ${postId} user ${userId}`);
+    
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+    
     const { error } = await supabase
       .from('reactions')
       .delete()
@@ -21,6 +28,13 @@ export const reactionService = {
 
   async deleteAllUserReactions(postId: string, userId: string) {
     console.log(`Deleting all reactions for post ${postId} user ${userId}`);
+    
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+    
     const { error } = await supabase
       .from('reactions')
       .delete()
@@ -37,6 +51,20 @@ export const reactionService = {
   async addReaction(postId: string, userId: string, reactionType: PostReactionType2) {
     console.log(`Adding ${reactionType} reaction for post ${postId} user ${userId}`);
     
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+    
+    console.log('Current authenticated user:', user.id);
+    console.log('UserId parameter:', userId);
+    
+    // Make sure the userId matches the authenticated user
+    if (user.id !== userId) {
+      throw new Error('User ID mismatch - security violation');
+    }
+    
     // Use upsert to handle the unique constraint properly
     const { error } = await supabase
       .from('reactions')
@@ -50,6 +78,7 @@ export const reactionService = {
 
     if (error) {
       console.error(`Error adding ${reactionType} reaction:`, error);
+      console.error('Full error details:', JSON.stringify(error, null, 2));
       throw error;
     }
     console.log(`Successfully added ${reactionType} reaction`);
