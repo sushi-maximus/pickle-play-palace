@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -22,10 +21,9 @@ interface CommentProps {
   comment: CommentType;
   userId?: string;
   onCommentUpdated?: () => void;
-  isOptimistic?: boolean; // Add the isOptimistic prop
 }
 
-export const Comment = ({ comment, userId, onCommentUpdated, isOptimistic = false }: CommentProps) => {
+export const Comment = ({ comment, userId, onCommentUpdated }: CommentProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isAuthor = userId === comment.user.id;
   
@@ -73,7 +71,7 @@ export const Comment = ({ comment, userId, onCommentUpdated, isOptimistic = fals
   };
 
   return (
-    <div className={`flex gap-3 py-2 w-full ${isOptimistic ? "opacity-70" : ""}`}>
+    <div className="flex gap-3 py-2 w-full">
       <Avatar className="h-8 w-8">
         {comment.user.avatar_url ? (
           <AvatarImage src={comment.user.avatar_url} alt={`${comment.user.first_name} ${comment.user.last_name}`} />
@@ -88,7 +86,7 @@ export const Comment = ({ comment, userId, onCommentUpdated, isOptimistic = fals
         <div className="bg-muted/50 rounded-lg p-3">
           <div className="font-medium text-sm flex justify-between items-center">
             <span>{comment.user.first_name} {comment.user.last_name}</span>
-            {isAuthor && !isOptimistic && !isEditingThisComment && (
+            {isAuthor && !isEditingThisComment && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
@@ -145,7 +143,7 @@ export const Comment = ({ comment, userId, onCommentUpdated, isOptimistic = fals
           )}
         </div>
         
-        {!isEditingThisComment && !isOptimistic && (
+        {!isEditingThisComment && (
           <div className="flex items-center mt-1">
             <div className="text-xs text-muted-foreground mr-auto">
               {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
