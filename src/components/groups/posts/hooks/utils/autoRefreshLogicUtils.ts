@@ -13,6 +13,7 @@ export const useAutoRefreshLogic = (
   setNextRefreshIn: (seconds: number) => void
 ) => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isSetupRef = useRef(false);
   
   // Helper function to clear interval
   const clearRefreshInterval = () => {
@@ -20,21 +21,29 @@ export const useAutoRefreshLogic = (
       console.log("Clearing existing refresh interval");
       clearInterval(refreshIntervalRef.current);
       refreshIntervalRef.current = null;
+      isSetupRef.current = false;
     }
   };
   
   // Effect for setting up and cleaning up the refresh interval
   useEffect(() => {
-    // Always clear existing interval first to prevent duplicates
-    clearRefreshInterval();
-
-    // Only set up the interval if component is mounted and auto-refresh is enabled
+    // Prevent multiple setups
     if (!isComponentMountedRef.current || !isAutoRefreshEnabled) {
+      if (isSetupRef.current) {
+        clearRefreshInterval();
+      }
       console.log(`Auto-refresh ${!isComponentMountedRef.current ? 'component not mounted' : 'disabled'}`);
-      return clearRefreshInterval;
+      return;
+    }
+
+    // Only set up if not already setup
+    if (isSetupRef.current) {
+      console.log("Auto-refresh already setup, skipping");
+      return;
     }
 
     console.log(`Auto-refresh enabled, setting up interval: ${interval/1000}s`);
+    isSetupRef.current = true;
     
     // Set up the recurring interval
     refreshIntervalRef.current = setInterval(() => {
@@ -79,17 +88,7 @@ export const useAutoRefreshLogic = (
 
     // Return cleanup function
     return clearRefreshInterval;
-  }, [
-    isAutoRefreshEnabled, 
-    interval,
-    isLoading,
-    refreshFunction,
-    setLastAutoRefresh,
-    setNextRefreshIn,
-    userInteractingRef,
-    isComponentMountedRef,
-    isVisibleRef
-  ]);
+  }, [isAutoRefreshEnabled, isLoading]); // Minimal dependencies
 
   return { refreshIntervalRef };
 };

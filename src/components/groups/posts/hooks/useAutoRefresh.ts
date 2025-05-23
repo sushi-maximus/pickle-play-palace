@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useVisibilityTracking } from "./utils/visibilityUtils";
@@ -23,18 +22,23 @@ export const useAutoRefresh = ({
   const isComponentMountedRef = useRef(true);
   const isRefreshingRef = useRef(false);
   const isAutoRefreshEnabledRef = useRef(isAutoRefreshEnabled);
+  const refreshFunctionRef = useRef(refreshFunction);
+
+  // Keep refs in sync
+  useEffect(() => {
+    isAutoRefreshEnabledRef.current = isAutoRefreshEnabled;
+  }, [isAutoRefreshEnabled]);
+
+  useEffect(() => {
+    refreshFunctionRef.current = refreshFunction;
+  }, [refreshFunction]);
 
   // All custom hooks third (in consistent order)
   const { isVisibleRef } = useVisibilityTracking();
   const { userInteractingRef, timeoutRef } = useUserInteractionTracking();
 
-  // Update ref when state changes
-  useEffect(() => {
-    isAutoRefreshEnabledRef.current = isAutoRefreshEnabled;
-  }, [isAutoRefreshEnabled]);
-
-  // Wrap refreshFunction to handle the refreshing state
-  const wrappedRefreshFunction = useCallback(async () => {
+  // Stable refresh function that doesn't change reference
+  const stableRefreshFunction = useCallback(async () => {
     if (isRefreshingRef.current || loading) {
       console.log("Auto refresh skipped, already refreshing or loading");
       return;
@@ -44,7 +48,7 @@ export const useAutoRefresh = ({
     try {
       isRefreshingRef.current = true;
       setIsRefreshing(true);
-      await refreshFunction();
+      await refreshFunctionRef.current();
     } catch (error) {
       console.error("Error during auto-refresh:", error);
       if (isComponentMountedRef.current) {
@@ -61,7 +65,7 @@ export const useAutoRefresh = ({
         }, 800);
       }
     }
-  }, [refreshFunction, loading]);
+  }, [loading]); // Only depend on loading, not refreshFunction
   
   // Set up countdown timer (fourth)
   const { countdownIntervalRef } = useCountdownTimer(
@@ -71,12 +75,12 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
   
-  // Set up auto-refresh logic (fifth)
+  // Set up auto-refresh logic (fifth) - use stable function
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
     loading || isRefreshing,
     interval,
-    wrappedRefreshFunction,
+    stableRefreshFunction, // Use stable function
     userInteractingRef,
     isComponentMountedRef,
     isVisibleRef,
@@ -125,7 +129,7 @@ export const useAutoRefresh = ({
     });
   }, [interval]);
 
-  // Manual refresh function
+  // Manual refresh function - use ref to get latest function
   const handleManualRefresh = useCallback(async () => {
     if (loading || isRefreshing || isRefreshingRef.current) {
       console.log("Manual refresh prevented - already loading or refreshing");
@@ -137,7 +141,7 @@ export const useAutoRefresh = ({
     try {
       isRefreshingRef.current = true;
       setIsRefreshing(true);
-      await refreshFunction();
+      await refreshFunctionRef.current();
       if (isComponentMountedRef.current) {
         setLastAutoRefresh(new Date());
         setNextRefreshIn(interval / 1000);
@@ -157,7 +161,7 @@ export const useAutoRefresh = ({
         }, 1000);
       }
     }
-  }, [refreshFunction, loading, isRefreshing, interval]);
+  }, [loading, isRefreshing, interval]);
 
   return {
     isAutoRefreshEnabled,
