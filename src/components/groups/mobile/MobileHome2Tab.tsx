@@ -143,20 +143,14 @@ export const MobileHome2Tab = ({
               </CardContent>
               
               {!isEditingThisPost && (
-                <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4 flex flex-col">
-                  <div className="w-full flex flex-col space-y-1 md:space-y-2">
-                    <div className="w-full flex justify-start">
-                      <PostThumbsUp 
-                        postId={post.id}
-                        userId={user?.id}
-                        initialCount={post.reactions?.thumbsup || 0}
-                        initialUserReaction={post.user_reactions?.thumbsup || false}
-                      />
-                    </div>
-                    
-                    <div className="w-[85%] md:w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
-                      {/* Empty space to match GroupPostCard structure */}
-                    </div>
+                <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4">
+                  <div className="w-full ml-12 md:ml-14">
+                    <PostThumbsUp 
+                      postId={post.id}
+                      userId={user?.id}
+                      initialCount={post.reactions?.thumbsup || 0}
+                      initialUserReaction={post.user_reactions?.thumbsup || false}
+                    />
                   </div>
                 </CardFooter>
               )}
