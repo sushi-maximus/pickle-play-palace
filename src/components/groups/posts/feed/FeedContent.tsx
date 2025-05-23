@@ -6,6 +6,8 @@ import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
 import type { GroupPost } from "../hooks/useGroupPosts";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 interface FeedContentProps {
   loading: boolean;
@@ -38,9 +40,35 @@ export const FeedContent = ({
   onPostUpdated,
   onPostDeleted
 }: FeedContentProps) => {
+  // Track previous posts to enable smooth transitions
+  const [displayedPosts, setDisplayedPosts] = useState<GroupPost[]>(posts);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Update displayed posts with transition when posts change
+  useEffect(() => {
+    if (posts.length > 0 && !loading) {
+      // Only apply transition when we're refreshing (not on initial load)
+      if (refreshing && displayedPosts.length > 0) {
+        // Start transition
+        setIsTransitioning(true);
+        
+        // Wait for fade out animation to complete before updating posts
+        const timer = setTimeout(() => {
+          setDisplayedPosts(posts);
+          setIsTransitioning(false);
+        }, 300); // Match this with the CSS transition duration
+        
+        return () => clearTimeout(timer);
+      } else {
+        // For initial load or non-refreshing updates, just update immediately
+        setDisplayedPosts(posts);
+      }
+    }
+  }, [posts, refreshing, loading]);
+
   // Only show loading state on initial load
   // For refreshes, we'll keep displaying the existing content
-  if (loading && !refreshing && posts.length === 0) {
+  if (loading && !refreshing && displayedPosts.length === 0) {
     return <GroupPostsLoading />;
   }
 
@@ -67,13 +95,16 @@ export const FeedContent = ({
         />
       )}
       
-      {posts.length === 0 ? (
+      {displayedPosts.length === 0 ? (
         <GroupPostsEmpty isMember={membershipStatus.isMember} />
       ) : (
-        <div className="space-y-6 animate-fade-in">
-          {/* Remove the old refreshing indicator and rely on the progress bar */}
-          
-          {posts.map((post) => (
+        <div 
+          className={cn(
+            "space-y-6", 
+            isTransitioning ? "opacity-50 transition-opacity duration-300" : "opacity-100 transition-opacity duration-300"
+          )}
+        >
+          {displayedPosts.map((post) => (
             <GroupPostCard 
               key={post.id} 
               post={post}
