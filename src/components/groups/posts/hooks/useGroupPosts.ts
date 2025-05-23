@@ -181,87 +181,96 @@ export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
     }
   };
 
+  // Setup Supabase real-time subscription
+  const setupRealtimeSubscription = () => {
+    if (!groupId || !isVisibleRef.current) return null;
+    
+    console.log('Setting up real-time subscription for group posts...');
+    
+    const channel = supabase
+      .channel('group-posts-changes')
+      .on(
+        'postgres_changes',
+        { 
+          event: '*', 
+          schema: 'public',
+          table: 'posts',
+          filter: `group_id=eq.${groupId}`
+        },
+        async (payload) => {
+          console.log('Posts change received:', payload);
+          
+          // Handle different event types
+          if (payload.eventType === 'INSERT') {
+            const newPost = await enrichPostData(payload.new);
+            setPosts(current => [newPost, ...current]);
+          } 
+          else if (payload.eventType === 'UPDATE') {
+            const updatedPost = await enrichPostData(payload.new);
+            setPosts(current => 
+              current.map(post => post.id === updatedPost.id ? updatedPost : post)
+            );
+          }
+          else if (payload.eventType === 'DELETE') {
+            setPosts(current => 
+              current.filter(post => post.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'comments',
+        },
+        async (payload) => {
+          // Update comment counts when comments change
+          if (payload.eventType === 'INSERT') {
+            const postId = payload.new.post_id;
+            setPosts(current => 
+              current.map(post => {
+                if (post.id === postId) {
+                  return {
+                    ...post,
+                    comments_count: post.comments_count + 1
+                  };
+                }
+                return post;
+              })
+            );
+          } 
+          else if (payload.eventType === 'DELETE') {
+            const postId = payload.old.post_id;
+            setPosts(current => 
+              current.map(post => {
+                if (post.id === postId && post.comments_count > 0) {
+                  return {
+                    ...post,
+                    comments_count: post.comments_count - 1
+                  };
+                }
+                return post;
+              })
+            );
+          }
+        }
+      )
+      .subscribe();
+    
+    return channel;
+  };
+
   // Setup real-time subscriptions when component mounts
   useEffect(() => {
     if (groupId) {
       fetchPosts();
 
-      // Only set up real-time if we have a groupId
-      const channel = supabase
-        .channel('group-posts-changes')
-        .on(
-          'postgres_changes',
-          { 
-            event: '*', 
-            schema: 'public',
-            table: 'posts',
-            filter: `group_id=eq.${groupId}`
-          },
-          async (payload) => {
-            console.log('Posts change received:', payload);
-            
-            // Handle different event types
-            if (payload.eventType === 'INSERT') {
-              const newPost = await enrichPostData(payload.new);
-              setPosts(current => [newPost, ...current]);
-            } 
-            else if (payload.eventType === 'UPDATE') {
-              const updatedPost = await enrichPostData(payload.new);
-              setPosts(current => 
-                current.map(post => post.id === updatedPost.id ? updatedPost : post)
-              );
-            }
-            else if (payload.eventType === 'DELETE') {
-              setPosts(current => 
-                current.filter(post => post.id !== payload.old.id)
-              );
-            }
-          }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'comments',
-          },
-          async (payload) => {
-            // Update comment counts when comments change
-            if (payload.eventType === 'INSERT') {
-              const postId = payload.new.post_id;
-              setPosts(current => 
-                current.map(post => {
-                  if (post.id === postId) {
-                    return {
-                      ...post,
-                      comments_count: post.comments_count + 1
-                    };
-                  }
-                  return post;
-                })
-              );
-            } 
-            else if (payload.eventType === 'DELETE') {
-              const postId = payload.old.post_id;
-              setPosts(current => 
-                current.map(post => {
-                  if (post.id === postId && post.comments_count > 0) {
-                    return {
-                      ...post,
-                      comments_count: post.comments_count - 1
-                    };
-                  }
-                  return post;
-                })
-              );
-            }
-          }
-        )
-        .subscribe();
-      
-      channelRef.current = channel;
+      // Setup real-time subscription
+      channelRef.current = setupRealtimeSubscription();
 
-      // Handle page visibility changes to disconnect when tab is hidden
+      // Handle page visibility changes
       const handleVisibilityChange = () => {
         const isVisible = document.visibilityState === 'visible';
         isVisibleRef.current = isVisible;
@@ -272,78 +281,7 @@ export const useGroupPosts = ({ groupId, userId }: UseGroupPostsProps) => {
           channelRef.current = null;
         } else if (isVisible && !channelRef.current) {
           console.log('Page visible again, resubscribing to real-time updates');
-          const newChannel = supabase
-            .channel('group-posts-changes')
-            .on(
-              'postgres_changes',
-              { 
-                event: '*', 
-                schema: 'public',
-                table: 'posts',
-                filter: `group_id=eq.${groupId}`
-              },
-              async (payload) => {
-                console.log('Posts change received:', payload);
-                
-                if (payload.eventType === 'INSERT') {
-                  const newPost = await enrichPostData(payload.new);
-                  setPosts(current => [newPost, ...current]);
-                } 
-                else if (payload.eventType === 'UPDATE') {
-                  const updatedPost = await enrichPostData(payload.new);
-                  setPosts(current => 
-                    current.map(post => post.id === updatedPost.id ? updatedPost : post)
-                  );
-                }
-                else if (payload.eventType === 'DELETE') {
-                  setPosts(current => 
-                    current.filter(post => post.id !== payload.old.id)
-                  );
-                }
-              }
-            )
-            .on(
-              'postgres_changes',
-              {
-                event: '*',
-                schema: 'public',
-                table: 'comments',
-              },
-              async (payload) => {
-                // Update comment counts when comments change
-                if (payload.eventType === 'INSERT') {
-                  const postId = payload.new.post_id;
-                  setPosts(current => 
-                    current.map(post => {
-                      if (post.id === postId) {
-                        return {
-                          ...post,
-                          comments_count: post.comments_count + 1
-                        };
-                      }
-                      return post;
-                    })
-                  );
-                } 
-                else if (payload.eventType === 'DELETE') {
-                  const postId = payload.old.post_id;
-                  setPosts(current => 
-                    current.map(post => {
-                      if (post.id === postId && post.comments_count > 0) {
-                        return {
-                          ...post,
-                          comments_count: post.comments_count - 1
-                        };
-                      }
-                      return post;
-                    })
-                  );
-                }
-              }
-            )
-            .subscribe();
-          
-          channelRef.current = newChannel;
+          channelRef.current = setupRealtimeSubscription();
         }
       };
       
