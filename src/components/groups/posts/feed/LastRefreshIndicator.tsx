@@ -27,14 +27,14 @@ export const LastRefreshIndicator = memo(({
   return (
     <div className="px-6 pt-3 pb-0 flex justify-end items-center text-xs text-muted-foreground">
       {loading && !refreshing ? (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 animate-fade-in">
           <Loader2 className="h-3 w-3 animate-spin" />
           <span>Loading content...</span>
         </div>
       ) : refreshing ? (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 animate-pulse">
           <Loader2 className="h-3 w-3 animate-spin text-primary" />
-          <span>Refreshing content in background...</span>
+          <span className="text-primary">Refreshing content in background...</span>
         </div>
       ) : (
         <div className="flex items-center gap-1">
@@ -48,7 +48,9 @@ export const LastRefreshIndicator = memo(({
                     Next: {nextRefreshIn}s •
                   </span>
                 )}
-                Last updated: {formatLastRefreshTime()}
+                <span className="text-muted-foreground">
+                  Last updated: {formatLastRefreshTime()}
+                </span>
               </span>
             </>
           ) : (
