@@ -33,38 +33,41 @@ export const useAutoRefresh = ({
     setNextRefreshIn
   );
   
+  // Wrap refreshFunction to handle the refreshing state
+  const wrappedRefreshFunction = async () => {
+    // Prevent overlapping refreshes
+    if (isRefreshingRef.current) {
+      console.log("Auto refresh skipped, already refreshing");
+      return;
+    }
+
+    console.log("Auto refresh triggered at", new Date().toLocaleTimeString());
+    try {
+      // Set refreshing state before calling the refresh function
+      isRefreshingRef.current = true;
+      setIsRefreshing(true);
+      await refreshFunction();
+    } catch (error) {
+      console.error("Error during auto-refresh:", error);
+    } finally {
+      // Only update state if component is still mounted
+      if (isComponentMountedRef.current) {
+        // Add a slight delay before setting isRefreshing to false for visual feedback
+        setTimeout(() => {
+          if (isComponentMountedRef.current) {
+            setIsRefreshing(false);
+            isRefreshingRef.current = false;
+          }
+        }, 800);
+      }
+    }
+  };
+  
   const { refreshIntervalRef } = useAutoRefreshLogic(
     isAutoRefreshEnabled,
     loading || isRefreshing,
     interval,
-    async () => {
-      // Prevent overlapping refreshes
-      if (isRefreshingRef.current) {
-        console.log("Auto refresh skipped, already refreshing");
-        return;
-      }
-
-      console.log("Auto refresh triggered at", new Date().toLocaleTimeString());
-      try {
-        // Set refreshing state before calling the refresh function
-        isRefreshingRef.current = true;
-        setIsRefreshing(true);
-        await refreshFunction();
-      } catch (error) {
-        console.error("Error during auto-refresh:", error);
-      } finally {
-        // Only update state if component is still mounted
-        if (isComponentMountedRef.current) {
-          // Add a slight delay before setting isRefreshing to false for visual feedback
-          setTimeout(() => {
-            if (isComponentMountedRef.current) {
-              setIsRefreshing(false);
-              isRefreshingRef.current = false;
-            }
-          }, 800);
-        }
-      }
-    },
+    wrappedRefreshFunction,
     userInteractingRef,
     isComponentMountedRef,
     isVisibleRef,
@@ -97,7 +100,6 @@ export const useAutoRefresh = ({
     const newValue = !isAutoRefreshEnabled;
     setIsAutoRefreshEnabled(newValue);
     
-    // Use the correct format for Sonner toast
     if (newValue) {
       toast({
         title: "Auto-refresh enabled",
@@ -124,14 +126,15 @@ export const useAutoRefresh = ({
       isRefreshingRef.current = true;
       setIsRefreshing(true);
       await refreshFunction();
+      // Set the last refresh time after successful refresh
+      setLastAutoRefresh(new Date());
+      // Reset countdown after manual refresh
+      setNextRefreshIn(interval / 1000);
     } catch (error) {
       console.error("Error during manual refresh:", error);
     } finally {
       // Only update state if component is still mounted
       if (isComponentMountedRef.current) {
-        setLastAutoRefresh(new Date());
-        setNextRefreshIn(interval / 1000); // Reset countdown after manual refresh
-        
         // Add a slight delay for visual feedback before hiding the progress indicator
         setTimeout(() => {
           if (isComponentMountedRef.current) {

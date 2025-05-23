@@ -12,7 +12,7 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isRefreshingRef = useRef(false);
   
-  // Effect for refreshing state changes - MUST be called unconditionally
+  // Consolidated effect for handling progress animation
   useEffect(() => {
     console.log("RefreshProgressIndicator - refreshing state changed to:", refreshing);
     
@@ -22,8 +22,8 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       intervalRef.current = null;
     }
     
-    // When refreshing starts and we're not already in a refresh cycle
-    if (refreshing && !isRefreshingRef.current) {
+    // When refreshing starts
+    if (refreshing) {
       console.log("RefreshProgressIndicator - starting progress animation");
       isRefreshingRef.current = true;
       
@@ -56,19 +56,21 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
       const hideTimeout = setTimeout(() => {
         console.log("RefreshProgressIndicator - hiding indicator");
         setVisible(false);
-        
-        // Reset progress after fade out animation completes
-        setTimeout(() => {
-          console.log("RefreshProgressIndicator - resetting progress");
-          setProgress(0);
-        }, 500);
       }, 600);
       
       return () => clearTimeout(hideTimeout);
     }
+    
+    // Cleanup on unmount or refreshing state change
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [refreshing]);
 
-  // Clean up on unmount - MUST be a separate useEffect
+  // Cleanup on component unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -79,11 +81,21 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
     };
   }, []);
 
-  // Don't use early return pattern here as it can cause hook count inconsistencies
-  // Instead, render null conditionally at the end
-  const shouldRender = visible || progress > 0;
+  // Reset progress after animation completes
+  useEffect(() => {
+    if (progress === 100) {
+      const resetTimeout = setTimeout(() => {
+        if (!refreshing) {
+          console.log("RefreshProgressIndicator - resetting progress");
+          setProgress(0);
+        }
+      }, 1000);
+      
+      return () => clearTimeout(resetTimeout);
+    }
+  }, [progress, refreshing]);
 
-  return shouldRender ? (
+  return visible || progress > 0 ? (
     <div 
       className={`w-full overflow-hidden transition-opacity duration-500 ${
         !refreshing && progress === 100 ? "opacity-0" : "opacity-100"

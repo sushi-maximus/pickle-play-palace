@@ -17,6 +17,9 @@ export const useAutoRefreshLogic = (
   
   // Single useEffect for setting up and cleaning up the refresh interval
   useEffect(() => {
+    // Skip effect if component is not mounted
+    if (!isComponentMountedRef.current) return;
+    
     // Clear existing interval when autoRefresh state changes
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
@@ -37,18 +40,6 @@ export const useAutoRefreshLogic = (
           !userInteractingRef.current && 
           isVisibleRef.current
         ) {
-          // Only perform initial refresh when transitioning from disabled to enabled
-          if (!initialRefreshCompletedRef.current) {
-            console.log('Initial refresh when auto-refresh enabled');
-            initialRefreshCompletedRef.current = true;
-            setLastAutoRefresh(new Date());
-            setNextRefreshIn(interval / 1000);
-            
-            // Don't call refreshFunction immediately to avoid UI jank
-            // Let it happen on the next interval
-            return;
-          }
-          
           console.log('Auto-refresh conditions met, refreshing data...');
           
           // Update last refresh timestamp first for immediate UI feedback
@@ -74,7 +65,7 @@ export const useAutoRefreshLogic = (
       }, interval);
     }
 
-    // Reset initialRefreshCompletedRef when auto-refresh is toggled
+    // Reset initialRefreshCompletedRef when auto-refresh is toggled off
     if (!isAutoRefreshEnabled) {
       initialRefreshCompletedRef.current = false;
     }
