@@ -31,25 +31,27 @@ export const PostContent = ({
         <Textarea
           value={editableContent}
           onChange={(e) => setEditableContent(e.target.value)}
-          className="w-full resize-none"
+          className="w-full resize-none text-sm md:text-base"
           rows={3}
           disabled={isEditSubmitting}
         />
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-1 md:gap-2">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={onCancelEditing}
             disabled={isEditSubmitting}
+            className="text-xs md:text-sm px-2 md:px-3"
           >
-            <X className="h-4 w-4 mr-1" /> Cancel
+            <X className="h-3 w-3 md:h-4 md:w-4 mr-1" /> Cancel
           </Button>
           <Button 
             size="sm" 
             onClick={onSaveEditing}
             disabled={!editableContent.trim() || isEditSubmitting}
+            className="text-xs md:text-sm px-2 md:px-3"
           >
-            <Check className="h-4 w-4 mr-1" /> Save
+            <Check className="h-3 w-3 md:h-4 md:w-4 mr-1" /> Save
           </Button>
         </div>
       </div>
@@ -58,17 +60,17 @@ export const PostContent = ({
 
   return (
     <>
-      <p className="text-sm text-gray-900 whitespace-pre-line leading-relaxed">{content}</p>
+      <p className="text-sm md:text-base text-gray-900 whitespace-pre-line leading-relaxed">{content}</p>
       
       {mediaUrls && mediaUrls.length > 0 && (
-        <div className="mt-3 grid gap-2 grid-cols-1 sm:grid-cols-2">
+        <div className="mt-2 md:mt-3 grid gap-1 md:gap-2 grid-cols-1 sm:grid-cols-2">
           {mediaUrls.map((url, index) => (
             <img
               key={index}
               src={url}
               alt={`Post attachment ${index + 1}`}
               className="rounded-md w-full object-cover"
-              style={{ maxHeight: "300px" }}
+              style={{ maxHeight: "250px" }}
             />
           ))}
         </div>

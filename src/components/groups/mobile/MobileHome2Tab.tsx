@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/contexts/AuthContext";
 import { CreatePostForm2 } from "../posts/CreatePostForm2";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
@@ -74,14 +73,14 @@ export const MobileHome2Tab = ({
 
   if (loading) {
     return (
-      <div className="flex-1 px-4 py-6">
-        <div className="space-y-4">
+      <div className="flex-1 px-3 py-4 md:px-6 md:py-8">
+        <div className="space-y-3 md:space-y-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex gap-3 animate-pulse">
-              <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
+            <div key={i} className="flex gap-2 md:gap-3 animate-pulse">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-slate-200 rounded-full"></div>
               <div className="flex-1">
-                <div className="h-4 bg-slate-200 rounded w-1/3 mb-2"></div>
-                <div className="h-12 bg-slate-200 rounded"></div>
+                <div className="h-3 md:h-4 bg-slate-200 rounded w-1/3 mb-1 md:mb-2"></div>
+                <div className="h-10 md:h-12 bg-slate-200 rounded"></div>
               </div>
             </div>
           ))}
@@ -91,10 +90,10 @@ export const MobileHome2Tab = ({
   }
 
   return (
-    <div className="flex-1 px-4 py-6 relative z-0 overflow-y-auto">
-      {/* Post Creation Form at the top */}
+    <div className="flex-1 px-3 py-4 md:px-6 md:py-8 relative z-0 overflow-y-auto">
+      {/* Post Creation Form - mobile first responsive */}
       {user && (
-        <div className="mb-6">
+        <div className="mb-4 md:mb-6">
           <CreatePostForm2
             groupId={groupId}
             user={user}
@@ -105,58 +104,56 @@ export const MobileHome2Tab = ({
       )}
       
       {refreshing && (
-        <div className="text-center py-2 mb-4">
-          <div className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-center py-1 md:py-2 mb-3 md:mb-4">
+          <div className="inline-block w-3 h-3 md:w-4 md:h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
       
-      {/* Posts Feed */}
-      <div>
+      {/* Posts Feed - mobile first responsive */}
+      <div className="space-y-3 md:space-y-4">
         {posts.map((post) => {
           const isAuthor = user?.id === post.user?.id;
           const isEditingThisPost = isEditing && currentPostId === post.id;
 
           return (
-            <div className="mb-4" key={post.id}>
-              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/30">
-                <CardHeader className="p-4 pb-3">
-                  <PostHeader 
-                    post={post}
-                    isAuthor={isAuthor}
-                    isEditing={isEditingThisPost}
-                    onStartEditing={() => startEditing(post.id, post.content)}
-                    onDeleteClick={() => handleDeleteClick(post.id)}
-                  />
-                </CardHeader>
-                
-                <CardContent className="px-4 pb-4">
-                  <PostContent 
-                    content={post.content}
-                    mediaUrls={post.media_urls}
-                    isEditing={isEditingThisPost}
-                    editableContent={editableContent}
-                    setEditableContent={setEditableContent}
-                    onCancelEditing={cancelEditing}
-                    onSaveEditing={handleUpdate}
-                    isEditSubmitting={isEditSubmitting}
-                  />
-                </CardContent>
-                
-                {!isEditingThisPost && (
-                  <CardFooter className="border-t border-gray-100 pt-3 px-4 pb-4 flex flex-col">
-                    <div className="w-full flex flex-col space-y-2">
-                      <div className="w-full flex justify-start">
-                        {/* Empty space to match GroupPostCard structure */}
-                      </div>
-                      
-                      <div className="w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
-                        {/* Empty space to match GroupPostCard structure */}
-                      </div>
+            <Card key={post.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-2 md:border-l-4 border-l-primary/30">
+              <CardHeader className="p-3 pb-2 md:p-4 md:pb-3">
+                <PostHeader 
+                  post={post}
+                  isAuthor={isAuthor}
+                  isEditing={isEditingThisPost}
+                  onStartEditing={() => startEditing(post.id, post.content)}
+                  onDeleteClick={() => handleDeleteClick(post.id)}
+                />
+              </CardHeader>
+              
+              <CardContent className="px-3 pb-0 md:px-4">
+                <PostContent 
+                  content={post.content}
+                  mediaUrls={post.media_urls}
+                  isEditing={isEditingThisPost}
+                  editableContent={editableContent}
+                  setEditableContent={setEditableContent}
+                  onCancelEditing={cancelEditing}
+                  onSaveEditing={handleUpdate}
+                  isEditSubmitting={isEditSubmitting}
+                />
+              </CardContent>
+              
+              {!isEditingThisPost && (
+                <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4 flex flex-col">
+                  <div className="w-full flex flex-col space-y-1 md:space-y-2">
+                    <div className="w-full flex justify-start">
+                      {/* Empty space to match GroupPostCard structure */}
                     </div>
-                  </CardFooter>
-                )}
-              </Card>
-            </div>
+                    
+                    <div className="w-[85%] md:w-[80%] mx-auto bg-slate-50 dark:bg-slate-800 rounded-lg hover:shadow-inner transition-all">
+                      {/* Empty space to match GroupPostCard structure */}
+                    </div>
+                  </div>
+                </CardFooter>
+              )}
+            </Card>
           );
         })}
       </div>
