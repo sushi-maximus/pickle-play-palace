@@ -39,10 +39,10 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
 
   return (
     <div 
-      className={`w-full overflow-hidden transition-opacity duration-300 ${
+      className={`w-full overflow-hidden transition-opacity duration-500 ${
         !refreshing && progress === 100 ? "opacity-0" : "opacity-100"
       }`}
-      style={{ height: "2px" }} // Very thin height
+      style={{ height: "3px" }} // Slightly thicker for better visibility
     >
       <Progress 
         value={progress} 
@@ -51,4 +51,3 @@ export const RefreshProgressIndicator = ({ refreshing }: RefreshProgressIndicato
     </div>
   );
 };
-

@@ -21,7 +21,7 @@ export const LastRefreshIndicator = memo(({
     if (!lastAutoRefresh) return "Never refreshed";
     
     // Format time in a user-friendly way (e.g., "5:30 PM")
-    return lastAutoRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return lastAutoRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
   return (
