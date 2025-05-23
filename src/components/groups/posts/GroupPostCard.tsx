@@ -3,11 +3,12 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, MoreHorizontal, Edit, X, Check, Trash } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Edit, X, Check, Trash } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useEditPost } from "./hooks/useEditPost";
 import { useDeletePost } from "./hooks/useDeletePost";
 import { Textarea } from "@/components/ui/textarea";
+import { CommentsSection } from "./CommentsSection";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +25,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface GroupPostCardProps {
@@ -60,6 +60,7 @@ export const GroupPostCard = ({
   const [isReacted, setIsReacted] = useState(post.user_has_reacted || false);
   const [reactionsCount, setReactionsCount] = useState(post.reactions_count || 0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const isAuthor = currentUserId === post.user.id;
   
   const {
@@ -197,26 +198,27 @@ export const GroupPostCard = ({
       </CardContent>
       
       {!isEditingThisPost && (
-        <CardFooter className="border-t pt-3 flex">
-          <div className="flex space-x-1 items-center mr-4">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="flex items-center gap-1"
-              onClick={handleReactionToggle}
-            >
-              <Heart 
-                className={`h-4 w-4 ${isReacted ? "fill-red-500 text-red-500" : ""}`}
-              />
-              <span>{reactionsCount > 0 ? reactionsCount : ''}</span>
-            </Button>
-          </div>
-          
-          <div className="flex space-x-1 items-center">
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
-              <MessageSquare className="h-4 w-4" />
-              <span>{post.comments_count || ''}</span>
-            </Button>
+        <CardFooter className="border-t pt-3 flex flex-col">
+          <div className="w-full flex">
+            <div className="flex space-x-1 items-center mr-6">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`flex items-center gap-1 ${isReacted ? "text-red-500" : ""}`}
+                onClick={handleReactionToggle}
+              >
+                <Heart 
+                  className={`h-4 w-4 ${isReacted ? "fill-red-500 text-red-500" : ""}`}
+                />
+                <span>{reactionsCount > 0 ? reactionsCount : ''}</span>
+              </Button>
+            </div>
+            
+            <CommentsSection 
+              postId={post.id}
+              userId={currentUserId}
+              commentsCount={post.comments_count || 0}
+            />
           </div>
         </CardFooter>
       )}
