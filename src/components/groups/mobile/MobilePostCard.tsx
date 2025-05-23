@@ -74,8 +74,10 @@ export const MobilePostCard = ({
                 userId={user?.id}
                 initialThumbsUp={post.reactions?.thumbsup || 0}
                 initialThumbsDown={post.reactions?.thumbsdown || 0}
+                initialHeart={post.reactions?.heart || 0}
                 initialUserThumbsUp={post.user_reactions?.thumbsup || false}
                 initialUserThumbsDown={post.user_reactions?.thumbsdown || false}
+                initialUserHeart={post.user_reactions?.heart || false}
               />
               
               <Button
@@ -108,44 +110,58 @@ const PostReactions2Component = ({
   userId, 
   initialThumbsUp,
   initialThumbsDown,
+  initialHeart,
   initialUserThumbsUp,
-  initialUserThumbsDown
+  initialUserThumbsDown,
+  initialUserHeart
 }: {
   postId: string;
   userId?: string;
   initialThumbsUp: number;
   initialThumbsDown: number;
+  initialHeart: number;
   initialUserThumbsUp: boolean;
   initialUserThumbsDown: boolean;
+  initialUserHeart: boolean;
 }) => {
   const { 
     thumbsUpCount, 
     thumbsDownCount,
+    heartCount,
     isThumbsUpActive, 
     isThumbsDownActive,
+    isHeartActive,
     isThumbsUpSubmitting,
     isThumbsDownSubmitting,
+    isHeartSubmitting,
     toggleThumbsUp,
-    toggleThumbsDown
+    toggleThumbsDown,
+    toggleHeart
   } = usePostReactions2({
     postId,
     userId,
     initialThumbsUp,
     initialThumbsDown,
+    initialHeart,
     initialUserThumbsUp,
-    initialUserThumbsDown
+    initialUserThumbsDown,
+    initialUserHeart
   });
 
   return (
     <PostReactions2
       thumbsUpCount={thumbsUpCount}
       thumbsDownCount={thumbsDownCount}
+      heartCount={heartCount}
       isThumbsUpActive={isThumbsUpActive}
       isThumbsDownActive={isThumbsDownActive}
+      isHeartActive={isHeartActive}
       isThumbsUpSubmitting={isThumbsUpSubmitting}
       isThumbsDownSubmitting={isThumbsDownSubmitting}
+      isHeartSubmitting={isHeartSubmitting}
       onThumbsUpClick={toggleThumbsUp}
       onThumbsDownClick={toggleThumbsDown}
+      onHeartClick={toggleHeart}
       disabled={!userId}
     />
   );
