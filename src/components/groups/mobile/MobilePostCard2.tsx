@@ -9,7 +9,7 @@ import { PostContent } from "../posts/post-card/PostContent";
 import { PostReactions2 } from "../posts/post-card/PostReactions2";
 import { CommentsSection2 } from "../posts/post-card/CommentsSection2";
 
-interface MobilePostCardProps {
+interface MobilePostCard2Props {
   post: any;
   user: any;
   isEditing: boolean;
@@ -23,7 +23,7 @@ interface MobilePostCardProps {
   onDeleteClick: (postId: string) => void;
 }
 
-export const MobilePostCard = ({
+export const MobilePostCard2 = ({
   post,
   user,
   isEditing,
@@ -35,10 +35,35 @@ export const MobilePostCard = ({
   onCancelEditing,
   onSaveEditing,
   onDeleteClick
-}: MobilePostCardProps) => {
+}: MobilePostCard2Props) => {
   const [showComments, setShowComments] = useState(false);
   const isAuthor = user?.id === post.user?.id;
   const isEditingThisPost = isEditing && currentPostId === post.id;
+
+  // Always call hooks at the top level for this specific post
+  const {
+    thumbsUpCount,
+    thumbsDownCount,
+    heartCount,
+    isThumbsUpActive,
+    isThumbsDownActive,
+    isHeartActive,
+    isThumbsUpSubmitting,
+    isThumbsDownSubmitting,
+    isHeartSubmitting,
+    toggleThumbsUp,
+    toggleThumbsDown,
+    toggleHeart
+  } = usePostReactions2({
+    postId: post.id,
+    userId: user?.id,
+    initialThumbsUp: post.reactions?.thumbsup || 0,
+    initialThumbsDown: post.reactions?.thumbsdown || 0,
+    initialHeart: post.reactions?.heart || 0,
+    initialUserThumbsUp: post.user_reactions?.thumbsup || false,
+    initialUserThumbsDown: post.user_reactions?.thumbsdown || false,
+    initialUserHeart: post.user_reactions?.heart || false,
+  });
 
   return (
     <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-2 md:border-l-4 border-l-primary/30">
@@ -69,9 +94,20 @@ export const MobilePostCard = ({
         <CardFooter className="border-t border-gray-100 pt-2 px-3 pb-3 md:pt-3 md:px-4 md:pb-4">
           <div className="w-full ml-12 md:ml-14">
             <div className="flex items-center gap-2 md:gap-3">
-              <PostReactions2Component 
-                post={post}
-                user={user}
+              <PostReactions2
+                thumbsUpCount={thumbsUpCount}
+                thumbsDownCount={thumbsDownCount}
+                heartCount={heartCount}
+                isThumbsUpActive={isThumbsUpActive}
+                isThumbsDownActive={isThumbsDownActive}
+                isHeartActive={isHeartActive}
+                isThumbsUpSubmitting={isThumbsUpSubmitting}
+                isThumbsDownSubmitting={isThumbsDownSubmitting}
+                isHeartSubmitting={isHeartSubmitting}
+                onThumbsUpClick={toggleThumbsUp}
+                onThumbsDownClick={toggleThumbsDown}
+                onHeartClick={toggleHeart}
+                disabled={!user?.id}
               />
               
               <Button
@@ -95,59 +131,5 @@ export const MobilePostCard = ({
         <CommentsSection2 postId={post.id} user={user} />
       )}
     </Card>
-  );
-};
-
-// Helper component to encapsulate reactions logic for each post
-const PostReactions2Component = ({ 
-  post, 
-  user
-}: {
-  post: any;
-  user: any;
-}) => {
-  // Always call hooks at the top level, never conditionally
-  const reactionsHook = usePostReactions2({
-    postId: post.id,
-    userId: user?.id,
-    initialThumbsUp: post.reactions?.thumbsup || 0,
-    initialThumbsDown: post.reactions?.thumbsdown || 0,
-    initialHeart: post.reactions?.heart || 0,
-    initialUserThumbsUp: post.user_reactions?.thumbsup || false,
-    initialUserThumbsDown: post.user_reactions?.thumbsdown || false,
-    initialUserHeart: post.user_reactions?.heart || false,
-  });
-
-  const { 
-    thumbsUpCount, 
-    thumbsDownCount,
-    heartCount,
-    isThumbsUpActive, 
-    isThumbsDownActive,
-    isHeartActive,
-    isThumbsUpSubmitting,
-    isThumbsDownSubmitting,
-    isHeartSubmitting,
-    toggleThumbsUp,
-    toggleThumbsDown,
-    toggleHeart
-  } = reactionsHook;
-
-  return (
-    <PostReactions2
-      thumbsUpCount={thumbsUpCount}
-      thumbsDownCount={thumbsDownCount}
-      heartCount={heartCount}
-      isThumbsUpActive={isThumbsUpActive}
-      isThumbsDownActive={isThumbsDownActive}
-      isHeartActive={isHeartActive}
-      isThumbsUpSubmitting={isThumbsUpSubmitting}
-      isThumbsDownSubmitting={isThumbsDownSubmitting}
-      isHeartSubmitting={isHeartSubmitting}
-      onThumbsUpClick={toggleThumbsUp}
-      onThumbsDownClick={toggleThumbsDown}
-      onHeartClick={toggleHeart}
-      disabled={!user?.id}
-    />
   );
 };
