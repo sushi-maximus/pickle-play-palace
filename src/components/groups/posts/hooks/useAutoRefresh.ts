@@ -102,7 +102,7 @@ export const useAutoRefresh = ({
       
       console.log('Component unmounted, all intervals cleaned up');
     };
-  }, []);
+  }, [countdownIntervalRef, refreshIntervalRef, timeoutRef]);
 
   // Log refresh state changes for debugging
   useEffect(() => {

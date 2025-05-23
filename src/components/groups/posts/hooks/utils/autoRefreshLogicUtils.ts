@@ -77,7 +77,10 @@ export const useAutoRefreshLogic = (
     isLoading,
     refreshFunction,
     setLastAutoRefresh,
-    setNextRefreshIn
+    setNextRefreshIn,
+    userInteractingRef,
+    isComponentMountedRef,
+    isVisibleRef
   ]);
 
   return { refreshIntervalRef };
