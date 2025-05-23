@@ -119,7 +119,7 @@ export const GroupPostCard = ({
               />
             </div>
             
-            <div className="w-[70%] mx-auto">
+            <div className="w-[80%] mx-auto">
               <CommentsSection 
                 postId={post.id}
                 userId={currentUserId}
