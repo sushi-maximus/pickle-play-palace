@@ -63,15 +63,15 @@ const Profile = () => {
     <div className="min-h-screen bg-slate-50">
       <MobilePageHeader title="Profile" />
       
-      {/* Mobile Profile Header - Only shown on mobile */}
-      <div className="md:hidden bg-slate-50 px-3 pt-20 pb-2">
-        <MobileProfileHeader profile={profile} />
-      </div>
-      
       {/* Scrollable content area */}
-      <div className="px-3 py-4 md:px-6 md:py-8 md:pt-20 pb-32 overflow-y-auto">
+      <div className="px-3 py-4 md:px-6 md:py-8 pt-20 pb-32 overflow-y-auto">
         <div className="container mx-auto max-w-4xl">
           <div className="space-y-3 md:space-y-4">
+            {/* Mobile Profile Header - Only shown on mobile, now scrolls with content */}
+            <div className="md:hidden">
+              <MobileProfileHeader profile={profile} />
+            </div>
+            
             <ProfileContent 
               profile={profile}
               onProfileUpdate={handleProfileUpdate}
