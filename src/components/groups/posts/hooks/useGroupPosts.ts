@@ -21,18 +21,20 @@ export const useGroupPosts = (
   const [error, setError] = useState<string | null>(null);
   const [groupName, setGroupName] = useState<string>("");
 
-  // Check if we have a valid group ID
-  const isValidGroupId = groupId && groupId.trim() !== '' && groupId !== ':id';
+  // Check if we have a valid group ID that's not empty and not the route parameter
+  const shouldFetch = groupId && groupId.trim() !== '' && groupId !== ':id';
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const isValidUUID = isValidGroupId && uuidRegex.test(groupId);
+  const isValidUUID = shouldFetch && uuidRegex.test(groupId);
 
   const fetchPosts = async () => {
     // Don't fetch if we don't have a valid group ID
     if (!isValidUUID) {
-      console.log("useGroupPosts: Invalid group ID, skipping fetch:", groupId);
+      console.log("useGroupPosts: Invalid or missing group ID, skipping fetch:", groupId);
       setPosts([]);
       setLoading(false);
       setRefreshing(false);
+      setError(null);
+      setGroupName("");
       return;
     }
 
@@ -66,6 +68,7 @@ export const useGroupPosts = (
       // If no posts, return early
       if (!postsData || postsData.length === 0) {
         setPosts([]);
+        setError(null);
         return;
       }
 
@@ -73,6 +76,7 @@ export const useGroupPosts = (
       const postsWithData = await mapPostsWithDetails(postsData, userId);
       
       setPosts(postsWithData);
+      setError(null);
     } catch (err) {
       console.error("Error fetching posts:", err);
       setError("Failed to load posts. Please try again later.");
@@ -87,13 +91,14 @@ export const useGroupPosts = (
       fetchPosts();
     } else {
       // Reset state for invalid group IDs
+      console.log("useGroupPosts: Resetting state for invalid group ID:", groupId);
       setPosts([]);
       setLoading(false);
       setRefreshing(false);
       setError(null);
       setGroupName("");
     }
-  }, [groupId, userId, isValidUUID]);
+  }, [groupId, userId, isValidUUID, shouldFetch]);
 
   return {
     posts,

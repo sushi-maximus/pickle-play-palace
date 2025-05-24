@@ -21,11 +21,21 @@ export const GroupDetailsPage = () => {
 
   console.log("GroupDetailsPage: Rendering with raw ID:", id, "User:", !!user);
 
-  // Validate and clean the ID parameter
+  // Validate and clean the ID parameter - this must happen synchronously
   const cleanId = id?.trim();
-  const isValidUUID = cleanId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(cleanId);
+  const isValidUUID = cleanId && cleanId !== ':id' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(cleanId);
+  
+  // Only use the ID if it's valid, otherwise use null to prevent hook execution
+  const validGroupId = isValidUUID ? cleanId : null;
 
-  // Early return and redirect if no valid ID
+  console.log("GroupDetailsPage: ID validation", {
+    rawId: id,
+    cleanId,
+    isValidUUID,
+    validGroupId
+  });
+
+  // Early return and redirect if no valid ID - this happens after render
   useEffect(() => {
     if (!cleanId || cleanId === '' || cleanId === ':id') {
       console.error("GroupDetailsPage: No valid group ID provided, ID:", id);
@@ -44,7 +54,7 @@ export const GroupDetailsPage = () => {
     console.log("GroupDetailsPage: Valid group ID found:", cleanId);
   }, [cleanId, isValidUUID, navigate, id]);
 
-  // Now we can safely call hooks - they handle invalid IDs internally
+  // Now we can safely call hooks - they will only execute with valid IDs
   const {
     group,
     loading: groupLoading,
@@ -52,9 +62,9 @@ export const GroupDetailsPage = () => {
     membershipStatus,
     hasPendingRequests,
     handleMemberUpdate
-  } = useGroupDetails(cleanId || "", user?.id);
+  } = useGroupDetails(validGroupId || "", user?.id);
 
-  // Posts management
+  // Posts management - only execute if we have a valid group ID
   const { 
     posts, 
     loading: postsLoading, 
@@ -62,7 +72,7 @@ export const GroupDetailsPage = () => {
     error: postsError, 
     refreshPosts 
   } = useGroupPosts({ 
-    groupId: cleanId || "", 
+    groupId: validGroupId || "", 
     userId: user?.id 
   });
 
@@ -79,7 +89,7 @@ export const GroupDetailsPage = () => {
   };
 
   console.log("GroupDetailsPage: State check", {
-    cleanId,
+    validGroupId,
     isValidUUID,
     groupLoading,
     groupError,
@@ -87,9 +97,9 @@ export const GroupDetailsPage = () => {
     user: !!user
   });
 
-  // Early return if no valid ID
-  if (!cleanId || !isValidUUID) {
-    console.log("GroupDetailsPage: Rendering loading state due to invalid ID");
+  // Early return if no valid ID - show loading while we redirect
+  if (!validGroupId) {
+    console.log("GroupDetailsPage: Rendering loading state due to invalid ID, will redirect");
     return <GroupDetailsLoading />;
   }
 
@@ -129,7 +139,7 @@ export const GroupDetailsPage = () => {
             user={user}
             membershipStatus={membershipStatus}
             hasPendingRequests={hasPendingRequests}
-            groupId={cleanId}
+            groupId={validGroupId}
             onPostCreated={handlePostCreated}
             onMemberUpdate={handleMemberUpdate}
           />

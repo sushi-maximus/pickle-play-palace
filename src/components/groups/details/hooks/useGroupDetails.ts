@@ -32,10 +32,10 @@ export function useGroupDetails(id: string, userId?: string) {
   
   console.log("useGroupDetails: Hook called with", { id, userId: !!userId });
   
-  // Only fetch data if we have a valid ID
-  const isValidId = id && id.trim() !== '' && id !== ':id';
+  // Only fetch data if we have a valid ID that's not empty
+  const shouldFetch = id && id.trim() !== '' && id !== ':id';
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const isValidUUID = isValidId && uuidRegex.test(id);
+  const isValidUUID = shouldFetch && uuidRegex.test(id);
   
   useEffect(() => {
     // Reset state first
@@ -43,9 +43,9 @@ export function useGroupDetails(id: string, userId?: string) {
     setError(null);
     setLoading(false);
     
-    if (!isValidId) {
-      console.log("useGroupDetails: No valid ID provided, skipping data fetch");
-      setError("Invalid group ID");
+    // Don't fetch if we don't have a valid ID
+    if (!shouldFetch) {
+      console.log("useGroupDetails: No ID provided, skipping data fetch");
       return;
     }
 
@@ -82,7 +82,7 @@ export function useGroupDetails(id: string, userId?: string) {
     };
     
     loadGroupDetails();
-  }, [id, isValidId, isValidUUID]);
+  }, [id, shouldFetch, isValidUUID]);
   
   // Check membership status
   useEffect(() => {
@@ -151,7 +151,7 @@ export function useGroupDetails(id: string, userId?: string) {
     loading,
     error,
     membershipStatus,
-    isValidId,
+    shouldFetch,
     isValidUUID
   });
 
