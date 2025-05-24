@@ -16,7 +16,7 @@ interface LeakInfo {
 }
 
 // Check if WeakRef is supported
-const isWeakRefSupported = typeof WeakRef !== 'undefined';
+const isWeakRefSupported = typeof globalThis !== 'undefined' && 'WeakRef' in globalThis;
 
 export const useMemoryLeakDetector = (options: LeakDetectionOptions = {}) => {
   const { 
@@ -35,7 +35,8 @@ export const useMemoryLeakDetector = (options: LeakDetectionOptions = {}) => {
     if (!enabled || !trackObjects || !isWeakRefSupported) return;
     
     try {
-      const weakRef = new (window as any).WeakRef(obj);
+      const WeakRefConstructor = (globalThis as any).WeakRef;
+      const weakRef = new WeakRefConstructor(obj);
       objectsRef.current.push(weakRef);
       
       if (process.env.NODE_ENV === 'development') {
