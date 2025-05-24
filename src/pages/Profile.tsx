@@ -60,16 +60,16 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50">
       <MobilePageHeader title="Profile" />
       
       {/* Mobile Profile Header - Only shown on mobile */}
-      <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-slate-50 px-3 pt-2">
+      <div className="md:hidden bg-slate-50 px-3 pt-20 pb-2">
         <MobileProfileHeader profile={profile} />
       </div>
       
-      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-48 md:pb-4">
-        {/* Container for all cards with proper spacing */}
+      {/* Scrollable content area */}
+      <div className="px-3 py-4 md:px-6 md:py-8 md:pt-20 pb-32 overflow-y-auto">
         <div className="container mx-auto max-w-4xl">
           <div className="space-y-3 md:space-y-4">
             <ProfileContent 
@@ -79,12 +79,12 @@ const Profile = () => {
             />
             
             {/* Logout Card - Always visible at the bottom with extra margin */}
-            <div className="mt-6">
+            <div className="mt-8 mb-8">
               <LogoutCard onLogout={handleLogout} />
             </div>
           </div>
         </div>
-      </main>
+      </div>
       
       <MobileGroupsBottomNav />
     </div>
