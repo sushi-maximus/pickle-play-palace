@@ -30,13 +30,13 @@ export function useGroupDetails(id: string, userId?: string) {
   
   console.log("useGroupDetails: Hook called with", { id, userId: !!userId });
   
-  // Validate ID format
+  // Validate ID format - must be non-empty and valid UUID
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const isValidUUID = id && id.trim() !== '' && id !== ':id' && uuidRegex.test(id);
   
   console.log("useGroupDetails: ID validation", { id, isValidUUID });
 
-  // Use React Query for group data with enabled condition
+  // Use React Query for group data - only enabled with valid UUID
   const {
     data: group,
     isLoading: loading,
@@ -52,9 +52,9 @@ export function useGroupDetails(id: string, userId?: string) {
       }
       return groupData;
     },
-    enabled: !!isValidUUID, // Only run query if we have a valid UUID
-    retry: false, // Don't retry failed requests
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: Boolean(isValidUUID), // Convert to boolean and only run with valid UUID
+    retry: false,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Check membership status when group data changes

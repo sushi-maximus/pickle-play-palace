@@ -26,14 +26,14 @@ export const GroupDetailsPage = () => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const isValidUUID = cleanId && cleanId !== ':id' && uuidRegex.test(cleanId);
   
-  // Only use the ID if it's valid, otherwise use empty string to prevent hook execution
-  const validGroupId = isValidUUID ? cleanId : "";
+  // Use empty string when ID is invalid to prevent any queries
+  const safeGroupId = isValidUUID ? cleanId! : "";
 
   console.log("GroupDetailsPage: ID validation", {
     rawId: id,
     cleanId,
     isValidUUID,
-    validGroupId
+    safeGroupId
   });
 
   // Handle invalid IDs with redirect
@@ -63,7 +63,7 @@ export const GroupDetailsPage = () => {
     membershipStatus,
     hasPendingRequests,
     handleMemberUpdate
-  } = useGroupDetails(validGroupId, user?.id);
+  } = useGroupDetails(safeGroupId, user?.id);
 
   const { 
     posts, 
@@ -72,7 +72,7 @@ export const GroupDetailsPage = () => {
     error: postsError, 
     refreshPosts 
   } = useGroupPosts({ 
-    groupId: validGroupId, 
+    groupId: safeGroupId, 
     userId: user?.id 
   });
 
@@ -89,7 +89,7 @@ export const GroupDetailsPage = () => {
   };
 
   console.log("GroupDetailsPage: State check", {
-    validGroupId,
+    safeGroupId,
     isValidUUID,
     groupLoading,
     groupError,
@@ -139,7 +139,7 @@ export const GroupDetailsPage = () => {
             user={user}
             membershipStatus={membershipStatus}
             hasPendingRequests={hasPendingRequests}
-            groupId={validGroupId}
+            groupId={safeGroupId}
             onPostCreated={handlePostCreated}
             onMemberUpdate={handleMemberUpdate}
           />

@@ -19,13 +19,13 @@ export const useGroupPosts = (
   const [refreshing, setRefreshing] = useState(false);
   const [groupName, setGroupName] = useState<string>("");
 
-  // Validate group ID
+  // Validate group ID - must be non-empty and valid UUID
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const isValidUUID = groupId && groupId.trim() !== '' && groupId !== ':id' && uuidRegex.test(groupId);
 
   console.log("useGroupPosts: Hook called with", { groupId, isValidUUID, userId: !!userId });
 
-  // Use React Query for posts data
+  // Use React Query for posts data - only enabled with valid UUID
   const {
     data: posts = [],
     isLoading: loading,
@@ -65,9 +65,9 @@ export const useGroupPosts = (
         throw new Error("Failed to load posts. Please try again later.");
       }
     },
-    enabled: !!isValidUUID, // Only run query if we have a valid UUID
+    enabled: Boolean(isValidUUID), // Convert to boolean and only run with valid UUID
     retry: false,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 30 * 1000,
   });
 
   // Manual refresh function
