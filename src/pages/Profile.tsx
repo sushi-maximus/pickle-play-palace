@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -68,9 +67,9 @@ const Profile = () => {
         <MobileProfileHeader profile={profile} />
       </div>
       
-      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20">
+      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-32 md:pb-4">
         {/* Container for all cards with minimal bottom spacing */}
-        <div className="container mx-auto max-w-4xl pb-8 md:pb-4">
+        <div className="container mx-auto max-w-4xl">
           <div className="space-y-3 md:space-y-4">
             <ProfileContent 
               profile={profile}
