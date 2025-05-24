@@ -129,21 +129,6 @@ export const OptimizedBottomNavigation = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[100]">
-      {/* Group context indicator - FOR TESTING ONLY */}
-      {isInGroupContext && (
-        <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
-          <div className="flex items-center justify-center">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold text-blue-700 truncate">
-                Context Detected: {group?.name || `Group ${activeGroupId}` || "Loading..."}
-              </span>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      )}
-      
       <div className="flex items-center justify-around py-2">
         {navItems.map((item) => {
           const isActive = item.isBackButton 
