@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useOptimisticMutations } from "@/hooks/useOptimisticMutations";
 
 export type CommentReactionType2 = "thumbsup" | "thumbsdown";
 
@@ -28,25 +29,41 @@ export const useCommentReactions2 = ({
   const [isThumbsUpSubmitting, setIsThumbsUpSubmitting] = useState(false);
   const [isThumbsDownSubmitting, setIsThumbsDownSubmitting] = useState(false);
 
+  const { updateCommentReactionOptimistically, rollbackOptimisticUpdate } = useOptimisticMutations();
+
   const toggleThumbsUp = async () => {
     if (!userId || isThumbsUpSubmitting || isThumbsDownSubmitting) return;
 
     setIsThumbsUpSubmitting(true);
     
-    // Optimistic update
+    // Store current state for rollback
+    const currentThumbsUpActive = isThumbsUpActive;
+    const currentThumbsDownActive = isThumbsDownActive;
+    const currentThumbsUpCount = thumbsUpCount;
+    const currentThumbsDownCount = thumbsDownCount;
+    
+    // Calculate new state
     const newIsActive = !isThumbsUpActive;
-    const newCount = newIsActive ? thumbsUpCount + 1 : thumbsUpCount - 1;
+    const thumbsUpChange = newIsActive ? 1 : -1;
+    const thumbsDownChange = (newIsActive && isThumbsDownActive) ? -1 : 0;
     
-    // If activating thumbsup, ensure thumbsdown is deactivated
-    if (newIsActive && isThumbsDownActive) {
-      setIsThumbsDownActive(false);
-      setThumbsDownCount(thumbsDownCount - 1);
-    }
-    
-    setIsThumbsUpActive(newIsActive);
-    setThumbsUpCount(newCount);
-
     try {
+      // Optimistic update
+      setIsThumbsUpActive(newIsActive);
+      setThumbsUpCount(prev => Math.max(0, prev + thumbsUpChange));
+      
+      // If activating thumbsup, deactivate thumbsdown
+      if (newIsActive && isThumbsDownActive) {
+        setIsThumbsDownActive(false);
+        setThumbsDownCount(prev => Math.max(0, prev - 1));
+      }
+      
+      // Update cache optimistically
+      updateCommentReactionOptimistically(commentId, 'thumbsup', newIsActive, thumbsUpChange);
+      if (thumbsDownChange !== 0) {
+        updateCommentReactionOptimistically(commentId, 'thumbsdown', false, thumbsDownChange);
+      }
+
       if (newIsActive) {
         // Remove thumbsdown if it exists
         if (isThumbsDownActive) {
@@ -82,14 +99,13 @@ export const useCommentReactions2 = ({
     } catch (error) {
       console.error('Error toggling comment thumbs up reaction:', error);
       // Revert optimistic update on error
-      setIsThumbsUpActive(!newIsActive);
-      setThumbsUpCount(newIsActive ? thumbsUpCount : thumbsUpCount + 1);
+      setIsThumbsUpActive(currentThumbsUpActive);
+      setThumbsDownActive(currentThumbsDownActive);
+      setThumbsUpCount(currentThumbsUpCount);
+      setThumbsDownCount(currentThumbsDownCount);
       
-      // Also revert thumbs down changes if they were made
-      if (newIsActive && isThumbsDownActive) {
-        setIsThumbsDownActive(true);
-        setThumbsDownCount(thumbsDownCount);
-      }
+      // Rollback cache
+      rollbackOptimisticUpdate(['comments']);
     } finally {
       setIsThumbsUpSubmitting(false);
     }
@@ -100,20 +116,34 @@ export const useCommentReactions2 = ({
 
     setIsThumbsDownSubmitting(true);
     
-    // Optimistic update
+    // Store current state for rollback
+    const currentThumbsUpActive = isThumbsUpActive;
+    const currentThumbsDownActive = isThumbsDownActive;
+    const currentThumbsUpCount = thumbsUpCount;
+    const currentThumbsDownCount = thumbsDownCount;
+    
+    // Calculate new state
     const newIsActive = !isThumbsDownActive;
-    const newCount = newIsActive ? thumbsDownCount + 1 : thumbsDownCount - 1;
-    
-    // If activating thumbsdown, ensure thumbsup is deactivated
-    if (newIsActive && isThumbsUpActive) {
-      setIsThumbsUpActive(false);
-      setThumbsUpCount(thumbsUpCount - 1);
-    }
-    
-    setIsThumbsDownActive(newIsActive);
-    setThumbsDownCount(newCount);
+    const thumbsDownChange = newIsActive ? 1 : -1;
+    const thumbsUpChange = (newIsActive && isThumbsUpActive) ? -1 : 0;
 
     try {
+      // Optimistic update
+      setIsThumbsDownActive(newIsActive);
+      setThumbsDownCount(prev => Math.max(0, prev + thumbsDownChange));
+      
+      // If activating thumbsdown, deactivate thumbsup
+      if (newIsActive && isThumbsUpActive) {
+        setIsThumbsUpActive(false);
+        setThumbsUpCount(prev => Math.max(0, prev - 1));
+      }
+      
+      // Update cache optimistically
+      updateCommentReactionOptimistically(commentId, 'thumbsdown', newIsActive, thumbsDownChange);
+      if (thumbsUpChange !== 0) {
+        updateCommentReactionOptimistically(commentId, 'thumbsup', false, thumbsUpChange);
+      }
+
       if (newIsActive) {
         // Remove thumbsup if it exists
         if (isThumbsUpActive) {
@@ -149,14 +179,13 @@ export const useCommentReactions2 = ({
     } catch (error) {
       console.error('Error toggling comment thumbs down reaction:', error);
       // Revert optimistic update on error
-      setIsThumbsDownActive(!newIsActive);
-      setThumbsDownCount(newIsActive ? thumbsDownCount : thumbsDownCount + 1);
+      setIsThumbsUpActive(currentThumbsUpActive);
+      setIsThumbsDownActive(currentThumbsDownActive);
+      setThumbsUpCount(currentThumbsUpCount);
+      setThumbsDownCount(currentThumbsDownCount);
       
-      // Also revert thumbs up changes if they were made
-      if (newIsActive && isThumbsUpActive) {
-        setIsThumbsUpActive(true);
-        setThumbsUpCount(thumbsUpCount);
-      }
+      // Rollback cache
+      rollbackOptimisticUpdate(['comments']);
     } finally {
       setIsThumbsDownSubmitting(false);
     }

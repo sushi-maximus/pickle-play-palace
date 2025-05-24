@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileErrorMessage } from "./ProfileErrorMessage";
 import { ButtonLoader } from "@/components/ui/ButtonLoader";
+import { useOptimisticMutations } from "@/hooks/useOptimisticMutations";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -28,6 +29,7 @@ export const ProfileForm = ({ profile, onProfileUpdate }: ProfileFormProps) => {
   const [isDataReady, setIsDataReady] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const { refreshProfile } = useAuth();
+  const { updateProfileOptimistically, rollbackOptimisticUpdate } = useOptimisticMutations();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -69,6 +71,11 @@ export const ProfileForm = ({ profile, onProfileUpdate }: ProfileFormProps) => {
       const updateData = formatProfileDataForUpdate(values);
       console.log("Update data being sent to Supabase:", updateData);
       
+      // Optimistic update
+      const optimisticProfile = { ...profile, ...updateData };
+      updateProfileOptimistically(profile.id, updateData);
+      onProfileUpdate(optimisticProfile);
+      
       const { error, data } = await supabase
         .from("profiles")
         .update(updateData)
@@ -78,7 +85,7 @@ export const ProfileForm = ({ profile, onProfileUpdate }: ProfileFormProps) => {
       
       if (error) throw error;
       
-      // Update the parent component with the new profile data
+      // Update the parent component with the actual server response
       if (data) {
         onProfileUpdate(data);
       }
@@ -93,6 +100,11 @@ export const ProfileForm = ({ profile, onProfileUpdate }: ProfileFormProps) => {
     } catch (error: any) {
       console.error("Error updating profile:", error);
       setFormError(error.message || "Failed to update profile. Please try again.");
+      
+      // Rollback optimistic update
+      rollbackOptimisticUpdate(['profile']);
+      onProfileUpdate(profile); // Revert to original profile
+      
       toast.error("Update failed", {
         description: "Failed to update profile. Please try again.",
         duration: 5000,

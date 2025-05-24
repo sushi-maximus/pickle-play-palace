@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { AppErrorBoundary } from "@/components/error-boundaries";
+import { createCacheManager } from "@/lib/cacheUtils";
 
 // Import routing components
 import { ProtectedRoute } from "@/components/routing/ProtectedRoute";
@@ -41,6 +42,12 @@ const queryClient = new QueryClient({
         return failureCount < 3;
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      // Enhanced caching strategy
+      gcTime: 10 * 60 * 1000, // 10 minutes garbage collection time
+      refetchOnMount: (query) => {
+        // Only refetch if data is older than 2 minutes
+        return Date.now() - query.dataUpdatedAt > 2 * 60 * 1000;
+      },
     },
     mutations: {
       retry: (failureCount, error) => {
@@ -50,9 +57,36 @@ const queryClient = new QueryClient({
         }
         return failureCount < 2;
       },
+      // Add optimistic update options
+      onMutate: () => {
+        console.log('Mutation started - optimistic update in progress');
+      },
+      onError: (error, variables, context) => {
+        console.error('Mutation failed, rolling back:', error);
+      },
+      onSuccess: () => {
+        console.log('Mutation successful');
+      },
     },
   },
 });
+
+// Initialize cache manager for advanced cache operations
+const cacheManager = createCacheManager(queryClient);
+
+// Add cache monitoring in development
+if (process.env.NODE_ENV === 'development') {
+  // Log cache stats every 30 seconds
+  setInterval(() => {
+    const stats = cacheManager.getCacheStats();
+    console.log('Cache Stats:', stats);
+  }, 30000);
+  
+  // Clear stale cache every 5 minutes
+  setInterval(() => {
+    cacheManager.clearStaleCache();
+  }, 5 * 60 * 1000);
+}
 
 function App() {
   return (

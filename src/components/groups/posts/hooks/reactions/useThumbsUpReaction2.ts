@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { reactionService } from "./reactionService";
+import { useOptimisticMutations } from "@/hooks/useOptimisticMutations";
 
 interface UseThumbsUpReaction2Props {
   postId: string;
@@ -18,6 +19,8 @@ export const useThumbsUpReaction2 = ({
   const [thumbsUpCount, setThumbsUpCount] = useState(initialCount);
   const [isThumbsUpActive, setIsThumbsUpActive] = useState(initialIsActive);
   const [isThumbsUpSubmitting, setIsThumbsUpSubmitting] = useState(false);
+  
+  const { updatePostReactionOptimistically, rollbackOptimisticUpdate } = useOptimisticMutations();
 
   const toggleThumbsUp = async () => {
     console.log(`=== THUMBS UP TOGGLE START ===`);
@@ -33,31 +36,27 @@ export const useThumbsUpReaction2 = ({
     // Store current state for potential rollback
     const currentActive = isThumbsUpActive;
     const currentCount = thumbsUpCount;
+    const countChange = currentActive ? -1 : 1;
+    const newActive = !currentActive;
+    
     console.log(`Current state - active: ${currentActive}, count: ${currentCount}`);
     
     try {
       console.log(`Toggling thumbs up: currently ${currentActive} for post ${postId}`);
       
-      // Optimistically update UI first
-      if (!currentActive) {
-        console.log(`Adding thumbs up - updating UI optimistically`);
-        setIsThumbsUpActive(true);
-        setThumbsUpCount(prev => {
-          console.log(`Count changing from ${prev} to ${prev + 1}`);
-          return prev + 1;
-        });
-        console.log(`Making API call to add reaction...`);
+      // Optimistic update - update UI immediately
+      setIsThumbsUpActive(newActive);
+      setThumbsUpCount(prev => Math.max(0, prev + countChange));
+      
+      // Update React Query cache optimistically
+      updatePostReactionOptimistically(postId, 'thumbsup', newActive, countChange);
+      
+      console.log(`Making API call to ${newActive ? 'add' : 'remove'} reaction...`);
+      
+      if (newActive) {
         await reactionService.addReaction(postId, userId, 'thumbsup');
         console.log('Added thumbs up reaction - API call successful');
       } else {
-        console.log(`Removing thumbs up - updating UI optimistically`);
-        setIsThumbsUpActive(false);
-        setThumbsUpCount(prev => {
-          const newCount = Math.max(0, prev - 1);
-          console.log(`Count changing from ${prev} to ${newCount}`);
-          return newCount;
-        });
-        console.log(`Making API call to delete reaction...`);
         await reactionService.deleteReaction(postId, userId, 'thumbsup');
         console.log('Removed thumbs up reaction - API call successful');
       }
@@ -68,9 +67,14 @@ export const useThumbsUpReaction2 = ({
       console.error('Error toggling thumbs up:', error);
       console.error('Error details:', JSON.stringify(error, null, 2));
       console.log(`Rolling back to previous state - active: ${currentActive}, count: ${currentCount}`);
-      // Revert to the original state on error
+      
+      // Revert local state
       setIsThumbsUpActive(currentActive);
       setThumbsUpCount(currentCount);
+      
+      // Rollback optimistic update in React Query cache
+      rollbackOptimisticUpdate(['posts']);
+      
       console.log(`State rolled back successfully`);
     } finally {
       console.log(`Setting isThumbsUpSubmitting to false`);
