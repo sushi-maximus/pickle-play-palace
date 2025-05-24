@@ -10,44 +10,44 @@ export const Landing = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [showSkeleton, setShowSkeleton] = useState(true);
-  const [authPhase, setAuthPhase] = useState<'checking' | 'verified' | 'complete'>('checking');
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
   useEffect(() => {
-    // Progressive auth loading phases
-    if (isLoading) {
-      setAuthPhase('checking');
-    } else if (user) {
-      setAuthPhase('verified');
-      // Small delay to show verification state
-      setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 100);
-    } else {
-      setAuthPhase('complete');
+    // Handle auth state changes
+    if (!isLoading) {
+      setHasCheckedAuth(true);
+      
+      if (user) {
+        // Small delay before redirect for better UX
+        const timer = setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 100);
+        return () => clearTimeout(timer);
+      }
     }
   }, [user, isLoading, navigate]);
 
   useEffect(() => {
-    // Show skeleton briefly for perceived performance
+    // Always hide skeleton after a reasonable time
     const timer = setTimeout(() => {
       setShowSkeleton(false);
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
 
-  // Enhanced loading states based on auth phase
-  if (isLoading) {
-    if (authPhase === 'checking') {
-      return <AuthLoadingState message="Checking authentication..." />;
-    }
-    if (authPhase === 'verified') {
-      return <AuthLoadingState message="Welcome back! Redirecting..." showSpinner={false} />;
-    }
+  // Show loading state while checking auth
+  if (isLoading && !hasCheckedAuth) {
+    return <AuthLoadingState message="Loading..." />;
+  }
+
+  // Show welcome message for authenticated users before redirect
+  if (user && hasCheckedAuth) {
+    return <AuthLoadingState message="Welcome back! Redirecting..." showSpinner={false} />;
   }
 
   // Show skeleton briefly for perceived performance
-  if (showSkeleton && !isLoading) {
+  if (showSkeleton && hasCheckedAuth) {
     return <LandingPageSkeleton />;
   }
 

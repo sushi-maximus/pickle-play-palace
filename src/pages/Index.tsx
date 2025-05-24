@@ -5,6 +5,8 @@ import { BusinessModelSection } from "@/components/landing/BusinessModelSection"
 import { CtaSection } from "@/components/landing/CtaSection";
 
 const Index = () => {
+  console.log("Index page rendering");
+  
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-1">
