@@ -45,7 +45,6 @@ const Profile = () => {
     <AppLayout 
       title="Profile" 
       showMobileProfileHeader={true}
-      className="px-1 md:px-6 overflow-y-auto"
     >
       <ProfileContent 
         profile={profile}
