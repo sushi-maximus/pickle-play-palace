@@ -15,7 +15,7 @@ export const ThreeLevelStrategyTabs = ({
 }: ThreeLevelStrategyTabsProps) => {
   const [isExpanded, setIsExpanded] = useState(!isCollapsible);
 
-  const TabsContent = () => (
+  const TabsContentComponent = () => (
     <Tabs defaultValue="overview" className="w-full">
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -100,7 +100,7 @@ export const ThreeLevelStrategyTabs = ({
         
         {isExpanded && (
           <div className="mt-4 ml-8">
-            <TabsContent />
+            <TabsContentComponent />
           </div>
         )}
       </div>
@@ -119,7 +119,7 @@ export const ThreeLevelStrategyTabs = ({
       </div>
       
       <div className="ml-8">
-        <TabsContent />
+        <TabsContentComponent />
       </div>
     </div>
   );
