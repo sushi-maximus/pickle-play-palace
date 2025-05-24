@@ -13,8 +13,10 @@ export const MobilePageHeader = ({
   showMenu = false, 
   onMenuClick 
 }: MobilePageHeaderProps) => {
+  console.log("MobilePageHeader rendering with title:", title);
+  
   return (
-    <header className="fixed top-0 left-0 right-0 z-[50] bg-slate-800 text-white px-4 py-3 flex items-center justify-between md:hidden">
+    <header className="fixed top-0 left-0 right-0 z-[60] bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
       <div className="flex-1">
         <h1 className="font-semibold text-lg">{title}</h1>
       </div>
