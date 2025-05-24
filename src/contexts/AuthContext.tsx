@@ -1,22 +1,6 @@
 
 import { createContext, useContext } from "react";
-import { Session, User } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
-
-// Use the actual database type instead of a custom one
-type Profile = Database['public']['Tables']['profiles']['Row'];
-
-type AuthContextType = {
-  session: Session | null;
-  user: User | null;
-  profile: Profile | null;
-  isLoading: boolean;
-  signOut: () => Promise<void>;
-  signUp: (email: string, password: string, metadata: any) => Promise<{ error: any | null; data: any | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: any | null; data: any | null }>;
-  resendVerificationEmail: (email: string) => Promise<{ error: any | null; data: any | null }>;
-  refreshProfile: () => Promise<void>;
-};
+import type { AuthContextType } from "@/providers/auth/types";
 
 export const AuthContext = createContext<AuthContextType>({
   session: null,
