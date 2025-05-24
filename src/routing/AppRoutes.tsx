@@ -14,6 +14,7 @@ import {
   LazyProfile,
   LazyGroups,
   LazyGroupDetails,
+  LazyAdmin,
   LazyAbout,
   LazyContact,
   LazyPrivacy,
@@ -90,6 +91,13 @@ export const AppRoutes = () => {
         <ProtectedRoute>
           <RouteLoader routeName="Group Details">
             <LazyGroupDetails />
+          </RouteLoader>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin" element={
+        <ProtectedRoute>
+          <RouteLoader routeName="Admin">
+            <LazyAdmin />
           </RouteLoader>
         </ProtectedRoute>
       } />

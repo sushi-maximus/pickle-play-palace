@@ -1,11 +1,12 @@
 
 import { useLocation } from "react-router-dom";
-import { Home, Users, User, MoreHorizontal } from "lucide-react";
+import { Home, Users, User, Settings } from "lucide-react";
 import { OptimizedNavLink } from "./OptimizedNavLink";
 import { 
   LazyDashboard, 
   LazyGroups, 
-  LazyProfile 
+  LazyProfile,
+  LazyAdmin
 } from "@/pages/lazy";
 
 export const OptimizedBottomNavigation = () => {
@@ -31,10 +32,10 @@ export const OptimizedBottomNavigation = () => {
       preload: LazyProfile.preload
     },
     {
-      icon: MoreHorizontal,
-      label: "More",
-      to: "/about",
-      preload: () => import("@/pages/About")
+      icon: Settings,
+      label: "Admin",
+      to: "/admin",
+      preload: LazyAdmin.preload
     }
   ];
 

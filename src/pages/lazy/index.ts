@@ -1,4 +1,3 @@
-
 import { createLazyComponent } from '@/utils/lazyLoading';
 
 // Core pages (keep these eager loaded for initial performance)
@@ -25,6 +24,11 @@ export const LazyGroups = createLazyComponent(
 export const LazyGroupDetails = createLazyComponent(
   () => import('@/pages/GroupDetails'),
   'GroupDetails'
+);
+
+export const LazyAdmin = createLazyComponent(
+  () => import('@/pages/Admin'),
+  'Admin'
 );
 
 export const LazyAbout = createLazyComponent(
