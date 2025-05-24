@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PostContent } from "../posts/post-card/PostContent";
@@ -9,6 +8,7 @@ import { useEditPost } from "../posts/hooks/useEditPost";
 import { useDeletePost } from "../posts/hooks/useDeletePost";
 import { MobilePostHeader } from "./components/MobilePostHeader";
 import { MobilePostActions } from "./components/MobilePostActions";
+import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface MobilePostCard2Props {
   post: {
@@ -23,12 +23,7 @@ interface MobilePostCard2Props {
       avatar_url?: string | null;
     };
   };
-  user?: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    avatar_url?: string | null;
-  };
+  user?: Profile | null;
   isEditing: boolean;
   currentPostId: string | null;
   editableContent: string;

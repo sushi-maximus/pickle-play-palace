@@ -1,9 +1,23 @@
 
 import { MobilePostCard2 } from "./MobilePostCard2";
+import type { Profile } from "../posts/hooks/types/groupPostTypes";
+
+interface Post {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  media_urls?: string[] | null;
+  profiles?: {
+    first_name: string;
+    last_name: string;
+    avatar_url?: string | null;
+  };
+}
 
 interface MobilePostsListProps {
-  posts: any[];
-  user: any;
+  posts: Post[];
+  user: Profile | null;
   isEditing: boolean;
   currentPostId: string | null;
   editableContent: string;
