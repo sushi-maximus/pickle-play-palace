@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AlertCircle } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { skillLevelOptions, getSkillLevelColor, duprToSkillLevel } from "@/lib/constants/skill-levels";
 import { getCurrentLevelDescription, getNextLevelAdvice } from "@/lib/constants/skill-level-descriptions";
@@ -13,6 +14,34 @@ interface ProgressionCardProps {
 }
 
 export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
+  // Check if both skill level and DUPR rating are missing/empty
+  const hasSkillLevel = profile.skill_level && profile.skill_level.trim() !== "";
+  const hasDuprRating = profile.dupr_rating && profile.dupr_rating > 0;
+  
+  // If neither skill level nor DUPR rating exists, show missing data message
+  if (!hasSkillLevel && !hasDuprRating) {
+    return (
+      <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg md:text-xl font-medium leading-tight">My Progression</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center space-y-3">
+              <div className="flex justify-center">
+                <AlertCircle className="h-12 w-12 text-amber-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-700">Missing Skill Level or DUPR Rating</h3>
+              <p className="text-sm text-gray-500 max-w-md">
+                Add your skill level or DUPR rating below to see your progression path and training recommendations.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Get current skill level info
   const currentSkillLevel = profile.skill_level || "3.0";
   const duprRating = profile.dupr_rating;
@@ -113,7 +142,7 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
             </div>
           )}
 
-          {/* Three-Level Strategy Component - Always visible */}
+          {/* Three-Level Strategy Component - Only show when we have valid skill data */}
           {nextSkillLevel && (
             <ThreeLevelStrategyTabs 
               isCollapsible={false}
