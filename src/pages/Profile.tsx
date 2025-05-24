@@ -2,18 +2,16 @@
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { ProfilePageLayout } from "@/components/profile/ProfilePageLayout";
-import { ProfileContent } from "@/components/profile/ProfileContent";
-import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
-import { ProfileErrorState } from "@/components/profile/ProfileErrorState";
+import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
+import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
 
 const Profile = () => {
-  const { user, profile, isLoading, signOut } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Profile page mounted - user:", user, "profile:", profile, "isLoading:", isLoading);
-  }, [user, profile, isLoading]);
+    console.log("Profile page mounted - user:", user, "isLoading:", isLoading);
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -22,26 +20,19 @@ const Profile = () => {
     }
   }, [user, isLoading, navigate]);
 
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      navigate("/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
-
-  const handleProfileUpdate = (updatedProfile: any) => {
-    // This will trigger a re-render with the updated profile
-    console.log("Profile updated:", updatedProfile);
-  };
-
   // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <ProfilePageLayout>
-        <ProfileSkeleton />
-      </ProfilePageLayout>
+      <div className="min-h-screen bg-slate-50 flex flex-col">
+        <MobilePageHeader title="Profile" />
+        <main className="flex-1 pt-20 pb-24 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </main>
+        <MobileGroupsBottomNav />
+      </div>
     );
   }
 
@@ -50,25 +41,26 @@ const Profile = () => {
     return null;
   }
 
-  // Show error if profile couldn't be loaded
-  if (!profile) {
-    return (
-      <ProfilePageLayout>
-        <ProfileErrorState />
-      </ProfilePageLayout>
-    );
-  }
-
-  console.log("Profile page rendering main content with profile:", profile);
+  console.log("Profile page rendering main content");
 
   return (
-    <ProfilePageLayout profile={profile}>
-      <ProfileContent 
-        profile={profile}
-        onProfileUpdate={handleProfileUpdate}
-        onLogout={handleLogout}
-      />
-    </ProfilePageLayout>
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <MobilePageHeader title="Profile" />
+      
+      <main className="flex-1 pt-20 pb-24">
+        <div className="px-3 py-4 md:px-6 md:py-8">
+          <div className="container mx-auto max-w-6xl">
+            {/* Profile content will go here */}
+            <div className="text-center py-12">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Profile Page</h2>
+              <p className="text-gray-600">Profile components will be added here</p>
+            </div>
+          </div>
+        </div>
+      </main>
+      
+      <MobileGroupsBottomNav />
+    </div>
   );
 };
 
