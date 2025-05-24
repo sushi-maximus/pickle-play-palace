@@ -17,6 +17,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import { ButtonLoader } from "@/components/ui/ButtonLoader";
 
 // Import the form sections
 import { PersonalInfoFields } from "./form-sections/PersonalInfoFields";
@@ -111,7 +112,13 @@ export const SignupForm = () => {
               type="submit" 
               disabled={isLoading}
             >
-              {isLoading ? "Creating account..." : "Sign Up"}
+              <ButtonLoader 
+                isLoading={isLoading}
+                loadingText="Creating account..."
+                size="sm"
+              >
+                Sign Up
+              </ButtonLoader>
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}

@@ -11,10 +11,10 @@ export const GroupsLoadingState = ({ count = 6 }: LoadingStateProps) => {
       {Array.from({ length: count }).map((_, i) => (
         <div 
           key={i} 
-          className="h-80 bg-white rounded-lg border animate-pulse"
+          className="h-80 bg-white rounded-lg border animate-fade-in hover:shadow-md transition-all"
           style={{
-            animationDelay: `${i * 100}ms`,
-            animationDuration: '1.5s'
+            animationDelay: `${i * 150}ms`,
+            animationDuration: '1.2s'
           }}
         >
           <div className="h-full flex flex-col justify-between p-6">

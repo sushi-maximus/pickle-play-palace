@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { LogoutCard } from "@/components/profile/LogoutCard";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
+import { ProfileLoading } from "@/components/loading/ProfileLoading";
 
 const Profile = () => {
   const { user, profile, isLoading, refreshProfile, signOut } = useAuth();
@@ -21,6 +22,20 @@ const Profile = () => {
       return;
     }
   }, [user, isLoading, navigate]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <RouteErrorBoundary routeName="Profile">
+        <AppLayout 
+          title="Profile" 
+          showMobileProfileHeader={false}
+        >
+          <ProfileLoading />
+        </AppLayout>
+      </RouteErrorBoundary>
+    );
+  }
 
   // Redirect to login if not authenticated
   if (!user || !profile) {

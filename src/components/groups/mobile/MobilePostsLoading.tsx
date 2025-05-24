@@ -8,10 +8,10 @@ export const MobilePostsLoading = () => {
         {[...Array(5)].map((_, i) => (
           <div 
             key={i} 
-            className="bg-white rounded-lg border border-gray-200 p-3 md:p-4 animate-pulse"
+            className="bg-white rounded-lg border border-gray-200 border-l-primary/30 border-l-4 p-3 md:p-4 animate-fade-in hover:shadow-md transition-all"
             style={{
-              animationDelay: `${i * 150}ms`,
-              animationDuration: '1.5s'
+              animationDelay: `${i * 200}ms`,
+              animationDuration: '1.2s'
             }}
           >
             {/* Post header */}

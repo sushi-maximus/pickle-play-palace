@@ -13,7 +13,7 @@ import { formatProfileDataForUpdate, mapProfileDataToFormValues } from "./utils/
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileErrorMessage } from "./ProfileErrorMessage";
-import { Loader2 } from "lucide-react";
+import { ButtonLoader } from "@/components/ui/ButtonLoader";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -158,12 +158,13 @@ export const ProfileForm = ({ profile, onProfileUpdate }: ProfileFormProps) => {
             disabled={isLoading || !form.formState.isDirty} 
             className="w-full md:w-auto transition-all"
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Updating...
-              </>
-            ) : "Save Changes"}
+            <ButtonLoader 
+              isLoading={isLoading}
+              loadingText="Updating..."
+              size="sm"
+            >
+              Save Changes
+            </ButtonLoader>
           </Button>
         </div>
       </form>

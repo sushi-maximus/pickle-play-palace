@@ -18,6 +18,7 @@ import {
 import { LoginErrorMessage } from "./LoginErrorMessage";
 import { ResendVerificationDialog } from "./ResendVerificationDialog";
 import { LoginFields } from "./form-sections/LoginFields";
+import { ButtonLoader } from "@/components/ui/ButtonLoader";
 
 export const LoginForm = () => {
   const { signIn } = useAuth();
@@ -87,7 +88,13 @@ export const LoginForm = () => {
               type="submit" 
               disabled={isLoading}
             >
-              {isLoading ? "Logging in..." : "Log In"}
+              <ButtonLoader 
+                isLoading={isLoading}
+                loadingText="Logging in..."
+                size="sm"
+              >
+                Log In
+              </ButtonLoader>
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
