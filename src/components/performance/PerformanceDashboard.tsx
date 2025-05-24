@@ -17,13 +17,15 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
-  Lightbulb
+  Lightbulb,
+  TestTube
 } from 'lucide-react';
 import { usePerformanceContext } from '@/contexts/PerformanceContext';
 import { MetricsChart } from './MetricsChart';
 import { ComponentMetricsTable } from './ComponentMetricsTable';
 import { MemoryPressureIndicator } from './MemoryPressureIndicator';
 import { PerformanceOptimizationPanel } from './PerformanceOptimizationPanel';
+import { PerformanceTestingPanel } from './PerformanceTestingPanel';
 
 interface PerformanceDashboardProps {
   className?: string;
@@ -183,11 +185,12 @@ export const PerformanceDashboard = ({ className = '' }: PerformanceDashboardPro
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="components" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="components">Components</TabsTrigger>
           <TabsTrigger value="memory">Memory</TabsTrigger>
           <TabsTrigger value="charts">Charts</TabsTrigger>
           <TabsTrigger value="optimization">Optimization</TabsTrigger>
+          <TabsTrigger value="testing">Testing</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -246,6 +249,10 @@ export const PerformanceDashboard = ({ className = '' }: PerformanceDashboardPro
 
         <TabsContent value="optimization" className="space-y-4">
           <PerformanceOptimizationPanel />
+        </TabsContent>
+
+        <TabsContent value="testing" className="space-y-4">
+          <PerformanceTestingPanel />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-4">

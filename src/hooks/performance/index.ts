@@ -6,6 +6,9 @@ export { useMemoryLeakDetector } from './useMemoryLeakDetector';
 export { useMemoryPressure } from './useMemoryPressure';
 export { usePerformanceMonitoring } from './usePerformanceMonitoring';
 export { usePerformanceOptimization } from './usePerformanceOptimization';
+export { usePerformanceTesting } from './usePerformanceTesting';
+export { usePerformanceBenchmark } from './usePerformanceBenchmark';
+export { usePerformanceValidation } from './usePerformanceValidation';
 export { PerformanceProvider, usePerformanceContext } from '../../contexts/PerformanceContext';
 
 // Re-export dashboard components for convenience
@@ -14,5 +17,6 @@ export {
   MetricsChart,
   ComponentMetricsTable,
   MemoryPressureIndicator,
-  PerformanceOptimizationPanel
+  PerformanceOptimizationPanel,
+  PerformanceTestingPanel
 } from '../../components/performance';
