@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { LazyMotionWrapper } from "./LazyMotionWrapper";
 
 export function CtaSection() {
   const fadeIn = {
@@ -14,7 +14,7 @@ export function CtaSection() {
   return (
     <section className="py-24 px-4 relative overflow-hidden">
       <div className="container mx-auto max-w-6xl">
-        <motion.div 
+        <LazyMotionWrapper 
           className="bg-gradient-to-r from-pickle-600 to-secondary rounded-3xl p-10 md:p-16 text-white text-center overflow-hidden relative transform transition-all duration-300 hover:scale-[1.01] hover:shadow-xl"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -27,21 +27,21 @@ export function CtaSection() {
           <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-white/5 blur-3xl"></div>
           
           <div className="relative z-10">
-            <motion.h2 
+            <LazyMotionWrapper 
               className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
               {...fadeIn}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               Join the Pickle Community Today
-            </motion.h2>
-            <motion.p 
+            </LazyMotionWrapper>
+            <LazyMotionWrapper 
               className="text-white/90 max-w-2xl mx-auto mb-10 text-lg"
               {...fadeIn}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               Create your free account and start playing!
-            </motion.p>
-            <motion.div 
+            </LazyMotionWrapper>
+            <LazyMotionWrapper 
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               {...fadeIn}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -65,9 +65,9 @@ export function CtaSection() {
                   Learn More
                 </Button>
               </Link>
-            </motion.div>
+            </LazyMotionWrapper>
           </div>
-        </motion.div>
+        </LazyMotionWrapper>
       </div>
     </section>
   );

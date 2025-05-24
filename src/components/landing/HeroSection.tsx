@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { LazyMotionWrapper } from "./LazyMotionWrapper";
 
 export function HeroSection() {
   // Animation variants
@@ -40,33 +40,33 @@ export function HeroSection() {
       </div>
       
       <div className="container mx-auto max-w-6xl relative z-10">
-        <motion.div 
+        <LazyMotionWrapper 
           className="flex flex-col lg:flex-row items-center gap-12"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
           <div className="flex-1 text-center lg:text-left">
-            <motion.span 
+            <LazyMotionWrapper 
               className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6 transform transition-all hover:scale-105"
               variants={itemVariants}
             >
               The Ultimate Pickleball Platform
-            </motion.span>
-            <motion.h1 
+            </LazyMotionWrapper>
+            <LazyMotionWrapper 
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8"
               variants={itemVariants}
             >
               <span className="text-primary">Pickle Ninja</span>
               <span className="block mt-2 text-foreground">Connect. Compete. Play.</span>
-            </motion.h1>
-            <motion.p 
+            </LazyMotionWrapper>
+            <LazyMotionWrapper 
               className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto lg:mx-0"
               variants={itemVariants}
             >
               Connect with players, organize games, and improve your pickleball skills - all in one place.
-            </motion.p>
-            <motion.div 
+            </LazyMotionWrapper>
+            <LazyMotionWrapper 
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
               variants={itemVariants}
             >
@@ -81,9 +81,9 @@ export function HeroSection() {
                   Log In
                 </Button>
               </Link>
-            </motion.div>
+            </LazyMotionWrapper>
           </div>
-          <motion.div 
+          <LazyMotionWrapper 
             className="flex-1"
             variants={itemVariants}
           >
@@ -96,8 +96,8 @@ export function HeroSection() {
               <div className="absolute -top-8 right-8 w-20 h-20 rounded-full bg-secondary/30 animate-bounce-slow"></div>
               <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-primary/20 animate-pulse"></div>
             </div>
-          </motion.div>
-        </motion.div>
+          </LazyMotionWrapper>
+        </LazyMotionWrapper>
       </div>
     </section>
   );
