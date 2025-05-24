@@ -23,24 +23,36 @@ interface MobilePostCard2Props {
       avatar_url?: string | null;
     };
   };
-  currentUserId?: string;
   user?: {
     id: string;
     first_name: string;
     last_name: string;
     avatar_url?: string | null;
   };
-  onPostUpdate?: () => void;
+  isEditing: boolean;
+  currentPostId: string | null;
+  editableContent: string;
+  setEditableContent: (content: string) => void;
+  isEditSubmitting: boolean;
+  onStartEditing: (postId: string, content: string) => void;
+  onCancelEditing: () => void;
+  onSaveEditing: () => void;
+  onDeleteClick: (postId: string) => void;
 }
 
 export const MobilePostCard2 = ({ 
   post, 
-  currentUserId, 
-  user, 
-  onPostUpdate 
+  user,
+  isEditing,
+  currentPostId,
+  editableContent,
+  setEditableContent,
+  isEditSubmitting,
+  onStartEditing,
+  onCancelEditing,
+  onSaveEditing,
+  onDeleteClick
 }: MobilePostCard2Props) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editableContent, setEditableContent] = useState(post.content);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
@@ -59,7 +71,7 @@ export const MobilePostCard2 = ({
     toggleHeart
   } = usePostReactions2({
     postId: post.id,
-    userId: currentUserId,
+    userId: user?.id,
     initialThumbsUp: 0,
     initialThumbsDown: 0,
     initialHeart: 0,
@@ -68,47 +80,25 @@ export const MobilePostCard2 = ({
     initialUserHeart: false
   });
 
-  const { 
-    startEditing, 
-    cancelEditing, 
-    handleUpdate, 
-    isSubmitting: isEditSubmitting 
-  } = useEditPost({
-    onPostUpdated: () => {
-      setIsEditing(false);
-      onPostUpdate?.();
-    }
-  });
-
-  const { handleDelete, isDeleting } = useDeletePost({
-    onPostDeleted: () => {
-      onPostUpdate?.();
-    }
-  });
-
   const handleEdit = () => {
-    setIsEditing(true);
-    setEditableContent(post.content);
-    startEditing(post.id, post.content);
+    onStartEditing(post.id, post.content);
   };
 
   const handleSaveEditing = () => {
     if (editableContent.trim() && editableContent !== post.content) {
-      handleUpdate();
+      onSaveEditing();
     } else {
-      setIsEditing(false);
-      cancelEditing();
+      onCancelEditing();
     }
   };
 
   const handleCancelEditing = () => {
-    setIsEditing(false);
     setEditableContent(post.content);
-    cancelEditing();
+    onCancelEditing();
   };
 
   const handleDeleteClick = () => {
-    handleDelete(post.id);
+    onDeleteClick(post.id);
     setShowDeleteDialog(false);
   };
 
@@ -117,9 +107,9 @@ export const MobilePostCard2 = ({
       <CardContent className="p-0">
         <MobilePostHeader
           post={post}
-          currentUserId={currentUserId}
+          currentUserId={user?.id}
           isEditing={isEditing}
-          isDeleting={isDeleting}
+          isDeleting={false}
           onEdit={handleEdit}
           onDeleteClick={() => setShowDeleteDialog(true)}
         />
@@ -152,13 +142,13 @@ export const MobilePostCard2 = ({
           onHeartClick={toggleHeart}
           showComments={showComments}
           onToggleComments={() => setShowComments(!showComments)}
-          currentUserId={currentUserId}
+          currentUserId={user?.id}
         />
 
         {showComments && (
           <CommentsSection2
             postId={post.id}
-            currentUserId={currentUserId}
+            currentUserId={user?.id}
             user={user}
           />
         )}
@@ -168,7 +158,7 @@ export const MobilePostCard2 = ({
         isOpen={showDeleteDialog}
         onOpenChange={(open) => !open && setShowDeleteDialog(false)}
         onConfirmDelete={handleDeleteClick}
-        isDeleting={isDeleting}
+        isDeleting={false}
       />
     </Card>
   );
