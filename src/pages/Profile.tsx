@@ -71,7 +71,7 @@ const Profile = () => {
       <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20">
         {/* Container for all cards with explicit bottom spacing */}
         <div className="container mx-auto max-w-4xl pb-32">
-          <div className="space-y-3 md:space-y-4">
+          <div className="space-y-2 md:space-y-4">
             <ProfileContent 
               profile={profile}
               onProfileUpdate={handleProfileUpdate}
