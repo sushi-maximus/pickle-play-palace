@@ -77,10 +77,10 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div 
-                  className="w-4 h-4 rounded-full border-2 opacity-60"
+                  className="w-4 h-4 rounded-full border-2"
                   style={{ 
-                    backgroundColor: "transparent",
-                    borderColor: nextLevelColor
+                    backgroundColor: nextLevelColor,
+                    borderColor: nextLevelColor === "#FFFFFF" ? "#e2e8f0" : nextLevelColor
                   }}
                 />
                 <h3 className="text-base font-semibold text-gray-700">Next Level</h3>
