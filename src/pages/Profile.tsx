@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -5,8 +6,11 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileErrorMessage } from "@/components/profile/ProfileErrorMessage";
 import { MobileProfileBottomNav } from "@/components/profile/MobileProfileBottomNav";
+import { AccountSettingsCard } from "@/components/profile/settings/AccountSettingsCard";
+import { PrivacySettingsCard } from "@/components/profile/settings/PrivacySettingsCard";
+import { PreferencesCard } from "@/components/profile/settings/PreferencesCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -112,6 +116,28 @@ const Profile = () => {
               </CardContent>
             </Card>
 
+            {/* Settings Cards Skeleton */}
+            <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
+              <CardContent className="pt-6">
+                <Skeleton className="h-6 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
+              <CardContent className="pt-6">
+                <Skeleton className="h-6 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Logout Card Skeleton */}
             <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
               <CardContent className="pt-6">
@@ -191,6 +217,11 @@ const Profile = () => {
               />
             </CardContent>
           </Card>
+
+          {/* Settings Cards */}
+          <AccountSettingsCard />
+          <PrivacySettingsCard />
+          <PreferencesCard />
 
           {/* Logout Card */}
           <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
