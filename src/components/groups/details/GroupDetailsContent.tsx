@@ -1,13 +1,22 @@
-
 import { MobileHome2Tab } from "@/components/groups/mobile";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
+import type { Database } from "@/integrations/supabase/types";
+import type { Profile } from "../posts/hooks/types/groupPostTypes";
+
+type Group = Database['public']['Tables']['groups']['Row'];
+
+interface MembershipStatus {
+  isMember: boolean;
+  isPending: boolean;
+  isAdmin: boolean;
+}
 
 interface GroupDetailsContentProps {
   activeTab: string;
-  group: any;
-  user: any;
-  membershipStatus: any;
+  group: Group;
+  user: Profile | null;
+  membershipStatus: MembershipStatus;
   hasPendingRequests: boolean;
   groupId: string;
   onPostCreated: () => void;

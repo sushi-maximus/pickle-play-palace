@@ -7,11 +7,20 @@ import { GroupJoinRequest } from "./GroupJoinRequest";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useGroupDetails } from "./hooks/useGroupDetails";
+import type { Database } from "@/integrations/supabase/types";
+import type { Profile } from "../posts/hooks/types/groupPostTypes";
+
+type Group = Database['public']['Tables']['groups']['Row'];
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
 
 interface GroupDetailsContainerProps {
   id: string;
-  user: any;
-  breadcrumbItems: { label: string; href?: string }[];
+  user: Profile | null;
+  breadcrumbItems: BreadcrumbItem[];
 }
 
 export const GroupDetailsContainer = ({ 
