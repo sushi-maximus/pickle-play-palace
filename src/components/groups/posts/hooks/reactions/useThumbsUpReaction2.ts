@@ -27,7 +27,7 @@ export const useThumbsUpReaction2 = ({
     try {
       const wasActive = isThumbsUpActive;
       
-      console.log(`Toggling thumbs up: currently ${wasActive}`);
+      console.log(`Toggling thumbs up: currently ${wasActive} for post ${postId}`);
       
       if (!wasActive) {
         // Add thumbs up
@@ -46,6 +46,9 @@ export const useThumbsUpReaction2 = ({
       console.log(`Thumbs up toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling thumbs up:', error);
+      // Revert optimistic update on error
+      setIsThumbsUpActive(isThumbsUpActive);
+      setThumbsUpCount(thumbsUpCount);
     } finally {
       setIsThumbsUpSubmitting(false);
     }

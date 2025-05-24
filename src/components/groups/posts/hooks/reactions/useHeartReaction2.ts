@@ -27,16 +27,16 @@ export const useHeartReaction2 = ({
     try {
       const wasActive = isHeartActive;
       
-      console.log(`Toggling heart: currently ${wasActive}`);
+      console.log(`Toggling heart: currently ${wasActive} for post ${postId}`);
       
       if (!wasActive) {
-        // We're activating heart - completely independent of thumbs reactions
+        // Add heart
         await reactionService.addReaction(postId, userId, 'heart');
         setIsHeartActive(true);
         setHeartCount(prev => prev + 1);
         console.log('Added heart reaction');
       } else {
-        // We're deactivating heart - completely independent of thumbs reactions
+        // Remove heart
         await reactionService.deleteReaction(postId, userId, 'heart');
         setIsHeartActive(false);
         setHeartCount(prev => Math.max(0, prev - 1));
@@ -46,6 +46,9 @@ export const useHeartReaction2 = ({
       console.log(`Heart toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling heart:', error);
+      // Revert optimistic update on error
+      setIsHeartActive(isHeartActive);
+      setHeartCount(heartCount);
     } finally {
       setIsHeartSubmitting(false);
     }
