@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Lock, Users, MessageCircle, Calendar, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 type Group = {
   id: string;
@@ -20,6 +21,8 @@ interface GroupCardHybrid1Props {
 }
 
 export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Props) => {
+  const navigate = useNavigate();
+  
   // Use passed group data or fallback to demo data
   const cardData = group || {
     id: "demo",
@@ -50,8 +53,21 @@ export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Pr
   
   console.log("Using background image:", defaultBackgroundImage);
 
+  const handleCardClick = () => {
+    navigate(`/groups/${cardData.id}`);
+  };
+
+  const handleJoinClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click when clicking join button
+    // TODO: Implement join functionality
+    console.log("Join button clicked for group:", cardData.id);
+  };
+
   return (
-    <Card className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0">
+    <Card 
+      className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0"
+      onClick={handleCardClick}
+    >
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
@@ -112,7 +128,10 @@ export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Pr
           
           {/* Only show join button if user is not a member */}
           {!isMember && (
-            <Button className="w-full bg-white text-black hover:bg-white/90">
+            <Button 
+              className="w-full bg-white text-black hover:bg-white/90"
+              onClick={handleJoinClick}
+            >
               {cardData.is_private ? "Request to Join" : "Join Group"}
             </Button>
           )}
