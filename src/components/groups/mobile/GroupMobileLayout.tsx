@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import { MobileGroupHeader } from "./MobileGroupHeader";
 import { GroupHorizontalTabs } from "./GroupHorizontalTabs";
+import { OptimizedBottomNavigation } from "@/components/navigation/OptimizedBottomNavigation";
 
 interface GroupMobileLayoutProps {
   children: ReactNode;
@@ -41,6 +42,9 @@ export const GroupMobileLayout = ({
       <div className="flex-1 pt-44 pb-20">
         {children}
       </div>
+      
+      {/* Bottom Navigation - Fixed at bottom */}
+      <OptimizedBottomNavigation />
     </>
   );
 };
