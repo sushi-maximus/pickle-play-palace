@@ -1,7 +1,7 @@
 
 import { ReactNode } from "react";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
-import { MobileProfileBottomNav } from "@/components/profile/MobileProfileBottomNav";
+import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
 
 interface ProfilePageLayoutProps {
   children: ReactNode;
@@ -18,7 +18,7 @@ export const ProfilePageLayout = ({ children }: ProfilePageLayoutProps) => {
         </div>
       </main>
       
-      <MobileProfileBottomNav />
+      <MobileGroupsBottomNav />
     </div>
   );
 };
