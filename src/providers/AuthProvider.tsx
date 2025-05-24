@@ -19,12 +19,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Function to fetch user profile data
   const fetchProfile = useCallback(async (userId: string) => {
     if (!userId) {
-      console.log("No userId provided to fetchProfile");
+      console.log("❌ No userId provided to fetchProfile");
       return;
     }
     
     try {
-      console.log("Fetching profile for user:", userId);
+      console.log("🔍 Fetching profile for user:", userId);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -32,20 +32,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .single();
 
       if (error) {
-        console.error("Error fetching profile:", error);
+        console.error("❌ Error fetching profile:", error);
+        // Don't throw error for missing profile - user might not have one yet
+        if (error.code === 'PGRST116') {
+          console.log("ℹ️ No profile found for user, this is normal for new users");
+          setProfile(null);
+          return;
+        }
         logError(new AppError("Failed to fetch user profile", "PROFILE_FETCH_ERROR"), "AuthProvider");
         return;
       }
       
       if (data) {
-        console.log("Profile fetched successfully:", data);
+        console.log("✅ Profile fetched successfully:", data);
         setProfile(data);
       } else {
-        console.log("No profile data returned");
+        console.log("ℹ️ No profile data returned");
+        setProfile(null);
       }
     } catch (error) {
-      console.error("Exception in fetchProfile:", error);
+      console.error("❌ Exception in fetchProfile:", error);
       logError(error as Error, "AuthProvider.fetchProfile");
+      setProfile(null);
     }
   }, []);
 
@@ -53,42 +61,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const refreshProfile = useCallback(async () => {
     if (user?.id) {
       try {
+        console.log("🔄 Refreshing profile for user:", user.id);
         await fetchProfile(user.id);
       } catch (error) {
         logError(error as Error, "AuthProvider.refreshProfile");
         throw new AppError("Failed to refresh profile data");
       }
+    } else {
+      console.log("❌ Cannot refresh profile - no user ID");
     }
   }, [user, fetchProfile]);
 
   useEffect(() => {
     let mounted = true;
+    console.log("🚀 AuthProvider initializing...");
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (!mounted) return;
+        if (!mounted) {
+          console.log("⚠️ Component unmounted, ignoring auth state change");
+          return;
+        }
 
-        console.log("Auth state changed:", event, "Session exists:", !!session);
+        console.log("🔔 Auth state changed:", event, "Session exists:", !!session);
         
         try {
           setSession(session);
           setUser(session?.user ?? null);
           
-          // Fetch profile when auth state changes
+          // Fetch profile when user authenticates
           if (session?.user) {
-            console.log("User authenticated, fetching profile");
-            await fetchProfile(session.user.id);
+            console.log("👤 User authenticated, fetching profile");
+            // Use setTimeout to prevent potential deadlock
+            setTimeout(() => {
+              if (mounted) {
+                fetchProfile(session.user.id);
+              }
+            }, 0);
           } else {
-            console.log("No user, clearing profile");
+            console.log("🚪 No user, clearing profile");
             setProfile(null);
           }
         } catch (error) {
-          console.error("Error in auth state change handler:", error);
+          console.error("❌ Error in auth state change handler:", error);
           logError(error as Error, "AuthProvider.authStateChange");
         } finally {
-          console.log("Setting isLoading to false");
-          setIsLoading(false);
+          if (mounted) {
+            console.log("✅ Setting isLoading to false (from auth state change)");
+            setIsLoading(false);
+          }
         }
       }
     );
@@ -96,33 +118,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // THEN check for existing session
     const initializeAuth = async () => {
       try {
-        console.log("Initializing auth...");
+        console.log("🔍 Checking for existing session...");
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error("Error getting session:", error);
+          console.error("❌ Error getting session:", error);
           logError(new AppError("Failed to get session", "SESSION_ERROR"), "AuthProvider");
-          setIsLoading(false);
+          if (mounted) {
+            setIsLoading(false);
+          }
           return;
         }
 
-        if (!mounted) return;
+        if (!mounted) {
+          console.log("⚠️ Component unmounted during session check");
+          return;
+        }
 
-        console.log("Initial session check:", !!session);
+        console.log("📋 Initial session check result:", !!session);
         setSession(session);
         setUser(session?.user ?? null);
         
         // Fetch profile for existing session
         if (session?.user) {
-          console.log("Initial session found, fetching profile");
-          await fetchProfile(session.user.id);
+          console.log("👤 Initial session found, fetching profile");
+          // Use setTimeout to prevent potential deadlock
+          setTimeout(() => {
+            if (mounted) {
+              fetchProfile(session.user.id);
+            }
+          }, 0);
+        } else {
+          console.log("🔓 No initial session found");
         }
       } catch (error) {
-        console.error("Error in initializeAuth:", error);
+        console.error("❌ Error in initializeAuth:", error);
         logError(error as Error, "AuthProvider.initializeAuth");
       } finally {
+        // Always set loading to false after initial check, even if there's an error
         if (mounted) {
-          console.log("Auth initialization complete, setting isLoading to false");
+          console.log("✅ Auth initialization complete, setting isLoading to false");
           setIsLoading(false);
         }
       }
@@ -131,23 +166,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     initializeAuth();
 
     return () => {
+      console.log("🧹 AuthProvider cleanup");
       mounted = false;
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
 
+  const contextValue = {
+    session, 
+    user, 
+    profile,
+    isLoading, 
+    signOut, 
+    signUp, 
+    signIn,
+    resendVerificationEmail,
+    refreshProfile 
+  };
+
+  console.log("🎯 AuthProvider render - isLoading:", isLoading, "user:", !!user, "profile:", !!profile);
+
   return (
-    <AuthContext.Provider value={{ 
-      session, 
-      user, 
-      profile,
-      isLoading, 
-      signOut, 
-      signUp, 
-      signIn,
-      resendVerificationEmail,
-      refreshProfile 
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

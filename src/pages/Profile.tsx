@@ -13,13 +13,24 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Profile page mounted - user:", !!user, "profile:", !!profile, "isLoading:", isLoading);
+    console.log("📱 Profile page mounted - user:", !!user, "profile:", !!profile, "isLoading:", isLoading);
   }, [user, profile, isLoading]);
+
+  useEffect(() => {
+    // Add a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        console.warn("⚠️ Profile page still loading after 10 seconds - this might indicate an issue");
+      }
+    }, 10000);
+
+    return () => clearTimeout(timeoutId);
+  }, [isLoading]);
 
   useEffect(() => {
     // Only redirect if we're done loading and there's no user
     if (!isLoading && !user) {
-      console.log("No user found, redirecting to login");
+      console.log("🔀 No user found, redirecting to login");
       navigate("/login");
       return;
     }
@@ -27,22 +38,7 @@ const Profile = () => {
 
   // Show loading state while authentication is being checked
   if (isLoading) {
-    console.log("Still loading authentication state");
-    return (
-      <RouteErrorBoundary routeName="Profile">
-        <AppLayout 
-          title="Profile" 
-          showMobileProfileHeader={false}
-        >
-          <ProfileLoading />
-        </AppLayout>
-      </RouteErrorBoundary>
-    );
-  }
-
-  // If user exists but profile is still loading, show loading
-  if (user && !profile) {
-    console.log("User exists but profile not loaded yet");
+    console.log("⏳ Still loading authentication state");
     return (
       <RouteErrorBoundary routeName="Profile">
         <AppLayout 
@@ -57,38 +53,28 @@ const Profile = () => {
 
   // If no user after loading is complete, this will be handled by the useEffect redirect
   if (!user) {
+    console.log("🚫 No user after loading complete");
     return null;
   }
 
-  // If we have user but no profile, there might be an issue
-  if (!profile) {
-    console.error("User exists but no profile found");
-    return (
-      <RouteErrorBoundary routeName="Profile">
-        <AppLayout 
-          title="Profile" 
-          showMobileProfileHeader={false}
-        >
-          <div className="text-center py-8">
-            <p className="text-red-600">Error loading profile. Please try refreshing the page.</p>
-          </div>
-        </AppLayout>
-      </RouteErrorBoundary>
-    );
-  }
-
-  console.log("Profile page rendering main content");
+  console.log("🎯 Profile page rendering main content - user exists, profile:", !!profile);
 
   const handleProfileUpdate = async () => {
-    await refreshProfile();
+    try {
+      console.log("🔄 Handling profile update");
+      await refreshProfile();
+    } catch (error) {
+      console.error("❌ Error updating profile:", error);
+    }
   };
 
   const handleLogout = async () => {
     try {
+      console.log("🚪 Handling logout");
       await signOut();
       navigate("/login");
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.error("❌ Error during logout:", error);
     }
   };
 
@@ -98,16 +84,32 @@ const Profile = () => {
         title="Profile" 
         showMobileProfileHeader={true}
       >
-        <ProfileContent 
-          profile={profile}
-          onProfileUpdate={handleProfileUpdate}
-          onLogout={handleLogout}
-        />
-        
-        {/* Logout Card - Always visible at the bottom with extra margin */}
-        <div className="mt-8 mb-8">
-          <LogoutCard onLogout={handleLogout} />
-        </div>
+        {profile ? (
+          <>
+            <ProfileContent 
+              profile={profile}
+              onProfileUpdate={handleProfileUpdate}
+              onLogout={handleLogout}
+            />
+            
+            {/* Logout Card - Always visible at the bottom with extra margin */}
+            <div className="mt-8 mb-8">
+              <LogoutCard onLogout={handleLogout} />
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-600 mb-4">
+              No profile found. This is normal for new accounts.
+            </p>
+            <p className="text-sm text-gray-500">
+              You can still access your account settings below.
+            </p>
+            <div className="mt-8 mb-8">
+              <LogoutCard onLogout={handleLogout} />
+            </div>
+          </div>
+        )}
       </AppLayout>
     </RouteErrorBoundary>
   );
