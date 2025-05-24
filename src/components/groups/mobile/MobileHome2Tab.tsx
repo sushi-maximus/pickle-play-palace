@@ -74,46 +74,50 @@ export const MobileHome2Tab = ({
   }
 
   return (
-    <div className="flex-1 px-3 py-4 md:px-6 md:py-8 relative z-0 overflow-y-auto">
-      {/* Post Creation Form - mobile first responsive */}
-      {user && (
-        <div className="mb-4 md:mb-6">
-          <CreatePostForm2
-            groupId={groupId}
+    <main className="flex-1 px-3 py-4">
+      <div className="container mx-auto max-w-4xl">
+        <div className="space-y-3">
+          {/* Post Creation Form - mobile first responsive */}
+          {user && (
+            <div className="mb-4 md:mb-6">
+              <CreatePostForm2
+                groupId={groupId}
+                user={user}
+                onPostCreated={handlePostCreated}
+                refreshing={refreshing}
+              />
+            </div>
+          )}
+          
+          {refreshing && (
+            <div className="text-center py-1 md:py-2 mb-3 md:mb-4">
+              <div className="inline-block w-3 h-3 md:w-4 md:h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
+          
+          {/* Posts Feed - mobile first responsive */}
+          <MobilePostsList
+            posts={posts}
             user={user}
-            onPostCreated={handlePostCreated}
-            refreshing={refreshing}
+            isEditing={isEditing}
+            currentPostId={currentPostId}
+            editableContent={editableContent}
+            setEditableContent={setEditableContent}
+            isEditSubmitting={isEditSubmitting}
+            onStartEditing={startEditing}
+            onCancelEditing={cancelEditing}
+            onSaveEditing={handleUpdate}
+            onDeleteClick={handleDeleteClick}
+          />
+
+          <DeletePostDialog 
+            isOpen={deleteDialogPostId !== null}
+            onOpenChange={(open) => !open && setDeleteDialogPostId(null)}
+            onConfirmDelete={confirmDelete}
+            isDeleting={isDeleting}
           />
         </div>
-      )}
-      
-      {refreshing && (
-        <div className="text-center py-1 md:py-2 mb-3 md:mb-4">
-          <div className="inline-block w-3 h-3 md:w-4 md:h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
-      
-      {/* Posts Feed - mobile first responsive */}
-      <MobilePostsList
-        posts={posts}
-        user={user}
-        isEditing={isEditing}
-        currentPostId={currentPostId}
-        editableContent={editableContent}
-        setEditableContent={setEditableContent}
-        isEditSubmitting={isEditSubmitting}
-        onStartEditing={startEditing}
-        onCancelEditing={cancelEditing}
-        onSaveEditing={handleUpdate}
-        onDeleteClick={handleDeleteClick}
-      />
-
-      <DeletePostDialog 
-        isOpen={deleteDialogPostId !== null}
-        onOpenChange={(open) => !open && setDeleteDialogPostId(null)}
-        onConfirmDelete={confirmDelete}
-        isDeleting={isDeleting}
-      />
-    </div>
+      </div>
+    </main>
   );
 };

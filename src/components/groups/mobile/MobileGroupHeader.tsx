@@ -17,7 +17,7 @@ export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileG
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[50] bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-[60] bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
       <Button
         variant="ghost"
         size="icon"
