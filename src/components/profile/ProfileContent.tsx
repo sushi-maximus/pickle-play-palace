@@ -26,7 +26,7 @@ export const ProfileContent = ({ profile, onProfileUpdate }: ProfileContentProps
       </div>
       
       {/* My Progression Card */}
-      <ProgressionCard />
+      <ProgressionCard profile={profile} />
       
       {/* Profile Form Card */}
       <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
