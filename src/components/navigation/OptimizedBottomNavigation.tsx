@@ -24,8 +24,13 @@ export const OptimizedBottomNavigation = () => {
   const { id: groupId } = useParams<{ id: string }>();
   const { user } = useAuth();
   
-  // Check if we're on a group details page
-  const isGroupDetailsPage = location.pathname.startsWith('/groups/') && groupId;
+  // More robust check for group details page
+  const isGroupDetailsPage = Boolean(
+    location.pathname.includes('/groups/') && 
+    groupId && 
+    groupId !== 'undefined' && 
+    groupId.length > 0
+  );
   
   // Get group details only when on group page
   const { group } = useGroupDetails(
@@ -33,11 +38,15 @@ export const OptimizedBottomNavigation = () => {
     user?.id
   );
 
-  console.log("OptimizedBottomNavigation - Debug:", {
-    isGroupDetailsPage,
+  // Enhanced debug logging
+  console.log("OptimizedBottomNavigation - Enhanced Debug:", {
+    pathname: location.pathname,
     groupId,
+    isGroupDetailsPage,
+    groupIdPresent: Boolean(groupId),
+    groupIdLength: groupId?.length,
     group: group?.name,
-    pathname: location.pathname
+    shouldShowGroupContext: isGroupDetailsPage
   });
 
   // Base navigation items
@@ -97,19 +106,19 @@ export const OptimizedBottomNavigation = () => {
     }
   ];
 
-  // Choose navigation items based on context - FORCE group context for testing
+  // Choose navigation items based on context - ALWAYS use group context when on group page
   const navItems = isGroupDetailsPage ? groupContextNavItems : baseNavItems;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[100]">
-      {/* Group context indicator - ALWAYS show when on group page */}
+      {/* Group context indicator - FORCE SHOW for testing when on group page */}
       {isGroupDetailsPage && (
         <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
               <span className="text-sm font-semibold text-blue-700 truncate">
-                {group?.name || "Loading group..."}
+                {group?.name || `Group ${groupId}` || "Loading group..."}
               </span>
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             </div>
@@ -123,6 +132,12 @@ export const OptimizedBottomNavigation = () => {
             ? false 
             : location.pathname === item.to;
           const IconComponent = item.icon;
+          
+          console.log("Rendering nav item:", {
+            label: item.label,
+            isBackButton: item.isBackButton,
+            isActive
+          });
           
           return (
             <OptimizedNavLink
