@@ -29,7 +29,7 @@ const Groups = () => {
             )}
           </div>
           
-          {/* Temporary content to fill space and test bottom nav visibility */}
+          {/* Test content */}
           <div className="space-y-4 pb-8">
             <div className="h-64 bg-white rounded-lg border p-4">
               <p className="text-gray-600">Placeholder content 1</p>
@@ -41,20 +41,15 @@ const Groups = () => {
               <p className="text-gray-600">Placeholder content 3</p>
               <p className="text-sm text-gray-500 mt-2">Scroll down to test bottom navigation visibility</p>
             </div>
-            <div className="h-32 bg-red-200 border p-4">
-              <p className="text-red-800 font-bold">DEBUG: Bottom nav should appear below this on mobile</p>
+            <div className="h-32 bg-blue-100 border p-4">
+              <p className="text-blue-800 font-bold">Bottom nav should appear below this content</p>
             </div>
           </div>
         </div>
       </main>
       
-      {/* Mobile Bottom Navigation - DEBUG VERSION */}
-      <div className="md:hidden">
-        <div className="fixed bottom-0 left-0 right-0 z-[70] bg-red-500 text-white text-center py-2">
-          DEBUG: This should be the bottom nav area
-        </div>
-        <MobileBottomNav />
-      </div>
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };
