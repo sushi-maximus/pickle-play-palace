@@ -17,7 +17,8 @@ export const currentLevelDescriptions: Record<string, SkillLevelDescription> = {
   },
   "3.0": {
     description: [
-      "Developing consistency in basic shots and can sustain rallies",
+      "Developing consistency in basic shots",
+      "Can sustain rallies",
       "Beginning to understand strategy"
     ]
   },
@@ -31,13 +32,15 @@ export const currentLevelDescriptions: Record<string, SkillLevelDescription> = {
   "4.0": {
     description: [
       "Consistent with all shots including directional control",
-      "Uses strategy effectively and can force errors"
+      "Uses strategy effectively",
+      "Can force errors"
     ]
   },
   "4.5": {
     description: [
       "Very consistent with all shots",
-      "Anticipates opponent's shots and has developed power in shots"
+      "Anticipates opponent's shots",
+      "Has developed power in shots"
     ]
   },
   "5.0": {
@@ -49,7 +52,8 @@ export const currentLevelDescriptions: Record<string, SkillLevelDescription> = {
   "5.5": {
     description: [
       "Tournament-level player with advanced precision",
-      "Power and strategic mastery"
+      "Power mastery",
+      "Strategic mastery"
     ]
   }
 };
@@ -58,7 +62,8 @@ export const currentLevelDescriptions: Record<string, SkillLevelDescription> = {
 export const nextLevelAdvice: Record<string, SkillLevelAdvice> = {
   "3.0": {
     advice: [
-      "Work on developing consistency in basic shots and sustaining rallies",
+      "Work on developing consistency in basic shots",
+      "Practice sustaining rallies",
       "Begin to understand strategy"
     ]
   },
@@ -72,25 +77,29 @@ export const nextLevelAdvice: Record<string, SkillLevelAdvice> = {
   "4.0": {
     advice: [
       "Achieve consistency with all shots including directional control",
-      "Use strategy effectively and learn to force errors"
+      "Use strategy effectively",
+      "Learn to force errors"
     ]
   },
   "4.5": {
     advice: [
       "Develop very consistent shots",
-      "Learn to anticipate opponent's shots and develop power in your shots"
+      "Learn to anticipate opponent's shots",
+      "Develop power in your shots"
     ]
   },
   "5.0": {
     advice: [
       "Master exceptional shot control",
-      "Strategic play and minimize unforced errors"
+      "Focus on strategic play",
+      "Minimize unforced errors"
     ]
   },
   "5.5": {
     advice: [
       "Achieve tournament-level precision",
-      "Power and strategic mastery"
+      "Master power techniques",
+      "Perfect strategic mastery"
     ]
   }
 };
