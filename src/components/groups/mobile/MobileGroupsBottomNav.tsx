@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Home, Users, Search, User } from "lucide-react";
+import { Home, Users, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export const MobileGroupsBottomNav = () => {
@@ -11,7 +11,7 @@ export const MobileGroupsBottomNav = () => {
     { 
       id: "dashboard", 
       icon: Home, 
-      label: "Home",
+      label: "Dashboard",
       path: "/dashboard"
     },
     { 
@@ -19,12 +19,6 @@ export const MobileGroupsBottomNav = () => {
       icon: Users, 
       label: "Groups",
       path: "/groups"
-    },
-    { 
-      id: "search", 
-      icon: Search, 
-      label: "Search",
-      path: "/search"
     },
     { 
       id: "profile", 
