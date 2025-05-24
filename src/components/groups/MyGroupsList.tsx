@@ -6,21 +6,6 @@ import { MyGroupsEmptyState } from "./ui/MyGroupsEmptyState";
 import { MembershipsGrid } from "./ui/MembershipsGrid";
 import { GroupsPagination } from "./ui/GroupsPagination";
 
-type Membership = {
-  id: string;
-  role: string;
-  joined_at: string;
-  group: {
-    id: string;
-    name: string;
-    description: string | null;
-    location: string | null;
-    created_at: string;
-    is_private: boolean;
-    member_count?: number;
-  };
-};
-
 interface MyGroupsListProps {
   user: any;
   onRefresh: () => void;

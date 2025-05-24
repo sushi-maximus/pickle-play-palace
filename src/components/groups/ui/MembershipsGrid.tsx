@@ -2,20 +2,11 @@
 import { motion } from "framer-motion";
 import { GroupCardHybrid1 } from "./GroupCardHybrid1";
 
-type Membership = {
+interface Membership {
   id: string;
   role: string;
-  joined_at: string;
-  group: {
-    id: string;
-    name: string;
-    description: string | null;
-    location: string | null;
-    created_at: string;
-    is_private: boolean;
-    member_count?: number;
-  };
-};
+  group: any;
+}
 
 interface MembershipsGridProps {
   memberships: Membership[];
