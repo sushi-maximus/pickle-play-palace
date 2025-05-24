@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Database } from "@/integrations/supabase/types";
@@ -112,7 +113,7 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
             </div>
           )}
 
-          {/* Three-Level Strategy Section */}
+          {/* Three-Level Strategy Section - Always visible */}
           {nextSkillLevel && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start gap-3 mb-3">
@@ -124,35 +125,43 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
                 </div>
               </div>
               
-              <div className="space-y-3 ml-8">
-                <div className="flex items-start gap-3">
-                  <TrendingUp className="h-4 w-4 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">Better players</p>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      Challenges you to elevate skills and learn advanced techniques
-                    </p>
+              <div className="space-y-4 ml-8">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <TrendingUp className="h-4 w-4 text-green-600 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Better players</p>
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        Challenges you to elevate your skills. You observe advanced techniques, strategies, and decision-making, pushing you to adapt and learn. It exposes weaknesses in your game and forces you to play at a higher intensity, accelerating skill development.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <Users className="h-4 w-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Similar-level players</p>
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        Provides competitive practice where matches are evenly matched. This hones your consistency, mental toughness, and ability to execute under pressure. It's ideal for refining strategies and building confidence in close games.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <Target className="h-4 w-4 text-orange-600 mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Less skilled players</p>
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        Allows you to dominate and experiment with new shots or tactics in a low-pressure environment. It builds confidence, reinforces fundamentals, and lets you focus on precision and control. You can also practice leadership, like controlling the pace or setting up plays.
+                      </p>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex items-start gap-3">
-                  <Users className="h-4 w-4 text-blue-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">Similar-level players</p>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      Builds consistency and mental toughness in competitive matches
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <Target className="h-4 w-4 text-orange-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">Less skilled players</p>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      Allows experimentation and reinforces fundamentals with confidence
-                    </p>
-                  </div>
+
+                <div className="border-t border-blue-200 pt-3">
+                  <p className="text-xs text-blue-800 italic leading-relaxed">
+                    This mix ensures well-rounded growth: you're stretched by superiors, tested by peers, and empowered by teaching moments with beginners. Each level targets different aspects of skill, strategy, and mentality critical for improvement.
+                  </p>
                 </div>
               </div>
             </div>
