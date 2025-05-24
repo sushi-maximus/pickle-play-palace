@@ -40,6 +40,13 @@ export const MobilePostCard2 = ({
   const isAuthor = user?.id === post.user?.id;
   const isEditingThisPost = isEditing && currentPostId === post.id;
 
+  // Debug logging for post data
+  console.log(`Post ${post.id} data:`, {
+    reactions: post.reactions,
+    user_reactions: post.user_reactions,
+    userId: user?.id
+  });
+
   // Always call hooks at the top level for this specific post
   const {
     thumbsUpCount,

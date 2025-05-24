@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { reactionService } from "./reactions/reactionService";
 import { UsePostReactions2Props, PostReactionType2 } from "./reactions/types";
 
@@ -15,6 +15,16 @@ export const usePostReactions2 = ({
   initialUserThumbsDown,
   initialUserHeart
 }: UsePostReactions2Props) => {
+  // Debug logging for initial values
+  console.log(`Post ${postId} initial values:`, {
+    initialThumbsUp,
+    initialThumbsDown,
+    initialHeart,
+    initialUserThumbsUp,
+    initialUserThumbsDown,
+    initialUserHeart
+  });
+
   // Individual reaction states
   const [thumbsUpCount, setThumbsUpCount] = useState(initialThumbsUp);
   const [thumbsDownCount, setThumbsDownCount] = useState(initialThumbsDown);
@@ -27,6 +37,25 @@ export const usePostReactions2 = ({
   const [isThumbsUpSubmitting, setIsThumbsUpSubmitting] = useState(false);
   const [isThumbsDownSubmitting, setIsThumbsDownSubmitting] = useState(false);
   const [isHeartSubmitting, setIsHeartSubmitting] = useState(false);
+
+  // Update states when initial values change (e.g., after refresh)
+  useEffect(() => {
+    console.log(`Post ${postId} updating states with new initial values`);
+    setThumbsUpCount(initialThumbsUp);
+    setThumbsDownCount(initialThumbsDown);
+    setHeartCount(initialHeart);
+    setIsThumbsUpActive(initialUserThumbsUp);
+    setIsThumbsDownActive(initialUserThumbsDown);
+    setIsHeartActive(initialUserHeart);
+  }, [
+    postId,
+    initialThumbsUp,
+    initialThumbsDown,
+    initialHeart,
+    initialUserThumbsUp,
+    initialUserThumbsDown,
+    initialUserHeart
+  ]);
 
   const isAnySubmitting = isThumbsUpSubmitting || isThumbsDownSubmitting || isHeartSubmitting;
 
@@ -46,6 +75,8 @@ export const usePostReactions2 = ({
       const newIsActive = !isThumbsUpActive;
       const newCount = newIsActive ? thumbsUpCount + 1 : thumbsUpCount - 1;
       
+      console.log(`Toggling thumbs up: ${isThumbsUpActive} -> ${newIsActive}`);
+      
       // Optimistic updates
       setIsThumbsUpActive(newIsActive);
       setThumbsUpCount(Math.max(0, newCount));
@@ -53,10 +84,12 @@ export const usePostReactions2 = ({
       // If activating thumbs up, deactivate others
       if (newIsActive) {
         if (isThumbsDownActive) {
+          console.log('Deactivating thumbs down due to thumbs up activation');
           setIsThumbsDownActive(false);
           setThumbsDownCount(Math.max(0, thumbsDownCount - 1));
         }
         if (isHeartActive) {
+          console.log('Deactivating heart due to thumbs up activation');
           setIsHeartActive(false);
           setHeartCount(Math.max(0, heartCount - 1));
         }
@@ -68,6 +101,8 @@ export const usePostReactions2 = ({
       } else {
         await reactionService.deleteReaction(postId, userId, 'thumbsup');
       }
+      
+      console.log(`Thumbs up toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling thumbs up:', error);
       // Rollback all changes
@@ -98,6 +133,8 @@ export const usePostReactions2 = ({
       const newIsActive = !isThumbsDownActive;
       const newCount = newIsActive ? thumbsDownCount + 1 : thumbsDownCount - 1;
       
+      console.log(`Toggling thumbs down: ${isThumbsDownActive} -> ${newIsActive}`);
+      
       // Optimistic updates
       setIsThumbsDownActive(newIsActive);
       setThumbsDownCount(Math.max(0, newCount));
@@ -105,10 +142,12 @@ export const usePostReactions2 = ({
       // If activating thumbs down, deactivate others
       if (newIsActive) {
         if (isThumbsUpActive) {
+          console.log('Deactivating thumbs up due to thumbs down activation');
           setIsThumbsUpActive(false);
           setThumbsUpCount(Math.max(0, thumbsUpCount - 1));
         }
         if (isHeartActive) {
+          console.log('Deactivating heart due to thumbs down activation');
           setIsHeartActive(false);
           setHeartCount(Math.max(0, heartCount - 1));
         }
@@ -120,6 +159,8 @@ export const usePostReactions2 = ({
       } else {
         await reactionService.deleteReaction(postId, userId, 'thumbsdown');
       }
+      
+      console.log(`Thumbs down toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling thumbs down:', error);
       // Rollback all changes
@@ -150,6 +191,8 @@ export const usePostReactions2 = ({
       const newIsActive = !isHeartActive;
       const newCount = newIsActive ? heartCount + 1 : heartCount - 1;
       
+      console.log(`Toggling heart: ${isHeartActive} -> ${newIsActive}`);
+      
       // Optimistic updates
       setIsHeartActive(newIsActive);
       setHeartCount(Math.max(0, newCount));
@@ -157,10 +200,12 @@ export const usePostReactions2 = ({
       // If activating heart, deactivate others
       if (newIsActive) {
         if (isThumbsUpActive) {
+          console.log('Deactivating thumbs up due to heart activation');
           setIsThumbsUpActive(false);
           setThumbsUpCount(Math.max(0, thumbsUpCount - 1));
         }
         if (isThumbsDownActive) {
+          console.log('Deactivating thumbs down due to heart activation');
           setIsThumbsDownActive(false);
           setThumbsDownCount(Math.max(0, thumbsDownCount - 1));
         }
@@ -172,6 +217,8 @@ export const usePostReactions2 = ({
       } else {
         await reactionService.deleteReaction(postId, userId, 'heart');
       }
+      
+      console.log(`Heart toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling heart:', error);
       // Rollback all changes
