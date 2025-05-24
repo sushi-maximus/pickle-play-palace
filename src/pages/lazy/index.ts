@@ -1,3 +1,4 @@
+
 import { createLazyComponent } from '@/utils/lazyLoading';
 
 // Core pages (keep these eager loaded for initial performance)
@@ -5,7 +6,7 @@ export { default as Index } from '@/pages/Index';
 export { default as Login } from '@/pages/Login';
 export { default as Signup } from '@/pages/Signup';
 
-// Lazy load secondary pages
+// Lazy load secondary pages with proper typing
 export const LazyDashboard = createLazyComponent(
   () => import('@/pages/Dashboard'),
   'Dashboard'
