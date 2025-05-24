@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
-  Memory, 
+  HardDrive, 
   TrendingUp, 
   TrendingDown, 
   Minus, 
@@ -31,7 +30,7 @@ export const MemoryPressureIndicator = ({ memoryMetrics }: MemoryPressureIndicat
   if (memoryMetrics.length === 0) {
     return (
       <div className="text-center py-8">
-        <Memory className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <HardDrive className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
         <p className="text-muted-foreground">No memory data available</p>
         <p className="text-sm text-muted-foreground">
           Memory monitoring will start automatically
