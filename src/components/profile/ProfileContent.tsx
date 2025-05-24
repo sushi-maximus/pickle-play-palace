@@ -2,10 +2,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
-import { AccountSettingsCard } from "@/components/profile/settings/AccountSettingsCard";
-import { PrivacySettingsCard } from "@/components/profile/settings/PrivacySettingsCard";
-import { PreferencesCard } from "@/components/profile/settings/PreferencesCard";
-import { LogoutCard } from "@/components/profile/LogoutCard";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -33,14 +29,6 @@ export const ProfileContent = ({ profile, onProfileUpdate, onLogout }: ProfileCo
           />
         </CardContent>
       </Card>
-
-      {/* Settings Cards */}
-      <AccountSettingsCard />
-      <PrivacySettingsCard />
-      <PreferencesCard />
-
-      {/* Logout Card */}
-      <LogoutCard onLogout={onLogout} />
     </>
   );
 };
