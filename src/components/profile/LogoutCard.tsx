@@ -21,7 +21,7 @@ interface LogoutCardProps {
 export const LogoutCard = ({ onLogout }: LogoutCardProps) => {
   return (
     <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
-      <CardContent className="pt-6 pb-6">
+      <CardContent className="pt-3 pb-3 md:pt-6 md:pb-6">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button 

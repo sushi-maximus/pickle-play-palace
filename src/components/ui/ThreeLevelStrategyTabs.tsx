@@ -75,7 +75,7 @@ export const ThreeLevelStrategyTabs = ({
 
   if (isCollapsible) {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 md:p-4">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-start gap-3 w-full text-left hover:bg-blue-100/50 -m-2 p-2 rounded transition-colors"
@@ -99,7 +99,7 @@ export const ThreeLevelStrategyTabs = ({
         </button>
         
         {isExpanded && (
-          <div className="mt-4 ml-8">
+          <div className="mt-4 ml-4 md:ml-8">
             <TabsContentComponent />
           </div>
         )}
@@ -108,7 +108,7 @@ export const ThreeLevelStrategyTabs = ({
   }
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 md:p-4">
       <div className="flex items-start gap-3 mb-3">
         <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
         <div>
@@ -118,7 +118,7 @@ export const ThreeLevelStrategyTabs = ({
         </div>
       </div>
       
-      <div className="ml-8">
+      <div className="ml-4 md:ml-8">
         <TabsContentComponent />
       </div>
     </div>

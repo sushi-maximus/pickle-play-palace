@@ -63,8 +63,8 @@ const Profile = () => {
     <div className="min-h-screen bg-slate-50">
       <MobilePageHeader title="Profile" />
       
-      {/* Scrollable content area */}
-      <div className="px-3 py-4 md:px-6 md:py-8 pt-20 pb-32 overflow-y-auto">
+      {/* Scrollable content area with minimal horizontal padding on mobile */}
+      <div className="px-1 py-4 md:px-6 md:py-8 pt-20 pb-32 overflow-y-auto">
         <div className="container mx-auto max-w-4xl">
           <div className="space-y-3 md:space-y-4">
             {/* Mobile Profile Header - Only shown on mobile, now scrolls with content */}
