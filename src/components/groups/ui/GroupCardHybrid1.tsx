@@ -1,23 +1,14 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Users, MessageCircle, Calendar, Globe } from "lucide-react";
+import { Lock, Users, MessageCircle, Calendar, Globe, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-
-type Group = {
-  id: string;
-  name: string;
-  description: string | null;
-  location: string | null;
-  created_at: string;
-  is_private: boolean;
-  member_count?: number;
-};
+import { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
 
 interface GroupCardHybrid1Props {
-  group?: Group;
-  isMember?: boolean; // New prop to indicate if user is already a member
+  group?: UnifiedGroup;
+  isMember?: boolean; // For backward compatibility
 }
 
 export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Props) => {
@@ -30,10 +21,24 @@ export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Pr
     description: "A community for tennis enthusiasts",
     location: "New York, NY",
     is_private: true,
-    member_count: 89
+    member_count: 89,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    created_by: "demo-user",
+    avatar_url: null,
+    skill_level_min: null,
+    skill_level_max: null,
+    max_members: null,
+    isMember: false,
+    membershipRole: undefined,
+    membershipId: undefined
   };
 
-  console.log("GroupCardHybrid1 rendering with data:", cardData, "isMember:", isMember);
+  // Use the group's membership status if available, otherwise fall back to prop
+  const isUserMember = group ? group.isMember : isMember;
+  const membershipRole = group?.membershipRole;
+
+  console.log("GroupCardHybrid1 rendering with data:", cardData, "isMember:", isUserMember, "role:", membershipRole);
 
   // Calculate demo stats based on member count
   const memberCount = cardData.member_count || 89;
@@ -82,19 +87,28 @@ export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Pr
       <div className="relative z-10 h-full flex flex-col justify-between p-6">
         {/* Top Section */}
         <div className="flex justify-between items-start">
-          <Badge variant="outline" className="bg-white/20 border-white/30 text-white">
-            {cardData.is_private ? (
-              <>
-                <Lock className="h-3 w-3 mr-1" />
-                Private
-              </>
-            ) : (
-              <>
-                <Globe className="h-3 w-3 mr-1" />
-                Public
-              </>
+          <div className="flex gap-2">
+            <Badge variant="outline" className="bg-white/20 border-white/30 text-white">
+              {cardData.is_private ? (
+                <>
+                  <Lock className="h-3 w-3 mr-1" />
+                  Private
+                </>
+              ) : (
+                <>
+                  <Globe className="h-3 w-3 mr-1" />
+                  Public
+                </>
+              )}
+            </Badge>
+            {/* Membership indicator */}
+            {isUserMember && (
+              <Badge variant="outline" className="bg-green-500/90 border-green-400/30 text-white">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                {membershipRole === 'admin' ? 'Admin' : 'Member'}
+              </Badge>
             )}
-          </Badge>
+          </div>
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
             {initials}
           </div>
@@ -126,8 +140,15 @@ export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Pr
             </div>
           </div>
           
-          {/* Only show join button if user is not a member */}
-          {!isMember && (
+          {/* Show different actions based on membership status */}
+          {isUserMember ? (
+            <Button 
+              className="w-full bg-green-500/20 text-white border border-green-400/30 hover:bg-green-500/30"
+              onClick={(e) => e.stopPropagation()}
+            >
+              View Group
+            </Button>
+          ) : (
             <Button 
               className="w-full bg-white text-black hover:bg-white/90"
               onClick={handleJoinClick}
