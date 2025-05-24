@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -30,7 +29,6 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   const { handleSubmit, isSubmitting } = useAddComment2({
     postId,
     userId: currentUserId || '',
-    content: newCommentContent,
     onCommentAdded: () => {
       setNewCommentContent("");
       refreshComments();
@@ -39,7 +37,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
 
   const handleAddComment = () => {
     if (newCommentContent.trim() && currentUserId) {
-      handleSubmit();
+      handleSubmit(newCommentContent);
     }
   };
 
