@@ -6,25 +6,30 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { AppErrorBoundary } from "@/components/error-boundaries";
 import { createCacheManager } from "@/lib/cacheUtils";
+import { preloadCriticalRoutes } from "@/utils/lazyLoading";
+import { RouteLoader } from "@/components/routing/RouteLoader";
 
 // Import routing components
 import { ProtectedRoute } from "@/components/routing/ProtectedRoute";
 import { PublicRoute } from "@/components/routing/PublicRoute";
 import { Landing } from "@/components/routing/Landing";
 
-// Import pages
-import Login from "@/pages/Login";
-import Signup from "@/pages/Signup";
-import ForgotPassword from "@/pages/ForgotPassword";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
-import Privacy from "@/pages/Privacy";
-import Profile from "@/pages/Profile";
-import Groups from "@/pages/Groups";
-import GroupDetails from "@/pages/GroupDetails";
-import Dashboard from "@/pages/Dashboard";
-import AuthCallback from "@/pages/AuthCallback";
-import NotFound from "@/pages/NotFound";
+// Import eager-loaded pages (critical for initial load)
+import { Index, Login, Signup } from "@/pages/lazy";
+
+// Import lazy-loaded pages
+import { 
+  LazyDashboard,
+  LazyProfile,
+  LazyGroups,
+  LazyGroupDetails,
+  LazyAbout,
+  LazyContact,
+  LazyPrivacy,
+  LazyForgotPassword,
+  LazyAuthCallback,
+  LazyNotFound
+} from "@/pages/lazy";
 
 import "./App.css";
 
@@ -88,6 +93,11 @@ if (process.env.NODE_ENV === 'development') {
   }, 5 * 60 * 1000);
 }
 
+// Preload critical routes after app initialization
+setTimeout(() => {
+  preloadCriticalRoutes();
+}, 1000);
+
 function App() {
   return (
     <AppErrorBoundary>
@@ -113,42 +123,72 @@ function App() {
                   } />
                   <Route path="/forgot-password" element={
                     <PublicRoute>
-                      <ForgotPassword />
+                      <RouteLoader routeName="Forgot Password">
+                        <LazyForgotPassword />
+                      </RouteLoader>
                     </PublicRoute>
                   } />
                   
                   {/* Public informational pages */}
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/about" element={
+                    <RouteLoader routeName="About">
+                      <LazyAbout />
+                    </RouteLoader>
+                  } />
+                  <Route path="/contact" element={
+                    <RouteLoader routeName="Contact">
+                      <LazyContact />
+                    </RouteLoader>
+                  } />
+                  <Route path="/privacy" element={
+                    <RouteLoader routeName="Privacy">
+                      <LazyPrivacy />
+                    </RouteLoader>
+                  } />
                   
                   {/* Protected routes requiring authentication */}
                   <Route path="/dashboard" element={
                     <ProtectedRoute>
-                      <Dashboard />
+                      <RouteLoader routeName="Dashboard">
+                        <LazyDashboard />
+                      </RouteLoader>
                     </ProtectedRoute>
                   } />
                   <Route path="/profile" element={
                     <ProtectedRoute>
-                      <Profile />
+                      <RouteLoader routeName="Profile">
+                        <LazyProfile />
+                      </RouteLoader>
                     </ProtectedRoute>
                   } />
                   <Route path="/groups" element={
                     <ProtectedRoute>
-                      <Groups />
+                      <RouteLoader routeName="Groups">
+                        <LazyGroups />
+                      </RouteLoader>
                     </ProtectedRoute>
                   } />
                   <Route path="/groups/:id" element={
                     <ProtectedRoute>
-                      <GroupDetails />
+                      <RouteLoader routeName="Group Details">
+                        <LazyGroupDetails />
+                      </RouteLoader>
                     </ProtectedRoute>
                   } />
                   
                   {/* Auth callback - no protection needed */}
-                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/auth/callback" element={
+                    <RouteLoader routeName="Authentication">
+                      <LazyAuthCallback />
+                    </RouteLoader>
+                  } />
                   
                   {/* 404 route */}
-                  <Route path="*" element={<NotFound />} />
+                  <Route path="*" element={
+                    <RouteLoader routeName="Page Not Found">
+                      <LazyNotFound />
+                    </RouteLoader>
+                  } />
                 </Routes>
               </div>
               <Toaster />
