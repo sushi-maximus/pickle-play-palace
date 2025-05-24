@@ -10,6 +10,10 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Profile page mounted - user:", user, "isLoading:", isLoading);
+  }, []);
+
+  useEffect(() => {
     if (!isLoading && !user) {
       navigate("/login");
       return;
@@ -20,7 +24,11 @@ const Profile = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col">
-        <MobilePageHeader title="Profile" />
+        <div className="fixed top-0 left-0 right-0 z-50 bg-slate-800 text-white px-4 py-3 flex items-center justify-between md:hidden">
+          <div className="flex-1">
+            <h1 className="font-semibold text-lg">Profile</h1>
+          </div>
+        </div>
         <main className="flex-1 pt-20 pb-24 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -37,9 +45,16 @@ const Profile = () => {
     return null;
   }
 
+  console.log("Profile page rendering main content");
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <MobilePageHeader title="Profile" />
+      {/* Fixed Header - Manually rendered to ensure visibility */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-slate-800 text-white px-4 py-3 flex items-center justify-between md:hidden">
+        <div className="flex-1">
+          <h1 className="font-semibold text-lg">Profile</h1>
+        </div>
+      </div>
       
       <main className="flex-1 pt-20 pb-24">
         <div className="px-3 py-4 md:px-6 md:py-8">
