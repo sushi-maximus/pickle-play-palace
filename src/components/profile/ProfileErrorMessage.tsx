@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 interface ProfileErrorMessageProps {
   error: string;
-  onRetry: () => Promise<void>;
+  onRetry: () => void | Promise<void>;
 }
 
 export const ProfileErrorMessage = ({ error, onRetry }: ProfileErrorMessageProps) => {
