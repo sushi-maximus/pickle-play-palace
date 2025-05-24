@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -89,28 +88,20 @@ const Profile = () => {
         
         <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
           <div className="container mx-auto max-w-4xl space-y-3 md:space-y-4">
-            {/* Profile Header Card Skeleton */}
-            <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
-              <CardHeader className="pb-3">
-                <Skeleton className="h-6 w-32" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center space-x-4">
-                  <Skeleton className="h-16 w-16 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
+            {/* Profile Header Skeleton - without card wrapper */}
+            <div className="hidden md:block">
+              <div className="flex items-center space-x-4 mb-4 md:mb-6">
+                <Skeleton className="h-16 w-16 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-20" />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Profile Form Card Skeleton */}
             <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
-              <CardHeader className="pb-3">
-                <Skeleton className="h-6 w-40" />
-              </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="pt-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Skeleton className="h-10 w-full" />
                   <Skeleton className="h-10 w-full" />
@@ -186,24 +177,14 @@ const Profile = () => {
       
       <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
         <div className="container mx-auto max-w-4xl space-y-3 md:space-y-4">
-          {/* Desktop Profile Header Card - Hidden on mobile, shown on desktop */}
-          <div className="hidden md:block">
-            <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-medium">Profile Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ProfileHeader profile={profile} />
-              </CardContent>
-            </Card>
+          {/* Desktop Profile Header - Hidden on mobile, shown on desktop, no card wrapper */}
+          <div className="hidden md:block mb-4 md:mb-6">
+            <ProfileHeader profile={profile} />
           </div>
           
-          {/* Profile Form Card */}
+          {/* Profile Form Card - removed "Profile Information" title */}
           <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-medium">Profile Information</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <ProfileForm 
                 profile={profile} 
                 onProfileUpdate={handleProfileUpdate}
