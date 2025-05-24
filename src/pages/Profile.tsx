@@ -6,9 +6,10 @@ import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
 import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
 import { ProfileContent } from "@/components/profile/ProfileContent";
+import { LogoutCard } from "@/components/profile/LogoutCard";
 
 const Profile = () => {
-  const { user, profile, isLoading, refreshProfile } = useAuth();
+  const { user, profile, isLoading, refreshProfile, signOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +51,12 @@ const Profile = () => {
   };
 
   const handleLogout = async () => {
-    // Logout functionality will be handled by ProfileContent
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -62,7 +68,7 @@ const Profile = () => {
         <MobileProfileHeader profile={profile} />
       </div>
       
-      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-32 md:pb-4">
+      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-4">
         <div className="container mx-auto max-w-4xl space-y-3 md:space-y-4">
           <ProfileContent 
             profile={profile}
@@ -71,6 +77,13 @@ const Profile = () => {
           />
         </div>
       </main>
+      
+      {/* Logout Card - Fixed at bottom above mobile nav */}
+      <div className="px-3 md:px-6 pb-20 md:pb-4">
+        <div className="container mx-auto max-w-4xl">
+          <LogoutCard onLogout={handleLogout} />
+        </div>
+      </div>
       
       <MobileGroupsBottomNav />
     </div>
