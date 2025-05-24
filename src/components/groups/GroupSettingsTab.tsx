@@ -8,10 +8,17 @@ import { updateGroup } from "@/components/groups/utils"; // Updated import path
 import { updateGroupSchema, UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
 import { toast } from "sonner";
 import { BasicInfoCard, AdvancedSettingsCard } from "./settings";
+import type { Database } from "@/integrations/supabase/types";
+import type { GroupMember } from "./members/types";
+
+type Group = Database['public']['Tables']['groups']['Row'] & {
+  members?: GroupMember[];
+  member_count: number;
+};
 
 interface GroupSettingsTabProps {
-  group: any;
-  onGroupUpdate: (updatedGroup: any) => void;
+  group: Group;
+  onGroupUpdate: (updatedGroup: Group) => void;
 }
 
 export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps) => {
