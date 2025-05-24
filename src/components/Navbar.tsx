@@ -1,174 +1,107 @@
-
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, User, LayoutDashboard, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage, AvatarWithBorder } from "@/components/ui/avatar";
-import { skillLevelColors, getSkillLevelColor } from "@/lib/constants/skill-levels";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, profile } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const location = useLocation();
-  
-  // Close mobile menu when changing routes
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
+  const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Get user initials for avatar fallback
-  const getInitials = () => {
-    if (profile?.first_name && profile?.last_name) {
-      return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase();
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
     }
-    return user?.email?.charAt(0).toUpperCase() || 'U';
-  };
-
-  // Get the appropriate color based on DUPR or skill level
-  const borderColor = getSkillLevelColor(profile?.dupr_rating, profile?.skill_level);
-
-  // Check if the current path matches the given path
-  const isActive = (path: string) => {
-    return location.pathname === path;
   };
 
   return (
-    <nav className="w-full bg-background border-b border-border py-3">
-      <div className="container px-4 mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-pickle-500 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">PN</span>
-          </div>
-          <span className="font-bold text-xl">Pickle Ninja</span>
-        </Link>
-
-        {/* Desktop navigation */}
-        <div className="hidden md:flex items-center gap-6">
-          {user && (
-            <>
-              <Link 
-                to="/dashboard" 
-                className={`relative transition-colors ${isActive('/dashboard') 
-                  ? 'text-primary font-medium after:content-[""] after:absolute after:w-full after:h-0.5 after:bg-primary after:bottom-[-8px] after:left-0' 
-                  : 'text-foreground hover:text-primary'}`}
-              >
-                Dashboard
-              </Link>
-              <Link 
-                to="/groups" 
-                className={`relative transition-colors ${location.pathname.startsWith('/groups') 
-                  ? 'text-primary font-medium after:content-[""] after:absolute after:w-full after:h-0.5 after:bg-primary after:bottom-[-8px] after:left-0' 
-                  : 'text-foreground hover:text-primary'}`}
-              >
-                Groups
-              </Link>
-            </>
-          )}
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            {user ? (
-              <Link to="/profile">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className={`rounded-full ${isActive('/profile') ? 'bg-accent' : ''}`}
+    <nav className="bg-white shadow-sm border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="text-xl font-bold text-primary">
+              PicklePlay
+            </Link>
+            
+            {user && (
+              <div className="hidden md:flex ml-10 space-x-8">
+                <Link
+                  to="/dashboard"
+                  className={`${
+                    location.pathname === "/dashboard"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-gray-700 hover:text-primary"
+                  } px-1 pt-1 border-b-2 border-transparent text-sm font-medium transition-colors`}
                 >
-                  <AvatarWithBorder className="h-8 w-8" borderColor={borderColor} borderWidth={2}>
-                    <AvatarImage 
-                      src={profile?.avatar_url || ""} 
-                      alt="Profile" 
-                      className="rounded-full"
-                    />
-                    <AvatarFallback className="rounded-full">{getInitials()}</AvatarFallback>
-                  </AvatarWithBorder>
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link to="/login">
-                  <Button variant={isActive('/login') ? "default" : "outline"}>Log In</Button>
+                  Dashboard
                 </Link>
-                <Link to="/signup">
-                  <Button variant={isActive('/signup') ? "secondary" : "default"}>Sign Up</Button>
+                <Link
+                  to="/groups"
+                  className={`${
+                    location.pathname.startsWith("/groups")
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-gray-700 hover:text-primary"
+                  } px-1 pt-1 border-b-2 border-transparent text-sm font-medium transition-colors`}
+                >
+                  Groups
                 </Link>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile menu button */}
-        <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile menu with improved transitions */}
-      <div 
-        className={`md:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-sm transition-all duration-300 transform ${
-          isMenuOpen 
-            ? 'translate-x-0 opacity-100'
-            : 'translate-x-full opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="flex justify-end p-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setIsMenuOpen(false)}
-            aria-label="Close menu"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-        <div className="px-4 py-4">
-          <div className="flex flex-col gap-4">
-            {user ? (
-              <div className="flex flex-col gap-3 mt-2">
-                <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                  <Button 
-                    variant="ghost" 
-                    className={`justify-start w-full ${isActive('/dashboard') ? 'bg-accent text-accent-foreground' : ''}`}
-                  >
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </Button>
-                </Link>
-                <Link to="/groups" onClick={() => setIsMenuOpen(false)}>
-                  <Button 
-                    variant="ghost" 
-                    className={`justify-start w-full ${location.pathname.startsWith('/groups') ? 'bg-accent text-accent-foreground' : ''}`}
-                  >
-                    <Users className="h-4 w-4 mr-2" />
-                    Groups
-                  </Button>
-                </Link>
-                <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-                  <Button 
-                    variant="ghost" 
-                    className={`justify-start w-full ${isActive('/profile') ? 'bg-accent text-accent-foreground' : ''}`}
-                  >
-                    <User className="h-4 w-4 mr-2" />
-                    Profile
-                  </Button>
+                <Link
+                  to="/training"
+                  className={`${
+                    location.pathname === "/training"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-gray-700 hover:text-primary"
+                  } px-1 pt-1 border-b-2 border-transparent text-sm font-medium transition-colors`}
+                >
+                  Training
                 </Link>
               </div>
+            )}
+          </div>
+
+          <div className="flex items-center">
+            {user ? (
+              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={profile?.avatar_url || ""} alt={profile?.full_name || "User Avatar"} />
+                      <AvatarFallback>{profile?.full_name?.charAt(0).toUpperCase() || "PP"}</AvatarFallback>
+                    </Avatar>
+                    <span className="sr-only">Open user menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <div className="flex flex-col gap-3 mt-2">
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant={isActive('/login') ? "default" : "outline"} className="w-full">Log In</Button>
+              <div className="hidden md:flex space-x-4">
+                <Link to="/login" className="text-gray-700 hover:text-primary text-sm font-medium transition-colors">
+                  Login
                 </Link>
-                <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant={isActive('/signup') ? "secondary" : "default"} className="w-full">Sign Up</Button>
+                <Link to="/signup" className="bg-primary text-white rounded-md px-3 py-2 text-sm font-medium hover:bg-primary-dark transition-colors">
+                  Sign Up
                 </Link>
               </div>
             )}
