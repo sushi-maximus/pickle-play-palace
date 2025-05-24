@@ -11,3 +11,4 @@ export * from './hooks/useCommentReactions';
 export * from './hooks/usePostReactions';
 export * from './hooks/useAutoRefresh';
 export * from './post-card';
+export * from './GroupPostsEmpty';

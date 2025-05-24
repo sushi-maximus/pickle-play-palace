@@ -1,7 +1,8 @@
-import { CreatePostForm } from "../CreatePostForm";
-import { GroupPostCard } from "../GroupPostCard";
+
+import { CreatePostForm2 } from "../CreatePostForm2";
+import { MobilePostCard2 } from "../../mobile/MobilePostCard2";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
-import { GroupPostsLoading } from "../GroupPostsLoading";
+import { MobilePostsLoading } from "../../mobile/MobilePostsLoading";
 import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
 import type { GroupPost } from "../hooks/types/groupPostTypes";
 import { Button } from "@/components/ui/button";
@@ -103,16 +104,17 @@ export const FeedContent = ({
       <RefreshProgressIndicator refreshing={refreshing} />
       
       {membershipStatus.isMember && (
-        <CreatePostForm 
+        <CreatePostForm2 
           groupId={groupId} 
           user={user}
           onPostCreated={onPostCreated}
-          refreshing={refreshing}
         />
       )}
       
       {displayedPosts.length === 0 ? (
-        <GroupPostsEmpty isMember={membershipStatus.isMember} />
+        <div className="text-center py-8 text-slate-500">
+          <p>No posts yet. Be the first to share something!</p>
+        </div>
       ) : (
         <div 
           className={cn(
@@ -121,7 +123,7 @@ export const FeedContent = ({
           )}
         >
           {displayedPosts.map((post) => (
-            <GroupPostCard 
+            <MobilePostCard2 
               key={post.id} 
               post={post}
               currentUserId={user?.id}
