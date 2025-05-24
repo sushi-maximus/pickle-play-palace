@@ -10,6 +10,8 @@ import { LoginPrompt } from "@/components/groups/LoginPrompt";
 import { MyGroupsList } from "@/components/groups/MyGroupsList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchFilter } from "@/components/groups/SearchFilter";
+import { MobileBottomNav } from "@/components/navigation/MobileBottomNav";
+import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 
 const Groups = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -28,16 +30,28 @@ const Groups = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      {/* Desktop Navigation */}
+      <div className="hidden md:block">
+        <Navbar />
+      </div>
       
-      <main className="flex-1 px-3 py-4 md:px-6 md:py-8">
+      {/* Mobile Header */}
+      <MobilePageHeader title="Groups" />
+      
+      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
         <div className="container mx-auto max-w-6xl">
-          <BreadcrumbNav items={breadcrumbItems} className="mb-4 md:mb-6" />
+          {/* Desktop Breadcrumb */}
+          <div className="hidden md:block">
+            <BreadcrumbNav items={breadcrumbItems} className="mb-4 md:mb-6" />
+          </div>
           
-          <GroupsHeader 
-            user={user} 
-            onRefresh={handleRefreshGroups} 
-          />
+          {/* Desktop Header */}
+          <div className="hidden md:block">
+            <GroupsHeader 
+              user={user} 
+              onRefresh={handleRefreshGroups} 
+            />
+          </div>
 
           {!user ? (
             <LoginPrompt />
@@ -73,7 +87,13 @@ const Groups = () => {
         </div>
       </main>
       
-      <Footer />
+      {/* Desktop Footer */}
+      <div className="hidden md:block">
+        <Footer />
+      </div>
+      
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };
