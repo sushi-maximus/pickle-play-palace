@@ -5,47 +5,24 @@ import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLoading } from "@/components/loading/DashboardLoading";
 import { PerformanceDashboard } from "@/components/performance";
-import { 
-  usePerformanceMetrics, 
-  useRenderTracker, 
-  useMemoryUsage, 
-  useMemoryLeakDetector,
-  useMemoryPressure 
-} from "@/hooks/performance";
+import { usePerformanceMonitoring } from "@/hooks/performance";
 
 const Dashboard = () => {
   const { isLoading } = useAuth();
   
-  // Add performance tracking
-  const { metrics } = usePerformanceMetrics({
+  // Integrated performance monitoring
+  const { 
+    metrics, 
+    memoryInfo, 
+    isHighUsage, 
+    pressureInfo 
+  } = usePerformanceMonitoring({ isLoading }, {
     componentName: 'Dashboard',
     enabled: process.env.NODE_ENV === 'development',
-    logToConsole: true
-  });
-
-  useRenderTracker({ isLoading }, {
-    componentName: 'Dashboard',
     trackProps: true,
-    threshold: 10,
-    enabled: process.env.NODE_ENV === 'development'
-  });
-
-  // Add memory monitoring
-  const { memoryInfo, isHighUsage } = useMemoryUsage({
-    enabled: process.env.NODE_ENV === 'development',
-    intervalMs: 5000,
-    alertThreshold: 75
-  });
-
-  const { trackObject } = useMemoryLeakDetector({
-    enabled: process.env.NODE_ENV === 'development',
-    componentName: 'Dashboard',
-    alertThreshold: 5
-  });
-
-  const { pressureInfo } = useMemoryPressure({
-    enabled: process.env.NODE_ENV === 'development',
-    checkIntervalMs: 10000
+    renderThreshold: 10,
+    memoryAlertThreshold: 75,
+    logToConsole: true
   });
 
   return (

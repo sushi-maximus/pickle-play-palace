@@ -1,5 +1,6 @@
 
 import { useRef, useEffect, useState, useCallback } from 'react';
+import { usePerformanceContext } from '@/contexts/PerformanceContext';
 
 interface PerformanceMetrics {
   renderCount: number;
@@ -27,13 +28,23 @@ export const usePerformanceMetrics = (options: UsePerformanceMetricsOptions = {}
     componentName
   });
 
+  const { isEnabled: contextEnabled, registerComponent, updateComponentMetrics } = usePerformanceContext();
+  const isTrackingEnabled = enabled && contextEnabled;
+
+  // Register component with context
+  useEffect(() => {
+    if (isTrackingEnabled) {
+      registerComponent(componentName);
+    }
+  }, [isTrackingEnabled, componentName, registerComponent]);
+
   // Start timing at the beginning of render
-  if (enabled) {
+  if (isTrackingEnabled) {
     renderStartTime.current = performance.now();
   }
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!isTrackingEnabled) return;
 
     const renderEndTime = performance.now();
     const renderTime = renderEndTime - renderStartTime.current;
@@ -50,6 +61,9 @@ export const usePerformanceMetrics = (options: UsePerformanceMetricsOptions = {}
         totalRenderTime: newTotalTime,
         componentName
       };
+
+      // Update context with new metrics
+      updateComponentMetrics(componentName, renderTime);
 
       if (logToConsole) {
         console.log(`Performance [${componentName}]:`, {
@@ -76,6 +90,6 @@ export const usePerformanceMetrics = (options: UsePerformanceMetricsOptions = {}
   return {
     metrics,
     resetMetrics,
-    isEnabled: enabled
+    isEnabled: isTrackingEnabled
   };
 };

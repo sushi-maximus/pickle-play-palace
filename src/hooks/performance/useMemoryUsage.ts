@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { usePerformanceContext } from '@/contexts/PerformanceContext';
 
 interface MemoryInfo {
   usedJSHeapSize: number;
@@ -13,7 +14,7 @@ interface UseMemoryUsageOptions {
   enabled?: boolean;
   intervalMs?: number;
   sampleSize?: number;
-  alertThreshold?: number; // Percentage threshold for memory alerts
+  alertThreshold?: number;
 }
 
 export const useMemoryUsage = (options: UseMemoryUsageOptions = {}) => {
@@ -30,15 +31,17 @@ export const useMemoryUsage = (options: UseMemoryUsageOptions = {}) => {
   const samplesRef = useRef<number[]>([]);
   const intervalRef = useRef<NodeJS.Timeout>();
 
-  // Check if performance.memory is supported
+  const { isEnabled: contextEnabled, updateMemoryMetrics } = usePerformanceContext();
+  const isTrackingEnabled = enabled && contextEnabled;
+
   useEffect(() => {
     const supported = 'memory' in performance;
     setIsSupported(supported);
     
-    if (!supported && enabled) {
+    if (!supported && isTrackingEnabled) {
       console.warn('Performance.memory API not supported in this browser');
     }
-  }, [enabled]);
+  }, [isTrackingEnabled]);
 
   const getMemoryInfo = useCallback((): MemoryInfo | null => {
     if (!isSupported || !('memory' in performance)) return null;
@@ -46,13 +49,11 @@ export const useMemoryUsage = (options: UseMemoryUsageOptions = {}) => {
     const memory = (performance as any).memory;
     const usedPercentage = (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100;
     
-    // Update samples for trend analysis
     samplesRef.current.push(usedPercentage);
     if (samplesRef.current.length > sampleSize) {
       samplesRef.current.shift();
     }
 
-    // Calculate trend
     let trend: 'increasing' | 'decreasing' | 'stable' = 'stable';
     if (samplesRef.current.length >= 3) {
       const recent = samplesRef.current.slice(-3);
@@ -70,9 +71,8 @@ export const useMemoryUsage = (options: UseMemoryUsageOptions = {}) => {
     };
   }, [isSupported, sampleSize]);
 
-  // Start memory monitoring
   useEffect(() => {
-    if (!enabled || !isSupported) return;
+    if (!isTrackingEnabled || !isSupported) return;
 
     const monitor = () => {
       const info = getMemoryInfo();
@@ -80,7 +80,9 @@ export const useMemoryUsage = (options: UseMemoryUsageOptions = {}) => {
         setMemoryInfo(info);
         setIsHighUsage(info.usedPercentage > alertThreshold);
         
-        // Log memory pressure warnings
+        // Update context with memory metrics
+        updateMemoryMetrics(info);
+        
         if (info.usedPercentage > alertThreshold) {
           console.warn(`High memory usage detected: ${info.usedPercentage.toFixed(1)}%`, {
             used: `${(info.usedJSHeapSize / 1024 / 1024).toFixed(2)} MB`,
@@ -91,10 +93,7 @@ export const useMemoryUsage = (options: UseMemoryUsageOptions = {}) => {
       }
     };
 
-    // Initial measurement
     monitor();
-    
-    // Set up interval
     intervalRef.current = setInterval(monitor, intervalMs);
 
     return () => {
@@ -102,7 +101,7 @@ export const useMemoryUsage = (options: UseMemoryUsageOptions = {}) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [enabled, isSupported, intervalMs, alertThreshold, getMemoryInfo]);
+  }, [isTrackingEnabled, isSupported, intervalMs, alertThreshold, getMemoryInfo, updateMemoryMetrics]);
 
   const forceGarbageCollection = useCallback(() => {
     if ('gc' in window && typeof (window as any).gc === 'function') {

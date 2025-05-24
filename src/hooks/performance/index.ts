@@ -4,6 +4,7 @@ export { useRenderTracker } from './useRenderTracker';
 export { useMemoryUsage } from './useMemoryUsage';
 export { useMemoryLeakDetector } from './useMemoryLeakDetector';
 export { useMemoryPressure } from './useMemoryPressure';
+export { usePerformanceMonitoring } from './usePerformanceMonitoring';
 export { PerformanceProvider, usePerformanceContext } from '../../contexts/PerformanceContext';
 
 // Re-export dashboard components for convenience

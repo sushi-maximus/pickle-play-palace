@@ -1,5 +1,6 @@
 
 import { useRef, useEffect } from 'react';
+import { usePerformanceContext } from '@/contexts/PerformanceContext';
 
 interface RenderInfo {
   componentName: string;
@@ -11,7 +12,7 @@ interface RenderInfo {
 interface UseRenderTrackerOptions {
   componentName: string;
   trackProps?: boolean;
-  threshold?: number; // Log only if render time exceeds this (ms)
+  threshold?: number;
   enabled?: boolean;
 }
 
@@ -24,17 +25,23 @@ export const useRenderTracker = (
   const previousProps = useRef<Record<string, any>>(props);
   const renderCount = useRef<number>(0);
 
+  const { isEnabled: contextEnabled, updateComponentMetrics } = usePerformanceContext();
+  const isTrackingEnabled = enabled && contextEnabled;
+
   // Start timing
-  if (enabled) {
+  if (isTrackingEnabled) {
     renderStartTime.current = performance.now();
   }
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!isTrackingEnabled) return;
 
     const renderEndTime = performance.now();
     const renderTime = renderEndTime - renderStartTime.current;
     renderCount.current += 1;
+
+    // Update context with render metrics
+    updateComponentMetrics(componentName, renderTime);
 
     // Only log if render time exceeds threshold
     if (renderTime > threshold) {
@@ -52,7 +59,6 @@ export const useRenderTracker = (
         ...(trackProps && { propsChanged: getChangedProps(previousProps.current, props) })
       });
 
-      // Store in performance observer if available
       if ('performance' in window && 'mark' in performance) {
         performance.mark(`slow-render-${componentName}-${renderCount.current}`);
       }
@@ -67,7 +73,6 @@ export const useRenderTracker = (
   };
 };
 
-// Helper function to identify which props changed
 const getChangedProps = (prevProps: Record<string, any>, currentProps: Record<string, any>) => {
   const changes: Record<string, { prev: any; current: any }> = {};
   
