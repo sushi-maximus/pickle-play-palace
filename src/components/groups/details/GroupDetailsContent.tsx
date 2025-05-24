@@ -6,7 +6,8 @@ import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 type Group = Database['public']['Tables']['groups']['Row'] & {
-  members?: any[];
+  members?: Database['public']['Tables']['group_members']['Row'][];
+  member_count: number;
 };
 
 interface MembershipStatus {

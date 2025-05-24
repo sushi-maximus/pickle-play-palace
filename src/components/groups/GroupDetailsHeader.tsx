@@ -6,10 +6,20 @@ import { ArrowLeft, Calendar, Lock, MapPin, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import type { Database } from "@/integrations/supabase/types";
+
+type Group = Database['public']['Tables']['groups']['Row'] & {
+  member_count: number;
+};
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
 
 interface GroupDetailsHeaderProps {
-  group: any;
-  breadcrumbItems: { label: string; href?: string }[];
+  group: Group | null;
+  breadcrumbItems: BreadcrumbItem[];
 }
 
 export const GroupDetailsHeader = ({ group, breadcrumbItems }: GroupDetailsHeaderProps) => {
@@ -71,7 +81,7 @@ export const GroupDetailsHeader = ({ group, breadcrumbItems }: GroupDetailsHeade
                   
                   <Badge variant="outline" className="flex items-center hover:bg-primary/5 transition-colors font-medium">
                     <Calendar className="h-3 w-3 mr-1" />
-                    Created {new Date(group?.created_at).toLocaleDateString()}
+                    Created {group?.created_at ? new Date(group.created_at).toLocaleDateString() : 'Unknown'}
                   </Badge>
                 </div>
               </div>

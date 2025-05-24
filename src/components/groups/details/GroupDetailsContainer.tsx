@@ -17,6 +17,12 @@ interface BreadcrumbItem {
   href?: string;
 }
 
+interface MembershipStatus {
+  isMember: boolean;
+  isPending: boolean;
+  isAdmin: boolean;
+}
+
 interface GroupDetailsContainerProps {
   id: string;
   user: Profile | null;
@@ -50,7 +56,7 @@ export const GroupDetailsContainer = ({
   };
   
   const handleJoinSuccess = () => {
-    const updatedStatus = { ...membershipStatus, isPending: true };
+    const updatedStatus: MembershipStatus = { ...membershipStatus, isPending: true };
   };
 
   if (loading) {
