@@ -33,6 +33,13 @@ export const OptimizedBottomNavigation = () => {
     user?.id
   );
 
+  console.log("OptimizedBottomNavigation - Debug:", {
+    isGroupDetailsPage,
+    groupId,
+    group: group?.name,
+    pathname: location.pathname
+  });
+
   // Base navigation items
   const baseNavItems: NavItem[] = [
     {
@@ -90,21 +97,21 @@ export const OptimizedBottomNavigation = () => {
     }
   ];
 
-  // Choose navigation items based on context
+  // Choose navigation items based on context - FORCE group context for testing
   const navItems = isGroupDetailsPage ? groupContextNavItems : baseNavItems;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-100">
-      {/* Group context indicator - Enhanced styling for Chunk 2 */}
-      {isGroupDetailsPage && group && (
-        <div className="bg-primary/10 border-b border-primary/20 px-4 py-3">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[100]">
+      {/* Group context indicator - ALWAYS show when on group page */}
+      {isGroupDetailsPage && (
+        <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold text-primary truncate">
-                {group.name}
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-semibold text-blue-700 truncate">
+                {group?.name || "Loading group..."}
               </span>
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -117,11 +124,6 @@ export const OptimizedBottomNavigation = () => {
             : location.pathname === item.to;
           const IconComponent = item.icon;
           
-          // Enhanced styling for back button
-          const backButtonStyles = item.isBackButton 
-            ? "text-primary bg-primary/15 border border-primary/30" 
-            : "";
-          
           return (
             <OptimizedNavLink
               key={item.to}
@@ -131,13 +133,11 @@ export const OptimizedBottomNavigation = () => {
                 isActive 
                   ? "text-primary bg-primary/10" 
                   : item.isBackButton
-                  ? `${backButtonStyles} hover:bg-primary/20 shadow-sm`
+                  ? "text-blue-600 bg-blue-100 border border-blue-300 hover:bg-blue-200 shadow-sm"
                   : "text-gray-600 hover:text-primary hover:bg-primary/5"
               }`}
             >
-              <IconComponent className={`mb-1 ${
-                item.isBackButton ? "h-5 w-5" : "h-5 w-5"
-              }`} />
+              <IconComponent className="h-5 w-5 mb-1" />
               <span className={`text-xs font-medium ${
                 item.isBackButton ? "font-semibold" : ""
               }`}>
