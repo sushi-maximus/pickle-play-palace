@@ -1,4 +1,5 @@
-import { Rss, Users, Info } from "lucide-react";
+
+import { Activity, Users, Info, Calendar } from "lucide-react";
 
 interface GroupHorizontalTabsProps {
   activeTab: string;
@@ -7,7 +8,8 @@ interface GroupHorizontalTabsProps {
 
 export const GroupHorizontalTabs = ({ activeTab, onTabChange }: GroupHorizontalTabsProps) => {
   const tabs = [
-    { id: "feed", label: "Feed", icon: Rss },
+    { id: "feed", label: "Activity", icon: Activity },
+    { id: "calendar", label: "Calendar", icon: Calendar },
     { id: "members", label: "Members", icon: Users },
     { id: "about", label: "About", icon: Info }
   ];
