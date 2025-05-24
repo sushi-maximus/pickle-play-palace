@@ -29,7 +29,7 @@ export const initializeApp = () => {
     window.addEventListener('load', () => {
       setTimeout(() => {
         const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-        const loadTime = navigation.loadEventEnd - navigation.navigationStart;
+        const loadTime = navigation.loadEventEnd - navigation.fetchStart;
         
         console.log(`⚡ App loaded in ${loadTime.toFixed(2)}ms`);
         bundleAnalyzer.correlateWithPerformance(loadTime);
