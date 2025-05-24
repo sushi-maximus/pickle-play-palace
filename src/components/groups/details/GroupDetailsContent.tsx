@@ -1,10 +1,13 @@
+
 import { MobileHome2Tab } from "@/components/groups/mobile";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
-type Group = Database['public']['Tables']['groups']['Row'];
+type Group = Database['public']['Tables']['groups']['Row'] & {
+  members?: any[];
+};
 
 interface MembershipStatus {
   isMember: boolean;

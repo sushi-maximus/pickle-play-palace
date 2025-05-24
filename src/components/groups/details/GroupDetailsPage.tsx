@@ -12,7 +12,9 @@ import { GroupDetailsContent } from "./GroupDetailsContent";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { GroupMobileLayout } from "@/components/groups/mobile";
 import { toast } from "sonner";
-import type { User } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export const GroupDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -55,6 +57,22 @@ export const GroupDetailsPage = () => {
     
     console.log("GroupDetailsPage: Valid group ID found:", cleanId);
   }, [cleanId, isValidUUID, navigate, id]);
+
+  // Convert Supabase Auth User to Profile for component compatibility
+  const userProfile: Profile | null = user ? {
+    id: user.id,
+    first_name: user.user_metadata?.first_name || '',
+    last_name: user.user_metadata?.last_name || '',
+    avatar_url: user.user_metadata?.avatar_url || null,
+    birthday: user.user_metadata?.birthday || null,
+    created_at: user.created_at || new Date().toISOString(),
+    updated_at: user.updated_at || new Date().toISOString(),
+    dupr_profile_link: user.user_metadata?.dupr_profile_link || null,
+    dupr_rating: user.user_metadata?.dupr_rating || null,
+    gender: user.user_metadata?.gender || 'Male',
+    phone_number: user.user_metadata?.phone_number || null,
+    skill_level: user.user_metadata?.skill_level || '2.5'
+  } : null;
 
   // Hooks - these will only execute with valid IDs due to the enabled condition
   const {
@@ -139,7 +157,7 @@ export const GroupDetailsPage = () => {
           <GroupDetailsContent
             activeTab={activeTab}
             group={group}
-            user={user}
+            user={userProfile}
             membershipStatus={membershipStatus}
             hasPendingRequests={hasPendingRequests}
             groupId={safeGroupId}
