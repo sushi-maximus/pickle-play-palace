@@ -33,8 +33,13 @@ export const MobilePostHeader = ({
 }: MobilePostHeaderProps) => {
   const isOwnPost = currentUserId === post.user_id;
   const profile = post.profiles;
-  const fullName = profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : 'Unknown User';
-  const initials = profile ? `${profile.first_name?.[0] || ''}${profile.last_name?.[0] || ''}` : 'UU';
+  
+  // Better handling of user name display
+  const firstName = profile?.first_name || '';
+  const lastName = profile?.last_name || '';
+  const fullName = `${firstName} ${lastName}`.trim();
+  const displayName = fullName || 'Unknown User';
+  const initials = firstName && lastName ? `${firstName[0]}${lastName[0]}` : 'UU';
 
   return (
     <div className="flex items-start justify-between p-3 md:p-4">
@@ -46,7 +51,7 @@ export const MobilePostHeader = ({
         
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-sm md:text-base text-gray-900 truncate">
-            {fullName}
+            {displayName}
           </h3>
           <p className="text-xs md:text-sm text-gray-500">
             {new Date(post.created_at).toLocaleDateString('en-US', {
