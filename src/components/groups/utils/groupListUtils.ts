@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
  * A utility function to fetch all groups
  */
 export const fetchAllGroups = async () => {
-  // First fetch all groups
+  // Fetch all groups with their stored member_count
   const { data, error } = await supabase
     .from("groups")
     .select("*")
@@ -16,25 +16,7 @@ export const fetchAllGroups = async () => {
     throw error;
   }
 
-  // For each group, count the number of active members
-  const groupsWithMemberCount = await Promise.all(
-    (data || []).map(async (group) => {
-      const { count, error: countError } = await supabase
-        .from("group_members")
-        .select("*", { count: "exact", head: true })
-        .eq("group_id", group.id)
-        .eq("status", "active");
-
-      if (countError) {
-        console.error(`Error counting members for group ${group.id}:`, countError);
-        return { ...group, member_count: 0 };
-      }
-
-      return { ...group, member_count: count || 0 };
-    })
-  );
-  
-  return groupsWithMemberCount || [];
+  return data || [];
 };
 
 /**
@@ -80,60 +62,23 @@ export const fetchUserMemberships = async (userId: string) => {
         throw groupsError;
       }
       
-      // Combine membership data with group data and add member counts
-      const membershipPromises = membershipData.map(async (membership) => {
+      // Combine membership data with group data (member_count is already included)
+      memberships = membershipData.map(membership => {
         const group = groupsData.find(g => g.id === membership.group_id);
-        if (!group) return null;
-
-        // Count the actual members for this group
-        const { count, error: countError } = await supabase
-          .from("group_members")
-          .select("*", { count: "exact", head: true })
-          .eq("group_id", group.id)
-          .eq("status", "active");
-
-        if (countError) {
-          console.error(`Error counting members for group ${group.id}:`, countError);
-        }
-
         return {
           id: membership.id,
           role: membership.role,
-          group: {
-            ...group,
-            member_count: count || 0
-          }
+          group: group || null
         };
-      });
-
-      const resolvedMemberships = await Promise.all(membershipPromises);
-      memberships = resolvedMemberships.filter(m => m !== null);
+      }).filter(m => m.group !== null);
     }
     
-    // Add created groups as admin memberships with member counts
-    const createdMembershipPromises = (createdGroups || []).map(async (group) => {
-      // Count the actual members for this group
-      const { count, error: countError } = await supabase
-        .from("group_members")
-        .select("*", { count: "exact", head: true })
-        .eq("group_id", group.id)
-        .eq("status", "active");
-
-      if (countError) {
-        console.error(`Error counting members for group ${group.id}:`, countError);
-      }
-
-      return {
-        id: `created-${group.id}`,
-        role: "admin",
-        group: {
-          ...group,
-          member_count: count || 0
-        }
-      };
-    });
-
-    const createdMemberships = await Promise.all(createdMembershipPromises);
+    // Add created groups as admin memberships (member_count is already included)
+    const createdMemberships = (createdGroups || []).map(group => ({
+      id: `created-${group.id}`,
+      role: "admin",
+      group
+    }));
     
     // Combine and deduplicate
     const allMemberships = [...memberships];

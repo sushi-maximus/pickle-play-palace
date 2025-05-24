@@ -124,6 +124,7 @@ export type Database = {
           is_private: boolean
           location: string | null
           max_members: number | null
+          member_count: number
           name: string
           skill_level_max: string | null
           skill_level_min: string | null
@@ -138,6 +139,7 @@ export type Database = {
           is_private?: boolean
           location?: string | null
           max_members?: number | null
+          member_count?: number
           name: string
           skill_level_max?: string | null
           skill_level_min?: string | null
@@ -152,6 +154,7 @@ export type Database = {
           is_private?: boolean
           location?: string | null
           max_members?: number | null
+          member_count?: number
           name?: string
           skill_level_max?: string | null
           skill_level_min?: string | null
