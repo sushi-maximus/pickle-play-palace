@@ -1,15 +1,15 @@
 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Comment2 } from "./Comment2";
 import { CommentForm2 } from "./CommentForm2";
 import { useComments2 } from "../hooks/useComments2";
 import { useAddComment2 } from "../hooks/useAddComment2";
-import { useEditComment2 } from "../hooks/useEditComment2";
-import { useDeleteComment2 } from "../hooks/useDeleteComment2";
-import { DeleteCommentDialog2 } from "./DeleteCommentDialog2";
-import { useState } from "react";
 
 interface CommentsSection2Props {
   postId: string;
+  currentUserId?: string;
   user?: {
     id: string;
     first_name: string;
@@ -18,106 +18,90 @@ interface CommentsSection2Props {
   };
 }
 
-export const CommentsSection2 = ({ postId, user }: CommentsSection2Props) => {
-  const [deleteDialogCommentId, setDeleteDialogCommentId] = useState<string | null>(null);
+export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSection2Props) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [newCommentContent, setNewCommentContent] = useState("");
 
-  const { comments, loading, refreshComments } = useComments2({
-    postId,
-    userId: user?.id
-  });
-
-  const { 
-    content,
-    setContent,
-    isSubmitting: isAddSubmitting,
-    handleSubmit: handleAddComment
-  } = useAddComment2({
-    postId,
-    userId: user?.id,
-    onCommentAdded: refreshComments
-  });
-
-  const {
-    isEditing,
-    editableContent,
-    setEditableContent,
-    isSubmitting: isEditSubmitting,
-    currentCommentId,
-    startEditing,
-    cancelEditing,
-    handleUpdate
-  } = useEditComment2({
-    onCommentUpdated: refreshComments
-  });
-
-  const { isDeleting, handleDelete } = useDeleteComment2({
-    onCommentDeleted: () => {
-      setDeleteDialogCommentId(null);
-      refreshComments();
+  const { comments, loading, refetch } = useComments2(postId);
+  const { addComment, isSubmitting } = useAddComment2({
+    onSuccess: () => {
+      setNewCommentContent("");
+      refetch();
     }
   });
 
-  const handleDeleteClick = (commentId: string) => {
-    setDeleteDialogCommentId(commentId);
+  const handleAddComment = () => {
+    if (newCommentContent.trim() && currentUserId) {
+      addComment({
+        postId,
+        content: newCommentContent.trim(),
+        userId: currentUserId
+      });
+    }
   };
 
-  const confirmDelete = () => {
-    if (deleteDialogCommentId) {
-      handleDelete(deleteDialogCommentId);
-    }
+  const handleCommentUpdate = () => {
+    refetch();
   };
 
   if (loading) {
     return (
-      <div className="p-4 text-center">
-        <div className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <div className="border-t border-gray-100 p-3 md:p-4">
+        <div className="flex items-center justify-center py-4">
+          <div className="h-4 w-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+        </div>
       </div>
     );
   }
 
+  if (!comments?.length && !currentUserId) {
+    return null;
+  }
+
   return (
-    <div className="border-t border-gray-100 ml-12 md:ml-14">
-      {/* Comments List */}
-      {comments.length > 0 && (
-        <div className="max-h-96 overflow-y-auto">
-          <div className="space-y-2">
-            {comments.map((comment) => (
-              <Comment2
-                key={comment.id}
-                comment={comment}
-                currentUserId={user?.id}
-                isEditing={isEditing && currentCommentId === comment.id}
-                editableContent={editableContent}
-                setEditableContent={setEditableContent}
-                isEditSubmitting={isEditSubmitting}
-                onStartEditing={startEditing}
-                onCancelEditing={cancelEditing}
-                onSaveEditing={handleUpdate}
-                onDeleteClick={handleDeleteClick}
-              />
-            ))}
-          </div>
+    <div className="border-t border-gray-100">
+      {comments && comments.length > 0 && (
+        <div className="px-3 md:px-4 py-2 border-b border-gray-50">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-between text-xs text-gray-500 hover:text-gray-700 h-8"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            <span>
+              {isExpanded ? 'Hide' : 'Show'} {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
+            </span>
+            {isExpanded ? (
+              <ChevronUp className="h-3 w-3" />
+            ) : (
+              <ChevronDown className="h-3 w-3" />
+            )}
+          </Button>
         </div>
       )}
-
-      {/* Comment Form */}
-      {user && (
+      
+      {isExpanded && comments && comments.length > 0 && (
+        <div className="max-h-96 overflow-y-auto">
+          {comments.map((comment) => (
+            <Comment2
+              key={comment.id}
+              comment={comment}
+              currentUserId={currentUserId}
+              onCommentUpdate={handleCommentUpdate}
+            />
+          ))}
+        </div>
+      )}
+      
+      {currentUserId && user && (
         <CommentForm2
-          content={content}
-          setContent={setContent}
+          content={newCommentContent}
+          setContent={setNewCommentContent}
           onSubmit={handleAddComment}
-          isSubmitting={isAddSubmitting}
+          isSubmitting={isSubmitting}
           user={user}
         />
       )}
-
-      {/* Delete Dialog */}
-      <DeleteCommentDialog2
-        isOpen={deleteDialogCommentId !== null}
-        onOpenChange={(open) => !open && setDeleteDialogCommentId(null)}
-        onConfirmDelete={confirmDelete}
-        isDeleting={isDeleting}
-      />
     </div>
   );
 };

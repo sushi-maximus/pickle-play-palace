@@ -1,4 +1,3 @@
-
 export * from './DeletePostDialog';
 export * from './PostHeader';
 export * from './PostContent';
@@ -15,3 +14,7 @@ export * from './CommentsSection2';
 export * from './DeleteCommentDialog2';
 export * from './CommentThumbsUp2';
 export * from './CommentThumbsDown2';
+export * from './ThumbsUp2';
+export * from './ThumbsDown2';
+export * from './PostReactions2';
+export * from './PostHeart2';

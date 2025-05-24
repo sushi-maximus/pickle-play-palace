@@ -12,34 +12,41 @@ import {
 
 interface DeleteCommentDialog2Props {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfirmDelete: () => void;
-  isDeleting: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  isSubmitting: boolean;
 }
 
 export const DeleteCommentDialog2 = ({
   isOpen,
-  onOpenChange,
-  onConfirmDelete,
-  isDeleting
+  onClose,
+  onConfirm,
+  isSubmitting
 }: DeleteCommentDialog2Props) => {
   return (
-    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
+      <AlertDialogContent className="sm:max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete this comment?</AlertDialogTitle>
+          <AlertDialogTitle>Delete Comment</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your comment.
+            Are you sure you want to delete this comment? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={onConfirmDelete}
-            disabled={isDeleting}
-            className="bg-destructive hover:bg-destructive/90"
+          <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onConfirm}
+            disabled={isSubmitting}
+            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="h-3 w-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Deleting...
+              </div>
+            ) : (
+              "Delete"
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
