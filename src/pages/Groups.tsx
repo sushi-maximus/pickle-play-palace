@@ -29,21 +29,23 @@ const Groups = () => {
         onCreateClick={handleCreateClick}
       />
       
-      <main className="flex-1 pt-20 pb-24 px-3 py-4 md:px-6 md:py-8">
-        <div className="container mx-auto max-w-6xl">
-          <div className="mb-4 md:mb-6">
-            <SearchFilter 
-              onSearch={handleSearch}
-              placeholder="Search groups..."
-            />
+      <main className="flex-1 pt-20 pb-24">
+        <div className="bg-white border-b px-4 py-4">
+          <SearchFilter 
+            onSearch={handleSearch}
+            placeholder="Search groups..."
+          />
+        </div>
+        
+        <div className="px-3 py-4 md:px-6 md:py-8">
+          <div className="container mx-auto max-w-6xl">
+            {showSearch && (
+              <div className="mb-4 p-4 bg-white rounded-lg border">
+                <h3 className="font-medium mb-2">Advanced Search</h3>
+                <p className="text-gray-600">Additional search options would go here</p>
+              </div>
+            )}
           </div>
-          
-          {showSearch && (
-            <div className="mt-4 p-4 bg-white rounded-lg border">
-              <h3 className="font-medium mb-2">Advanced Search</h3>
-              <p className="text-gray-600">Additional search options would go here</p>
-            </div>
-          )}
         </div>
       </main>
       
