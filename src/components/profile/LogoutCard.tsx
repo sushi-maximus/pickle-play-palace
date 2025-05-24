@@ -21,14 +21,14 @@ interface LogoutCardProps {
 export const LogoutCard = ({ onLogout }: LogoutCardProps) => {
   return (
     <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
-      <CardContent className="pt-6">
+      <CardContent className="pt-6 pb-6">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button 
               variant="ghost" 
-              className="justify-start w-full text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-auto px-2 md:h-9 md:px-3"
+              className="justify-start w-full text-destructive hover:text-destructive hover:bg-destructive/10 h-10 px-4"
             >
-              <LogOut className="mr-2 h-3 w-3 md:h-4 md:w-4" />
+              <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
           </AlertDialogTrigger>

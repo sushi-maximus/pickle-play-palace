@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -68,7 +69,7 @@ const Profile = () => {
       </div>
       
       <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-32 md:pb-4">
-        {/* Container for all cards with minimal bottom spacing */}
+        {/* Container for all cards with proper spacing */}
         <div className="container mx-auto max-w-4xl">
           <div className="space-y-3 md:space-y-4">
             <ProfileContent 
@@ -77,10 +78,8 @@ const Profile = () => {
               onLogout={handleLogout}
             />
             
-            {/* Logout Card - Ensure it's always visible */}
-            <div className="relative z-10">
-              <LogoutCard onLogout={handleLogout} />
-            </div>
+            {/* Logout Card - Always visible at the bottom */}
+            <LogoutCard onLogout={handleLogout} />
           </div>
         </div>
       </main>
