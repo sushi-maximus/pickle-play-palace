@@ -4,7 +4,7 @@ import { MobilePostCard2 } from "../../mobile/MobilePostCard2";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { MobilePostsLoading } from "../../mobile/MobilePostsLoading";
 import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
-import type { GroupPost } from "../hooks/types/groupPostTypes";
+import type { GroupPost, Profile } from "../hooks/types/groupPostTypes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ interface FeedContentProps {
   refreshing?: boolean;
   error: string | null;
   posts: GroupPost[];
-  user: any;
+  user: Profile | null;
   groupId: string;
   membershipStatus: {
     isMember: boolean;
@@ -124,9 +124,9 @@ export const FeedContent = ({
             // Debug log to see the post data structure
             console.log("FeedContent - Processing post:", {
               postId: post.id,
-              postUser: post.user,
-              userFirstName: post.user?.first_name,
-              userLastName: post.user?.last_name
+              postProfiles: post.profiles,
+              userFirstName: post.profiles?.first_name,
+              userLastName: post.profiles?.last_name
             });
 
             // Transform GroupPost to match MobilePostCard2 expected format
@@ -134,12 +134,12 @@ export const FeedContent = ({
               id: post.id,
               content: post.content,
               created_at: post.created_at,
-              user_id: post.user.id,
+              user_id: post.user_id,
               media_urls: post.media_urls,
               profiles: {
-                first_name: post.user.first_name || '',
-                last_name: post.user.last_name || '',
-                avatar_url: post.user.avatar_url
+                first_name: post.profiles?.first_name || '',
+                last_name: post.profiles?.last_name || '',
+                avatar_url: post.profiles?.avatar_url
               }
             };
 
