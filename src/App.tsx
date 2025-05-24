@@ -5,8 +5,12 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/providers/AuthProvider";
 
+// Import routing components
+import { ProtectedRoute } from "@/components/routing/ProtectedRoute";
+import { PublicRoute } from "@/components/routing/PublicRoute";
+import { Landing } from "@/components/routing/Landing";
+
 // Import pages
-import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
@@ -39,18 +43,57 @@ function App() {
           <AuthProvider>
             <div className="min-h-screen bg-background font-sans antialiased">
               <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
+                {/* Smart landing route - redirects authenticated users to dashboard */}
+                <Route path="/" element={<Landing />} />
+                
+                {/* Public routes that redirect authenticated users */}
+                <Route path="/login" element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                } />
+                <Route path="/signup" element={
+                  <PublicRoute>
+                    <Signup />
+                  </PublicRoute>
+                } />
+                <Route path="/forgot-password" element={
+                  <PublicRoute>
+                    <ForgotPassword />
+                  </PublicRoute>
+                } />
+                
+                {/* Public informational pages */}
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy" element={<Privacy />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/groups" element={<Groups />} />
-                <Route path="/groups/:id" element={<GroupDetails />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+                
+                {/* Protected routes requiring authentication */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/groups" element={
+                  <ProtectedRoute>
+                    <Groups />
+                  </ProtectedRoute>
+                } />
+                <Route path="/groups/:id" element={
+                  <ProtectedRoute>
+                    <GroupDetails />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Auth callback - no protection needed */}
                 <Route path="/auth/callback" element={<AuthCallback />} />
+                
+                {/* 404 route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
