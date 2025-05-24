@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { CreatePostForm2 } from "../posts/CreatePostForm2";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
@@ -7,6 +6,7 @@ import { useDeletePost } from "../posts/hooks/useDeletePost";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
 import { MobilePostsLoading } from "./MobilePostsLoading";
 import { MobilePostsList } from "./MobilePostsList";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface MobileHome2TabProps {
   groupId: string;
@@ -90,8 +90,8 @@ export const MobileHome2Tab = ({
           )}
           
           {refreshing && (
-            <div className="text-center py-1 md:py-2 mb-3 md:mb-4">
-              <div className="inline-block w-3 h-3 md:w-4 md:h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-center py-2 md:py-3 mb-3 md:mb-4">
+              <LoadingSpinner size="sm" text="Refreshing posts..." />
             </div>
           )}
           
