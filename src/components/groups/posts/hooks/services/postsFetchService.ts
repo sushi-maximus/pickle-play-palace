@@ -49,10 +49,17 @@ export const fetchReactionCounts = async (postId: string) => {
     .eq("post_id", postId)
     .eq("reaction_type", "thumbsdown");
 
+  const { count: heartCount } = await supabase
+    .from("reactions")
+    .select("*", { count: "exact", head: true })
+    .eq("post_id", postId)
+    .eq("reaction_type", "heart");
+
   return {
     like: likeCount || 0,
     thumbsup: thumbsUpCount || 0,
-    thumbsdown: thumbsDownCount || 0
+    thumbsdown: thumbsDownCount || 0,
+    heart: heartCount || 0
   };
 };
 
@@ -70,7 +77,8 @@ export const fetchUserReactions = async (postId: string, userId?: string) => {
     return {
       like: false,
       thumbsup: false,
-      thumbsdown: false
+      thumbsdown: false,
+      heart: false
     };
   }
 
@@ -98,9 +106,18 @@ export const fetchUserReactions = async (postId: string, userId?: string) => {
     .eq("reaction_type", "thumbsdown")
     .maybeSingle();
   
+  const { data: heartReaction } = await supabase
+    .from("reactions")
+    .select("*")
+    .eq("post_id", postId)
+    .eq("user_id", userId)
+    .eq("reaction_type", "heart")
+    .maybeSingle();
+  
   return {
     like: !!likeReaction,
     thumbsup: !!thumbsUpReaction,
-    thumbsdown: !!thumbsDownReaction
+    thumbsdown: !!thumbsDownReaction,
+    heart: !!heartReaction
   };
 };
