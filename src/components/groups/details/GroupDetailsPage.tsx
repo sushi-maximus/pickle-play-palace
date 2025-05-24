@@ -94,7 +94,8 @@ export const GroupDetailsPage = () => {
     groupLoading,
     groupError,
     group: !!group,
-    user: !!user
+    user: !!user,
+    isAdmin: membershipStatus.isAdmin
   });
 
   // Early return if no valid ID - show loading while we redirect
@@ -122,7 +123,7 @@ export const GroupDetailsPage = () => {
   }
 
   // Success state - render the group content
-  console.log("GroupDetailsPage: Rendering group successfully:", group?.name);
+  console.log("GroupDetailsPage: Rendering group successfully:", group?.name, "Admin status:", membershipStatus.isAdmin);
 
   return (
     <RouteErrorBoundary routeName="Group Details">
@@ -132,6 +133,7 @@ export const GroupDetailsPage = () => {
           memberCount={group.member_count}
           activeTab={activeTab}
           onTabChange={handleTabChange}
+          isAdmin={membershipStatus.isAdmin}
         >
           <GroupDetailsContent
             activeTab={activeTab}
