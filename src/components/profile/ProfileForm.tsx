@@ -14,13 +14,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileErrorMessage } from "./ProfileErrorMessage";
 import { Loader2 } from "lucide-react";
+import type { Database } from "@/integrations/supabase/types";
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface ProfileFormProps {
-  userId: string;
-  profileData: any;
+  profile: Profile;
+  onProfileUpdate: (updatedProfile: Profile) => void;
 }
 
-export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
+export const ProfileForm = ({ profile, onProfileUpdate }: ProfileFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -36,15 +39,15 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       birthday: undefined,
       duprRating: "",
     },
-    mode: "onChange" // Enable onChange validation mode for real-time feedback
+    mode: "onChange"
   });
 
   // Set form values when profile data is available
   useEffect(() => {
-    if (profileData) {
-      console.log("Initial profile data:", profileData);
+    if (profile) {
+      console.log("Initial profile data:", profile);
       
-      const formValues = mapProfileDataToFormValues(profileData);
+      const formValues = mapProfileDataToFormValues(profile);
       console.log("Setting form values to:", formValues);
       
       // Use setValue for each field individually to ensure the SelectFields update correctly
@@ -55,7 +58,7 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       // Set data ready after a small delay to ensure smooth transition
       setTimeout(() => setIsDataReady(true), 300);
     }
-  }, [profileData, form]);
+  }, [profile, form]);
 
   const onSubmit = async (values: ProfileFormValues) => {
     try {
@@ -66,12 +69,19 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
       const updateData = formatProfileDataForUpdate(values);
       console.log("Update data being sent to Supabase:", updateData);
       
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from("profiles")
         .update(updateData)
-        .eq("id", userId);
+        .eq("id", profile.id)
+        .select()
+        .single();
       
       if (error) throw error;
+      
+      // Update the parent component with the new profile data
+      if (data) {
+        onProfileUpdate(data);
+      }
       
       // Refresh the profile data after successful update
       await refreshProfile();
@@ -90,6 +100,12 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRetry = async () => {
+    setFormError(null);
+    // Trigger form submission again
+    form.handleSubmit(onSubmit)();
   };
 
   // Show skeleton UI while data is loading
@@ -122,7 +138,7 @@ export const ProfileForm = ({ userId, profileData }: ProfileFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-        {formError && <ProfileErrorMessage errorMessage={formError} />}
+        {formError && <ProfileErrorMessage error={formError} onRetry={handleRetry} />}
         
         <div className="space-y-8">
           <div>

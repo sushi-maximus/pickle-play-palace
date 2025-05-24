@@ -16,12 +16,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
 interface ProfileHeaderProps {
-  user: User;
-  profile: Tables<"profiles"> | null;
-  getInitials: () => string;
+  profile: Tables<"profiles">;
 }
 
-export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps) => {
+export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   const [avatarLoading, setAvatarLoading] = useState(!!profile?.avatar_url);
   
   // Calculate age from birthday
@@ -31,6 +29,13 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
       return differenceInYears(new Date(), birthdayDate);
     }
     return null;
+  };
+
+  // Get user initials from profile data
+  const getInitials = () => {
+    const firstName = profile?.first_name || '';
+    const lastName = profile?.last_name || '';
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
   // Determine rating display
@@ -54,13 +59,13 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
 
   return (
     <div className="flex flex-col items-center md:flex-row md:items-start md:gap-6 mb-8 p-6 bg-card rounded-lg shadow-sm border border-border">
-      {user && profile && (
+      {profile && (
         <div className="relative">
           {avatarLoading && profile.avatar_url && (
             <Skeleton className="absolute inset-0 h-24 w-24 rounded-full z-10" />
           )}
           <ProfileAvatar 
-            userId={user.id}
+            userId={profile.id}
             avatarUrl={profile.avatar_url}
             getInitials={getInitials}
             onAvatarLoaded={handleAvatarLoaded}
@@ -71,7 +76,6 @@ export const ProfileHeader = ({ user, profile, getInitials }: ProfileHeaderProps
         <h2 className="text-xl font-semibold">
           {profile?.first_name} {profile?.last_name}
         </h2>
-        <p className="text-muted-foreground">{user.email}</p>
         <div className="flex flex-wrap gap-4 mt-3">
           <TooltipProvider>
             <Tooltip>

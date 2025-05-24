@@ -14,12 +14,26 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileSidebarProps {
-  onLogout: () => Promise<void>;
+  profile: any;
 }
 
-export const ProfileSidebar = ({ onLogout }: ProfileSidebarProps) => {
+export const ProfileSidebar = ({ profile }: ProfileSidebarProps) => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
   return (
     <Card className="w-full md:w-64 p-4">
       <h3 className="font-medium text-lg border-b pb-2 mb-4">Account Menu</h3>
@@ -103,7 +117,7 @@ export const ProfileSidebar = ({ onLogout }: ProfileSidebarProps) => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={onLogout}>Log out</AlertDialogAction>
+                <AlertDialogAction onClick={handleLogout}>Log out</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
