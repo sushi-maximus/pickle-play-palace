@@ -1,5 +1,4 @@
-
-import { Users, Feed } from "lucide-react";
+import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MobileGroupHeaderProps {
