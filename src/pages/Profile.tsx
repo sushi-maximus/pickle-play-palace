@@ -13,18 +13,21 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Profile page mounted - user:", user, "isLoading:", isLoading);
-  }, []);
+    console.log("Profile page mounted - user:", !!user, "profile:", !!profile, "isLoading:", isLoading);
+  }, [user, profile, isLoading]);
 
   useEffect(() => {
+    // Only redirect if we're done loading and there's no user
     if (!isLoading && !user) {
+      console.log("No user found, redirecting to login");
       navigate("/login");
       return;
     }
   }, [user, isLoading, navigate]);
 
-  // Show loading state
+  // Show loading state while authentication is being checked
   if (isLoading) {
+    console.log("Still loading authentication state");
     return (
       <RouteErrorBoundary routeName="Profile">
         <AppLayout 
@@ -37,9 +40,41 @@ const Profile = () => {
     );
   }
 
-  // Redirect to login if not authenticated
-  if (!user || !profile) {
+  // If user exists but profile is still loading, show loading
+  if (user && !profile) {
+    console.log("User exists but profile not loaded yet");
+    return (
+      <RouteErrorBoundary routeName="Profile">
+        <AppLayout 
+          title="Profile" 
+          showMobileProfileHeader={false}
+        >
+          <ProfileLoading />
+        </AppLayout>
+      </RouteErrorBoundary>
+    );
+  }
+
+  // If no user after loading is complete, this will be handled by the useEffect redirect
+  if (!user) {
     return null;
+  }
+
+  // If we have user but no profile, there might be an issue
+  if (!profile) {
+    console.error("User exists but no profile found");
+    return (
+      <RouteErrorBoundary routeName="Profile">
+        <AppLayout 
+          title="Profile" 
+          showMobileProfileHeader={false}
+        >
+          <div className="text-center py-8">
+            <p className="text-red-600">Error loading profile. Please try refreshing the page.</p>
+          </div>
+        </AppLayout>
+      </RouteErrorBoundary>
+    );
   }
 
   console.log("Profile page rendering main content");
