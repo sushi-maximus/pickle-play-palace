@@ -48,21 +48,43 @@ export const MobilePostCard2 = ({
   const [showComments, setShowComments] = useState(false);
 
   const {
-    reactions,
-    userReactions,
-    isSubmitting: isReactionsSubmitting,
-    handleReactionToggle
-  } = usePostReactions2(post.id, currentUserId);
+    thumbsUpCount,
+    thumbsDownCount,
+    heartCount,
+    isThumbsUpActive,
+    isThumbsDownActive,
+    isHeartActive,
+    isThumbsUpSubmitting,
+    isThumbsDownSubmitting,
+    isHeartSubmitting,
+    toggleThumbsUp,
+    toggleThumbsDown,
+    toggleHeart
+  } = usePostReactions2({
+    postId: post.id,
+    userId: currentUserId,
+    initialThumbsUp: 0,
+    initialThumbsDown: 0,
+    initialHeart: 0,
+    initialUserThumbsUp: false,
+    initialUserThumbsDown: false,
+    initialUserHeart: false
+  });
 
-  const { editPost, isSubmitting: isEditSubmitting } = useEditPost({
-    onSuccess: () => {
+  const { 
+    startEditing, 
+    cancelEditing, 
+    handleUpdate, 
+    isSubmitting: isEditSubmitting 
+  } = useEditPost({
+    onPostUpdated: () => {
       setIsEditing(false);
       onPostUpdate?.();
     }
   });
 
-  const { deletePost, isSubmitting: isDeleteSubmitting } = useDeletePost({
-    onSuccess: () => {
+  const { handleDelete, isDeleting } = useDeletePost({
+    onPostDeleted: () => {
       onPostUpdate?.();
     }
   });
@@ -70,26 +92,26 @@ export const MobilePostCard2 = ({
   const handleEdit = () => {
     setIsEditing(true);
     setEditableContent(post.content);
+    startEditing(post.id, post.content);
   };
 
   const handleSaveEditing = () => {
     if (editableContent.trim() && editableContent !== post.content) {
-      editPost({
-        postId: post.id,
-        content: editableContent.trim()
-      });
+      handleUpdate();
     } else {
       setIsEditing(false);
+      cancelEditing();
     }
   };
 
   const handleCancelEditing = () => {
     setIsEditing(false);
     setEditableContent(post.content);
+    cancelEditing();
   };
 
-  const handleDelete = () => {
-    deletePost(post.id);
+  const handleDeleteClick = () => {
+    handleDelete(post.id);
     setShowDeleteDialog(false);
   };
 
@@ -139,7 +161,7 @@ export const MobilePostCard2 = ({
                 <DropdownMenuItem 
                   onClick={() => setShowDeleteDialog(true)} 
                   className="text-red-600 focus:text-red-600"
-                  disabled={isDeleteSubmitting}
+                  disabled={isDeleting}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Post
@@ -166,18 +188,18 @@ export const MobilePostCard2 = ({
         {/* Post Actions */}
         <div className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 border-t border-gray-100">
           <PostReactions2
-            thumbsUpCount={reactions.thumbsup}
-            thumbsDownCount={reactions.thumbsdown}
-            heartCount={reactions.like}
-            isThumbsUpActive={userReactions.thumbsup}
-            isThumbsDownActive={userReactions.thumbsdown}
-            isHeartActive={userReactions.like}
-            isThumbsUpSubmitting={isReactionsSubmitting.thumbsup}
-            isThumbsDownSubmitting={isReactionsSubmitting.thumbsdown}
-            isHeartSubmitting={isReactionsSubmitting.like}
-            onThumbsUpClick={() => handleReactionToggle('thumbsup')}
-            onThumbsDownClick={() => handleReactionToggle('thumbsdown')}
-            onHeartClick={() => handleReactionToggle('like')}
+            thumbsUpCount={thumbsUpCount}
+            thumbsDownCount={thumbsDownCount}
+            heartCount={heartCount}
+            isThumbsUpActive={isThumbsUpActive}
+            isThumbsDownActive={isThumbsDownActive}
+            isHeartActive={isHeartActive}
+            isThumbsUpSubmitting={isThumbsUpSubmitting}
+            isThumbsDownSubmitting={isThumbsDownSubmitting}
+            isHeartSubmitting={isHeartSubmitting}
+            onThumbsUpClick={toggleThumbsUp}
+            onThumbsDownClick={toggleThumbsDown}
+            onHeartClick={toggleHeart}
             disabled={!currentUserId}
           />
           
@@ -206,9 +228,9 @@ export const MobilePostCard2 = ({
       
       <DeletePostDialog
         isOpen={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-        onConfirm={handleDelete}
-        isSubmitting={isDeleteSubmitting}
+        onOpenChange={(open) => !open && setShowDeleteDialog(false)}
+        onConfirmDelete={handleDeleteClick}
+        isDeleting={isDeleting}
       />
     </Card>
   );

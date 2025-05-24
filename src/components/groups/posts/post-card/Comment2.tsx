@@ -34,21 +34,37 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { 
-    reactions, 
-    userReactions, 
-    isSubmitting, 
-    handleReactionToggle 
-  } = useCommentReactions2(comment.id, currentUserId);
+    thumbsUpCount,
+    thumbsDownCount,
+    isThumbsUpActive,
+    isThumbsDownActive,
+    isThumbsUpSubmitting,
+    isThumbsDownSubmitting,
+    toggleThumbsUp,
+    toggleThumbsDown
+  } = useCommentReactions2({
+    commentId: comment.id,
+    userId: currentUserId,
+    initialThumbsUp: 0,
+    initialThumbsDown: 0,
+    initialUserThumbsUp: false,
+    initialUserThumbsDown: false
+  });
 
-  const { editComment, isSubmitting: isEditSubmitting } = useEditComment2({
-    onSuccess: () => {
+  const { 
+    startEditing, 
+    cancelEditing, 
+    handleUpdate, 
+    isSubmitting: isEditSubmitting 
+  } = useEditComment2({
+    onCommentUpdated: () => {
       setIsEditing(false);
       onCommentUpdate?.();
     }
   });
 
-  const { deleteComment, isSubmitting: isDeleteSubmitting } = useDeleteComment2({
-    onSuccess: () => {
+  const { handleDelete, isDeleting } = useDeleteComment2({
+    onCommentDeleted: () => {
       onCommentUpdate?.();
     }
   });
@@ -56,26 +72,26 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   const handleEdit = () => {
     setIsEditing(true);
     setEditContent(comment.content);
+    startEditing(comment.id, comment.content);
   };
 
   const handleSaveEdit = () => {
     if (editContent.trim() && editContent !== comment.content) {
-      editComment({
-        commentId: comment.id,
-        content: editContent.trim()
-      });
+      handleUpdate();
     } else {
       setIsEditing(false);
+      cancelEditing();
     }
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditContent(comment.content);
+    cancelEditing();
   };
 
-  const handleDelete = () => {
-    deleteComment(comment.id);
+  const handleDeleteClick = () => {
+    handleDelete(comment.id);
     setShowDeleteDialog(false);
   };
 
@@ -120,7 +136,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
                 <DropdownMenuItem 
                   onClick={() => setShowDeleteDialog(true)} 
                   className="text-red-600 focus:text-red-600"
-                  disabled={isDeleteSubmitting}
+                  disabled={isDeleting}
                 >
                   <Trash2 className="h-3 w-3 mr-2" />
                   Delete
@@ -166,17 +182,17 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
         
         <div className="flex items-center gap-2 mt-2">
           <CommentThumbsUp2
-            count={reactions.thumbsup}
-            isActive={userReactions.thumbsup}
-            isSubmitting={isSubmitting.thumbsup}
-            onClick={() => handleReactionToggle('thumbsup')}
+            count={thumbsUpCount}
+            isActive={isThumbsUpActive}
+            isSubmitting={isThumbsUpSubmitting}
+            onClick={toggleThumbsUp}
             disabled={!currentUserId}
           />
           <CommentThumbsDown2
-            count={reactions.thumbsdown}
-            isActive={userReactions.thumbsdown}
-            isSubmitting={isSubmitting.thumbsdown}
-            onClick={() => handleReactionToggle('thumbsdown')}
+            count={thumbsDownCount}
+            isActive={isThumbsDownActive}
+            isSubmitting={isThumbsDownSubmitting}
+            onClick={toggleThumbsDown}
             disabled={!currentUserId}
           />
         </div>
@@ -185,8 +201,8 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
       <DeleteCommentDialog2
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
-        onConfirm={handleDelete}
-        isSubmitting={isDeleteSubmitting}
+        onConfirm={handleDeleteClick}
+        isSubmitting={isDeleting}
       />
     </div>
   );

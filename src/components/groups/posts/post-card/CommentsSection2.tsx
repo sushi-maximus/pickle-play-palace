@@ -22,26 +22,29 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   const [isExpanded, setIsExpanded] = useState(false);
   const [newCommentContent, setNewCommentContent] = useState("");
 
-  const { comments, loading, refetch } = useComments2(postId);
-  const { addComment, isSubmitting } = useAddComment2({
-    onSuccess: () => {
+  const { comments, loading, refreshComments } = useComments2({
+    postId,
+    userId: currentUserId
+  });
+
+  const { handleSubmit, isSubmitting } = useAddComment2({
+    postId,
+    userId: currentUserId || '',
+    content: newCommentContent,
+    onCommentAdded: () => {
       setNewCommentContent("");
-      refetch();
+      refreshComments();
     }
   });
 
   const handleAddComment = () => {
     if (newCommentContent.trim() && currentUserId) {
-      addComment({
-        postId,
-        content: newCommentContent.trim(),
-        userId: currentUserId
-      });
+      handleSubmit();
     }
   };
 
   const handleCommentUpdate = () => {
-    refetch();
+    refreshComments();
   };
 
   if (loading) {
