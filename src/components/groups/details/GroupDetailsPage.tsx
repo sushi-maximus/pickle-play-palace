@@ -21,12 +21,13 @@ export const GroupDetailsPage = () => {
 
   console.log("GroupDetailsPage: Rendering with raw ID:", id, "User:", !!user);
 
-  // Validate and clean the ID parameter - this must happen synchronously
+  // Validate and clean the ID parameter
   const cleanId = id?.trim();
-  const isValidUUID = cleanId && cleanId !== ':id' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(cleanId);
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const isValidUUID = cleanId && cleanId !== ':id' && uuidRegex.test(cleanId);
   
-  // Only use the ID if it's valid, otherwise use null to prevent hook execution
-  const validGroupId = isValidUUID ? cleanId : null;
+  // Only use the ID if it's valid, otherwise use empty string to prevent hook execution
+  const validGroupId = isValidUUID ? cleanId : "";
 
   console.log("GroupDetailsPage: ID validation", {
     rawId: id,
@@ -35,7 +36,7 @@ export const GroupDetailsPage = () => {
     validGroupId
   });
 
-  // Early return and redirect if no valid ID - this happens after render
+  // Handle invalid IDs with redirect
   useEffect(() => {
     if (!cleanId || cleanId === '' || cleanId === ':id') {
       console.error("GroupDetailsPage: No valid group ID provided, ID:", id);
@@ -54,7 +55,7 @@ export const GroupDetailsPage = () => {
     console.log("GroupDetailsPage: Valid group ID found:", cleanId);
   }, [cleanId, isValidUUID, navigate, id]);
 
-  // Now we can safely call hooks - they will only execute with valid IDs
+  // Hooks - these will only execute with valid IDs due to the enabled condition
   const {
     group,
     loading: groupLoading,
@@ -62,9 +63,8 @@ export const GroupDetailsPage = () => {
     membershipStatus,
     hasPendingRequests,
     handleMemberUpdate
-  } = useGroupDetails(validGroupId || "", user?.id);
+  } = useGroupDetails(validGroupId, user?.id);
 
-  // Posts management - only execute if we have a valid group ID
   const { 
     posts, 
     loading: postsLoading, 
@@ -72,7 +72,7 @@ export const GroupDetailsPage = () => {
     error: postsError, 
     refreshPosts 
   } = useGroupPosts({ 
-    groupId: validGroupId || "", 
+    groupId: validGroupId, 
     userId: user?.id 
   });
 
@@ -98,7 +98,7 @@ export const GroupDetailsPage = () => {
   });
 
   // Early return if no valid ID - show loading while we redirect
-  if (!validGroupId) {
+  if (!isValidUUID) {
     console.log("GroupDetailsPage: Rendering loading state due to invalid ID, will redirect");
     return <GroupDetailsLoading />;
   }

@@ -1,5 +1,6 @@
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   GroupPost, 
@@ -15,97 +16,93 @@ export type { PostReactionType } from "./usePostReactions";
 export const useGroupPosts = (
   { groupId, userId }: UseGroupPostsProps
 ): UseGroupPostsResult => {
-  const [posts, setPosts] = useState<GroupPost[]>([]);
-  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [groupName, setGroupName] = useState<string>("");
 
-  // Check if we have a valid group ID that's not empty and not the route parameter
-  const shouldFetch = groupId && groupId.trim() !== '' && groupId !== ':id';
+  // Validate group ID
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const isValidUUID = shouldFetch && uuidRegex.test(groupId);
+  const isValidUUID = groupId && groupId.trim() !== '' && groupId !== ':id' && uuidRegex.test(groupId);
 
-  const fetchPosts = async () => {
-    // Don't fetch if we don't have a valid group ID
+  console.log("useGroupPosts: Hook called with", { groupId, isValidUUID, userId: !!userId });
+
+  // Use React Query for posts data
+  const {
+    data: posts = [],
+    isLoading: loading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['group-posts', groupId, userId],
+    queryFn: async () => {
+      console.log("useGroupPosts: Fetching posts for group:", groupId);
+      
+      try {
+        // Get posts for this group
+        const { data: postsData, error: postsError } = await supabase
+          .from("posts")
+          .select(`*`)
+          .eq("group_id", groupId)
+          .order("created_at", { ascending: false });
+
+        if (postsError) {
+          throw postsError;
+        }
+
+        // Fetch group info for name
+        const name = await fetchGroupInfo(groupId);
+        setGroupName(name);
+
+        // If no posts, return empty array
+        if (!postsData || postsData.length === 0) {
+          return [];
+        }
+
+        // Map posts with all their related data
+        const postsWithData = await mapPostsWithDetails(postsData, userId);
+        return postsWithData;
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+        throw new Error("Failed to load posts. Please try again later.");
+      }
+    },
+    enabled: !!isValidUUID, // Only run query if we have a valid UUID
+    retry: false,
+    staleTime: 30 * 1000, // 30 seconds
+  });
+
+  // Manual refresh function
+  const refreshPosts = useCallback(async () => {
     if (!isValidUUID) {
-      console.log("useGroupPosts: Invalid or missing group ID, skipping fetch:", groupId);
-      setPosts([]);
-      setLoading(false);
-      setRefreshing(false);
-      setError(null);
-      setGroupName("");
+      console.log("useGroupPosts: Cannot refresh - invalid group ID");
       return;
     }
 
+    setRefreshing(true);
     try {
-      // Only set loading to true if this is the initial fetch (no posts yet)
-      // Otherwise, set refreshing to true for background updates
-      if (posts.length === 0) {
-        setLoading(true);
-        setRefreshing(false);
-      } else {
-        setRefreshing(true);
-        // Keep loading false so we don't show loading skeletons
-        setLoading(false);
-      }
-      
-      // Get posts for this group
-      const { data: postsData, error: postsError } = await supabase
-        .from("posts")
-        .select(`*`)
-        .eq("group_id", groupId)
-        .order("created_at", { ascending: false });
-
-      if (postsError) {
-        throw postsError;
-      }
-
-      // Fetch group info for name
-      const name = await fetchGroupInfo(groupId);
-      setGroupName(name);
-
-      // If no posts, return early
-      if (!postsData || postsData.length === 0) {
-        setPosts([]);
-        setError(null);
-        return;
-      }
-
-      // Map posts with all their related data
-      const postsWithData = await mapPostsWithDetails(postsData, userId);
-      
-      setPosts(postsWithData);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching posts:", err);
-      setError("Failed to load posts. Please try again later.");
+      await refetch();
+    } catch (error) {
+      console.error("Error refreshing posts:", error);
     } finally {
-      setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [isValidUUID, refetch]);
 
-  useEffect(() => {
-    if (isValidUUID) {
-      fetchPosts();
-    } else {
-      // Reset state for invalid group IDs
-      console.log("useGroupPosts: Resetting state for invalid group ID:", groupId);
-      setPosts([]);
-      setLoading(false);
-      setRefreshing(false);
-      setError(null);
-      setGroupName("");
-    }
-  }, [groupId, userId, isValidUUID, shouldFetch]);
+  const errorMessage = error instanceof Error ? error.message : null;
 
-  return {
-    posts,
+  console.log("useGroupPosts: Returning state", {
+    postsCount: posts?.length || 0,
     loading,
     refreshing,
-    error,
+    error: errorMessage,
+    isValidUUID
+  });
+
+  return {
+    posts: posts || [],
+    loading,
+    refreshing,
+    error: errorMessage,
     groupName,
-    refreshPosts: fetchPosts
+    refreshPosts
   };
 };

@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { fetchGroupDetails } from "@/components/groups/utils";
 import { checkMembershipStatus } from "@/components/groups/services";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,9 +21,6 @@ export interface MembershipStatus {
 
 export function useGroupDetails(id: string, userId?: string) {
   const navigate = useNavigate();
-  const [group, setGroup] = useState<GroupData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [membershipStatus, setMembershipStatus] = useState<MembershipStatus>({
     isMember: false,
     isPending: false,
@@ -32,62 +30,37 @@ export function useGroupDetails(id: string, userId?: string) {
   
   console.log("useGroupDetails: Hook called with", { id, userId: !!userId });
   
-  // Only fetch data if we have a valid ID that's not empty
-  const shouldFetch = id && id.trim() !== '' && id !== ':id';
+  // Validate ID format
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const isValidUUID = shouldFetch && uuidRegex.test(id);
+  const isValidUUID = id && id.trim() !== '' && id !== ':id' && uuidRegex.test(id);
   
-  useEffect(() => {
-    // Reset state first
-    setGroup(null);
-    setError(null);
-    setLoading(false);
-    
-    // Don't fetch if we don't have a valid ID
-    if (!shouldFetch) {
-      console.log("useGroupDetails: No ID provided, skipping data fetch");
-      return;
-    }
+  console.log("useGroupDetails: ID validation", { id, isValidUUID });
 
-    if (!isValidUUID) {
-      console.log("useGroupDetails: Invalid UUID format, skipping data fetch");
-      setError("Invalid group ID format");
-      return;
-    }
-
-    // Start loading
-    setLoading(true);
-    
-    const loadGroupDetails = async () => {
-      try {
-        console.log("useGroupDetails: Fetching group details for valid UUID:", id);
-        const groupData = await fetchGroupDetails(id);
-        
-        if (!groupData) {
-          console.warn("useGroupDetails: No group data returned");
-          setError("Group not found");
-          setLoading(false);
-          return;
-        }
-        
-        console.log("useGroupDetails: Successfully loaded group:", groupData.name);
-        setGroup(groupData);
-        setError(null);
-      } catch (error) {
-        console.error("useGroupDetails: Failed to load group details:", error);
-        setError(error instanceof Error ? error.message : "Failed to load group details");
-      } finally {
-        setLoading(false);
+  // Use React Query for group data with enabled condition
+  const {
+    data: group,
+    isLoading: loading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['group-details', id],
+    queryFn: async () => {
+      console.log("useGroupDetails: Fetching group details for:", id);
+      const groupData = await fetchGroupDetails(id);
+      if (!groupData) {
+        throw new Error("Group not found");
       }
-    };
-    
-    loadGroupDetails();
-  }, [id, shouldFetch, isValidUUID]);
-  
-  // Check membership status
+      return groupData;
+    },
+    enabled: !!isValidUUID, // Only run query if we have a valid UUID
+    retry: false, // Don't retry failed requests
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Check membership status when group data changes
   useEffect(() => {
     const checkMembership = async () => {
-      if (userId && group && !error && isValidUUID) {
+      if (userId && group && isValidUUID) {
         try {
           console.log("useGroupDetails: Checking membership for user:", userId, "in group:", group.id);
           const status = await checkMembershipStatus(userId, group.id);
@@ -95,18 +68,17 @@ export function useGroupDetails(id: string, userId?: string) {
           console.log("useGroupDetails: Membership status:", status);
         } catch (error) {
           console.error("useGroupDetails: Failed to check membership status:", error);
-          // Don't set error state for membership check failure
         }
       }
     };
     
     checkMembership();
-  }, [userId, group, error, isValidUUID]);
+  }, [userId, group, isValidUUID]);
   
   // Check for pending requests
   useEffect(() => {
     const checkPendingRequests = async () => {
-      if (userId && group && membershipStatus.isAdmin && !error && isValidUUID) {
+      if (userId && group && membershipStatus.isAdmin && isValidUUID) {
         try {
           console.log("useGroupDetails: Checking pending requests for admin user");
           const { data, error: requestError } = await supabase
@@ -122,46 +94,43 @@ export function useGroupDetails(id: string, userId?: string) {
           }
         } catch (error) {
           console.error("useGroupDetails: Error checking pending requests:", error);
-          // Don't set error state for pending requests check failure
         }
       }
     };
     
     checkPendingRequests();
-  }, [group, userId, membershipStatus.isAdmin, error, isValidUUID]);
+  }, [group, userId, membershipStatus.isAdmin, isValidUUID]);
 
   // Function to update group data
   const handleMemberUpdate = async () => {
-    if (isValidUUID && !error) {
+    if (isValidUUID) {
       try {
         console.log("useGroupDetails: Updating group data after member change");
-        const updatedGroup = await fetchGroupDetails(id);
-        if (updatedGroup) {
-          setGroup(updatedGroup);
-          console.log("useGroupDetails: Group data updated successfully");
-        }
+        await refetch();
+        console.log("useGroupDetails: Group data updated successfully");
       } catch (error) {
         console.error("useGroupDetails: Failed to update group data:", error);
       }
     }
   };
 
+  const errorMessage = error instanceof Error ? error.message : null;
+
   console.log("useGroupDetails: Returning state", {
     hasGroup: !!group,
     loading,
-    error,
+    error: errorMessage,
     membershipStatus,
-    shouldFetch,
     isValidUUID
   });
 
   return {
-    group,
+    group: group || null,
     loading,
-    error,
+    error: errorMessage,
     membershipStatus,
     hasPendingRequests,
     handleMemberUpdate,
-    setGroup
+    setGroup: () => {} // Keep for compatibility but use refetch instead
   };
 }
