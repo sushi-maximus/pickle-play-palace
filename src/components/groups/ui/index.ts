@@ -16,6 +16,3 @@ export * from './GroupCardHybrid2';
 export * from './GroupCardHybrid3';
 export * from './GroupCardShowcase';
 export * from './GroupsGrid';
-export * from './MembershipCard';
-export * from './MembershipsGrid';
-export * from './MyGroupsEmptyState';
