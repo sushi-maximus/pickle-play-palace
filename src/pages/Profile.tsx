@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
@@ -62,13 +61,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        {/* Desktop Navigation */}
-        <div className="hidden md:block">
-          <Navbar />
-        </div>
-        
-        {/* Mobile Header */}
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         <MobilePageHeader title="Profile" />
         
         <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
@@ -90,13 +83,7 @@ const Profile = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col">
-        {/* Desktop Navigation */}
-        <div className="hidden md:block">
-          <Navbar />
-        </div>
-        
-        {/* Mobile Header */}
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         <MobilePageHeader title="Profile" />
         
         <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
@@ -113,13 +100,7 @@ const Profile = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex flex-col">
-        {/* Desktop Navigation */}
-        <div className="hidden md:block">
-          <Navbar />
-        </div>
-        
-        {/* Mobile Header */}
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         <MobilePageHeader title="Profile" />
         
         <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
@@ -134,29 +115,23 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Desktop Navigation */}
-      <div className="hidden md:block">
-        <Navbar />
-      </div>
-      
-      {/* Mobile Header */}
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <MobilePageHeader title="Profile" />
       
       <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
         <div className="container mx-auto max-w-4xl">
-          {/* Desktop Header */}
+          {/* Desktop Header - Hidden on mobile, shown on desktop */}
           <div className="hidden md:block mb-8">
             <ProfileHeader profile={profile} />
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Desktop Sidebar */}
+            {/* Desktop Sidebar - Hidden on mobile, shown on desktop */}
             <div className="lg:col-span-1 hidden md:block">
               <ProfileSidebar profile={profile} />
             </div>
             
-            {/* Profile Form */}
+            {/* Profile Form - Full width on mobile, 3/4 width on desktop */}
             <div className="lg:col-span-3">
               <ProfileForm 
                 profile={profile} 
