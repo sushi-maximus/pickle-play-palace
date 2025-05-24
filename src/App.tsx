@@ -1,9 +1,9 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { PerformanceProvider } from "@/contexts/PerformanceContext";
 import { AppErrorBoundary } from "@/components/error-boundaries";
 import { createCacheManager } from "@/lib/cacheUtils";
 import { preloadCriticalRoutes } from "@/utils/lazyLoading";
@@ -102,99 +102,101 @@ function App() {
   return (
     <AppErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <Router>
-            <AuthProvider>
-              <div className="min-h-screen bg-background font-sans antialiased">
-                <Routes>
-                  {/* Smart landing route - redirects authenticated users to dashboard */}
-                  <Route path="/" element={<Landing />} />
-                  
-                  {/* Public routes that redirect authenticated users */}
-                  <Route path="/login" element={
-                    <PublicRoute>
-                      <Login />
-                    </PublicRoute>
-                  } />
-                  <Route path="/signup" element={
-                    <PublicRoute>
-                      <Signup />
-                    </PublicRoute>
-                  } />
-                  <Route path="/forgot-password" element={
-                    <PublicRoute>
-                      <RouteLoader routeName="Forgot Password">
-                        <LazyForgotPassword />
+        <PerformanceProvider enabled={process.env.NODE_ENV === 'development'}>
+          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            <Router>
+              <AuthProvider>
+                <div className="min-h-screen bg-background font-sans antialiased">
+                  <Routes>
+                    {/* Smart landing route - redirects authenticated users to dashboard */}
+                    <Route path="/" element={<Landing />} />
+                    
+                    {/* Public routes that redirect authenticated users */}
+                    <Route path="/login" element={
+                      <PublicRoute>
+                        <Login />
+                      </PublicRoute>
+                    } />
+                    <Route path="/signup" element={
+                      <PublicRoute>
+                        <Signup />
+                      </PublicRoute>
+                    } />
+                    <Route path="/forgot-password" element={
+                      <PublicRoute>
+                        <RouteLoader routeName="Forgot Password">
+                          <LazyForgotPassword />
+                        </RouteLoader>
+                      </PublicRoute>
+                    } />
+                    
+                    {/* Public informational pages */}
+                    <Route path="/about" element={
+                      <RouteLoader routeName="About">
+                        <LazyAbout />
                       </RouteLoader>
-                    </PublicRoute>
-                  } />
-                  
-                  {/* Public informational pages */}
-                  <Route path="/about" element={
-                    <RouteLoader routeName="About">
-                      <LazyAbout />
-                    </RouteLoader>
-                  } />
-                  <Route path="/contact" element={
-                    <RouteLoader routeName="Contact">
-                      <LazyContact />
-                    </RouteLoader>
-                  } />
-                  <Route path="/privacy" element={
-                    <RouteLoader routeName="Privacy">
-                      <LazyPrivacy />
-                    </RouteLoader>
-                  } />
-                  
-                  {/* Protected routes requiring authentication */}
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <RouteLoader routeName="Dashboard">
-                        <LazyDashboard />
+                    } />
+                    <Route path="/contact" element={
+                      <RouteLoader routeName="Contact">
+                        <LazyContact />
                       </RouteLoader>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/profile" element={
-                    <ProtectedRoute>
-                      <RouteLoader routeName="Profile">
-                        <LazyProfile />
+                    } />
+                    <Route path="/privacy" element={
+                      <RouteLoader routeName="Privacy">
+                        <LazyPrivacy />
                       </RouteLoader>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/groups" element={
-                    <ProtectedRoute>
-                      <RouteLoader routeName="Groups">
-                        <LazyGroups />
+                    } />
+                    
+                    {/* Protected routes requiring authentication */}
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute>
+                        <RouteLoader routeName="Dashboard">
+                          <LazyDashboard />
+                        </RouteLoader>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/profile" element={
+                      <ProtectedRoute>
+                        <RouteLoader routeName="Profile">
+                          <LazyProfile />
+                        </RouteLoader>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/groups" element={
+                      <ProtectedRoute>
+                        <RouteLoader routeName="Groups">
+                          <LazyGroups />
+                        </RouteLoader>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/groups/:id" element={
+                      <ProtectedRoute>
+                        <RouteLoader routeName="Group Details">
+                          <LazyGroupDetails />
+                        </RouteLoader>
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* Auth callback - no protection needed */}
+                    <Route path="/auth/callback" element={
+                      <RouteLoader routeName="Authentication">
+                        <LazyAuthCallback />
                       </RouteLoader>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/groups/:id" element={
-                    <ProtectedRoute>
-                      <RouteLoader routeName="Group Details">
-                        <LazyGroupDetails />
+                    } />
+                    
+                    {/* 404 route */}
+                    <Route path="*" element={
+                      <RouteLoader routeName="Page Not Found">
+                        <LazyNotFound />
                       </RouteLoader>
-                    </ProtectedRoute>
-                  } />
-                  
-                  {/* Auth callback - no protection needed */}
-                  <Route path="/auth/callback" element={
-                    <RouteLoader routeName="Authentication">
-                      <LazyAuthCallback />
-                    </RouteLoader>
-                  } />
-                  
-                  {/* 404 route */}
-                  <Route path="*" element={
-                    <RouteLoader routeName="Page Not Found">
-                      <LazyNotFound />
-                    </RouteLoader>
-                  } />
-                </Routes>
-              </div>
-              <Toaster />
-            </AuthProvider>
-          </Router>
-        </ThemeProvider>
+                    } />
+                  </Routes>
+                </div>
+                <Toaster />
+              </AuthProvider>
+            </Router>
+          </ThemeProvider>
+        </PerformanceProvider>
       </QueryClientProvider>
     </AppErrorBoundary>
   );
