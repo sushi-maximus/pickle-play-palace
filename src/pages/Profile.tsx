@@ -4,9 +4,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
+import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
 
 const Profile = () => {
-  const { user, isLoading } = useAuth();
+  const { user, profile, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,6 +51,9 @@ const Profile = () => {
       <main className="flex-1 pt-20 pb-24">
         <div className="px-3 py-4 md:px-6 md:py-8">
           <div className="container mx-auto max-w-6xl">
+            {/* Mobile Profile Header */}
+            {profile && <MobileProfileHeader profile={profile} />}
+            
             {/* Profile content will go here */}
             <div className="text-center py-12">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">Profile Page</h2>
