@@ -21,7 +21,7 @@ export interface MembershipStatus {
 export function useGroupDetails(id: string, userId?: string) {
   const navigate = useNavigate();
   const [group, setGroup] = useState<GroupData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [membershipStatus, setMembershipStatus] = useState<MembershipStatus>({
     isMember: false,
@@ -32,28 +32,31 @@ export function useGroupDetails(id: string, userId?: string) {
   
   console.log("useGroupDetails: Hook called with", { id, userId: !!userId });
   
-  // Early return if no valid ID to prevent unnecessary API calls
+  // Only fetch data if we have a valid ID
+  const isValidId = id && id.trim() !== '' && id !== ':id';
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const isValidUUID = isValidId && uuidRegex.test(id);
+  
   useEffect(() => {
-    if (!id || id.trim() === '' || id === ':id') {
+    // Reset state first
+    setGroup(null);
+    setError(null);
+    setLoading(false);
+    
+    if (!isValidId) {
       console.log("useGroupDetails: No valid ID provided, skipping data fetch");
-      setLoading(false);
       setError("Invalid group ID");
       return;
     }
 
-    // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(id)) {
+    if (!isValidUUID) {
       console.log("useGroupDetails: Invalid UUID format, skipping data fetch");
-      setLoading(false);
       setError("Invalid group ID format");
       return;
     }
 
-    // Reset state before loading
+    // Start loading
     setLoading(true);
-    setError(null);
-    setGroup(null);
     
     const loadGroupDetails = async () => {
       try {
@@ -79,12 +82,12 @@ export function useGroupDetails(id: string, userId?: string) {
     };
     
     loadGroupDetails();
-  }, [id]);
+  }, [id, isValidId, isValidUUID]);
   
   // Check membership status
   useEffect(() => {
     const checkMembership = async () => {
-      if (userId && group && !error) {
+      if (userId && group && !error && isValidUUID) {
         try {
           console.log("useGroupDetails: Checking membership for user:", userId, "in group:", group.id);
           const status = await checkMembershipStatus(userId, group.id);
@@ -98,12 +101,12 @@ export function useGroupDetails(id: string, userId?: string) {
     };
     
     checkMembership();
-  }, [userId, group, error]);
+  }, [userId, group, error, isValidUUID]);
   
   // Check for pending requests
   useEffect(() => {
     const checkPendingRequests = async () => {
-      if (userId && group && membershipStatus.isAdmin && !error) {
+      if (userId && group && membershipStatus.isAdmin && !error && isValidUUID) {
         try {
           console.log("useGroupDetails: Checking pending requests for admin user");
           const { data, error: requestError } = await supabase
@@ -125,11 +128,11 @@ export function useGroupDetails(id: string, userId?: string) {
     };
     
     checkPendingRequests();
-  }, [group, userId, membershipStatus.isAdmin, error]);
+  }, [group, userId, membershipStatus.isAdmin, error, isValidUUID]);
 
   // Function to update group data
   const handleMemberUpdate = async () => {
-    if (id && !error && id !== ':id') {
+    if (isValidUUID && !error) {
       try {
         console.log("useGroupDetails: Updating group data after member change");
         const updatedGroup = await fetchGroupDetails(id);
@@ -147,7 +150,9 @@ export function useGroupDetails(id: string, userId?: string) {
     hasGroup: !!group,
     loading,
     error,
-    membershipStatus
+    membershipStatus,
+    isValidId,
+    isValidUUID
   });
 
   return {

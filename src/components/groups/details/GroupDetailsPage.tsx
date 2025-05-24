@@ -44,10 +44,7 @@ export const GroupDetailsPage = () => {
     console.log("GroupDetailsPage: Valid group ID found:", cleanId);
   }, [cleanId, isValidUUID, navigate, id]);
 
-  // Only call hooks if we have a valid ID to prevent QueryClient errors
-  const shouldFetchData = cleanId && isValidUUID;
-
-  // Group details and membership - only call if we have valid ID
+  // Now we can safely call hooks - they handle invalid IDs internally
   const {
     group,
     loading: groupLoading,
@@ -55,9 +52,9 @@ export const GroupDetailsPage = () => {
     membershipStatus,
     hasPendingRequests,
     handleMemberUpdate
-  } = useGroupDetails(shouldFetchData ? cleanId : "", user?.id);
+  } = useGroupDetails(cleanId || "", user?.id);
 
-  // Posts management - only call if we have valid ID
+  // Posts management
   const { 
     posts, 
     loading: postsLoading, 
@@ -65,7 +62,7 @@ export const GroupDetailsPage = () => {
     error: postsError, 
     refreshPosts 
   } = useGroupPosts({ 
-    groupId: shouldFetchData ? cleanId : "", 
+    groupId: cleanId || "", 
     userId: user?.id 
   });
 
@@ -84,7 +81,6 @@ export const GroupDetailsPage = () => {
   console.log("GroupDetailsPage: State check", {
     cleanId,
     isValidUUID,
-    shouldFetchData,
     groupLoading,
     groupError,
     group: !!group,
@@ -92,7 +88,7 @@ export const GroupDetailsPage = () => {
   });
 
   // Early return if no valid ID
-  if (!shouldFetchData) {
+  if (!cleanId || !isValidUUID) {
     console.log("GroupDetailsPage: Rendering loading state due to invalid ID");
     return <GroupDetailsLoading />;
   }

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -15,12 +16,26 @@ export const useGroupPosts = (
   { groupId, userId }: UseGroupPostsProps
 ): UseGroupPostsResult => {
   const [posts, setPosts] = useState<GroupPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [groupName, setGroupName] = useState<string>("");
 
+  // Check if we have a valid group ID
+  const isValidGroupId = groupId && groupId.trim() !== '' && groupId !== ':id';
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const isValidUUID = isValidGroupId && uuidRegex.test(groupId);
+
   const fetchPosts = async () => {
+    // Don't fetch if we don't have a valid group ID
+    if (!isValidUUID) {
+      console.log("useGroupPosts: Invalid group ID, skipping fetch:", groupId);
+      setPosts([]);
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+
     try {
       // Only set loading to true if this is the initial fetch (no posts yet)
       // Otherwise, set refreshing to true for background updates
@@ -68,10 +83,17 @@ export const useGroupPosts = (
   };
 
   useEffect(() => {
-    if (groupId) {
+    if (isValidUUID) {
       fetchPosts();
+    } else {
+      // Reset state for invalid group IDs
+      setPosts([]);
+      setLoading(false);
+      setRefreshing(false);
+      setError(null);
+      setGroupName("");
     }
-  }, [groupId, userId]);
+  }, [groupId, userId, isValidUUID]);
 
   return {
     posts,
