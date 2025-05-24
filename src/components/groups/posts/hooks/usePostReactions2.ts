@@ -27,39 +27,29 @@ export const usePostReactions2 = ({
     initialUserHeart
   });
 
-  // Individual reaction hooks
+  // Individual reaction hooks - completely independent
   const {
     thumbsUpCount,
     isThumbsUpActive,
     isThumbsUpSubmitting,
-    toggleThumbsUp,
-    deactivateThumbsUp
+    toggleThumbsUp
   } = useThumbsUpReaction2({
     postId,
     userId,
     initialCount: initialThumbsUp,
-    initialIsActive: initialUserThumbsUp,
-    onThumbsDownDeactivate: () => {
-      // This will be called when thumbs up is activated
-      deactivateThumbsDown();
-    }
+    initialIsActive: initialUserThumbsUp
   });
 
   const {
     thumbsDownCount,
     isThumbsDownActive,
     isThumbsDownSubmitting,
-    toggleThumbsDown,
-    deactivateThumbsDown
+    toggleThumbsDown
   } = useThumbsDownReaction2({
     postId,
     userId,
     initialCount: initialThumbsDown,
-    initialIsActive: initialUserThumbsDown,
-    onThumbsUpDeactivate: () => {
-      // This will be called when thumbs down is activated
-      deactivateThumbsUp();
-    }
+    initialIsActive: initialUserThumbsDown
   });
 
   const {

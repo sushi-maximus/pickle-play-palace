@@ -7,15 +7,13 @@ interface UseThumbsDownReaction2Props {
   userId?: string;
   initialCount: number;
   initialIsActive: boolean;
-  onThumbsUpDeactivate?: () => void;
 }
 
 export const useThumbsDownReaction2 = ({
   postId,
   userId,
   initialCount,
-  initialIsActive,
-  onThumbsUpDeactivate
+  initialIsActive
 }: UseThumbsDownReaction2Props) => {
   const [thumbsDownCount, setThumbsDownCount] = useState(initialCount);
   const [isThumbsDownActive, setIsThumbsDownActive] = useState(initialIsActive);
@@ -32,16 +30,13 @@ export const useThumbsDownReaction2 = ({
       console.log(`Toggling thumbs down: currently ${wasActive}`);
       
       if (!wasActive) {
-        // We're activating thumbs down - notify parent to deactivate thumbs up
-        onThumbsUpDeactivate?.();
-        
         // Add thumbs down
         await reactionService.addReaction(postId, userId, 'thumbsdown');
         setIsThumbsDownActive(true);
         setThumbsDownCount(prev => prev + 1);
         console.log('Added thumbs down reaction');
       } else {
-        // We're deactivating thumbs down
+        // Remove thumbs down
         await reactionService.deleteReaction(postId, userId, 'thumbsdown');
         setIsThumbsDownActive(false);
         setThumbsDownCount(prev => Math.max(0, prev - 1));
@@ -56,24 +51,10 @@ export const useThumbsDownReaction2 = ({
     }
   };
 
-  const deactivateThumbsDown = async () => {
-    if (!isThumbsDownActive) return;
-    
-    try {
-      await reactionService.deleteReaction(postId, userId!, 'thumbsdown');
-      setIsThumbsDownActive(false);
-      setThumbsDownCount(prev => Math.max(0, prev - 1));
-      console.log('Deactivated thumbs down from external trigger');
-    } catch (error) {
-      console.error('Error deactivating thumbs down:', error);
-    }
-  };
-
   return {
     thumbsDownCount,
     isThumbsDownActive,
     isThumbsDownSubmitting,
-    toggleThumbsDown,
-    deactivateThumbsDown
+    toggleThumbsDown
   };
 };
