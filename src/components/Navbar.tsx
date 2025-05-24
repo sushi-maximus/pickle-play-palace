@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,6 +26,18 @@ export function Navbar() {
     } catch (error) {
       console.error("Error during logout:", error);
     }
+  };
+
+  const getFullName = () => {
+    if (!profile) return "User";
+    return `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "User";
+  };
+
+  const getInitials = () => {
+    if (!profile) return "PP";
+    const firstName = profile.first_name || "";
+    const lastName = profile.last_name || "";
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || "PP";
   };
 
   return (
@@ -78,8 +91,8 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-8 w-8 p-0">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={profile?.avatar_url || ""} alt={profile?.full_name || "User Avatar"} />
-                      <AvatarFallback>{profile?.full_name?.charAt(0).toUpperCase() || "PP"}</AvatarFallback>
+                      <AvatarImage src={profile?.avatar_url || ""} alt={getFullName()} />
+                      <AvatarFallback>{getInitials()}</AvatarFallback>
                     </Avatar>
                     <span className="sr-only">Open user menu</span>
                   </Button>
