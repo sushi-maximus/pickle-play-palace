@@ -40,14 +40,20 @@ export const MobilePostCard2 = ({
   const isAuthor = user?.id === post.user?.id;
   const isEditingThisPost = isEditing && currentPostId === post.id;
 
+  // Ensure we have stable, default values for the hook
+  const safePost = post || {};
+  const safeReactions = safePost.reactions || {};
+  const safeUserReactions = safePost.user_reactions || {};
+  const safeUserId = user?.id || null;
+
   // Debug logging for post data
-  console.log(`Post ${post.id} data:`, {
-    reactions: post.reactions,
-    user_reactions: post.user_reactions,
-    userId: user?.id
+  console.log(`Post ${safePost.id} data:`, {
+    reactions: safeReactions,
+    user_reactions: safeUserReactions,
+    userId: safeUserId
   });
 
-  // Always call hooks at the top level for this specific post
+  // Always call hooks at the top level for this specific post with stable values
   const {
     thumbsUpCount,
     thumbsDownCount,
@@ -62,15 +68,20 @@ export const MobilePostCard2 = ({
     toggleThumbsDown,
     toggleHeart
   } = usePostReactions2({
-    postId: post.id,
-    userId: user?.id,
-    initialThumbsUp: post.reactions?.thumbsup || 0,
-    initialThumbsDown: post.reactions?.thumbsdown || 0,
-    initialHeart: post.reactions?.heart || 0,
-    initialUserThumbsUp: post.user_reactions?.thumbsup || false,
-    initialUserThumbsDown: post.user_reactions?.thumbsdown || false,
-    initialUserHeart: post.user_reactions?.heart || false,
+    postId: safePost.id || '',
+    userId: safeUserId,
+    initialThumbsUp: safeReactions.thumbsup || 0,
+    initialThumbsDown: safeReactions.thumbsdown || 0,
+    initialHeart: safeReactions.heart || 0,
+    initialUserThumbsUp: safeUserReactions.thumbsup || false,
+    initialUserThumbsDown: safeUserReactions.thumbsdown || false,
+    initialUserHeart: safeUserReactions.heart || false,
   });
+
+  // Don't render if we don't have a valid post ID
+  if (!safePost.id) {
+    return null;
+  }
 
   return (
     <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 border-l-2 md:border-l-4 border-l-primary/30">
