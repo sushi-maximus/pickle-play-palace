@@ -140,6 +140,7 @@ const GroupDetails = () => {
       <MobileGroupHeader 
         groupName={group.name} 
         groupCode={group.code || undefined}
+        memberCount={group.member_count}
       />
       
       <div className="flex-1 mt-16 pb-20 overflow-hidden relative">
