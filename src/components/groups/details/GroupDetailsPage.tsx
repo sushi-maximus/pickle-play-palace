@@ -86,10 +86,15 @@ export const GroupDetailsPage = () => {
     return <GroupDetailsLoading />;
   }
 
-  // Error states - check if component returns something
-  if (groupError || !group) {
-    console.log("GroupDetailsPage: Rendering error state", { groupError, hasGroup: !!group });
+  // Only render error states when there's actually an error OR when group is null
+  if (groupError) {
+    console.log("GroupDetailsPage: Rendering error state due to error:", groupError);
     return <GroupDetailsErrorStates error={groupError} group={group} />;
+  }
+
+  if (!group) {
+    console.log("GroupDetailsPage: Rendering error state due to missing group");
+    return <GroupDetailsErrorStates error={null} group={null} />;
   }
 
   console.log("GroupDetailsPage: Rendering group successfully:", group?.name);
