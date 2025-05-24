@@ -41,7 +41,7 @@ export const GroupBottomNavigation = ({
             <item.icon className={`h-5 w-5 transition-transform duration-200 ${
               activeTab === item.id ? "scale-110" : ""
             }`} />
-            <span className={`text-xs font-medium transition-all duration-200 ${
+            <span className={`text-xs font-medium transition-all duration-200 leading-tight ${
               activeTab === item.id ? "font-semibold" : ""
             }`}>
               {item.label}

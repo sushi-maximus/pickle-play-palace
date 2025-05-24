@@ -63,7 +63,7 @@ export const MobileProfileHeader = ({ profile }: MobileProfileHeaderProps) => {
         
         {/* Name */}
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 leading-tight">
             {profile?.first_name} {profile?.last_name}
           </h2>
         </div>
@@ -74,7 +74,7 @@ export const MobileProfileHeader = ({ profile }: MobileProfileHeaderProps) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
-                  className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 cursor-help"
+                  className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 cursor-help leading-tight"
                   style={{ borderLeft: `3px solid ${skillLevelColor}` }}
                 >
                   {ratingDisplay.label}: {ratingDisplay.value}
@@ -83,10 +83,10 @@ export const MobileProfileHeader = ({ profile }: MobileProfileHeaderProps) => {
               </TooltipTrigger>
               <TooltipContent className="w-64 p-0">
                 <div className="p-3">
-                  <p className="text-sm font-medium mb-2">Skill Level Color Guide</p>
+                  <p className="text-sm font-medium mb-2 leading-tight">Skill Level Color Guide</p>
                   <div className="grid grid-cols-1 gap-1">
                     {Object.entries(skillLevelColors).map(([level, color]) => (
-                      <div key={level} className="flex items-center text-xs">
+                      <div key={level} className="flex items-center text-xs leading-tight">
                         <div 
                           className="h-3 w-3 rounded-full mr-2" 
                           style={{ backgroundColor: color, border: color === "#FFFFFF" ? "1px solid #e2e8f0" : "none" }}
@@ -107,7 +107,7 @@ export const MobileProfileHeader = ({ profile }: MobileProfileHeaderProps) => {
           </TooltipProvider>
           
           {age !== null && (
-            <div className="bg-secondary/10 text-secondary rounded-full px-3 py-1 text-xs font-medium">
+            <div className="bg-secondary/10 text-secondary rounded-full px-3 py-1 text-xs font-medium leading-tight">
               Age: {age}
             </div>
           )}
@@ -117,7 +117,7 @@ export const MobileProfileHeader = ({ profile }: MobileProfileHeaderProps) => {
               href={profile.dupr_profile_link} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-blue-500/10 text-blue-500 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 hover:bg-blue-500/20 transition-colors"
+              className="bg-blue-500/10 text-blue-500 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 hover:bg-blue-500/20 transition-colors leading-tight"
             >
               DUPR Profile 
               <ExternalLink className="h-3 w-3" />

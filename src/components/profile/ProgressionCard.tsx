@@ -37,7 +37,7 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
   return (
     <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
       <CardHeader className="pb-4">
-        <CardTitle className="text-lg font-medium">My Progression</CardTitle>
+        <CardTitle className="text-lg md:text-xl font-medium leading-tight">My Progression</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -51,10 +51,10 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
                   borderColor: borderColor === "#FFFFFF" ? "#e2e8f0" : borderColor
                 }}
               />
-              <h3 className="text-base font-semibold text-gray-900">Current Level</h3>
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 leading-tight">Current Level</h3>
               <Badge 
                 variant="secondary" 
-                className="text-sm font-medium"
+                className="text-sm font-medium leading-tight"
                 style={{ 
                   backgroundColor: `${borderColor}20`,
                   color: borderColor === "#FFFFFF" ? "#374151" : borderColor,
@@ -64,7 +64,7 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
                 {skillLevelInfo?.label || `${effectiveSkillLevel} - Intermediate`}
               </Badge>
               {duprRating && (
-                <span className="text-sm text-gray-500">DUPR: {duprRating}</span>
+                <span className="text-sm text-gray-500 leading-tight">DUPR: {duprRating}</span>
               )}
             </div>
             
@@ -86,10 +86,10 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
                     borderColor: nextLevelColor === "#FFFFFF" ? "#e2e8f0" : nextLevelColor
                   }}
                 />
-                <h3 className="text-base font-semibold text-gray-700">Next Level</h3>
+                <h3 className="text-base md:text-lg font-semibold text-gray-700 leading-tight">Next Level</h3>
                 <Badge 
                   variant="outline" 
-                  className="text-sm font-medium opacity-75"
+                  className="text-sm font-medium opacity-75 leading-tight"
                   style={{ 
                     borderColor: `${nextLevelColor}60`,
                     color: "#6b7280"
@@ -100,7 +100,7 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
               </div>
               
               <div className="ml-7">
-                <p className="text-sm font-medium text-gray-700 mb-2">Focus areas to reach the next level:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2 leading-tight">Focus areas to reach the next level:</p>
                 <ul className="space-y-1">
                   {nextLevelAdvicePoints.map((point, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed">

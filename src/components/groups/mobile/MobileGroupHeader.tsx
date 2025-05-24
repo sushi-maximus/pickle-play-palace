@@ -29,15 +29,15 @@ export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileG
       </Button>
       
       <div className="flex-1 text-center px-2">
-        <h1 className="font-semibold text-lg truncate tracking-wide">{groupName}</h1>
+        <h1 className="font-semibold text-lg md:text-xl truncate tracking-tight leading-tight">{groupName}</h1>
         <div className="flex items-center justify-center gap-2 text-xs text-slate-300/90 mt-0.5">
           {memberCount !== undefined && (
-            <span className="bg-slate-600/30 px-2 py-0.5 rounded-full">
+            <span className="bg-slate-600/30 px-2 py-0.5 rounded-full font-medium leading-tight">
               {memberCount} {memberCount === 1 ? "member" : "members"}
             </span>
           )}
           {groupCode && (
-            <span className="bg-primary/20 text-primary-foreground px-2 py-0.5 rounded-full font-medium">
+            <span className="bg-primary/20 text-primary-foreground px-2 py-0.5 rounded-full font-medium leading-tight">
               {groupCode}
             </span>
           )}

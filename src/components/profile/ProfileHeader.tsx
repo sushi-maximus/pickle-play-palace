@@ -73,7 +73,7 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
         </div>
       )}
       <div className="mt-4 md:mt-0">
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-xl md:text-2xl font-semibold leading-tight">
           {profile?.first_name} {profile?.last_name}
         </h2>
         <div className="flex flex-wrap gap-4 mt-3">
@@ -81,7 +81,7 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
-                  className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium flex items-center gap-1 cursor-help"
+                  className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium flex items-center gap-1 cursor-help leading-tight"
                   style={{ borderLeft: `4px solid ${skillLevelColor}` }}
                 >
                   {ratingDisplay.label}: {ratingDisplay.value}
@@ -90,10 +90,10 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
               </TooltipTrigger>
               <TooltipContent className="w-64 p-0">
                 <div className="p-3">
-                  <p className="text-sm font-medium mb-2">Skill Level Color Guide</p>
+                  <p className="text-sm font-medium mb-2 leading-tight">Skill Level Color Guide</p>
                   <div className="grid grid-cols-1 gap-1">
                     {Object.entries(skillLevelColors).map(([level, color]) => (
-                      <div key={level} className="flex items-center text-xs">
+                      <div key={level} className="flex items-center text-xs leading-tight">
                         <div 
                           className="h-3 w-3 rounded-full mr-2" 
                           style={{ backgroundColor: color, border: color === "#FFFFFF" ? "1px solid #e2e8f0" : "none" }}
@@ -113,7 +113,7 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
             </Tooltip>
           </TooltipProvider>
           {age !== null && (
-            <div className="bg-secondary/10 text-secondary rounded-full px-3 py-1 text-sm font-medium">
+            <div className="bg-secondary/10 text-secondary rounded-full px-3 py-1 text-sm font-medium leading-tight">
               Age: {age}
             </div>
           )}
@@ -122,7 +122,7 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
               href={profile.dupr_profile_link} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-blue-500/10 text-blue-500 rounded-full px-3 py-1 text-sm font-medium flex items-center gap-1 hover:bg-blue-500/20 transition-colors"
+              className="bg-blue-500/10 text-blue-500 rounded-full px-3 py-1 text-sm font-medium flex items-center gap-1 hover:bg-blue-500/20 transition-colors leading-tight"
             >
               View DUPR Profile 
               <ExternalLink className="h-3 w-3" />

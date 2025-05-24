@@ -14,7 +14,7 @@ export const MobileGroupsHeader = ({
   return (
     <header className="fixed top-0 left-0 right-0 z-[50] bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 flex items-center justify-between shadow-lg border-b border-slate-600/30">
       <div className="flex-1">
-        <h1 className="font-semibold text-lg tracking-wide">Groups</h1>
+        <h1 className="font-semibold text-lg md:text-xl tracking-tight leading-tight">Groups</h1>
       </div>
       
       <div className="flex items-center gap-2">
