@@ -28,7 +28,7 @@ const Groups = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Desktop Navigation */}
       <div className="hidden md:block">
         <Navbar />
