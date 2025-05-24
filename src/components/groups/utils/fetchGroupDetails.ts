@@ -1,22 +1,28 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type GroupData = Database['public']['Tables']['groups']['Row'] & {
+  member_count: number;
+  members: any[];
+};
 
 /**
  * Fetches detailed information for a specific group by ID
  * @param groupId The UUID of the group to fetch
  * @returns Group details or null if not found
  */
-export const fetchGroupDetails = async (groupId: string) => {
+export const fetchGroupDetails = async (groupId: string): Promise<GroupData | null> => {
   try {
     console.log("fetchGroupDetails: Starting fetch for group ID:", groupId);
     
     // Validate groupId
-    if (!groupId || typeof groupId !== 'string') {
+    if (!groupId || typeof groupId !== 'string' || groupId.trim() === '') {
       console.error("fetchGroupDetails: Invalid group ID provided:", groupId);
       throw new Error("Invalid group ID");
     }
     
-    // Fetch group data
+    // Fetch group data with better error handling
     const { data: groupData, error: groupError } = await supabase
       .from("groups")
       .select(`
@@ -31,88 +37,73 @@ export const fetchGroupDetails = async (groupId: string) => {
         is_private,
         skill_level_min,
         skill_level_max,
-        max_members
+        max_members,
+        member_count
       `)
       .eq("id", groupId)
-      .single();
+      .maybeSingle();
     
     if (groupError) {
-      console.error(`fetchGroupDetails: Error fetching group ${groupId}:`, groupError);
-      
-      // Handle specific error types
-      if (groupError.code === 'PGRST116') {
-        // No rows returned
-        return null;
-      }
-      
+      console.error(`fetchGroupDetails: Database error fetching group ${groupId}:`, groupError);
       throw new Error(`Failed to fetch group: ${groupError.message}`);
     }
     
     if (!groupData) {
-      console.log("fetchGroupDetails: No group data returned for ID:", groupId);
+      console.log("fetchGroupDetails: No group found for ID:", groupId);
       return null;
     }
     
     console.log("fetchGroupDetails: Successfully fetched group data:", groupData.name);
     
-    // Get member count
-    const { count: memberCount, error: countError } = await supabase
-      .from("group_members")
-      .select('id', { count: 'exact', head: true })
-      .eq("group_id", groupId)
-      .eq("status", "active");
-      
-    if (countError) {
-      console.error(`fetchGroupDetails: Error counting members for group ${groupId}:`, countError);
-      // Don't throw here, just log the error and continue with 0 count
-    }
-    
-    // Get members with their profile info
-    const { data: membersData, error: membersError } = await supabase
-      .from("group_members")
-      .select(`
-        id,
-        role,
-        joined_at,
-        user_id
-      `)
-      .eq("group_id", groupId)
-      .eq("status", "active");
-      
-    if (membersError) {
-      console.error(`fetchGroupDetails: Error fetching members for group ${groupId}:`, membersError);
-      // Don't throw here, continue with empty members array
-    }
-    
-    // Fetch profiles for members
+    // Get members with their profile info - use separate try-catch for this
     let membersWithProfiles = [];
-    if (membersData && membersData.length > 0) {
-      const userIds = membersData.map(member => member.user_id);
-      
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, first_name, last_name, avatar_url, skill_level, dupr_rating, birthday")
-        .in("id", userIds);
+    try {
+      const { data: membersData, error: membersError } = await supabase
+        .from("group_members")
+        .select(`
+          id,
+          role,
+          joined_at,
+          user_id
+        `)
+        .eq("group_id", groupId)
+        .eq("status", "active");
         
-      if (profilesError) {
-        console.error(`fetchGroupDetails: Error fetching profiles for group members:`, profilesError);
-        // Don't throw here, continue without profile data
+      if (membersError) {
+        console.error(`fetchGroupDetails: Error fetching members for group ${groupId}:`, membersError);
+        // Continue with empty members array rather than failing
+      } else if (membersData && membersData.length > 0) {
+        // Fetch profiles for members
+        const userIds = membersData.map(member => member.user_id);
+        
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, first_name, last_name, avatar_url, skill_level, dupr_rating, birthday")
+          .in("id", userIds);
+          
+        if (profilesError) {
+          console.error(`fetchGroupDetails: Error fetching profiles:`, profilesError);
+          // Continue without profile data
+        }
+        
+        // Combine member data with profiles
+        membersWithProfiles = membersData.map(member => {
+          const profile = profilesData?.find(profile => profile.id === member.user_id) || {
+            id: member.user_id,
+            first_name: "Unknown",
+            last_name: "User",
+            avatar_url: null
+          };
+          
+          return {
+            ...member,
+            profiles: profile
+          };
+        });
       }
-      
-      // Combine member data with profiles
-      membersWithProfiles = membersData.map(member => {
-        const profile = profilesData?.find(profile => profile.id === member.user_id) || {
-          id: member.user_id,
-          first_name: "Unknown",
-          last_name: "User",
-          avatar_url: null
-        };
-        
-        return {
-          ...member,
-          profiles: profile
-        };
-      });
+    } catch (memberError) {
+      console.error("fetchGroupDetails: Error fetching member data:", memberError);
+      // Continue with empty members array
     }
     
     console.log("fetchGroupDetails: Successfully processed group with", membersWithProfiles.length, "members");
@@ -120,7 +111,7 @@ export const fetchGroupDetails = async (groupId: string) => {
     // Return group with member data
     return {
       ...groupData,
-      member_count: memberCount || membersWithProfiles.length || 0,
+      member_count: groupData.member_count || membersWithProfiles.length || 0,
       members: membersWithProfiles
     };
   } catch (error) {
