@@ -11,6 +11,7 @@ interface GroupMobileLayoutProps {
   memberCount?: number;
   activeTab: string;
   onTabChange: (tab: string) => void;
+  isAdmin?: boolean;
 }
 
 export const GroupMobileLayout = ({ 
@@ -19,7 +20,8 @@ export const GroupMobileLayout = ({
   groupCode,
   memberCount,
   activeTab,
-  onTabChange
+  onTabChange,
+  isAdmin = false
 }: GroupMobileLayoutProps) => {
   return (
     <>
@@ -35,6 +37,7 @@ export const GroupMobileLayout = ({
         <GroupHorizontalTabs 
           activeTab={activeTab}
           onTabChange={onTabChange}
+          isAdmin={isAdmin}
         />
       </div>
       
