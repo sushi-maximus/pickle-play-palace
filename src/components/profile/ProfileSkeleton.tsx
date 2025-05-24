@@ -5,6 +5,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const ProfileSkeleton = () => {
   return (
     <>
+      {/* Mobile Profile Header Skeleton */}
+      <div className="bg-white border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow rounded-lg p-4 mb-3 md:hidden">
+        <div className="flex flex-col items-center text-center space-y-3">
+          <Skeleton className="h-24 w-24 rounded-full" />
+          <Skeleton className="h-5 w-32" />
+          <div className="flex gap-2">
+            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-6 w-16 rounded-full" />
+          </div>
+        </div>
+      </div>
+
       {/* Profile Header Skeleton - without card wrapper */}
       <div className="hidden md:block">
         <div className="flex items-center space-x-4 mb-4 md:mb-6">

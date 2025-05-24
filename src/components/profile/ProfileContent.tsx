@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { AccountSettingsCard } from "@/components/profile/settings/AccountSettingsCard";
 import { PrivacySettingsCard } from "@/components/profile/settings/PrivacySettingsCard";
@@ -19,6 +20,9 @@ interface ProfileContentProps {
 export const ProfileContent = ({ profile, onProfileUpdate, onLogout }: ProfileContentProps) => {
   return (
     <>
+      {/* Mobile Profile Header - Only shown on mobile */}
+      <MobileProfileHeader profile={profile} />
+      
       {/* Desktop Profile Header - Hidden on mobile, shown on desktop, no card wrapper */}
       <div className="hidden md:block mb-4 md:mb-6">
         <ProfileHeader profile={profile} />
