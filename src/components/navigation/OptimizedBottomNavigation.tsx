@@ -11,6 +11,14 @@ import {
   LazyAdmin
 } from "@/pages/lazy";
 
+interface NavItem {
+  icon: React.ComponentType<any>;
+  label: string;
+  to: string;
+  preload: () => Promise<any>;
+  isBackButton?: boolean;
+}
+
 export const OptimizedBottomNavigation = () => {
   const location = useLocation();
   const { id: groupId } = useParams<{ id: string }>();
@@ -26,7 +34,7 @@ export const OptimizedBottomNavigation = () => {
   );
 
   // Base navigation items
-  const baseNavItems = [
+  const baseNavItems: NavItem[] = [
     {
       icon: Home,
       label: "Home",
@@ -54,7 +62,7 @@ export const OptimizedBottomNavigation = () => {
   ];
 
   // Modified navigation items for group context
-  const groupContextNavItems = [
+  const groupContextNavItems: NavItem[] = [
     {
       icon: Home,
       label: "Home",
