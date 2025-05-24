@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -69,7 +70,7 @@ const Profile = () => {
       
       <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-4">
         {/* Container for all cards with bottom margin for mobile nav */}
-        <div className="container mx-auto max-w-4xl mb-32 md:mb-0">
+        <div className="container mx-auto max-w-4xl mb-40 md:mb-0">
           <div className="space-y-3 md:space-y-4">
             <ProfileContent 
               profile={profile}
