@@ -24,31 +24,32 @@ export const useThumbsUpReaction2 = ({
 
     setIsThumbsUpSubmitting(true);
     
+    // Store current state for potential rollback
+    const currentActive = isThumbsUpActive;
+    const currentCount = thumbsUpCount;
+    
     try {
-      const wasActive = isThumbsUpActive;
+      console.log(`Toggling thumbs up: currently ${currentActive} for post ${postId}`);
       
-      console.log(`Toggling thumbs up: currently ${wasActive} for post ${postId}`);
-      
-      if (!wasActive) {
-        // Add thumbs up
-        await reactionService.addReaction(postId, userId, 'thumbsup');
+      // Optimistically update UI first
+      if (!currentActive) {
         setIsThumbsUpActive(true);
         setThumbsUpCount(prev => prev + 1);
+        await reactionService.addReaction(postId, userId, 'thumbsup');
         console.log('Added thumbs up reaction');
       } else {
-        // Remove thumbs up
-        await reactionService.deleteReaction(postId, userId, 'thumbsup');
         setIsThumbsUpActive(false);
         setThumbsUpCount(prev => Math.max(0, prev - 1));
+        await reactionService.deleteReaction(postId, userId, 'thumbsup');
         console.log('Removed thumbs up reaction');
       }
       
       console.log(`Thumbs up toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling thumbs up:', error);
-      // Revert optimistic update on error
-      setIsThumbsUpActive(isThumbsUpActive);
-      setThumbsUpCount(thumbsUpCount);
+      // Revert to the original state on error
+      setIsThumbsUpActive(currentActive);
+      setThumbsUpCount(currentCount);
     } finally {
       setIsThumbsUpSubmitting(false);
     }

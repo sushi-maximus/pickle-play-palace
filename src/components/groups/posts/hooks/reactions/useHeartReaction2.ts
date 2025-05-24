@@ -24,31 +24,32 @@ export const useHeartReaction2 = ({
 
     setIsHeartSubmitting(true);
     
+    // Store current state for potential rollback
+    const currentActive = isHeartActive;
+    const currentCount = heartCount;
+    
     try {
-      const wasActive = isHeartActive;
+      console.log(`Toggling heart: currently ${currentActive} for post ${postId}`);
       
-      console.log(`Toggling heart: currently ${wasActive} for post ${postId}`);
-      
-      if (!wasActive) {
-        // Add heart
-        await reactionService.addReaction(postId, userId, 'heart');
+      // Optimistically update UI first
+      if (!currentActive) {
         setIsHeartActive(true);
         setHeartCount(prev => prev + 1);
+        await reactionService.addReaction(postId, userId, 'heart');
         console.log('Added heart reaction');
       } else {
-        // Remove heart
-        await reactionService.deleteReaction(postId, userId, 'heart');
         setIsHeartActive(false);
         setHeartCount(prev => Math.max(0, prev - 1));
+        await reactionService.deleteReaction(postId, userId, 'heart');
         console.log('Removed heart reaction');
       }
       
       console.log(`Heart toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling heart:', error);
-      // Revert optimistic update on error
-      setIsHeartActive(isHeartActive);
-      setHeartCount(heartCount);
+      // Revert to the original state on error
+      setIsHeartActive(currentActive);
+      setHeartCount(currentCount);
     } finally {
       setIsHeartSubmitting(false);
     }
