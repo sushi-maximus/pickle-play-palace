@@ -64,54 +64,37 @@ export const usePostReactions2 = ({
 
     setIsThumbsUpSubmitting(true);
     
-    // Store original states for rollback
-    const originalStates = {
-      thumbsUp: { count: thumbsUpCount, active: isThumbsUpActive },
-      thumbsDown: { count: thumbsDownCount, active: isThumbsDownActive },
-      heart: { count: heartCount, active: isHeartActive }
-    };
+    const newIsActive = !isThumbsUpActive;
+    console.log(`Toggling thumbs up: ${isThumbsUpActive} -> ${newIsActive}`);
     
     try {
-      const newIsActive = !isThumbsUpActive;
-      const newCount = newIsActive ? thumbsUpCount + 1 : thumbsUpCount - 1;
-      
-      console.log(`Toggling thumbs up: ${isThumbsUpActive} -> ${newIsActive}`);
-      
-      // Optimistic updates
-      setIsThumbsUpActive(newIsActive);
-      setThumbsUpCount(Math.max(0, newCount));
-      
-      // If activating thumbs up, deactivate others
+      // Handle API calls first
       if (newIsActive) {
+        // Only remove thumbs down if it exists (heart stays independent)
         if (isThumbsDownActive) {
-          console.log('Deactivating thumbs down due to thumbs up activation');
-          setIsThumbsDownActive(false);
-          setThumbsDownCount(Math.max(0, thumbsDownCount - 1));
+          await reactionService.deleteReaction(postId, userId, 'thumbsdown');
+          console.log('Deleted existing thumbs down reaction');
         }
-        if (isHeartActive) {
-          console.log('Deactivating heart due to thumbs up activation');
-          setIsHeartActive(false);
-          setHeartCount(Math.max(0, heartCount - 1));
-        }
-      }
-
-      // API call
-      if (newIsActive) {
+        // Add thumbs up
         await reactionService.addReaction(postId, userId, 'thumbsup');
       } else {
+        // Remove thumbs up
         await reactionService.deleteReaction(postId, userId, 'thumbsup');
+      }
+
+      // Update state after successful API calls
+      setIsThumbsUpActive(newIsActive);
+      setThumbsUpCount(prev => newIsActive ? prev + 1 : Math.max(0, prev - 1));
+      
+      // Only deactivate thumbs down if thumbs up is being activated
+      if (newIsActive && isThumbsDownActive) {
+        setIsThumbsDownActive(false);
+        setThumbsDownCount(prev => Math.max(0, prev - 1));
       }
       
       console.log(`Thumbs up toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling thumbs up:', error);
-      // Rollback all changes
-      setThumbsUpCount(originalStates.thumbsUp.count);
-      setIsThumbsUpActive(originalStates.thumbsUp.active);
-      setThumbsDownCount(originalStates.thumbsDown.count);
-      setIsThumbsDownActive(originalStates.thumbsDown.active);
-      setHeartCount(originalStates.heart.count);
-      setIsHeartActive(originalStates.heart.active);
     } finally {
       setIsThumbsUpSubmitting(false);
     }
@@ -122,54 +105,37 @@ export const usePostReactions2 = ({
 
     setIsThumbsDownSubmitting(true);
     
-    // Store original states for rollback
-    const originalStates = {
-      thumbsUp: { count: thumbsUpCount, active: isThumbsUpActive },
-      thumbsDown: { count: thumbsDownCount, active: isThumbsDownActive },
-      heart: { count: heartCount, active: isHeartActive }
-    };
+    const newIsActive = !isThumbsDownActive;
+    console.log(`Toggling thumbs down: ${isThumbsDownActive} -> ${newIsActive}`);
     
     try {
-      const newIsActive = !isThumbsDownActive;
-      const newCount = newIsActive ? thumbsDownCount + 1 : thumbsDownCount - 1;
-      
-      console.log(`Toggling thumbs down: ${isThumbsDownActive} -> ${newIsActive}`);
-      
-      // Optimistic updates
-      setIsThumbsDownActive(newIsActive);
-      setThumbsDownCount(Math.max(0, newCount));
-      
-      // If activating thumbs down, deactivate others
+      // Handle API calls first
       if (newIsActive) {
+        // Only remove thumbs up if it exists (heart stays independent)
         if (isThumbsUpActive) {
-          console.log('Deactivating thumbs up due to thumbs down activation');
-          setIsThumbsUpActive(false);
-          setThumbsUpCount(Math.max(0, thumbsUpCount - 1));
+          await reactionService.deleteReaction(postId, userId, 'thumbsup');
+          console.log('Deleted existing thumbs up reaction');
         }
-        if (isHeartActive) {
-          console.log('Deactivating heart due to thumbs down activation');
-          setIsHeartActive(false);
-          setHeartCount(Math.max(0, heartCount - 1));
-        }
-      }
-
-      // API call
-      if (newIsActive) {
+        // Add thumbs down
         await reactionService.addReaction(postId, userId, 'thumbsdown');
       } else {
+        // Remove thumbs down
         await reactionService.deleteReaction(postId, userId, 'thumbsdown');
+      }
+
+      // Update state after successful API calls
+      setIsThumbsDownActive(newIsActive);
+      setThumbsDownCount(prev => newIsActive ? prev + 1 : Math.max(0, prev - 1));
+      
+      // Only deactivate thumbs up if thumbs down is being activated
+      if (newIsActive && isThumbsUpActive) {
+        setIsThumbsUpActive(false);
+        setThumbsUpCount(prev => Math.max(0, prev - 1));
       }
       
       console.log(`Thumbs down toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling thumbs down:', error);
-      // Rollback all changes
-      setThumbsUpCount(originalStates.thumbsUp.count);
-      setIsThumbsUpActive(originalStates.thumbsUp.active);
-      setThumbsDownCount(originalStates.thumbsDown.count);
-      setIsThumbsDownActive(originalStates.thumbsDown.active);
-      setHeartCount(originalStates.heart.count);
-      setIsHeartActive(originalStates.heart.active);
     } finally {
       setIsThumbsDownSubmitting(false);
     }
@@ -180,54 +146,24 @@ export const usePostReactions2 = ({
 
     setIsHeartSubmitting(true);
     
-    // Store original states for rollback
-    const originalStates = {
-      thumbsUp: { count: thumbsUpCount, active: isThumbsUpActive },
-      thumbsDown: { count: thumbsDownCount, active: isThumbsDownActive },
-      heart: { count: heartCount, active: isHeartActive }
-    };
+    const newIsActive = !isHeartActive;
+    console.log(`Toggling heart: ${isHeartActive} -> ${newIsActive}`);
     
     try {
-      const newIsActive = !isHeartActive;
-      const newCount = newIsActive ? heartCount + 1 : heartCount - 1;
-      
-      console.log(`Toggling heart: ${isHeartActive} -> ${newIsActive}`);
-      
-      // Optimistic updates
-      setIsHeartActive(newIsActive);
-      setHeartCount(Math.max(0, newCount));
-      
-      // If activating heart, deactivate others
-      if (newIsActive) {
-        if (isThumbsUpActive) {
-          console.log('Deactivating thumbs up due to heart activation');
-          setIsThumbsUpActive(false);
-          setThumbsUpCount(Math.max(0, thumbsUpCount - 1));
-        }
-        if (isThumbsDownActive) {
-          console.log('Deactivating thumbs down due to heart activation');
-          setIsThumbsDownActive(false);
-          setThumbsDownCount(Math.max(0, thumbsDownCount - 1));
-        }
-      }
-
-      // API call
+      // Heart is independent - no need to remove other reactions
       if (newIsActive) {
         await reactionService.addReaction(postId, userId, 'heart');
       } else {
         await reactionService.deleteReaction(postId, userId, 'heart');
       }
+
+      // Update heart state only
+      setIsHeartActive(newIsActive);
+      setHeartCount(prev => newIsActive ? prev + 1 : Math.max(0, prev - 1));
       
       console.log(`Heart toggle successful for post ${postId}`);
     } catch (error) {
       console.error('Error toggling heart:', error);
-      // Rollback all changes
-      setThumbsUpCount(originalStates.thumbsUp.count);
-      setIsThumbsUpActive(originalStates.thumbsUp.active);
-      setThumbsDownCount(originalStates.thumbsDown.count);
-      setIsThumbsDownActive(originalStates.thumbsDown.active);
-      setHeartCount(originalStates.heart.count);
-      setIsHeartActive(originalStates.heart.active);
     } finally {
       setIsHeartSubmitting(false);
     }
