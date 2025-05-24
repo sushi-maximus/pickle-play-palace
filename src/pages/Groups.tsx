@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MobileGroupsHeader } from "@/components/groups/mobile/MobileGroupsHeader";
 import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
@@ -8,13 +9,11 @@ import { MyGroupsList } from "@/components/groups/MyGroupsList";
 import { GroupsList } from "@/components/groups/GroupsList";
 import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 import { LoginPrompt } from "@/components/groups/LoginPrompt";
-import { GroupCardShowcase } from "@/components/groups/ui/GroupCardShowcase";
 
 const Groups = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
-  const [showDesigns, setShowDesigns] = useState(true); // Show designs again
   const { user, isLoading } = useAuth();
 
   const handleSearchClick = () => {
@@ -71,11 +70,6 @@ const Groups = () => {
         <MobileGroupsBottomNav />
       </div>
     );
-  }
-
-  // Show design showcase
-  if (showDesigns) {
-    return <GroupCardShowcase />;
   }
 
   return (

@@ -1,10 +1,47 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Users, MessageCircle, Calendar } from "lucide-react";
+import { Lock, Users, MessageCircle, Calendar, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const GroupCardHybrid1 = () => {
+type Group = {
+  id: string;
+  name: string;
+  description: string | null;
+  location: string | null;
+  created_at: string;
+  is_private: boolean;
+  member_count?: number;
+};
+
+interface GroupCardHybrid1Props {
+  group?: Group;
+}
+
+export const GroupCardHybrid1 = ({ group }: GroupCardHybrid1Props = {}) => {
+  // Use passed group data or fallback to demo data
+  const cardData = group || {
+    id: "demo",
+    name: "Tennis Club Downtown",
+    description: "A community for tennis enthusiasts",
+    location: "New York, NY",
+    is_private: true,
+    member_count: 89
+  };
+
+  // Calculate demo stats based on member count
+  const memberCount = cardData.member_count || 89;
+  const postCount = Math.floor(memberCount * 0.27) || 24;
+  const eventCount = Math.floor(memberCount * 0.13) || 12;
+
+  // Generate initials for avatar
+  const initials = cardData.name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
     <Card className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0">
       {/* Background Image */}
@@ -22,26 +59,35 @@ export const GroupCardHybrid1 = () => {
         {/* Top Section */}
         <div className="flex justify-between items-start">
           <Badge variant="outline" className="bg-white/20 border-white/30 text-white">
-            <Lock className="h-3 w-3 mr-1" />
-            Private
+            {cardData.is_private ? (
+              <>
+                <Lock className="h-3 w-3 mr-1" />
+                Private
+              </>
+            ) : (
+              <>
+                <Globe className="h-3 w-3 mr-1" />
+                Public
+              </>
+            )}
           </Badge>
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
-            TC
+            {initials}
           </div>
         </div>
         
-        {/* Stats Section - NEW */}
+        {/* Stats Section */}
         <div className="grid grid-cols-3 gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
           <div className="text-center">
-            <div className="text-xl font-bold text-white">89</div>
+            <div className="text-xl font-bold text-white">{memberCount}</div>
             <div className="text-xs text-white/80">Members</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-white">24</div>
+            <div className="text-xl font-bold text-white">{postCount}</div>
             <div className="text-xs text-white/80">Posts</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-white">12</div>
+            <div className="text-xl font-bold text-white">{eventCount}</div>
             <div className="text-xs text-white/80">Events</div>
           </div>
         </div>
@@ -49,15 +95,15 @@ export const GroupCardHybrid1 = () => {
         {/* Bottom Section */}
         <div className="space-y-3">
           <div>
-            <h3 className="text-2xl font-bold text-white mb-2">Tennis Club Downtown</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">{cardData.name}</h3>
             <div className="flex items-center gap-1 text-white/80 text-sm">
               <Users className="h-4 w-4" />
-              <span>New York, NY</span>
+              <span>{cardData.location || "Location not specified"}</span>
             </div>
           </div>
           
           <Button className="w-full bg-white text-black hover:bg-white/90">
-            View Group
+            {cardData.is_private ? "Request to Join" : "Join Group"}
           </Button>
         </div>
       </div>

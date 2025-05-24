@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { fetchAllGroups } from "./utils";
 import { GroupsLoadingState } from "./ui/GroupsLoadingState";
 import { GroupsEmptyState } from "./ui/GroupsEmptyState";
-import { GroupsGrid } from "./ui/GroupsGrid";
+import { GroupsGridHybrid } from "./ui/GroupsGridHybrid";
 import { useGroupFiltering } from "./hooks/useGroupFiltering";
 import { GroupsPagination } from "./ui/GroupsPagination";
 
@@ -79,7 +79,7 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
 
   return (
     <>
-      <GroupsGrid groups={currentGroups} />
+      <GroupsGridHybrid groups={currentGroups} />
       {totalPages > 1 && (
         <GroupsPagination 
           currentPage={currentPage}
