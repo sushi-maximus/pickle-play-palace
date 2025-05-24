@@ -1,10 +1,7 @@
 
-import { Navbar } from "@/components/Navbar";
-
 const Privacy = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-1 py-12 px-4">
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold mb-6">Privacy Policy</h1>

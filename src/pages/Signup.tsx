@@ -1,5 +1,4 @@
 
-import { Navbar } from "@/components/Navbar";
 import { SignupForm } from "@/components/auth/SignupForm";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +17,6 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Navbar />
       <main className="flex-1 flex items-center justify-center py-12 px-4 bg-muted/30">
         <div className="w-full max-w-md">
           <SignupForm />

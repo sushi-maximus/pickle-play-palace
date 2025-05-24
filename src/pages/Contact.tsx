@@ -1,5 +1,4 @@
 
-import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 const Contact = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-1 py-12 px-4">
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold mb-6">Contact Us</h1>

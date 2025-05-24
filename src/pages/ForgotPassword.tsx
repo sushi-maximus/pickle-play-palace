@@ -1,5 +1,4 @@
 
-import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ResetPasswordForm } from "@/components/auth/form-fields/ResetPasswordForm";
@@ -8,7 +7,6 @@ import { ArrowLeft } from "lucide-react";
 const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Navbar />
       <main className="flex-1 flex items-center justify-center py-12 px-4 bg-gradient-to-b from-background to-muted/20">
         <div className="w-full max-w-md">
           <Card className="shadow-lg border-t-4 border-t-primary">
