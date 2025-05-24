@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { LogoutCard } from "@/components/profile/LogoutCard";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
-import { ProfileLoading } from "@/components/loading/ProfileLoading";
+import { ProfileSkeleton } from "@/components/loading/ProfileSkeleton";
 
 const Profile = () => {
   const { user, profile, isLoading, refreshProfile, signOut } = useAuth();
@@ -36,7 +36,7 @@ const Profile = () => {
     }
   }, [user, isLoading, navigate]);
 
-  // Show loading state while authentication is being checked
+  // Show enhanced loading state while authentication is being checked
   if (isLoading) {
     console.log("⏳ Still loading authentication state");
     return (
@@ -45,7 +45,7 @@ const Profile = () => {
           title="Profile" 
           showMobileProfileHeader={false}
         >
-          <ProfileLoading />
+          <ProfileSkeleton />
         </AppLayout>
       </RouteErrorBoundary>
     );
@@ -84,32 +84,34 @@ const Profile = () => {
         title="Profile" 
         showMobileProfileHeader={true}
       >
-        {profile ? (
-          <>
-            <ProfileContent 
-              profile={profile}
-              onProfileUpdate={handleProfileUpdate}
-              onLogout={handleLogout}
-            />
-            
-            {/* Logout Card - Always visible at the bottom with extra margin */}
-            <div className="mt-8 mb-8">
-              <LogoutCard onLogout={handleLogout} />
+        <div className="animate-fade-in">
+          {profile ? (
+            <>
+              <ProfileContent 
+                profile={profile}
+                onProfileUpdate={handleProfileUpdate}
+                onLogout={handleLogout}
+              />
+              
+              {/* Logout Card - Always visible at the bottom with extra margin */}
+              <div className="mt-8 mb-8">
+                <LogoutCard onLogout={handleLogout} />
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">
+                No profile found. This is normal for new accounts.
+              </p>
+              <p className="text-sm text-gray-500">
+                You can still access your account settings below.
+              </p>
+              <div className="mt-8 mb-8">
+                <LogoutCard onLogout={handleLogout} />
+              </div>
             </div>
-          </>
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-gray-600 mb-4">
-              No profile found. This is normal for new accounts.
-            </p>
-            <p className="text-sm text-gray-500">
-              You can still access your account settings below.
-            </p>
-            <div className="mt-8 mb-8">
-              <LogoutCard onLogout={handleLogout} />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </AppLayout>
     </RouteErrorBoundary>
   );

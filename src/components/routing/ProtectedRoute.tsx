@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { AuthLoadingState } from "@/components/loading/AuthLoadingState";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -11,13 +11,9 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, isLoading } = useAuth();
 
-  // Show loading while checking authentication status
+  // Enhanced loading state while checking authentication
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" text="Loading..." />
-      </div>
-    );
+    return <AuthLoadingState message="Verifying access..." />;
   }
 
   // Redirect to login if not authenticated
