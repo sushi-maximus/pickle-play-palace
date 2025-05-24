@@ -31,13 +31,14 @@ export const useThumbsDownReaction2 = ({
     try {
       console.log(`Toggling thumbs down: currently ${currentActive} for post ${postId}`);
       
-      // Optimistically update UI first
       if (!currentActive) {
+        // Adding thumbs down
         setIsThumbsDownActive(true);
         setThumbsDownCount(prev => prev + 1);
         await reactionService.addReaction(postId, userId, 'thumbsdown');
         console.log('Added thumbs down reaction');
       } else {
+        // Removing thumbs down
         setIsThumbsDownActive(false);
         setThumbsDownCount(prev => Math.max(0, prev - 1));
         await reactionService.deleteReaction(postId, userId, 'thumbsdown');

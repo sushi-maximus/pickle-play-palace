@@ -31,13 +31,14 @@ export const useHeartReaction2 = ({
     try {
       console.log(`Toggling heart: currently ${currentActive} for post ${postId}`);
       
-      // Optimistically update UI first
       if (!currentActive) {
+        // Adding heart
         setIsHeartActive(true);
         setHeartCount(prev => prev + 1);
         await reactionService.addReaction(postId, userId, 'heart');
         console.log('Added heart reaction');
       } else {
+        // Removing heart
         setIsHeartActive(false);
         setHeartCount(prev => Math.max(0, prev - 1));
         await reactionService.deleteReaction(postId, userId, 'heart');
