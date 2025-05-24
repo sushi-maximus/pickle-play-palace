@@ -22,15 +22,15 @@ export const GroupMobileLayout = ({
 }: GroupMobileLayoutProps) => {
   return (
     <>
-      {/* Group Header - Fixed at top with z-60 */}
+      {/* Group Header with context indicator - Fixed at top with z-60/70 */}
       <MobileGroupHeader 
         groupName={groupName}
         groupCode={groupCode}
         memberCount={memberCount}
       />
       
-      {/* Content Area with proper spacing */}
-      <div className="flex-1 pt-16 pb-20">
+      {/* Content Area with proper spacing for both context bar and header */}
+      <div className="flex-1 pt-24 pb-20">
         {children}
       </div>
       
