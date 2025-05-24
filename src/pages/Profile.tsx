@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { LogoutCard } from "@/components/profile/LogoutCard";
+import { RouteErrorBoundary } from "@/components/error-boundaries";
 
 const Profile = () => {
   const { user, profile, isLoading, refreshProfile, signOut } = useAuth();
@@ -42,21 +43,23 @@ const Profile = () => {
   };
 
   return (
-    <AppLayout 
-      title="Profile" 
-      showMobileProfileHeader={true}
-    >
-      <ProfileContent 
-        profile={profile}
-        onProfileUpdate={handleProfileUpdate}
-        onLogout={handleLogout}
-      />
-      
-      {/* Logout Card - Always visible at the bottom with extra margin */}
-      <div className="mt-8 mb-8">
-        <LogoutCard onLogout={handleLogout} />
-      </div>
-    </AppLayout>
+    <RouteErrorBoundary routeName="Profile">
+      <AppLayout 
+        title="Profile" 
+        showMobileProfileHeader={true}
+      >
+        <ProfileContent 
+          profile={profile}
+          onProfileUpdate={handleProfileUpdate}
+          onLogout={handleLogout}
+        />
+        
+        {/* Logout Card - Always visible at the bottom with extra margin */}
+        <div className="mt-8 mb-8">
+          <LogoutCard onLogout={handleLogout} />
+        </div>
+      </AppLayout>
+    </RouteErrorBoundary>
   );
 };
 

@@ -8,6 +8,7 @@ import { useAutoRefresh } from "@/components/groups/posts/hooks/useAutoRefresh";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { GroupDetailsTabs } from "@/components/groups/details/GroupDetailsTabs";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
+import { RouteErrorBoundary } from "@/components/error-boundaries";
 import {
   GroupMobileLayout,
   MobileHome2Tab,
@@ -131,17 +132,19 @@ const GroupDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <GroupMobileLayout
-        groupName={group.name}
-        groupCode={group.code || undefined}
-        memberCount={group.member_count}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      >
-        {renderTabContent()}
-      </GroupMobileLayout>
-    </div>
+    <RouteErrorBoundary routeName="Group Details">
+      <div className="min-h-screen bg-slate-50 flex flex-col">
+        <GroupMobileLayout
+          groupName={group.name}
+          groupCode={group.code || undefined}
+          memberCount={group.member_count}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        >
+          {renderTabContent()}
+        </GroupMobileLayout>
+      </div>
+    </RouteErrorBoundary>
   );
 };
 

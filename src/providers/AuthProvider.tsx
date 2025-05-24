@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/AuthContext";
 import { signIn, signUp, signOut, resendVerificationEmail } from "@/utils/auth-utils";
 import { toast } from "@/hooks/use-toast";
+import { logError, AppError } from "@/utils/errorHandling";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .single();
 
       if (error) {
-        console.error("Error fetching profile:", error);
+        logError(new AppError("Failed to fetch user profile", "PROFILE_FETCH_ERROR"), "AuthProvider");
         return;
       }
       
@@ -35,50 +36,83 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setProfile(data);
       }
     } catch (error) {
-      console.error("Unexpected error fetching profile:", error);
+      logError(error as Error, "AuthProvider.fetchProfile");
     }
   }, []);
 
   // Refresh profile data function
   const refreshProfile = useCallback(async () => {
     if (user?.id) {
-      await fetchProfile(user.id);
+      try {
+        await fetchProfile(user.id);
+      } catch (error) {
+        logError(error as Error, "AuthProvider.refreshProfile");
+        throw new AppError("Failed to refresh profile data");
+      }
     }
   }, [user, fetchProfile]);
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        if (!mounted) return;
+
         console.log("Auth state changed:", event);
-        setSession(session);
-        setUser(session?.user ?? null);
         
-        // Fetch profile when auth state changes
-        if (session?.user) {
-          fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
+        try {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          // Fetch profile when auth state changes
+          if (session?.user) {
+            await fetchProfile(session.user.id);
+          } else {
+            setProfile(null);
+          }
+        } catch (error) {
+          logError(error as Error, "AuthProvider.authStateChange");
+        } finally {
+          setIsLoading(false);
         }
-        
-        setIsLoading(false);
       }
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      // Fetch profile for existing session
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          logError(new AppError("Failed to get session", "SESSION_ERROR"), "AuthProvider");
+          setIsLoading(false);
+          return;
+        }
+
+        if (!mounted) return;
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        // Fetch profile for existing session
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        }
+      } catch (error) {
+        logError(error as Error, "AuthProvider.initializeAuth");
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
-      
-      setIsLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
