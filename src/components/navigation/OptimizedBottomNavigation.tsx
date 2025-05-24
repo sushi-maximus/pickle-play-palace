@@ -1,4 +1,3 @@
-
 import { useLocation, useParams } from "react-router-dom";
 import { Home, Users, User, Settings, ArrowLeft } from "lucide-react";
 import { OptimizedNavLink } from "./OptimizedNavLink";
@@ -19,34 +18,52 @@ interface NavItem {
   isBackButton?: boolean;
 }
 
+// Route context detection utilities
+const isGroupRoute = (pathname: string): boolean => {
+  return pathname.includes('/groups/') && pathname !== '/groups';
+};
+
+const extractGroupId = (pathname: string): string | null => {
+  const match = pathname.match(/\/groups\/([^\/]+)/);
+  return match ? match[1] : null;
+};
+
+const isValidGroupId = (groupId: string | undefined): boolean => {
+  return Boolean(groupId && groupId !== 'undefined' && groupId.length > 0);
+};
+
 export const OptimizedBottomNavigation = () => {
   const location = useLocation();
-  const { id: groupId } = useParams<{ id: string }>();
+  const { id: paramGroupId } = useParams<{ id: string }>();
   const { user } = useAuth();
   
-  // More robust check for group details page
-  const isGroupDetailsPage = Boolean(
-    location.pathname.includes('/groups/') && 
-    groupId && 
-    groupId !== 'undefined' && 
-    groupId.length > 0
-  );
+  // Enhanced route context detection
+  const currentPath = location.pathname;
+  const isOnGroupRoute = isGroupRoute(currentPath);
+  const extractedGroupId = extractGroupId(currentPath);
+  const activeGroupId = paramGroupId || extractedGroupId;
+  const hasValidGroupId = isValidGroupId(activeGroupId);
   
-  // Get group details only when on group page
+  // Determine if we're in a group context (route detection only)
+  const isInGroupContext = isOnGroupRoute && hasValidGroupId;
+  
+  // Get group details only when we have a valid context
   const { group } = useGroupDetails(
-    isGroupDetailsPage ? groupId! : "", 
+    isInGroupContext ? activeGroupId! : "", 
     user?.id
   );
 
-  // Enhanced debug logging
-  console.log("OptimizedBottomNavigation - Enhanced Debug:", {
-    pathname: location.pathname,
-    groupId,
-    isGroupDetailsPage,
-    groupIdPresent: Boolean(groupId),
-    groupIdLength: groupId?.length,
-    group: group?.name,
-    shouldShowGroupContext: isGroupDetailsPage
+  // Enhanced debug logging for route detection
+  console.log("OptimizedBottomNavigation - Route Context Detection:", {
+    currentPath,
+    paramGroupId,
+    extractedGroupId,
+    activeGroupId,
+    isOnGroupRoute,
+    hasValidGroupId,
+    isInGroupContext,
+    groupName: group?.name,
+    timestamp: new Date().toISOString()
   });
 
   // Base navigation items
@@ -77,7 +94,7 @@ export const OptimizedBottomNavigation = () => {
     }
   ];
 
-  // Modified navigation items for group context
+  // Group context navigation items (for future use)
   const groupContextNavItems: NavItem[] = [
     {
       icon: Home,
@@ -106,19 +123,20 @@ export const OptimizedBottomNavigation = () => {
     }
   ];
 
-  // Choose navigation items based on context - ALWAYS use group context when on group page
-  const navItems = isGroupDetailsPage ? groupContextNavItems : baseNavItems;
+  // For now, always use base navigation (UI unchanged)
+  // In future chunks, we'll use: isInGroupContext ? groupContextNavItems : baseNavItems
+  const navItems = baseNavItems;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[100]">
-      {/* Group context indicator - FORCE SHOW for testing when on group page */}
-      {isGroupDetailsPage && (
+      {/* Group context indicator - FOR TESTING ONLY */}
+      {isInGroupContext && (
         <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
               <span className="text-sm font-semibold text-blue-700 truncate">
-                {group?.name || `Group ${groupId}` || "Loading group..."}
+                Context Detected: {group?.name || `Group ${activeGroupId}` || "Loading..."}
               </span>
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             </div>
@@ -132,12 +150,6 @@ export const OptimizedBottomNavigation = () => {
             ? false 
             : location.pathname === item.to;
           const IconComponent = item.icon;
-          
-          console.log("Rendering nav item:", {
-            label: item.label,
-            isBackButton: item.isBackButton,
-            isActive
-          });
           
           return (
             <OptimizedNavLink
