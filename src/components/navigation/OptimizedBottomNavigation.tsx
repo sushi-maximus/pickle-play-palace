@@ -95,13 +95,17 @@ export const OptimizedBottomNavigation = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-100">
-      {/* Group context indicator */}
+      {/* Group context indicator - Enhanced styling for Chunk 2 */}
       {isGroupDetailsPage && group && (
-        <div className="bg-primary/5 border-b border-primary/10 px-4 py-2">
+        <div className="bg-primary/10 border-b border-primary/20 px-4 py-3">
           <div className="flex items-center justify-center">
-            <span className="text-sm font-medium text-primary truncate">
-              {group.name}
-            </span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm font-semibold text-primary truncate">
+                {group.name}
+              </span>
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+            </div>
           </div>
         </div>
       )}
@@ -113,21 +117,32 @@ export const OptimizedBottomNavigation = () => {
             : location.pathname === item.to;
           const IconComponent = item.icon;
           
+          // Enhanced styling for back button
+          const backButtonStyles = item.isBackButton 
+            ? "text-primary bg-primary/15 border border-primary/30" 
+            : "";
+          
           return (
             <OptimizedNavLink
               key={item.to}
               to={item.to}
               preloadRoute={item.preload}
-              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
+              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200 ${
                 isActive 
                   ? "text-primary bg-primary/10" 
                   : item.isBackButton
-                  ? "text-gray-600 hover:text-primary hover:bg-primary/5"
+                  ? `${backButtonStyles} hover:bg-primary/20 shadow-sm`
                   : "text-gray-600 hover:text-primary hover:bg-primary/5"
               }`}
             >
-              <IconComponent className="h-5 w-5 mb-1" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <IconComponent className={`mb-1 ${
+                item.isBackButton ? "h-5 w-5" : "h-5 w-5"
+              }`} />
+              <span className={`text-xs font-medium ${
+                item.isBackButton ? "font-semibold" : ""
+              }`}>
+                {item.label}
+              </span>
             </OptimizedNavLink>
           );
         })}
