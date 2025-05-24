@@ -1,11 +1,9 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
-import { GroupPostsFeed } from "@/components/groups/posts/GroupPostsFeed";
-import { MessageSquare, Settings, Users } from "lucide-react";
+import { Settings, Users } from "lucide-react";
 
 interface GroupDetailsTabsProps {
   group: any;

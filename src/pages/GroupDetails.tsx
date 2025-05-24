@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,11 +11,10 @@ import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import {
   MobileGroupHeader,
   MobileIconMenu,
-  MobileChatFeed,
   MobileHome2Tab,
 } from "@/components/groups/mobile";
 
-type ActiveTab = "home" | "home2" | "users" | "settings" | "calendar";
+type ActiveTab = "home2" | "users" | "settings" | "calendar";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -73,22 +73,6 @@ const GroupDetails = () => {
   // Tab content renderer
   const renderTabContent = () => {
     switch (activeTab) {
-      case "home":
-        return (
-          <div className="relative z-0">
-            <MobileChatFeed
-              posts={posts}
-              loading={postsLoading}
-              refreshing={refreshing}
-              currentUserId={user?.id}
-              user={user}
-              groupId={id}
-              membershipStatus={membershipStatus}
-              onPostCreated={handlePostCreated}
-            />
-          </div>
-        );
-      
       case "home2":
         return (
           <MobileHome2Tab
