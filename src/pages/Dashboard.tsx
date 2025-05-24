@@ -1,6 +1,5 @@
 
 import { Navbar } from "@/components/Navbar";
-import { MobileBottomNav } from "@/components/navigation/MobileBottomNav";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 
 const Dashboard = () => {
@@ -22,9 +21,6 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
-      
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
     </div>
   );
 };

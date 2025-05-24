@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +8,6 @@ import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileErrorMessage } from "@/components/profile/ProfileErrorMessage";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MobileBottomNav } from "@/components/navigation/MobileBottomNav";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -84,9 +84,6 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        
-        {/* Mobile Bottom Navigation */}
-        <MobileBottomNav />
       </div>
     );
   }
@@ -110,9 +107,6 @@ const Profile = () => {
             />
           </div>
         </main>
-        
-        {/* Mobile Bottom Navigation */}
-        <MobileBottomNav />
       </div>
     );
   }
@@ -135,9 +129,6 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        
-        {/* Mobile Bottom Navigation */}
-        <MobileBottomNav />
       </div>
     );
   }
@@ -175,9 +166,6 @@ const Profile = () => {
           </div>
         </div>
       </main>
-      
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
     </div>
   );
 };

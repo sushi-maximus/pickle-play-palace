@@ -2,7 +2,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Navbar } from "@/components/Navbar";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
-import { MobileBottomNav } from "@/components/navigation/MobileBottomNav";
 
 export const GroupDetailsLoading = () => {
   return (
@@ -28,9 +27,6 @@ export const GroupDetailsLoading = () => {
           </div>
         </div>
       </main>
-      
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
     </div>
   );
 };
