@@ -4,6 +4,7 @@ import { AreasOfFocusCard } from "@/components/dashboard/AreasOfFocusCard";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLoading } from "@/components/loading/DashboardLoading";
+import { PerformanceDashboard } from "@/components/performance";
 import { 
   usePerformanceMetrics, 
   useRenderTracker, 
@@ -75,6 +76,13 @@ const Dashboard = () => {
             
             {/* My Areas of Focus Card */}
             <AreasOfFocusCard />
+
+            {/* Performance Dashboard - Only in Development */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-8">
+                <PerformanceDashboard />
+              </div>
+            )}
           </>
         )}
       </AppLayout>
