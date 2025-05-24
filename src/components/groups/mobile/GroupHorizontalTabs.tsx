@@ -19,14 +19,14 @@ export const GroupHorizontalTabs = ({
   ];
 
   return (
-    <div className="bg-white border-b border-gray-200 px-3 py-2">
-      <div className="flex items-center gap-1 overflow-x-auto">
+    <div className="w-full bg-white border-b border-gray-200 px-3 py-3">
+      <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
         {tabItems.map((item) => (
           <Button
             key={item.id}
             variant="ghost"
             size="sm"
-            className={`flex items-center gap-2 h-9 px-3 py-2 rounded-lg transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
+            className={`flex items-center gap-2 h-10 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
               activeTab === item.id 
                 ? "text-primary bg-primary/15 shadow-sm font-semibold border border-primary/20" 
                 : "text-gray-600 hover:text-primary hover:bg-primary/5"

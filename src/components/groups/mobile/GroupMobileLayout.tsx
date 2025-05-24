@@ -29,8 +29,8 @@ export const GroupMobileLayout = ({
         memberCount={memberCount}
       />
       
-      {/* Horizontal Group Tabs - Fixed below header with z-50 */}
-      <div className="fixed top-20 left-0 right-0 z-50">
+      {/* Horizontal Group Tabs - Fixed below header with higher z-index */}
+      <div className="fixed top-20 left-0 right-0 z-[80] bg-white shadow-sm">
         <GroupHorizontalTabs 
           activeTab={activeTab}
           onTabChange={onTabChange}
@@ -38,7 +38,7 @@ export const GroupMobileLayout = ({
       </div>
       
       {/* Content Area with proper spacing for header, context bar, and horizontal tabs */}
-      <div className="flex-1 pt-32 pb-20">
+      <div className="flex-1 pt-36 pb-20">
         {children}
       </div>
     </>
