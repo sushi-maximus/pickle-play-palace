@@ -69,21 +69,20 @@ const Profile = () => {
       </div>
       
       <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-4">
-        <div className="container mx-auto max-w-4xl space-y-3 md:space-y-4">
-          <ProfileContent 
-            profile={profile}
-            onProfileUpdate={handleProfileUpdate}
-            onLogout={handleLogout}
-          />
+        {/* Container for all cards with bottom margin for mobile nav */}
+        <div className="container mx-auto max-w-4xl mb-24 md:mb-0">
+          <div className="space-y-3 md:space-y-4">
+            <ProfileContent 
+              profile={profile}
+              onProfileUpdate={handleProfileUpdate}
+              onLogout={handleLogout}
+            />
+            
+            {/* Logout Card */}
+            <LogoutCard onLogout={handleLogout} />
+          </div>
         </div>
       </main>
-      
-      {/* Logout Card - Fixed at bottom above mobile nav */}
-      <div className="px-3 md:px-6 pb-20 md:pb-4">
-        <div className="container mx-auto max-w-4xl">
-          <LogoutCard onLogout={handleLogout} />
-        </div>
-      </div>
       
       <MobileGroupsBottomNav />
     </div>
