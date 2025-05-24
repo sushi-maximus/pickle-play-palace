@@ -1,7 +1,6 @@
 
-import { ArrowLeft, Settings } from "lucide-react";
+import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 interface MobileGroupHeaderProps {
   groupName: string;
@@ -10,12 +9,6 @@ interface MobileGroupHeaderProps {
 }
 
 export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileGroupHeaderProps) => {
-  const navigate = useNavigate();
-
-  const handleGoBack = () => {
-    navigate("/groups");
-  };
-
   return (
     <>
       {/* Group context indicator bar */}
@@ -31,15 +24,8 @@ export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileG
 
       {/* Main header */}
       <header className="fixed top-8 left-0 right-0 z-[60] bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 flex items-center justify-between shadow-lg border-b border-slate-600/30">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-white hover:bg-slate-600/50 transition-all duration-200 hover:scale-105 flex-shrink-0"
-          onClick={handleGoBack}
-          aria-label="Go back to groups"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+        {/* Empty left space for balance */}
+        <div className="w-10 flex-shrink-0"></div>
         
         <div className="flex-1 text-center px-2">
           <h1 className="font-semibold text-lg md:text-xl truncate tracking-tight leading-tight">{groupName}</h1>
@@ -61,9 +47,9 @@ export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileG
           variant="ghost"
           size="icon"
           className="text-white hover:bg-slate-600/50 transition-all duration-200 hover:scale-105 flex-shrink-0"
-          aria-label="Group settings"
+          aria-label="Groups"
         >
-          <Settings className="h-5 w-5" />
+          <Users className="h-5 w-5" />
         </Button>
       </header>
     </>
