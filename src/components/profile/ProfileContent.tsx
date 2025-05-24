@@ -2,6 +2,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { LogoutCard } from "@/components/profile/LogoutCard";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -13,8 +16,20 @@ interface ProfileContentProps {
 }
 
 export const ProfileContent = ({ profile, onProfileUpdate, onLogout }: ProfileContentProps) => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
   const handleProfileUpdate = (updatedProfile: Profile) => {
     onProfileUpdate();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -33,6 +48,11 @@ export const ProfileContent = ({ profile, onProfileUpdate, onLogout }: ProfileCo
           />
         </CardContent>
       </Card>
+
+      {/* Logout Card - At the bottom with extra margin for mobile nav */}
+      <div className="mb-8 md:mb-4">
+        <LogoutCard onLogout={handleLogout} />
+      </div>
     </>
   );
 };
