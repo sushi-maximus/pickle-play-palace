@@ -1,93 +1,59 @@
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { ProfilePageLayout } from "@/components/profile/ProfilePageLayout";
-import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
-import { ProfileErrorState } from "@/components/profile/ProfileErrorState";
-import { ProfileNotFound } from "@/components/profile/ProfileNotFound";
-import { ProfileContent } from "@/components/profile/ProfileContent";
-import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type Profile = Database['public']['Tables']['profiles']['Row'];
+import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
+import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
 
 const Profile = () => {
-  const { user, signOut } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) {
+    if (!isLoading && !user) {
       navigate("/login");
       return;
     }
+  }, [user, isLoading, navigate]);
 
-    fetchProfile();
-  }, [user, navigate]);
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col">
+        <MobilePageHeader title="Profile" />
+        <main className="flex-1 pt-20 pb-24 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </main>
+        <MobileGroupsBottomNav />
+      </div>
+    );
+  }
 
-  const fetchProfile = async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      setProfile(data);
-    } catch (err: any) {
-      console.error('Error fetching profile:', err);
-      setError(err.message || 'Failed to load profile');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleProfileUpdate = (updatedProfile: Profile) => {
-    setProfile(updatedProfile);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      navigate("/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
+  // Redirect to login if not authenticated
+  if (!user) {
+    return null;
+  }
 
   return (
-    <ProfilePageLayout profile={profile}>
-      {loading && <ProfileSkeleton />}
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <MobilePageHeader title="Profile" />
       
-      {error && (
-        <ProfileErrorState 
-          error={error} 
-          onRetry={fetchProfile} 
-        />
-      )}
+      <main className="flex-1 pt-20 pb-24">
+        <div className="px-3 py-4 md:px-6 md:py-8">
+          <div className="container mx-auto max-w-4xl space-y-3 md:space-y-4">
+            {/* Profile content will go here */}
+            <div className="text-center py-12">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Profile Page</h2>
+              <p className="text-gray-600">Profile components will be added here</p>
+            </div>
+          </div>
+        </div>
+      </main>
       
-      {!loading && !error && !profile && <ProfileNotFound />}
-      
-      {!loading && !error && profile && (
-        <ProfileContent
-          profile={profile}
-          onProfileUpdate={handleProfileUpdate}
-          onLogout={handleLogout}
-        />
-      )}
-    </ProfilePageLayout>
+      <MobileGroupsBottomNav />
+    </div>
   );
 };
 
