@@ -1,4 +1,3 @@
-
 import { CreatePostForm2 } from "../CreatePostForm2";
 import { MobilePostCard2 } from "../../mobile/MobilePostCard2";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
@@ -80,7 +79,7 @@ export const FeedContent = ({
     return (
       <>
         <RefreshProgressIndicator refreshing={refreshing} />
-        <GroupPostsLoading />
+        <MobilePostsLoading />
       </>
     );
   }
@@ -112,9 +111,7 @@ export const FeedContent = ({
       )}
       
       {displayedPosts.length === 0 ? (
-        <div className="text-center py-8 text-slate-500">
-          <p>No posts yet. Be the first to share something!</p>
-        </div>
+        <GroupPostsEmpty isMember={membershipStatus.isMember} />
       ) : (
         <div 
           className={cn(
@@ -126,9 +123,16 @@ export const FeedContent = ({
             <MobilePostCard2 
               key={post.id} 
               post={post}
-              currentUserId={user?.id}
-              onPostUpdated={onPostUpdated}
-              onPostDeleted={onPostDeleted}
+              user={user}
+              isEditing={false}
+              currentPostId={null}
+              editableContent=""
+              setEditableContent={() => {}}
+              isEditSubmitting={false}
+              onStartEditing={() => {}}
+              onCancelEditing={() => {}}
+              onSaveEditing={() => {}}
+              onDeleteClick={() => {}}
             />
           ))}
         </div>
