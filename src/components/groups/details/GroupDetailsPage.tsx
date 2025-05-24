@@ -12,6 +12,7 @@ import { GroupDetailsContent } from "./GroupDetailsContent";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { GroupMobileLayout } from "@/components/groups/mobile";
 import { toast } from "sonner";
+import type { User } from "@supabase/supabase-js";
 
 export const GroupDetailsPage = () => {
   const { id } = useParams<{ id: string }>();

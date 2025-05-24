@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { CreatePostForm2 } from "../posts/CreatePostForm2";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
@@ -7,10 +8,11 @@ import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
 import { MobilePostsLoading } from "./MobilePostsLoading";
 import { MobilePostsList } from "./MobilePostsList";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface MobileHome2TabProps {
   groupId: string;
-  user: any;
+  user: Profile | null;
   onPostCreated?: () => void;
 }
 
