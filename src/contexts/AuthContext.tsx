@@ -12,6 +12,10 @@ type Profile = {
   skill_level: string;
   dupr_rating: number | null;
   birthday?: string | null;
+  created_at: string;
+  updated_at: string;
+  dupr_profile_link: string | null;
+  phone_number: string | null;
 };
 
 type AuthContextType = {
