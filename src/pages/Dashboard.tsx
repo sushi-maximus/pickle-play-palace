@@ -1,10 +1,11 @@
 
 import { Navbar } from "@/components/Navbar";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
+import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Desktop Navigation */}
       <div className="hidden md:block">
         <Navbar />
@@ -21,6 +22,8 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+      
+      <MobileGroupsBottomNav />
     </div>
   );
 };
