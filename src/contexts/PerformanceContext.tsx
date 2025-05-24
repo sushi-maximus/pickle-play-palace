@@ -1,4 +1,3 @@
-
 import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
 
 interface ComponentMetrics {
@@ -10,13 +9,26 @@ interface ComponentMetrics {
   timestamp: number;
 }
 
+interface MemoryMetrics {
+  componentName: string;
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+  usedPercentage: number;
+  trend: 'increasing' | 'decreasing' | 'stable';
+  timestamp: number;
+}
+
 interface PerformanceContextType {
   isEnabled: boolean;
   componentMetrics: ComponentMetrics[];
+  memoryMetrics: MemoryMetrics[];
   togglePerformanceTracking: () => void;
   addComponentMetrics: (metrics: ComponentMetrics) => void;
+  addMemoryMetrics: (metrics: MemoryMetrics) => void;
   clearMetrics: () => void;
   getSlowComponents: (threshold?: number) => ComponentMetrics[];
+  getHighMemoryComponents: (threshold?: number) => MemoryMetrics[];
 }
 
 const PerformanceContext = createContext<PerformanceContextType | undefined>(undefined);
@@ -29,6 +41,7 @@ interface PerformanceProviderProps {
 export const PerformanceProvider = ({ children, enabled = false }: PerformanceProviderProps) => {
   const [isEnabled, setIsEnabled] = useState(enabled);
   const [componentMetrics, setComponentMetrics] = useState<ComponentMetrics[]>([]);
+  const [memoryMetrics, setMemoryMetrics] = useState<MemoryMetrics[]>([]);
 
   const togglePerformanceTracking = useCallback(() => {
     setIsEnabled(prev => !prev);
@@ -48,8 +61,17 @@ export const PerformanceProvider = ({ children, enabled = false }: PerformancePr
     });
   }, []);
 
+  const addMemoryMetrics = useCallback((metrics: MemoryMetrics) => {
+    setMemoryMetrics(prev => {
+      // Keep only the last 50 memory metrics to prevent memory buildup
+      const updated = [metrics, ...prev].slice(0, 50);
+      return updated;
+    });
+  }, []);
+
   const clearMetrics = useCallback(() => {
     setComponentMetrics([]);
+    setMemoryMetrics([]);
     console.log('Performance metrics cleared');
   }, []);
 
@@ -57,13 +79,20 @@ export const PerformanceProvider = ({ children, enabled = false }: PerformancePr
     return componentMetrics.filter(metric => metric.averageRenderTime > threshold);
   }, [componentMetrics]);
 
+  const getHighMemoryComponents = useCallback((threshold = 80) => {
+    return memoryMetrics.filter(metric => metric.usedPercentage > threshold);
+  }, [memoryMetrics]);
+
   const value = {
     isEnabled,
     componentMetrics,
+    memoryMetrics,
     togglePerformanceTracking,
     addComponentMetrics,
+    addMemoryMetrics,
     clearMetrics,
-    getSlowComponents
+    getSlowComponents,
+    getHighMemoryComponents
   };
 
   return (
