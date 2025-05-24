@@ -1,4 +1,5 @@
 
+import { motion } from "framer-motion";
 import { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
 import { GroupCardHybrid1 } from "./GroupCardHybrid1";
 
@@ -16,6 +17,27 @@ export const UnifiedGroupsGrid = ({
   emptyDescription = "Try adjusting your search criteria or create a new group."
 }: UnifiedGroupsGridProps) => {
   console.log("UnifiedGroupsGrid rendering with groups:", groups.length, "loading:", loading);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { duration: 0.3 }
+    }
+  };
 
   if (loading) {
     return (
@@ -70,14 +92,23 @@ export const UnifiedGroupsGrid = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+    <motion.div 
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {groups.map((group) => (
-        <GroupCardHybrid1 
-          key={group.id} 
-          group={group} 
-          isMember={group.isMember}
-        />
+        <motion.div 
+          key={group.id}
+          variants={itemVariants}
+        >
+          <GroupCardHybrid1 
+            group={group} 
+            isMember={group.isMember}
+          />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };

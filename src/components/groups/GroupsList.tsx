@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { GroupsLoadingState } from "./ui/GroupsLoadingState";
 import { GroupsEmptyState } from "./ui/GroupsEmptyState";
-import { GroupsGridHybrid } from "./ui/GroupsGridHybrid";
+import { UnifiedGroupsGrid } from "./ui/UnifiedGroupsGrid";
 import { GroupsPagination } from "./ui/GroupsPagination";
 import { useUnifiedGroups } from "./hooks/useUnifiedGroups";
 
@@ -62,11 +62,11 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
   const endIndex = startIndex + itemsPerPage;
   const currentGroups = filteredGroups.slice(startIndex, endIndex);
 
-  console.log("Rendering GroupsGridHybrid with unified groups:", currentGroups);
+  console.log("Rendering UnifiedGroupsGrid with unified groups:", currentGroups);
 
   return (
     <>
-      <GroupsGridHybrid groups={currentGroups} />
+      <UnifiedGroupsGrid groups={currentGroups} />
       {totalPages > 1 && (
         <GroupsPagination 
           currentPage={currentPage}
