@@ -7,9 +7,10 @@ import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
 import { Settings, Users } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
+import type { GroupMember } from "../members/types";
 
 type Group = Database['public']['Tables']['groups']['Row'] & {
-  members?: Database['public']['Tables']['group_members']['Row'][];
+  members?: GroupMember[];
   member_count: number;
 };
 
