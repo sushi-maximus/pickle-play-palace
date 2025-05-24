@@ -68,7 +68,7 @@ const Profile = () => {
         <MobileProfileHeader profile={profile} />
       </div>
       
-      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-32 md:pb-4">
+      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-40 md:pb-4">
         {/* Container for all cards with proper spacing */}
         <div className="container mx-auto max-w-4xl">
           <div className="space-y-3 md:space-y-4">
