@@ -19,18 +19,30 @@ export const GroupDetailsPage = () => {
   const navigate = useNavigate();
   const { activeTab, handleTabChange } = useGroupDetailsState();
 
-  console.log("GroupDetailsPage: Rendering with ID:", id, "User:", !!user);
+  console.log("GroupDetailsPage: Rendering with raw ID:", id, "User:", !!user);
 
-  // Early return and redirect if no ID
+  // Validate and clean the ID parameter
+  const cleanId = id?.trim();
+  const isValidUUID = cleanId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(cleanId);
+
+  // Early return and redirect if no valid ID
   useEffect(() => {
-    if (!id || id.trim() === '') {
-      console.error("GroupDetailsPage: No group ID provided in URL parameters");
+    if (!cleanId || cleanId === '' || cleanId === ':id') {
+      console.error("GroupDetailsPage: No valid group ID provided, ID:", id);
       toast.error("Invalid group URL - missing group ID");
       navigate("/groups", { replace: true });
       return;
     }
-    console.log("GroupDetailsPage: Valid group ID found:", id);
-  }, [id, navigate]);
+    
+    if (!isValidUUID) {
+      console.error("GroupDetailsPage: Invalid UUID format:", cleanId);
+      toast.error("Invalid group ID format");
+      navigate("/groups", { replace: true });
+      return;
+    }
+    
+    console.log("GroupDetailsPage: Valid group ID found:", cleanId);
+  }, [cleanId, isValidUUID, navigate, id]);
 
   // Group details and membership
   const {
@@ -40,7 +52,7 @@ export const GroupDetailsPage = () => {
     membershipStatus,
     hasPendingRequests,
     handleMemberUpdate
-  } = useGroupDetails(id || "", user?.id);
+  } = useGroupDetails(cleanId || "", user?.id);
 
   // Posts management
   const { 
@@ -50,7 +62,7 @@ export const GroupDetailsPage = () => {
     error: postsError, 
     refreshPosts 
   } = useGroupPosts({ 
-    groupId: id || "", 
+    groupId: cleanId || "", 
     userId: user?.id 
   });
 
@@ -67,16 +79,17 @@ export const GroupDetailsPage = () => {
   };
 
   console.log("GroupDetailsPage: State check", {
-    id,
+    cleanId,
+    isValidUUID,
     groupLoading,
     groupError,
     group: !!group,
     user: !!user
   });
 
-  // Early return if no ID
-  if (!id || id.trim() === '') {
-    console.log("GroupDetailsPage: Rendering loading state due to missing ID");
+  // Early return if no valid ID
+  if (!cleanId || !isValidUUID) {
+    console.log("GroupDetailsPage: Rendering loading state due to invalid ID");
     return <GroupDetailsLoading />;
   }
 
@@ -116,7 +129,7 @@ export const GroupDetailsPage = () => {
             user={user}
             membershipStatus={membershipStatus}
             hasPendingRequests={hasPendingRequests}
-            groupId={id}
+            groupId={cleanId}
             onPostCreated={handlePostCreated}
             onMemberUpdate={handleMemberUpdate}
           />
