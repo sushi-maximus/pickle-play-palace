@@ -15,9 +15,12 @@ export const MobilePageHeader = ({
 }: MobilePageHeaderProps) => {
   console.log("MobilePageHeader rendering with title:", title);
   
+  // Only center the Profile title
+  const shouldCenter = title === "Profile";
+  
   return (
     <header className="fixed top-0 left-0 right-0 z-[60] bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
-      <div className="flex-1">
+      <div className={`flex-1 ${shouldCenter ? 'text-center' : ''}`}>
         <h1 className="font-semibold text-lg">{title}</h1>
       </div>
       
