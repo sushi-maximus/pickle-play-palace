@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroupDetails } from "@/components/groups/details/hooks/useGroupDetails";
 import { useGroupPosts } from "@/components/groups/posts/hooks/useGroupPosts";
@@ -13,13 +13,26 @@ import {
   GroupMobileLayout,
   MobileHome2Tab,
 } from "@/components/groups/mobile";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 type ActiveTab = "home2" | "users" | "settings" | "calendar";
 
 const GroupDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<ActiveTab>("home2");
+
+  // Early return if no ID - redirect to groups page
+  useEffect(() => {
+    if (!id) {
+      console.error("No group ID provided in URL parameters");
+      toast.error("Invalid group URL");
+      navigate("/groups");
+      return;
+    }
+  }, [id, navigate]);
 
   // Group details and membership
   const {
@@ -57,15 +70,29 @@ const GroupDetails = () => {
     setActiveTab(tab as ActiveTab);
   };
 
+  // Early return if no ID
+  if (!id) {
+    return <GroupDetailsLoading />;
+  }
+
   // Loading and error states
-  if (!id || groupLoading) {
+  if (groupLoading) {
     return <GroupDetailsLoading />;
   }
 
   if (!group) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Group not found</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center space-y-4">
+          <h2 className="text-xl font-medium text-gray-900">Group not found</h2>
+          <p className="text-gray-600">The group you're looking for doesn't exist or has been removed.</p>
+          <button
+            onClick={() => navigate("/groups")}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+          >
+            Back to Groups
+          </button>
+        </div>
       </div>
     );
   }

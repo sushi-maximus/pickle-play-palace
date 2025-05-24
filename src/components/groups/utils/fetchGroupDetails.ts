@@ -8,6 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
  */
 export const fetchGroupDetails = async (groupId: string) => {
   try {
+    console.log("fetchGroupDetails: Starting fetch for group ID:", groupId);
+    
+    // Validate groupId
+    if (!groupId || typeof groupId !== 'string') {
+      console.error("fetchGroupDetails: Invalid group ID provided:", groupId);
+      throw new Error("Invalid group ID");
+    }
+    
     // Fetch group data
     const { data: groupData, error: groupError } = await supabase
       .from("groups")
@@ -29,9 +37,23 @@ export const fetchGroupDetails = async (groupId: string) => {
       .single();
     
     if (groupError) {
-      console.error(`Error fetching group ${groupId}:`, groupError);
+      console.error(`fetchGroupDetails: Error fetching group ${groupId}:`, groupError);
+      
+      // Handle specific error types
+      if (groupError.code === 'PGRST116') {
+        // No rows returned
+        return null;
+      }
+      
+      throw new Error(`Failed to fetch group: ${groupError.message}`);
+    }
+    
+    if (!groupData) {
+      console.log("fetchGroupDetails: No group data returned for ID:", groupId);
       return null;
     }
+    
+    console.log("fetchGroupDetails: Successfully fetched group data:", groupData.name);
     
     // Get member count
     const { count: memberCount, error: countError } = await supabase
@@ -41,10 +63,11 @@ export const fetchGroupDetails = async (groupId: string) => {
       .eq("status", "active");
       
     if (countError) {
-      console.error(`Error counting members for group ${groupId}:`, countError);
+      console.error(`fetchGroupDetails: Error counting members for group ${groupId}:`, countError);
+      // Don't throw here, just log the error and continue with 0 count
     }
     
-    // Get members with their profile info - using a join approach instead of foreign relationships
+    // Get members with their profile info
     const { data: membersData, error: membersError } = await supabase
       .from("group_members")
       .select(`
@@ -57,10 +80,11 @@ export const fetchGroupDetails = async (groupId: string) => {
       .eq("status", "active");
       
     if (membersError) {
-      console.error(`Error fetching members for group ${groupId}:`, membersError);
+      console.error(`fetchGroupDetails: Error fetching members for group ${groupId}:`, membersError);
+      // Don't throw here, continue with empty members array
     }
     
-    // Now fetch the profiles for these members
+    // Fetch profiles for members
     let membersWithProfiles = [];
     if (membersData && membersData.length > 0) {
       const userIds = membersData.map(member => member.user_id);
@@ -71,7 +95,8 @@ export const fetchGroupDetails = async (groupId: string) => {
         .in("id", userIds);
         
       if (profilesError) {
-        console.error(`Error fetching profiles for group members:`, profilesError);
+        console.error(`fetchGroupDetails: Error fetching profiles for group members:`, profilesError);
+        // Don't throw here, continue without profile data
       }
       
       // Combine member data with profiles
@@ -90,6 +115,8 @@ export const fetchGroupDetails = async (groupId: string) => {
       });
     }
     
+    console.log("fetchGroupDetails: Successfully processed group with", membersWithProfiles.length, "members");
+    
     // Return group with member data
     return {
       ...groupData,
@@ -97,7 +124,7 @@ export const fetchGroupDetails = async (groupId: string) => {
       members: membersWithProfiles
     };
   } catch (error) {
-    console.error('Error fetching group details:', error);
-    return null;
+    console.error('fetchGroupDetails: Unexpected error fetching group details:', error);
+    throw error;
   }
 };
