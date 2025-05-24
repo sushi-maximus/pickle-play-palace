@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileErrorMessage } from "./ProfileErrorMessage";
 import { ButtonLoader } from "@/components/ui/ButtonLoader";
 import { useOptimisticMutations } from "@/hooks/useOptimisticMutations";
+import { FormErrorBoundary } from "@/components/error-boundaries";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -148,38 +149,40 @@ export const ProfileForm = ({ profile, onProfileUpdate }: ProfileFormProps) => {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-        {formError && <ProfileErrorMessage error={formError} onRetry={handleRetry} />}
-        
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-lg font-medium mb-4">Personal Information</h3>
-            <PersonalInfoFields control={form.control} />
+    <FormErrorBoundary formName="Profile" onRetry={handleRetry}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+          {formError && <ProfileErrorMessage error={formError} onRetry={handleRetry} />}
+          
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Personal Information</h3>
+              <PersonalInfoFields control={form.control} />
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-medium mb-4">Additional Information</h3>
+              <AdditionalInfoFields control={form.control} />
+            </div>
           </div>
           
-          <div>
-            <h3 className="text-lg font-medium mb-4">Additional Information</h3>
-            <AdditionalInfoFields control={form.control} />
-          </div>
-        </div>
-        
-        <div className="flex justify-end mt-6">
-          <Button 
-            type="submit" 
-            disabled={isLoading || !form.formState.isDirty} 
-            className="w-full md:w-auto transition-all"
-          >
-            <ButtonLoader 
-              isLoading={isLoading}
-              loadingText="Updating..."
-              size="sm"
+          <div className="flex justify-end mt-6">
+            <Button 
+              type="submit" 
+              disabled={isLoading || !form.formState.isDirty} 
+              className="w-full md:w-auto transition-all"
             >
-              Save Changes
-            </ButtonLoader>
-          </Button>
-        </div>
-      </form>
-    </Form>
+              <ButtonLoader 
+                isLoading={isLoading}
+                loadingText="Updating..."
+                size="sm"
+              >
+                Save Changes
+              </ButtonLoader>
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </FormErrorBoundary>
   );
 };

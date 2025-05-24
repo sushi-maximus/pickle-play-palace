@@ -1,4 +1,3 @@
-
 import { useState, useEffect, ReactNode, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +5,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { signIn, signUp, signOut, resendVerificationEmail } from "@/utils/auth-utils";
 import { toast } from "@/hooks/use-toast";
 import { logError, AppError } from "@/utils/errorHandling";
+import { DataFetchErrorBoundary } from "@/components/error-boundaries";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Function to fetch user profile data
+  // Function to fetch user profile data with enhanced error handling
   const fetchProfile = useCallback(async (userId: string) => {
     if (!userId) {
       console.log("❌ No userId provided to fetchProfile");
@@ -54,10 +54,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("❌ Exception in fetchProfile:", error);
       logError(error as Error, "AuthProvider.fetchProfile");
       setProfile(null);
+      
+      // Show user-friendly error for network issues
+      if (error instanceof Error && error.message.includes('network')) {
+        toast({
+          title: "Connection Error",
+          description: "Unable to load profile. Please check your internet connection.",
+          variant: "destructive",
+        });
+      }
     }
   }, []);
 
-  // Refresh profile data function
+  // Refresh profile data function with error boundary protection
   const refreshProfile = useCallback(async () => {
     if (user?.id) {
       try {
@@ -70,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } else {
       console.log("❌ Cannot refresh profile - no user ID");
     }
-  }, [user, fetchProfile]);
+  }, [user?.id, fetchProfile]);
 
   useEffect(() => {
     let mounted = true;
@@ -188,7 +197,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {children}
+      <DataFetchErrorBoundary componentName="Authentication" onRetry={refreshProfile}>
+        {children}
+      </DataFetchErrorBoundary>
     </AuthContext.Provider>
   );
 };
