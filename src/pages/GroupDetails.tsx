@@ -200,7 +200,6 @@ const GroupDetails = () => {
       <div className="min-h-screen bg-slate-50 flex flex-col">
         <GroupMobileLayout
           groupName={group.name}
-          groupCode={group.code || undefined}
           memberCount={group.member_count}
           activeTab={activeTab}
           onTabChange={handleTabChange}
