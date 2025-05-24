@@ -68,9 +68,8 @@ export const usePostReactions2 = ({
     console.log(`Toggling thumbs up: ${isThumbsUpActive} -> ${newIsActive}`);
     
     try {
-      // Handle API calls first
       if (newIsActive) {
-        // Only remove thumbs down if it exists (heart stays independent)
+        // If we're activating thumbs up and thumbs down is active, remove thumbs down first
         if (isThumbsDownActive) {
           await reactionService.deleteReaction(postId, userId, 'thumbsdown');
           console.log('Deleted existing thumbs down reaction');
@@ -78,19 +77,21 @@ export const usePostReactions2 = ({
         // Add thumbs up
         await reactionService.addReaction(postId, userId, 'thumbsup');
       } else {
-        // Remove thumbs up
+        // Just remove thumbs up
         await reactionService.deleteReaction(postId, userId, 'thumbsup');
       }
 
-      // Update state after successful API calls
+      // Update thumbs up state
       setIsThumbsUpActive(newIsActive);
       setThumbsUpCount(prev => newIsActive ? prev + 1 : Math.max(0, prev - 1));
       
-      // Only deactivate thumbs down if thumbs up is being activated
+      // If we activated thumbs up and thumbs down was active, deactivate thumbs down
       if (newIsActive && isThumbsDownActive) {
         setIsThumbsDownActive(false);
         setThumbsDownCount(prev => Math.max(0, prev - 1));
       }
+      
+      // Heart remains completely untouched
       
       console.log(`Thumbs up toggle successful for post ${postId}`);
     } catch (error) {
@@ -109,9 +110,8 @@ export const usePostReactions2 = ({
     console.log(`Toggling thumbs down: ${isThumbsDownActive} -> ${newIsActive}`);
     
     try {
-      // Handle API calls first
       if (newIsActive) {
-        // Only remove thumbs up if it exists (heart stays independent)
+        // If we're activating thumbs down and thumbs up is active, remove thumbs up first
         if (isThumbsUpActive) {
           await reactionService.deleteReaction(postId, userId, 'thumbsup');
           console.log('Deleted existing thumbs up reaction');
@@ -119,19 +119,21 @@ export const usePostReactions2 = ({
         // Add thumbs down
         await reactionService.addReaction(postId, userId, 'thumbsdown');
       } else {
-        // Remove thumbs down
+        // Just remove thumbs down
         await reactionService.deleteReaction(postId, userId, 'thumbsdown');
       }
 
-      // Update state after successful API calls
+      // Update thumbs down state
       setIsThumbsDownActive(newIsActive);
       setThumbsDownCount(prev => newIsActive ? prev + 1 : Math.max(0, prev - 1));
       
-      // Only deactivate thumbs up if thumbs down is being activated
+      // If we activated thumbs down and thumbs up was active, deactivate thumbs up
       if (newIsActive && isThumbsUpActive) {
         setIsThumbsUpActive(false);
         setThumbsUpCount(prev => Math.max(0, prev - 1));
       }
+      
+      // Heart remains completely untouched
       
       console.log(`Thumbs down toggle successful for post ${postId}`);
     } catch (error) {
@@ -150,14 +152,15 @@ export const usePostReactions2 = ({
     console.log(`Toggling heart: ${isHeartActive} -> ${newIsActive}`);
     
     try {
-      // Heart is independent - no need to remove other reactions
       if (newIsActive) {
+        // Just add heart - no interaction with thumbs reactions
         await reactionService.addReaction(postId, userId, 'heart');
       } else {
+        // Just remove heart - no interaction with thumbs reactions
         await reactionService.deleteReaction(postId, userId, 'heart');
       }
 
-      // Update heart state only
+      // Update only heart state - thumbs up/down remain completely untouched
       setIsHeartActive(newIsActive);
       setHeartCount(prev => newIsActive ? prev + 1 : Math.max(0, prev - 1));
       
