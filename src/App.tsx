@@ -46,7 +46,7 @@ const queryClient = new QueryClient({
       gcTime: 10 * 60 * 1000, // 10 minutes garbage collection time
       refetchOnMount: (query) => {
         // Only refetch if data is older than 2 minutes
-        return Date.now() - query.dataUpdatedAt > 2 * 60 * 1000;
+        return Date.now() - (query.state.dataUpdatedAt || 0) > 2 * 60 * 1000;
       },
     },
     mutations: {

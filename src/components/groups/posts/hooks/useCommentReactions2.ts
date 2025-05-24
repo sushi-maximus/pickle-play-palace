@@ -100,7 +100,7 @@ export const useCommentReactions2 = ({
       console.error('Error toggling comment thumbs up reaction:', error);
       // Revert optimistic update on error
       setIsThumbsUpActive(currentThumbsUpActive);
-      setThumbsDownActive(currentThumbsDownActive);
+      setIsThumbsDownActive(currentThumbsDownActive);
       setThumbsUpCount(currentThumbsUpCount);
       setThumbsDownCount(currentThumbsDownCount);
       
