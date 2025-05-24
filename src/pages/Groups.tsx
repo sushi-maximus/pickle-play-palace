@@ -34,9 +34,9 @@ const Groups = () => {
   }
 
   return (
-    <AppLayout title="Groups" className="px-0 py-0">
+    <AppLayout title="Groups">
       {/* Search and Create Section */}
-      <div className="bg-white border-b px-4 py-4 -mx-3 md:-mx-6 mb-4">
+      <div className="bg-white border-b px-4 py-4 -mx-3 mb-4">
         <div className="flex items-center gap-4">
           <div className="flex-1">
             <SearchFilter 
@@ -51,7 +51,7 @@ const Groups = () => {
       </div>
       
       {/* Main Content */}
-      <div className="px-3 md:px-6">
+      <div className="px-3">
         {showSearch && (
           <div className="mb-4 p-4 bg-white rounded-lg border">
             <h3 className="font-medium mb-2">Advanced Search</h3>

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Users, User, Home, BookOpen } from "lucide-react";
+import { Users, User, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigation } from "./hooks/useNavigation";
 
@@ -10,7 +10,6 @@ export const BottomNavigation = () => {
   const navigationItems = [
     { id: "dashboard", icon: Home, label: "Dashboard" },
     { id: "groups", icon: Users, label: "Groups" },
-    { id: "training", icon: BookOpen, label: "Training" },
     { id: "profile", icon: User, label: "Profile" },
   ];
 

@@ -16,8 +16,6 @@ export const useNavigation = () => {
       setActiveTab("profile");
     } else if (path === "/dashboard") {
       setActiveTab("dashboard");
-    } else if (path === "/training") {
-      setActiveTab("training");
     }
   }, [location.pathname]);
 

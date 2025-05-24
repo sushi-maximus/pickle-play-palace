@@ -17,7 +17,6 @@ import Profile from "@/pages/Profile";
 import Groups from "@/pages/Groups";
 import GroupDetails from "@/pages/GroupDetails";
 import Dashboard from "@/pages/Dashboard";
-import Training from "@/pages/Training";
 import AuthCallback from "@/pages/AuthCallback";
 import NotFound from "@/pages/NotFound";
 
@@ -51,7 +50,6 @@ function App() {
                 <Route path="/groups" element={<Groups />} />
                 <Route path="/groups/:id" element={<GroupDetails />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/training" element={<Training />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
