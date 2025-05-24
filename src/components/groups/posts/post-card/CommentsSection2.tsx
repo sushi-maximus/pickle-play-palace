@@ -37,7 +37,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
 
   const handleAddComment = () => {
     if (newCommentContent.trim() && currentUserId) {
-      handleSubmit(newCommentContent);
+      handleSubmit();
     }
   };
 
