@@ -1,6 +1,5 @@
 
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { MobileBottomNav } from "@/components/navigation/MobileBottomNav";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 
@@ -23,11 +22,6 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
-      
-      {/* Desktop Footer */}
-      <div className="hidden md:block">
-        <Footer />
-      </div>
       
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav />

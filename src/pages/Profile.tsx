@@ -1,9 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
@@ -87,11 +85,6 @@ const Profile = () => {
           </div>
         </main>
         
-        {/* Desktop Footer */}
-        <div className="hidden md:block">
-          <Footer />
-        </div>
-        
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
       </div>
@@ -118,11 +111,6 @@ const Profile = () => {
           </div>
         </main>
         
-        {/* Desktop Footer */}
-        <div className="hidden md:block">
-          <Footer />
-        </div>
-        
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
       </div>
@@ -147,11 +135,6 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        
-        {/* Desktop Footer */}
-        <div className="hidden md:block">
-          <Footer />
-        </div>
         
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
@@ -192,11 +175,6 @@ const Profile = () => {
           </div>
         </div>
       </main>
-      
-      {/* Desktop Footer */}
-      <div className="hidden md:block">
-        <Footer />
-      </div>
       
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav />

@@ -1,6 +1,5 @@
 
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { BusinessModelSection } from "@/components/landing/BusinessModelSection";
@@ -17,8 +16,6 @@ const Index = () => {
         <BusinessModelSection />
         <CtaSection />
       </main>
-      
-      <Footer />
     </div>
   );
 };

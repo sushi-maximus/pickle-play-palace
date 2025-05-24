@@ -1,6 +1,5 @@
 
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ResetPasswordForm } from "@/components/auth/form-fields/ResetPasswordForm";
@@ -33,7 +32,6 @@ const ForgotPassword = () => {
           </Card>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

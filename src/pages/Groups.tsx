@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { GroupsList } from "@/components/groups/GroupsList";
@@ -86,11 +85,6 @@ const Groups = () => {
           )}
         </div>
       </main>
-      
-      {/* Desktop Footer */}
-      <div className="hidden md:block">
-        <Footer />
-      </div>
       
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav />

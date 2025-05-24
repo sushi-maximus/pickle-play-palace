@@ -1,6 +1,5 @@
 
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +24,6 @@ const Login = () => {
           <LoginForm />
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
