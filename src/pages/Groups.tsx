@@ -30,9 +30,9 @@ const Groups = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-1 py-12 px-4">
+      <main className="flex-1 px-3 py-4 md:px-6 md:py-8">
         <div className="container mx-auto max-w-6xl">
-          <BreadcrumbNav items={breadcrumbItems} className="mb-8" />
+          <BreadcrumbNav items={breadcrumbItems} className="mb-4 md:mb-6" />
           
           <GroupsHeader 
             user={user} 
@@ -42,16 +42,17 @@ const Groups = () => {
           {!user ? (
             <LoginPrompt />
           ) : (
-            <>
-              <div className="mt-8 mb-4">
+            <div className="space-y-6">
+              <div className="space-y-3 md:space-y-4">
                 <SearchFilter onSearch={handleSearch} placeholder="Search all groups..." />
               </div>
-              <Tabs defaultValue="my-groups" className="mt-4">
-                <TabsList className="mb-6">
+              
+              <Tabs defaultValue="my-groups" className="space-y-4">
+                <TabsList className="w-full">
                   <TabsTrigger value="my-groups">My Groups</TabsTrigger>
                   <TabsTrigger value="all">All Groups</TabsTrigger>
                 </TabsList>
-                <TabsContent value="my-groups">
+                <TabsContent value="my-groups" className="space-y-3 md:space-y-4">
                   <MyGroupsList 
                     user={user} 
                     onRefresh={handleRefreshGroups}
@@ -59,7 +60,7 @@ const Groups = () => {
                     key={`my-${refreshTrigger}`} 
                   />
                 </TabsContent>
-                <TabsContent value="all">
+                <TabsContent value="all" className="space-y-3 md:space-y-4">
                   <GroupsList 
                     user={user} 
                     searchTerm={searchTerm}
@@ -67,7 +68,7 @@ const Groups = () => {
                   />
                 </TabsContent>
               </Tabs>
-            </>
+            </div>
           )}
         </div>
       </main>
