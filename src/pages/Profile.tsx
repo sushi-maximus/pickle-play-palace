@@ -6,6 +6,7 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileErrorMessage } from "@/components/profile/ProfileErrorMessage";
+import { MobileProfileBottomNav } from "@/components/profile/MobileProfileBottomNav";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 import { supabase } from "@/integrations/supabase/client";
@@ -77,6 +78,8 @@ const Profile = () => {
             </div>
           </div>
         </main>
+        
+        <MobileProfileBottomNav />
       </div>
     );
   }
@@ -94,6 +97,8 @@ const Profile = () => {
             />
           </div>
         </main>
+        
+        <MobileProfileBottomNav />
       </div>
     );
   }
@@ -110,6 +115,8 @@ const Profile = () => {
             </div>
           </div>
         </main>
+        
+        <MobileProfileBottomNav />
       </div>
     );
   }
@@ -141,6 +148,8 @@ const Profile = () => {
           </div>
         </div>
       </main>
+      
+      <MobileProfileBottomNav />
     </div>
   );
 };
