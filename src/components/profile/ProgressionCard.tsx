@@ -30,6 +30,9 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
   const currentDescription = getCurrentLevelDescription(effectiveSkillLevel);
   const nextLevelAdvicePoints = nextSkillLevel ? getNextLevelAdvice(nextSkillLevel.value) : [];
 
+  // Join current description into a single sentence
+  const currentDescriptionSentence = currentDescription.join(", ") + ".";
+
   return (
     <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
       <CardHeader className="pb-4">
@@ -65,14 +68,9 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
             </div>
             
             <div className="ml-7">
-              <ul className="space-y-1">
-                {currentDescription.map((point, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {currentDescriptionSentence}
+              </p>
             </div>
           </div>
 
