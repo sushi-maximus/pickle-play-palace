@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,12 +16,14 @@ import {
   AlertTriangle,
   TrendingUp,
   TrendingDown,
-  Minus
+  Minus,
+  Lightbulb
 } from 'lucide-react';
 import { usePerformanceContext } from '@/contexts/PerformanceContext';
 import { MetricsChart } from './MetricsChart';
 import { ComponentMetricsTable } from './ComponentMetricsTable';
 import { MemoryPressureIndicator } from './MemoryPressureIndicator';
+import { PerformanceOptimizationPanel } from './PerformanceOptimizationPanel';
 
 interface PerformanceDashboardProps {
   className?: string;
@@ -180,10 +183,11 @@ export const PerformanceDashboard = ({ className = '' }: PerformanceDashboardPro
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="components" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="components">Components</TabsTrigger>
           <TabsTrigger value="memory">Memory</TabsTrigger>
           <TabsTrigger value="charts">Charts</TabsTrigger>
+          <TabsTrigger value="optimization">Optimization</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -238,6 +242,10 @@ export const PerformanceDashboard = ({ className = '' }: PerformanceDashboardPro
             memoryMetrics={memoryMetrics}
             key={refreshKey}
           />
+        </TabsContent>
+
+        <TabsContent value="optimization" className="space-y-4">
+          <PerformanceOptimizationPanel />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-4">
