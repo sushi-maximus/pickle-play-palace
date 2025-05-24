@@ -1,19 +1,10 @@
 
 import { motion } from "framer-motion";
 import { GroupCardHybrid1 } from "./GroupCardHybrid1";
-
-type Group = {
-  id: string;
-  name: string;
-  description: string | null;
-  location: string | null;
-  created_at: string;
-  is_private: boolean;
-  member_count?: number;
-};
+import { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
 
 interface GroupsGridHybridProps {
-  groups: Group[];
+  groups: UnifiedGroup[];
 }
 
 export const GroupsGridHybrid = ({ groups }: GroupsGridHybridProps) => {
