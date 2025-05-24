@@ -34,18 +34,18 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
         <div className="space-y-6">
           {/* Current Level Section */}
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div 
-                className="w-4 h-4 rounded-full border-2"
-                style={{ 
-                  backgroundColor: borderColor,
-                  borderColor: borderColor === "#FFFFFF" ? "#e2e8f0" : borderColor
-                }}
-              />
-              <h3 className="text-base font-semibold text-gray-900">Current Level</h3>
-            </div>
-            
-            <div className="ml-7 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-4 h-4 rounded-full border-2"
+                  style={{ 
+                    backgroundColor: borderColor,
+                    borderColor: borderColor === "#FFFFFF" ? "#e2e8f0" : borderColor
+                  }}
+                />
+                <h3 className="text-base font-semibold text-gray-900">Current Level</h3>
+              </div>
+              
               <div className="flex items-center gap-2">
                 <Badge 
                   variant="secondary" 
@@ -62,7 +62,9 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
                   <span className="text-sm text-gray-500">DUPR: {duprRating}</span>
                 )}
               </div>
-              
+            </div>
+            
+            <div className="ml-7">
               <p className="text-sm text-gray-600 leading-relaxed">
                 {effectiveSkillLevel === "2.5" && "New to pickleball. Learning basic rules, shots, and positioning."}
                 {effectiveSkillLevel === "3.0" && "Developing consistency in basic shots and can sustain rallies. Beginning to understand strategy."}
@@ -78,18 +80,18 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
           {/* Next Level Section */}
           {nextSkillLevel && (
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div 
-                  className="w-4 h-4 rounded-full border-2 opacity-60"
-                  style={{ 
-                    backgroundColor: "transparent",
-                    borderColor: nextLevelColor
-                  }}
-                />
-                <h3 className="text-base font-semibold text-gray-700">Next Level</h3>
-              </div>
-              
-              <div className="ml-7 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-4 h-4 rounded-full border-2 opacity-60"
+                    style={{ 
+                      backgroundColor: "transparent",
+                      borderColor: nextLevelColor
+                    }}
+                  />
+                  <h3 className="text-base font-semibold text-gray-700">Next Level</h3>
+                </div>
+                
                 <Badge 
                   variant="outline" 
                   className="text-sm font-medium opacity-75"
@@ -100,7 +102,9 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
                 >
                   {nextSkillLevel.label}
                 </Badge>
-                
+              </div>
+              
+              <div className="ml-7">
                 <p className="text-sm text-gray-500 leading-relaxed">
                   {nextSkillLevel.value === "3.0" && "Work on developing consistency in basic shots and sustaining rallies. Begin to understand strategy."}
                   {nextSkillLevel.value === "3.5" && "Focus on consistency with all basic shots. Develop advanced shots and strategies. Learn to play at the non-volley zone."}
