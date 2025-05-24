@@ -1,39 +1,36 @@
 
-import { BreadcrumbNav } from "@/components/BreadcrumbNav";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
+import { MobileBottomNav } from "@/components/navigation/MobileBottomNav";
 
 export const GroupDetailsLoading = () => {
-  const breadcrumbItems = [
-    { label: "Groups", href: "/groups" },
-    { label: "Loading..." }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1 py-12 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <BreadcrumbNav items={breadcrumbItems} className="mb-8" />
-          <Card className="w-full mb-6">
-            <CardHeader>
-              <Skeleton className="h-8 w-1/3 mb-2" />
-              <Skeleton className="h-4 w-1/4 mb-4" />
-              <div className="flex gap-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-16 w-full mb-4" />
-              <Skeleton className="h-10 w-1/4" />
-            </CardContent>
-          </Card>
+      {/* Desktop Navigation */}
+      <div className="hidden md:block">
+        <Navbar />
+      </div>
+      
+      {/* Mobile Header */}
+      <MobilePageHeader title="Loading..." />
+      
+      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="space-y-6">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-32 w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+          </div>
         </div>
       </main>
-      <Footer />
+      
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };
