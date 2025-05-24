@@ -1,7 +1,7 @@
 
 import { ReactNode } from "react";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
-import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
+import { BottomNavigation } from "@/components/navigation/BottomNavigation";
 import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -40,8 +40,8 @@ export const MobileLayout = ({
         {children}
       </div>
       
-      {/* Bottom Navigation - Fixed at bottom with z-50 */}
-      <MobileGroupsBottomNav />
+      {/* Bottom Navigation - Fixed at bottom with z-100 */}
+      <BottomNavigation />
     </>
   );
 };

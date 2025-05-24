@@ -8,9 +8,9 @@ import { useAutoRefresh } from "@/components/groups/posts/hooks/useAutoRefresh";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { GroupDetailsTabs } from "@/components/groups/details/GroupDetailsTabs";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
+import { BottomNavigation } from "@/components/navigation/BottomNavigation";
 import {
   MobileGroupHeader,
-  MobileIconMenu,
   MobileHome2Tab,
 } from "@/components/groups/mobile";
 
@@ -119,6 +119,14 @@ const GroupDetails = () => {
     }
   };
 
+  // Group-specific navigation items
+  const groupNavigationItems = [
+    { id: "home2", label: "Home" },
+    { id: "calendar", label: "Calendar" },
+    { id: "users", label: "Members" },
+    { id: "settings", label: "Settings" },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <MobileGroupHeader 
@@ -131,10 +139,22 @@ const GroupDetails = () => {
         {renderTabContent()}
       </div>
       
-      <MobileIconMenu 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange} 
-      />
+      {/* Group-specific bottom navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[100] shadow-lg">
+        <div className="flex justify-around items-center py-2">
+          {groupNavigationItems.map((item) => (
+            <button
+              key={item.id}
+              className={`flex flex-col items-center gap-1 py-2 px-3 ${
+                activeTab === item.id ? "text-primary" : "text-slate-600"
+              }`}
+              onClick={() => handleTabChange(item.id)}
+            >
+              <span className="text-xs">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
