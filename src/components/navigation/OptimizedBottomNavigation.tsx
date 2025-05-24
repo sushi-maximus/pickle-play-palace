@@ -1,6 +1,6 @@
 
 import { useLocation, useParams } from "react-router-dom";
-import { Home, Users, User, Settings } from "lucide-react";
+import { LayoutDashboard, Users, User, Settings } from "lucide-react";
 import { OptimizedNavLink } from "./OptimizedNavLink";
 import { useGroupDetails } from "@/components/groups/details/hooks/useGroupDetails";
 import { useAuth } from "@/contexts/AuthContext";
@@ -69,8 +69,8 @@ export const OptimizedBottomNavigation = () => {
   // Navigation items - always use the same set
   const navItems: NavItem[] = [
     {
-      icon: Home,
-      label: "Home",
+      icon: LayoutDashboard,
+      label: "Dashboard",
       to: "/dashboard",
       preload: LazyDashboard.preload
     },

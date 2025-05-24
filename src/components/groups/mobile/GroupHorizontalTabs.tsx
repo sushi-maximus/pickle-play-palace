@@ -1,46 +1,38 @@
 
-import { Button } from "@/components/ui/button";
-import { Home, Calendar, Users, Settings } from "lucide-react";
+import { Feed, Users, Info } from "lucide-react";
 
 interface GroupHorizontalTabsProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-export const GroupHorizontalTabs = ({ 
-  activeTab, 
-  onTabChange 
-}: GroupHorizontalTabsProps) => {
-  const tabItems = [
-    { id: "home2", icon: Home, label: "Home" },
-    { id: "calendar", icon: Calendar, label: "Calendar" },
-    { id: "users", icon: Users, label: "Members" },
-    { id: "settings", icon: Settings, label: "Settings" },
+export const GroupHorizontalTabs = ({ activeTab, onTabChange }: GroupHorizontalTabsProps) => {
+  const tabs = [
+    { id: "feed", label: "Feed", icon: Feed },
+    { id: "members", label: "Members", icon: Users },
+    { id: "about", label: "About", icon: Info }
   ];
 
   return (
-    <div className="w-full bg-white border-b border-gray-200 px-3 py-3">
-      <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
-        {tabItems.map((item) => (
-          <Button
-            key={item.id}
-            variant="ghost"
-            size="sm"
-            className={`flex items-center gap-2 h-10 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
-              activeTab === item.id 
-                ? "text-primary bg-primary/15 shadow-sm font-semibold border border-primary/20" 
-                : "text-gray-600 hover:text-primary hover:bg-primary/5"
-            }`}
-            onClick={() => onTabChange(item.id)}
-          >
-            <item.icon className={`h-4 w-4 transition-transform duration-200 ${
-              activeTab === item.id ? "scale-110" : ""
-            }`} />
-            <span className="text-sm font-medium">
-              {item.label}
-            </span>
-          </Button>
-        ))}
+    <div className="border-b border-gray-200 bg-white">
+      <div className="flex">
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? "text-primary border-b-2 border-primary bg-primary/5"
+                  : "text-gray-600 hover:text-primary hover:bg-gray-50"
+              }`}
+            >
+              <IconComponent className="h-4 w-4" />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
