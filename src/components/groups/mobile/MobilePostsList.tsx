@@ -4,13 +4,29 @@ import { MobilePostCard2 } from "./MobilePostCard2";
 interface MobilePostsListProps {
   posts: any[];
   user: any;
-  onPostUpdate?: () => void;
+  isEditing: boolean;
+  currentPostId: string | null;
+  editableContent: string;
+  setEditableContent: (content: string) => void;
+  isEditSubmitting: boolean;
+  onStartEditing: (postId: string, content: string) => void;
+  onCancelEditing: () => void;
+  onSaveEditing: () => void;
+  onDeleteClick: (postId: string) => void;
 }
 
 export const MobilePostsList = ({
   posts,
   user,
-  onPostUpdate
+  isEditing,
+  currentPostId,
+  editableContent,
+  setEditableContent,
+  isEditSubmitting,
+  onStartEditing,
+  onCancelEditing,
+  onSaveEditing,
+  onDeleteClick
 }: MobilePostsListProps) => {
   return (
     <div className="space-y-3 md:space-y-4">
@@ -18,9 +34,16 @@ export const MobilePostsList = ({
         <MobilePostCard2
           key={post.id}
           post={post}
-          currentUserId={user?.id}
           user={user}
-          onPostUpdate={onPostUpdate}
+          isEditing={isEditing && currentPostId === post.id}
+          currentPostId={currentPostId}
+          editableContent={editableContent}
+          setEditableContent={setEditableContent}
+          isEditSubmitting={isEditSubmitting}
+          onStartEditing={onStartEditing}
+          onCancelEditing={onCancelEditing}
+          onSaveEditing={onSaveEditing}
+          onDeleteClick={onDeleteClick}
         />
       ))}
     </div>

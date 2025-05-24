@@ -1,3 +1,4 @@
+
 import { CreatePostForm2 } from "../CreatePostForm2";
 import { MobilePostCard2 } from "../../mobile/MobilePostCard2";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
@@ -119,22 +120,38 @@ export const FeedContent = ({
             isTransitioning ? "opacity-50 transition-opacity duration-300" : "opacity-100 transition-opacity duration-300"
           )}
         >
-          {displayedPosts.map((post) => (
-            <MobilePostCard2 
-              key={post.id} 
-              post={post}
-              user={user}
-              isEditing={false}
-              currentPostId={null}
-              editableContent=""
-              setEditableContent={() => {}}
-              isEditSubmitting={false}
-              onStartEditing={() => {}}
-              onCancelEditing={() => {}}
-              onSaveEditing={() => {}}
-              onDeleteClick={() => {}}
-            />
-          ))}
+          {displayedPosts.map((post) => {
+            // Transform GroupPost to match MobilePostCard2 expected format
+            const transformedPost = {
+              id: post.id,
+              content: post.content,
+              created_at: post.created_at,
+              user_id: post.user.id,
+              media_urls: post.media_urls,
+              profiles: {
+                first_name: post.user.first_name,
+                last_name: post.user.last_name,
+                avatar_url: post.user.avatar_url
+              }
+            };
+
+            return (
+              <MobilePostCard2 
+                key={post.id} 
+                post={transformedPost}
+                user={user}
+                isEditing={false}
+                currentPostId={null}
+                editableContent=""
+                setEditableContent={() => {}}
+                isEditSubmitting={false}
+                onStartEditing={() => {}}
+                onCancelEditing={() => {}}
+                onSaveEditing={() => {}}
+                onDeleteClick={() => {}}
+              />
+            );
+          })}
         </div>
       )}
     </div>
