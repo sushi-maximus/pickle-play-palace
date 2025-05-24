@@ -1,7 +1,7 @@
 
 import { ReactNode } from "react";
 import { MobileGroupHeader } from "./MobileGroupHeader";
-import { GroupBottomNavigation } from "./GroupBottomNavigation";
+import { GroupHorizontalTabs } from "./GroupHorizontalTabs";
 
 interface GroupMobileLayoutProps {
   children: ReactNode;
@@ -29,16 +29,18 @@ export const GroupMobileLayout = ({
         memberCount={memberCount}
       />
       
-      {/* Content Area with proper spacing for both context bar and header */}
-      <div className="flex-1 pt-24 pb-20">
-        {children}
+      {/* Horizontal Group Tabs - Fixed below header with z-50 */}
+      <div className="fixed top-20 left-0 right-0 z-50">
+        <GroupHorizontalTabs 
+          activeTab={activeTab}
+          onTabChange={onTabChange}
+        />
       </div>
       
-      {/* Group Bottom Navigation - Fixed at bottom with z-100 */}
-      <GroupBottomNavigation 
-        activeTab={activeTab}
-        onTabChange={onTabChange}
-      />
+      {/* Content Area with proper spacing for header, context bar, and horizontal tabs */}
+      <div className="flex-1 pt-32 pb-20">
+        {children}
+      </div>
     </>
   );
 };
