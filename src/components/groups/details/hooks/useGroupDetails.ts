@@ -32,31 +32,31 @@ export function useGroupDetails(id: string, userId?: string) {
   
   console.log("useGroupDetails: Hook called with", { id, userId: !!userId });
   
-  // Load group details
+  // Early return if no valid ID to prevent unnecessary API calls
   useEffect(() => {
+    if (!id || id.trim() === '' || id === ':id') {
+      console.log("useGroupDetails: No valid ID provided, skipping data fetch");
+      setLoading(false);
+      setError("Invalid group ID");
+      return;
+    }
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      console.log("useGroupDetails: Invalid UUID format, skipping data fetch");
+      setLoading(false);
+      setError("Invalid group ID format");
+      return;
+    }
+
+    // Reset state before loading
+    setLoading(true);
+    setError(null);
+    setGroup(null);
+    
     const loadGroupDetails = async () => {
-      console.log("useGroupDetails: Starting to load group details for ID:", id);
-      
-      if (!id || id.trim() === '') {
-        console.error("useGroupDetails: No group ID provided");
-        setError("Group ID is missing");
-        setLoading(false);
-        return;
-      }
-      
-      setLoading(true);
-      setError(null);
-      
       try {
-        // Validate UUID format
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        if (!uuidRegex.test(id)) {
-          console.error("useGroupDetails: Invalid UUID format:", id);
-          setError("Invalid group ID format");
-          setLoading(false);
-          return;
-        }
-        
         console.log("useGroupDetails: Fetching group details for valid UUID:", id);
         const groupData = await fetchGroupDetails(id);
         
@@ -129,7 +129,7 @@ export function useGroupDetails(id: string, userId?: string) {
 
   // Function to update group data
   const handleMemberUpdate = async () => {
-    if (id && !error) {
+    if (id && !error && id !== ':id') {
       try {
         console.log("useGroupDetails: Updating group data after member change");
         const updatedGroup = await fetchGroupDetails(id);
