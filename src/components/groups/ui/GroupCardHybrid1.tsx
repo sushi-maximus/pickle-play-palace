@@ -44,8 +44,10 @@ export const GroupCardHybrid1 = ({ group }: GroupCardHybrid1Props = {}) => {
     .toUpperCase()
     .slice(0, 2);
 
-  // Default background image - easy to update for testing
-  const defaultBackgroundImage = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop";
+  // Updated pickleball-related background image for testing
+  const defaultBackgroundImage = "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&v=2";
+  
+  console.log("Using background image:", defaultBackgroundImage);
 
   return (
     <Card className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0">
