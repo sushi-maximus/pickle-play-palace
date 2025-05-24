@@ -50,7 +50,7 @@ export const ProfileContent = ({ profile, onProfileUpdate, onLogout }: ProfileCo
       </Card>
 
       {/* Logout Card - At the bottom with extra margin for mobile nav */}
-      <div className="mb-8 md:mb-4">
+      <div className="mb-20 md:mb-4">
         <LogoutCard onLogout={handleLogout} />
       </div>
     </>
