@@ -16,9 +16,10 @@ type Group = {
 
 interface GroupCardHybrid1Props {
   group?: Group;
+  isMember?: boolean; // New prop to indicate if user is already a member
 }
 
-export const GroupCardHybrid1 = ({ group }: GroupCardHybrid1Props = {}) => {
+export const GroupCardHybrid1 = ({ group, isMember = false }: GroupCardHybrid1Props) => {
   // Use passed group data or fallback to demo data
   const cardData = group || {
     id: "demo",
@@ -29,7 +30,7 @@ export const GroupCardHybrid1 = ({ group }: GroupCardHybrid1Props = {}) => {
     member_count: 89
   };
 
-  console.log("GroupCardHybrid1 rendering with data:", cardData);
+  console.log("GroupCardHybrid1 rendering with data:", cardData, "isMember:", isMember);
 
   // Calculate demo stats based on member count
   const memberCount = cardData.member_count || 89;
@@ -109,9 +110,12 @@ export const GroupCardHybrid1 = ({ group }: GroupCardHybrid1Props = {}) => {
             </div>
           </div>
           
-          <Button className="w-full bg-white text-black hover:bg-white/90">
-            {cardData.is_private ? "Request to Join" : "Join Group"}
-          </Button>
+          {/* Only show join button if user is not a member */}
+          {!isMember && (
+            <Button className="w-full bg-white text-black hover:bg-white/90">
+              {cardData.is_private ? "Request to Join" : "Join Group"}
+            </Button>
+          )}
         </div>
       </div>
     </Card>

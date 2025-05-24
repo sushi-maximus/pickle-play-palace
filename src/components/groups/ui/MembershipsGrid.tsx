@@ -46,7 +46,7 @@ export const MembershipsGrid = ({ memberships }: MembershipsGridProps) => {
           key={membership.id}
           variants={itemVariants}
         >
-          <GroupCardHybrid1 group={membership.group} />
+          <GroupCardHybrid1 group={membership.group} isMember={true} />
         </motion.div>
       ))}
     </motion.div>
