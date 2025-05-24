@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
-import { useUserMemberships } from "./hooks/useUserMemberships";
+import { useUnifiedGroups } from "./hooks/useUnifiedGroups";
 import { GroupsLoadingState } from "./ui/GroupsLoadingState";
-import { MyGroupsEmptyState } from "./ui/MyGroupsEmptyState";
-import { MembershipsGrid } from "./ui/MembershipsGrid";
+import { GroupsEmptyState } from "./ui/GroupsEmptyState";
+import { UnifiedGroupsGrid } from "./ui/UnifiedGroupsGrid";
 import { GroupsPagination } from "./ui/GroupsPagination";
 
 interface MyGroupsListProps {
@@ -13,7 +13,16 @@ interface MyGroupsListProps {
 }
 
 export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListProps) => {
-  const { filteredMemberships, loading, refreshMemberships } = useUserMemberships(user.id, searchTerm);
+  const { 
+    filteredGroups, 
+    loading, 
+    refreshData 
+  } = useUnifiedGroups({
+    mode: 'my-groups',
+    searchTerm,
+    userId: user?.id
+  });
+  
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6; // Show 6 groups per page (2 rows of 3)
 
@@ -26,31 +35,31 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
     return <GroupsLoadingState />;
   }
 
-  if (filteredMemberships.length === 0 && searchTerm === "") {
+  if (filteredGroups.length === 0 && searchTerm === "") {
     return (
-      <MyGroupsEmptyState 
+      <GroupsEmptyState 
         type="no-groups" 
         onRefresh={async () => {
-          await refreshMemberships();
+          await refreshData();
           onRefresh();
         }} 
       />
     );
   }
 
-  if (filteredMemberships.length === 0 && searchTerm !== "") {
-    return <MyGroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
+  if (filteredGroups.length === 0 && searchTerm !== "") {
+    return <GroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
   }
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredMemberships.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentMemberships = filteredMemberships.slice(startIndex, endIndex);
+  const currentGroups = filteredGroups.slice(startIndex, endIndex);
 
   return (
     <>
-      <MembershipsGrid memberships={currentMemberships} />
+      <UnifiedGroupsGrid groups={currentGroups} />
       {totalPages > 1 && (
         <GroupsPagination 
           currentPage={currentPage}

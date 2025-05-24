@@ -17,8 +17,8 @@ export const GroupsEmptyState = ({ type, searchTerm, onRefresh }: EmptyStateProp
     return (
       <div className="text-center py-12">
         <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-2xl font-bold mb-2">No groups yet</h3>
-        <p className="text-muted-foreground mb-6">Create your first group to get started</p>
+        <h3 className="text-2xl font-bold mb-2">You haven't joined any groups yet</h3>
+        <p className="text-muted-foreground mb-6">Create your first group or join an existing one</p>
         <CreateGroupDialog 
           trigger={
             <Button className="hover-scale">
