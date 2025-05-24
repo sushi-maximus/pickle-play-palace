@@ -2,7 +2,8 @@
 import { ReactNode } from "react";
 import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 import { OptimizedBottomNavigation } from "@/components/navigation/OptimizedBottomNavigation";
-import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
+import { MobileLayoutContent, MobileProfileSection } from "./components";
+import { useMobileLayout } from "./hooks";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -20,8 +21,10 @@ export const MobileLayout = ({
   showProfileHeader = false,
   profile 
 }: MobileLayoutProps) => {
-  // Calculate top padding based on whether profile header is shown
-  const topPadding = showProfileHeader && profile ? 'pt-48' : 'pt-16';
+  const { topPadding, shouldShowProfileHeader } = useMobileLayout({
+    showProfileHeader,
+    profile
+  });
   
   return (
     <>
@@ -29,16 +32,17 @@ export const MobileLayout = ({
       <MobilePageHeader title={title} />
       
       {/* Profile Header - Only shown when specified and profile exists */}
-      {showProfileHeader && profile && (
-        <div className="fixed top-16 left-0 right-0 z-40 bg-slate-50 px-3 pt-2">
-          <MobileProfileHeader profile={profile} />
-        </div>
+      {profile && (
+        <MobileProfileSection 
+          profile={profile} 
+          shouldShow={shouldShowProfileHeader} 
+        />
       )}
       
       {/* Content Area with proper spacing */}
-      <div className={`flex-1 ${topPadding} pb-20`}>
+      <MobileLayoutContent topPadding={topPadding}>
         {children}
-      </div>
+      </MobileLayoutContent>
       
       {/* Bottom Navigation - Fixed at bottom with z-100 */}
       <OptimizedBottomNavigation />
