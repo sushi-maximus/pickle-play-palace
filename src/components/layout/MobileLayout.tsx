@@ -33,10 +33,7 @@ export const MobileLayout = ({
       
       {/* Profile Header - Only shown when specified and profile exists */}
       {profile && shouldShowProfileHeader && (
-        <MobileProfileSection 
-          profile={profile} 
-          shouldShow={shouldShowProfileHeader} 
-        />
+        <MobileProfileSection profile={profile} />
       )}
       
       {/* Content Area with proper spacing */}
