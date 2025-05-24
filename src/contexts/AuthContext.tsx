@@ -1,10 +1,18 @@
 
 import { createContext, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 
-// Use the exact database type for Profile
-type Profile = Database['public']['Tables']['profiles']['Row'];
+// Define the profile type based on our database schema
+type Profile = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  avatar_url: string | null;
+  gender: string;
+  skill_level: string;
+  dupr_rating: number | null;
+  birthday?: string | null;
+};
 
 type AuthContextType = {
   session: Session | null;
