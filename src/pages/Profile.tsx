@@ -45,8 +45,8 @@ const Profile = () => {
 
   console.log("Profile page rendering main content");
 
-  const handleProfileUpdate = (updatedProfile: any) => {
-    refreshProfile();
+  const handleProfileUpdate = async () => {
+    await refreshProfile();
   };
 
   const handleLogout = async () => {

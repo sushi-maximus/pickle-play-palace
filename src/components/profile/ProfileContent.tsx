@@ -8,11 +8,15 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface ProfileContentProps {
   profile: Profile;
-  onProfileUpdate: (updatedProfile: Profile) => void;
+  onProfileUpdate: () => void;
   onLogout: () => void;
 }
 
 export const ProfileContent = ({ profile, onProfileUpdate, onLogout }: ProfileContentProps) => {
+  const handleProfileUpdate = (updatedProfile: Profile) => {
+    onProfileUpdate();
+  };
+
   return (
     <>
       {/* Desktop Profile Header - Hidden on mobile, shown on desktop, no card wrapper */}
@@ -25,7 +29,7 @@ export const ProfileContent = ({ profile, onProfileUpdate, onLogout }: ProfileCo
         <CardContent className="pt-6">
           <ProfileForm 
             profile={profile} 
-            onProfileUpdate={onProfileUpdate}
+            onProfileUpdate={handleProfileUpdate}
           />
         </CardContent>
       </Card>
