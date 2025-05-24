@@ -1,0 +1,47 @@
+
+import { ReactNode } from "react";
+import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
+import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
+import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
+import type { Database } from "@/integrations/supabase/types";
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
+
+interface MobileLayoutProps {
+  children: ReactNode;
+  title?: string;
+  showProfileHeader?: boolean;
+  profile?: Profile | null;
+}
+
+export const MobileLayout = ({ 
+  children, 
+  title = "PicklePlay",
+  showProfileHeader = false,
+  profile 
+}: MobileLayoutProps) => {
+  // Calculate top padding based on whether profile header is shown
+  const topPadding = showProfileHeader && profile ? 'pt-48' : 'pt-16';
+  
+  return (
+    <>
+      {/* Mobile Header - Fixed at top with z-60 */}
+      <MobilePageHeader title={title} />
+      
+      {/* Mobile Profile Header - Only shown when specified and profile exists */}
+      {showProfileHeader && profile && (
+        <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-slate-50 px-3 pt-2">
+          <MobileProfileHeader profile={profile} />
+        </div>
+      )}
+      
+      {/* Content Area with proper spacing */}
+      <div className={`flex-1 ${topPadding} md:pt-4 pb-20 md:pb-4`}>
+        {children}
+      </div>
+      
+      {/* Bottom Navigation - Fixed at bottom with z-50 */}
+      <MobileGroupsBottomNav />
+    </>
+  );
+};

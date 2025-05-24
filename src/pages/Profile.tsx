@@ -2,9 +2,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
-import { MobileGroupsBottomNav } from "@/components/groups/mobile/MobileGroupsBottomNav";
-import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { LogoutCard } from "@/components/profile/LogoutCard";
 
@@ -22,22 +20,6 @@ const Profile = () => {
       return;
     }
   }, [user, isLoading, navigate]);
-
-  // Show loading state while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <MobilePageHeader title="Profile" />
-        <main className="flex-1 pt-20 pb-24 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
-          </div>
-        </main>
-        <MobileGroupsBottomNav />
-      </div>
-    );
-  }
 
   // Redirect to login if not authenticated
   if (!user || !profile) {
@@ -60,34 +42,22 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <MobilePageHeader title="Profile" />
+    <AppLayout 
+      title="Profile" 
+      showMobileProfileHeader={true}
+      className="px-1 md:px-6 overflow-y-auto"
+    >
+      <ProfileContent 
+        profile={profile}
+        onProfileUpdate={handleProfileUpdate}
+        onLogout={handleLogout}
+      />
       
-      {/* Scrollable content area with minimal horizontal padding on mobile */}
-      <div className="px-1 py-4 md:px-6 md:py-8 pt-20 pb-32 overflow-y-auto">
-        <div className="container mx-auto max-w-4xl">
-          <div className="space-y-3 md:space-y-4">
-            {/* Mobile Profile Header - Only shown on mobile, now scrolls with content */}
-            <div className="md:hidden">
-              <MobileProfileHeader profile={profile} />
-            </div>
-            
-            <ProfileContent 
-              profile={profile}
-              onProfileUpdate={handleProfileUpdate}
-              onLogout={handleLogout}
-            />
-            
-            {/* Logout Card - Always visible at the bottom with extra margin */}
-            <div className="mt-8 mb-8">
-              <LogoutCard onLogout={handleLogout} />
-            </div>
-          </div>
-        </div>
+      {/* Logout Card - Always visible at the bottom with extra margin */}
+      <div className="mt-8 mb-8">
+        <LogoutCard onLogout={handleLogout} />
       </div>
-      
-      <MobileGroupsBottomNav />
-    </div>
+    </AppLayout>
   );
 };
 
