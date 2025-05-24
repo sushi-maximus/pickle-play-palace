@@ -1,4 +1,4 @@
 
-// Export all services from their respective files
+// Phase 2.4: Service layer exports
 export * from './createGroupService';
 export * from './membershipService';

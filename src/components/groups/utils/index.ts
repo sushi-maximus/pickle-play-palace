@@ -1,13 +1,11 @@
 
-// Phase 3: Updated exports to include new optimized functions
-// Original exports for backward compatibility
-export * from './groupListUtils';
-export * from './membershipUtils';
-
-// New exports from refactored files
+// Phase 2.4: Updated exports with unified data approach
+// Core utility functions
+export * from './groupDataUtils';
 export * from './fetchGroupDetails';
 export * from './updateGroupUtils';
 export * from './memberRoleUtils';
 
-// Phase 2: New optimized functions
-export * from './groupDataUtils';
+// Legacy utilities maintained for backward compatibility
+export * from './groupListUtils';
+export * from './membershipUtils';

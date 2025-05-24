@@ -1,8 +1,8 @@
 
-// Phase 2.3: Primary unified exports - use these for new development
+// Phase 2.4: Unified hooks and types - primary exports for all development
 export * from './useUnifiedGroups';
 export * from './types/unifiedGroupTypes';
 
-// Legacy exports for backward compatibility
+// Legacy exports maintained for backward compatibility
 export * from './useUserMemberships';
 export * from './useGroupFiltering';
