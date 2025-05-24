@@ -29,6 +29,8 @@ export const GroupCardHybrid1 = ({ group }: GroupCardHybrid1Props = {}) => {
     member_count: 89
   };
 
+  console.log("GroupCardHybrid1 rendering with data:", cardData);
+
   // Calculate demo stats based on member count
   const memberCount = cardData.member_count || 89;
   const postCount = Math.floor(memberCount * 0.27) || 24;

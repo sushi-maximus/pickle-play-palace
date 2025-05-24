@@ -46,7 +46,9 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
     try {
       // Only fetch groups if the user is logged in
       if (user) {
+        console.log("Fetching groups for user:", user?.email);
         const data = await fetchAllGroups();
+        console.log("Fetched groups data:", data);
         setGroups(data || []);
       } else {
         setGroups([]);
@@ -60,14 +62,17 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
   };
 
   if (loading) {
+    console.log("Groups loading...");
     return <GroupsLoadingState />;
   }
 
   if (groups.length === 0) {
+    console.log("No groups found, showing empty state");
     return <GroupsEmptyState type="no-groups" onRefresh={fetchGroups} />;
   }
 
   if (filteredGroups.length === 0 && searchTerm) {
+    console.log("No search results for:", searchTerm);
     return <GroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
   }
 
@@ -76,6 +81,8 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentGroups = filteredGroups.slice(startIndex, endIndex);
+
+  console.log("Rendering GroupsGridHybrid with groups:", currentGroups);
 
   return (
     <>
