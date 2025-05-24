@@ -65,7 +65,8 @@ export const reactionService = {
       throw new Error('User ID mismatch - security violation');
     }
     
-    // Use upsert to handle the unique constraint properly
+    // Use upsert with the correct conflict resolution that includes reaction_type
+    // This allows multiple reactions per user per post as long as they're different types
     const { error } = await supabase
       .from('reactions')
       .upsert({
@@ -73,7 +74,7 @@ export const reactionService = {
         user_id: userId,
         reaction_type: reactionType
       }, {
-        onConflict: 'post_id,user_id'
+        onConflict: 'post_id,user_id,reaction_type'
       });
 
     if (error) {
