@@ -1,7 +1,6 @@
 
 import { ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Navbar } from "@/components/Navbar";
 import { MobileLayout } from "./MobileLayout";
 
 interface AppLayoutProps {
@@ -37,22 +36,14 @@ export const AppLayout = ({
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Desktop Navigation - Only shown when authenticated */}
-      {user && (
-        <div className="hidden md:block">
-          <Navbar />
-        </div>
-      )}
-      
-      {/* Mobile Layout */}
       <MobileLayout 
         title={title} 
         showProfileHeader={showMobileProfileHeader}
         profile={profile}
       >
-        <main className={`flex-1 px-3 py-4 md:px-6 md:py-8 pt-16 md:pt-4 pb-20 md:pb-4 ${className}`}>
+        <main className={`flex-1 px-3 py-4 ${className}`}>
           <div className="container mx-auto max-w-4xl">
-            <div className="space-y-3 md:space-y-4">
+            <div className="space-y-3">
               {children}
             </div>
           </div>

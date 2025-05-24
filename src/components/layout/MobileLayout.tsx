@@ -25,18 +25,18 @@ export const MobileLayout = ({
   
   return (
     <>
-      {/* Mobile Header - Fixed at top with z-60 */}
+      {/* Page Header - Fixed at top with z-60 */}
       <MobilePageHeader title={title} />
       
-      {/* Mobile Profile Header - Only shown when specified and profile exists */}
+      {/* Profile Header - Only shown when specified and profile exists */}
       {showProfileHeader && profile && (
-        <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-slate-50 px-3 pt-2">
+        <div className="fixed top-16 left-0 right-0 z-40 bg-slate-50 px-3 pt-2">
           <MobileProfileHeader profile={profile} />
         </div>
       )}
       
       {/* Content Area with proper spacing */}
-      <div className={`flex-1 ${topPadding} md:pt-4 pb-20 md:pb-4`}>
+      <div className={`flex-1 ${topPadding} pb-20`}>
         {children}
       </div>
       
