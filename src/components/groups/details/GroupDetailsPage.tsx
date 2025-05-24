@@ -19,17 +19,17 @@ export const GroupDetailsPage = () => {
   const navigate = useNavigate();
   const { activeTab, handleTabChange } = useGroupDetailsState();
 
-  console.log("GroupDetails: Component rendering with ID:", id);
+  console.log("GroupDetailsPage: Rendering with ID:", id, "User:", !!user);
 
   // Early return and redirect if no ID
   useEffect(() => {
     if (!id || id.trim() === '') {
-      console.error("GroupDetails: No group ID provided in URL parameters");
+      console.error("GroupDetailsPage: No group ID provided in URL parameters");
       toast.error("Invalid group URL - missing group ID");
       navigate("/groups", { replace: true });
       return;
     }
-    console.log("GroupDetails: Valid group ID found:", id);
+    console.log("GroupDetailsPage: Valid group ID found:", id);
   }, [id, navigate]);
 
   // Group details and membership
@@ -62,31 +62,37 @@ export const GroupDetailsPage = () => {
 
   // Event handlers
   const handlePostCreated = () => {
+    console.log("GroupDetailsPage: Post created, refreshing posts");
     refreshPosts();
   };
 
+  console.log("GroupDetailsPage: State check", {
+    id,
+    groupLoading,
+    groupError,
+    group: !!group,
+    user: !!user
+  });
+
   // Early return if no ID
   if (!id || id.trim() === '') {
-    console.log("GroupDetails: Rendering loading state due to missing ID");
+    console.log("GroupDetailsPage: Rendering loading state due to missing ID");
     return <GroupDetailsLoading />;
   }
 
   // Loading state
   if (groupLoading) {
-    console.log("GroupDetails: Rendering loading state");
+    console.log("GroupDetailsPage: Rendering loading state");
     return <GroupDetailsLoading />;
   }
 
-  // Error states
-  const errorStateComponent = (
-    <GroupDetailsErrorStates error={groupError} group={group} />
-  );
-  
-  if (errorStateComponent) {
-    return errorStateComponent;
+  // Error states - check if component returns something
+  if (groupError || !group) {
+    console.log("GroupDetailsPage: Rendering error state", { groupError, hasGroup: !!group });
+    return <GroupDetailsErrorStates error={groupError} group={group} />;
   }
 
-  console.log("GroupDetails: Rendering group successfully:", group.name);
+  console.log("GroupDetailsPage: Rendering group successfully:", group?.name);
 
   return (
     <RouteErrorBoundary routeName="Group Details">

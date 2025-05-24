@@ -9,8 +9,10 @@ interface GroupDetailsErrorStatesProps {
 export const GroupDetailsErrorStates = ({ error, group }: GroupDetailsErrorStatesProps) => {
   const navigate = useNavigate();
 
+  console.log("GroupDetailsErrorStates: Rendering with", { error, hasGroup: !!group });
+
   if (error) {
-    console.error("GroupDetails: Rendering error state:", error);
+    console.error("GroupDetailsErrorStates: Rendering error state:", error);
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center space-y-4 p-6">
@@ -36,7 +38,7 @@ export const GroupDetailsErrorStates = ({ error, group }: GroupDetailsErrorState
   }
 
   if (!group) {
-    console.log("GroupDetails: Group not found");
+    console.log("GroupDetailsErrorStates: Group not found");
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center space-y-4 p-6">
@@ -53,5 +55,7 @@ export const GroupDetailsErrorStates = ({ error, group }: GroupDetailsErrorState
     );
   }
 
+  // If we reach here, there's no error and group exists, so don't render anything
+  console.log("GroupDetailsErrorStates: No error state needed");
   return null;
 };

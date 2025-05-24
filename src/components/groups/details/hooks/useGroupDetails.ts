@@ -30,6 +30,8 @@ export function useGroupDetails(id: string, userId?: string) {
   });
   const [hasPendingRequests, setHasPendingRequests] = useState(false);
   
+  console.log("useGroupDetails: Hook called with", { id, userId: !!userId });
+  
   // Load group details
   useEffect(() => {
     const loadGroupDetails = async () => {
@@ -140,6 +142,13 @@ export function useGroupDetails(id: string, userId?: string) {
       }
     }
   };
+
+  console.log("useGroupDetails: Returning state", {
+    hasGroup: !!group,
+    loading,
+    error,
+    membershipStatus
+  });
 
   return {
     group,
