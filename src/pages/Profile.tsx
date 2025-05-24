@@ -68,7 +68,7 @@ const Profile = () => {
   };
 
   return (
-    <ProfilePageLayout>
+    <ProfilePageLayout profile={profile}>
       {loading && <ProfileSkeleton />}
       
       {error && (
