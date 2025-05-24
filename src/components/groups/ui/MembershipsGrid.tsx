@@ -1,9 +1,11 @@
 
 import { motion } from "framer-motion";
-import { MembershipCard } from "./MembershipCard";
+import { GroupCardHybrid1 } from "./GroupCardHybrid1";
 
 type Membership = {
   id: string;
+  role: string;
+  joined_at: string;
   group: {
     id: string;
     name: string;
@@ -11,8 +13,8 @@ type Membership = {
     location: string | null;
     created_at: string;
     is_private: boolean;
+    member_count?: number;
   };
-  role: string;
 };
 
 interface MembershipsGridProps {
@@ -53,7 +55,7 @@ export const MembershipsGrid = ({ memberships }: MembershipsGridProps) => {
           key={membership.id}
           variants={itemVariants}
         >
-          <MembershipCard membership={membership} />
+          <GroupCardHybrid1 group={membership.group} />
         </motion.div>
       ))}
     </motion.div>
