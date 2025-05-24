@@ -86,17 +86,19 @@ export const GroupDetailsPage = () => {
     return <GroupDetailsLoading />;
   }
 
-  // Only render error states when there's actually an error OR when group is null
+  // Error state
   if (groupError) {
     console.log("GroupDetailsPage: Rendering error state due to error:", groupError);
     return <GroupDetailsErrorStates error={groupError} group={group} />;
   }
 
+  // Group not found state
   if (!group) {
     console.log("GroupDetailsPage: Rendering error state due to missing group");
     return <GroupDetailsErrorStates error={null} group={null} />;
   }
 
+  // Success state - render the group content
   console.log("GroupDetailsPage: Rendering group successfully:", group?.name);
 
   return (
