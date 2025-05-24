@@ -121,6 +121,14 @@ export const FeedContent = ({
           )}
         >
           {displayedPosts.map((post) => {
+            // Debug log to see the post data structure
+            console.log("FeedContent - Processing post:", {
+              postId: post.id,
+              postUser: post.user,
+              userFirstName: post.user?.first_name,
+              userLastName: post.user?.last_name
+            });
+
             // Transform GroupPost to match MobilePostCard2 expected format
             const transformedPost = {
               id: post.id,
@@ -129,11 +137,13 @@ export const FeedContent = ({
               user_id: post.user.id,
               media_urls: post.media_urls,
               profiles: {
-                first_name: post.user.first_name,
-                last_name: post.user.last_name,
+                first_name: post.user.first_name || '',
+                last_name: post.user.last_name || '',
                 avatar_url: post.user.avatar_url
               }
             };
+
+            console.log("FeedContent - Transformed post:", transformedPost);
 
             return (
               <MobilePostCard2 

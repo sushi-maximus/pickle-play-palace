@@ -39,8 +39,8 @@ export const MobilePostActions = ({
   currentUserId
 }: MobilePostActionsProps) => {
   return (
-    <div className="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 border-t border-gray-100">
-      <div className="flex-1">
+    <div className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 border-t border-gray-100">
+      <div className="flex-1 min-w-0">
         <PostReactions2
           thumbsUpCount={thumbsUpCount}
           thumbsDownCount={thumbsDownCount}
@@ -61,7 +61,7 @@ export const MobilePostActions = ({
       <Button
         variant="ghost"
         size="sm"
-        className="h-8 w-auto px-2 md:h-9 md:px-3 flex items-center gap-1 md:gap-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 flex-shrink-0"
+        className="h-8 w-auto px-2 md:h-9 md:px-3 flex items-center gap-1 md:gap-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 flex-shrink-0 ml-2"
         onClick={onToggleComments}
       >
         <MessageCircle className="h-3 w-3 md:h-4 md:w-4" />

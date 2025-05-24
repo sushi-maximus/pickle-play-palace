@@ -35,25 +35,35 @@ export const MobilePostHeader = ({
   const profile = post.profiles;
   
   // Debug logging to understand the data structure
-  console.log("MobilePostHeader - Post data:", {
-    postId: post.id,
-    userId: post.user_id,
-    profiles: profile,
-    hasProfiles: !!profile,
-    firstName: profile?.first_name,
-    lastName: profile?.last_name
-  });
+  console.log("MobilePostHeader - Raw post data:", post);
+  console.log("MobilePostHeader - Profiles data:", profile);
   
-  // Better handling of user name display with more fallbacks
+  // Better handling of user name display with more robust fallbacks
   const firstName = profile?.first_name?.trim() || '';
   const lastName = profile?.last_name?.trim() || '';
   const fullName = `${firstName} ${lastName}`.trim();
   
-  // If no name data, show a better fallback
-  const displayName = fullName || (profile ? 'Group Member' : 'Unknown User');
-  const initials = firstName && lastName ? `${firstName[0]}${lastName[0]}` : 
-                   firstName ? `${firstName[0]}U` :
-                   lastName ? `U${lastName[0]}` : 'GM';
+  // More descriptive fallback based on data availability
+  let displayName = 'Unknown User';
+  if (fullName) {
+    displayName = fullName;
+  } else if (firstName) {
+    displayName = firstName;
+  } else if (lastName) {
+    displayName = lastName;
+  } else if (profile) {
+    displayName = 'Group Member';
+  }
+  
+  // Generate initials with better fallback logic
+  let initials = 'GM'; // Group Member default
+  if (firstName && lastName) {
+    initials = `${firstName[0]}${lastName[0]}`;
+  } else if (firstName) {
+    initials = `${firstName[0]}M`;
+  } else if (lastName) {
+    initials = `M${lastName[0]}`;
+  }
 
   return (
     <div className="flex items-start justify-between p-3 md:p-4">
