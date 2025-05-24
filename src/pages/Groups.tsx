@@ -81,10 +81,17 @@ const Groups = () => {
       
       <main className="flex-1 pt-20 pb-24">
         <div className="bg-white border-b px-4 py-4">
-          <SearchFilter 
-            onSearch={handleSearch}
-            placeholder="Search groups..."
-          />
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <SearchFilter 
+                onSearch={handleSearch}
+                placeholder="Search groups..."
+              />
+            </div>
+            <CreateGroupDialog 
+              onSuccess={handleRefresh}
+            />
+          </div>
         </div>
         
         <div className="px-3 py-4 md:px-6 md:py-8">
@@ -95,13 +102,6 @@ const Groups = () => {
                 <p className="text-gray-600">Additional search options would go here</p>
               </div>
             )}
-            
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
-              <h1 className="text-2xl md:text-3xl font-bold">Groups</h1>
-              <CreateGroupDialog 
-                onSuccess={handleRefresh}
-              />
-            </div>
 
             <Tabs defaultValue="my-groups" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">

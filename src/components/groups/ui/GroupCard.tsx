@@ -45,17 +45,11 @@ export const GroupCard = ({ group }: GroupCardProps) => {
               )}
             </CardTitle>
           </div>
-          <div className="p-2 bg-primary/10 rounded-full">
-            <Users className="h-5 w-5 text-primary" />
-          </div>
         </div>
         <CardDescription>
           {group.location && (
             <div className="text-sm mt-1">{group.location}</div>
           )}
-          <div className="text-xs text-muted-foreground mt-1">
-            Created {new Date(group.created_at).toLocaleDateString()}
-          </div>
           <div className="flex flex-wrap gap-2 mt-2">
             <Badge variant="outline" className="text-xs">
               <Users className="h-3 w-3 mr-1" />
