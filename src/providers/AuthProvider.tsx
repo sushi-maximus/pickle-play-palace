@@ -3,7 +3,7 @@ import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/AuthContext";
 import { signIn, signUp, signOut, resendVerificationEmail } from "@/utils/auth-utils";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { logError, AppError } from "@/utils/errorHandling";
 import { DataFetchErrorBoundary } from "@/components/error-boundaries";
 import type { Database } from "@/integrations/supabase/types";
@@ -57,11 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       // Show user-friendly error for network issues
       if (error instanceof Error && error.message.includes('network')) {
-        toast({
-          title: "Connection Error",
-          description: "Unable to load profile. Please check your internet connection.",
-          variant: "destructive",
-        });
+        toast.error("Unable to load profile. Please check your internet connection.");
       }
     }
   }, []);
