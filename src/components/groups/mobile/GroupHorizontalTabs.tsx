@@ -9,9 +9,9 @@ interface GroupHorizontalTabsProps {
 
 export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }: GroupHorizontalTabsProps) => {
   const tabs = [
-    { id: "feed", label: "Activity", icon: Activity },
+    { id: "home2", label: "Activity", icon: Activity },
     { id: "calendar", label: "Calendar", icon: Calendar },
-    { id: "members", label: "Members", icon: Users },
+    { id: "users", label: "Members", icon: Users },
     { id: "about", label: "About", icon: Info }
   ];
 
