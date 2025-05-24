@@ -14,7 +14,7 @@ const Groups = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
-  const [showDesigns, setShowDesigns] = useState(true); // Temporarily show designs
+  const [showDesigns, setShowDesigns] = useState(true); // Show designs again
   const { user, isLoading } = useAuth();
 
   const handleSearchClick = () => {
@@ -73,7 +73,7 @@ const Groups = () => {
     );
   }
 
-  // Show design showcase temporarily
+  // Show design showcase
   if (showDesigns) {
     return <GroupCardShowcase />;
   }
