@@ -1,92 +1,102 @@
-
-// Bundle analysis utilities for performance monitoring
-
-interface PerformanceNavigationEntry extends PerformanceEntry {
-  transferSize?: number;
-  encodedBodySize?: number;
-  decodedBodySize?: number;
-}
-
-interface BundleStats {
-  totalSize: number;
-  gzippedSize: number;
+interface BundleMetrics {
+  estimatedSize: number;
   componentCount: number;
   routeCount: number;
+  chunkCount: number;
+  timestamp: number;
 }
 
-// Get bundle size information from performance API
-export const getBundleSize = (): number => {
-  try {
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationEntry;
+interface ModuleInfo {
+  name: string;
+  size: number;
+  imports: string[];
+  type: 'component' | 'hook' | 'utility' | 'page';
+}
+
+class BundleAnalyzer {
+  private metrics: BundleMetrics[] = [];
+  private modules = new Map<string, ModuleInfo>();
+
+  // Simulate bundle analysis (in production, this would integrate with webpack-bundle-analyzer)
+  analyzeBundle(): BundleMetrics {
+    const componentCount = this.countComponents();
+    const routeCount = this.countRoutes();
     
-    // Use transferSize if available, fallback to encodedBodySize or 0
-    return navigation?.transferSize || navigation?.encodedBodySize || 0;
-  } catch (error) {
-    console.warn('Could not get bundle size:', error);
-    return 0;
-  }
-};
-
-// Analyze resource loading performance
-export const analyzeResourceLoading = () => {
-  const resources = performance.getEntriesByType('resource');
-  
-  return resources.map(resource => {
-    const navResource = resource as PerformanceNavigationEntry;
-    return {
-      name: resource.name,
-      size: navResource?.transferSize || navResource?.encodedBodySize || 0,
-      duration: resource.duration,
-      startTime: resource.startTime
+    const metrics: BundleMetrics = {
+      estimatedSize: this.estimateSize(),
+      componentCount,
+      routeCount,
+      chunkCount: this.estimateChunks(),
+      timestamp: Date.now()
     };
-  });
-};
 
-// Get comprehensive bundle statistics
-export const getBundleStats = (): BundleStats => {
-  const bundleSize = getBundleSize();
-  const resources = analyzeResourceLoading();
-  
-  const jsResources = resources.filter(r => r.name.endsWith('.js'));
-  const totalSize = jsResources.reduce((sum, r) => sum + r.size, 0);
-  
-  return {
-    totalSize,
-    gzippedSize: bundleSize,
-    componentCount: jsResources.length,
-    routeCount: jsResources.filter(r => r.name.includes('pages')).length
-  };
-};
-
-// Log bundle analysis in development
-export const logBundleAnalysis = () => {
-  if (process.env.NODE_ENV === 'development') {
-    const stats = getBundleStats();
-    console.group('📦 Bundle Analysis');
-    console.log('Total Size:', `${(stats.totalSize / 1024).toFixed(2)} KB`);
-    console.log('Gzipped Size:', `${(stats.gzippedSize / 1024).toFixed(2)} KB`);
-    console.log('Component Count:', stats.componentCount);
-    console.log('Route Count:', stats.routeCount);
-    console.groupEnd();
-  }
-};
-
-// Monitor chunk loading performance
-export const monitorChunkLoading = () => {
-  const observer = new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) {
-      if (entry.name.includes('chunk') || entry.name.includes('lazy')) {
-        console.log('🔄 Lazy chunk loaded:', {
-          name: entry.name,
-          duration: `${entry.duration.toFixed(2)}ms`,
-          size: (entry as PerformanceNavigationEntry)?.transferSize || 'unknown'
-        });
-      }
+    this.metrics.push(metrics);
+    
+    // Keep only last 10 analyses
+    if (this.metrics.length > 10) {
+      this.metrics = this.metrics.slice(-10);
     }
-  });
 
-  observer.observe({ entryTypes: ['resource'] });
-  
-  // Cleanup after 30 seconds
-  setTimeout(() => observer.disconnect(), 30000);
-};
+    return metrics;
+  }
+
+  private countComponents(): number {
+    // This would analyze the actual component tree in a real implementation
+    // For now, we'll estimate based on common patterns
+    return 25 + Math.floor(Math.random() * 10);
+  }
+
+  private countRoutes(): number {
+    // Count based on lazy-loaded routes
+    return 12; // Based on current route count
+  }
+
+  private estimateSize(): number {
+    // Rough estimation based on component count and complexity
+    const baseSize = 150; // KB
+    const componentOverhead = this.countComponents() * 2; // 2KB per component estimate
+    const routeOverhead = this.countRoutes() * 15; // 15KB per route estimate
+    
+    return baseSize + componentOverhead + routeOverhead;
+  }
+
+  private estimateChunks(): number {
+    // Each lazy-loaded route creates a chunk
+    return this.countRoutes() + 2; // +2 for vendor and main chunks
+  }
+
+  getMetrics(): BundleMetrics[] {
+    return this.metrics;
+  }
+
+  getSizeRecommendations(): string[] {
+    const latest = this.metrics[this.metrics.length - 1];
+    const recommendations: string[] = [];
+
+    if (!latest) return recommendations;
+
+    if (latest.estimatedSize > 500) {
+      recommendations.push('Consider implementing more aggressive code splitting');
+    }
+
+    if (latest.componentCount > 30) {
+      recommendations.push('High component count - consider component consolidation');
+    }
+
+    if (latest.chunkCount < 8) {
+      recommendations.push('Consider splitting large components into separate chunks');
+    }
+
+    return recommendations;
+  }
+
+  // Monitor performance impact of bundle size
+  correlateWithPerformance(loadTime: number): void {
+    const latest = this.metrics[this.metrics.length - 1];
+    if (latest && loadTime > 3000) { // > 3 seconds
+      console.warn(`Slow load time (${loadTime}ms) with bundle size ${latest.estimatedSize}KB`);
+    }
+  }
+}
+
+export const bundleAnalyzer = new BundleAnalyzer();

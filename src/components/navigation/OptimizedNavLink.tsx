@@ -1,9 +1,9 @@
 
-import { Link, LinkProps } from 'react-router-dom';
-import { ReactNode } from 'react';
-import { preloadOnHover } from '@/utils/lazyLoading';
+import { Link, LinkProps } from "react-router-dom";
+import { ReactNode, useCallback } from "react";
+import { routePreloader } from "@/utils/routePreloader";
 
-interface OptimizedNavLinkProps extends Omit<LinkProps, 'to'> {
+interface OptimizedNavLinkProps extends Omit<LinkProps, "to"> {
   to: string;
   children: ReactNode;
   preloadRoute?: () => Promise<any>;
@@ -13,19 +13,28 @@ interface OptimizedNavLinkProps extends Omit<LinkProps, 'to'> {
 export const OptimizedNavLink = ({ 
   to, 
   children, 
-  preloadRoute,
+  preloadRoute, 
   className,
   ...props 
 }: OptimizedNavLinkProps) => {
-  const preloadProps = preloadRoute 
-    ? preloadOnHover(`route-${to}`, preloadRoute)
-    : {};
+  const handleMouseEnter = useCallback(() => {
+    if (preloadRoute) {
+      routePreloader.preload(to, preloadRoute);
+    }
+  }, [to, preloadRoute]);
+
+  const handleFocus = useCallback(() => {
+    if (preloadRoute) {
+      routePreloader.preload(to, preloadRoute);
+    }
+  }, [to, preloadRoute]);
 
   return (
-    <Link 
-      to={to} 
+    <Link
+      to={to}
+      onMouseEnter={handleMouseEnter}
+      onFocus={handleFocus}
       className={className}
-      {...preloadProps}
       {...props}
     >
       {children}

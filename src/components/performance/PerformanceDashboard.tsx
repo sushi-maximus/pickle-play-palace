@@ -1,302 +1,195 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Activity, 
-  BarChart3, 
-  Clock, 
-  HardDrive, 
-  Trash2, 
-  RefreshCw, 
-  AlertTriangle,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Lightbulb,
-  TestTube
-} from 'lucide-react';
-import { usePerformanceContext } from '@/contexts/PerformanceContext';
-import { MetricsChart } from './MetricsChart';
-import { ComponentMetricsTable } from './ComponentMetricsTable';
-import { MemoryPressureIndicator } from './MemoryPressureIndicator';
-import { PerformanceOptimizationPanel } from './PerformanceOptimizationPanel';
-import { PerformanceTestingPanel } from './PerformanceTestingPanel';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePerformanceMonitor } from "@/hooks/usePerformanceMonitor";
+import { bundleAnalyzer } from "@/utils/bundleAnalyzer";
+import { smartCache } from "@/utils/smartCacheManager";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-interface PerformanceDashboardProps {
-  className?: string;
-}
+export const PerformanceDashboard = () => {
+  const { metrics, navigationTiming, getMemoryUsage } = usePerformanceMonitor();
+  const [bundleMetrics, setBundleMetrics] = useState(bundleAnalyzer.getMetrics());
+  const [cacheStats, setCacheStats] = useState(smartCache.getStats());
 
-export const PerformanceDashboard = ({ className = '' }: PerformanceDashboardProps) => {
-  const {
-    isEnabled,
-    componentMetrics,
-    memoryMetrics,
-    togglePerformanceTracking,
-    clearMetrics,
-    getSlowComponents,
-    getHighMemoryComponents
-  } = usePerformanceContext();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBundleMetrics(bundleAnalyzer.getMetrics());
+      setCacheStats(smartCache.getStats());
+    }, 5000);
 
-  const [refreshKey, setRefreshKey] = useState(0);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
+  const handleAnalyzeBundle = () => {
+    const newMetrics = bundleAnalyzer.analyzeBundle();
+    setBundleMetrics(bundleAnalyzer.getMetrics());
+    console.log('Bundle analysis completed:', newMetrics);
   };
 
-  const slowComponents = getSlowComponents(16); // 16ms threshold
-  const highMemoryComponents = getHighMemoryComponents(75); // 75% threshold
-  const latestMemory = memoryMetrics[0];
-
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'increasing':
-        return <TrendingUp className="h-4 w-4 text-red-500" />;
-      case 'decreasing':
-        return <TrendingDown className="h-4 w-4 text-green-500" />;
-      default:
-        return <Minus className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  if (!isEnabled) {
-    return (
-      <Card className={className}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            Performance Monitoring
-          </CardTitle>
-          <CardDescription>
-            Performance tracking is currently disabled
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={togglePerformanceTracking}>
-            Enable Performance Tracking
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  const latestBundle = bundleMetrics[bundleMetrics.length - 1];
+  const memoryUsage = getMemoryUsage();
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Header Controls */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Performance Dashboard</h2>
-          <p className="text-muted-foreground">
-            Monitor component renders and memory usage
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleRefresh}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button variant="outline" size="sm" onClick={clearMetrics}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Clear
-          </Button>
-          <Button variant="outline" size="sm" onClick={togglePerformanceTracking}>
-            Disable Tracking
-          </Button>
-        </div>
-      </div>
-
-      {/* Alert for Performance Issues */}
-      {(slowComponents.length > 0 || highMemoryComponents.length > 0) && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            Performance issues detected: {slowComponents.length} slow components, {highMemoryComponents.length} high memory usage components
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Navigation Timing */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Components Tracked</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="text-lg">Load Performance</CardTitle>
+            <CardDescription>Initial page load metrics</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{componentMetrics.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Active components
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Render Time</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {componentMetrics.length > 0
-                ? (componentMetrics.reduce((acc, m) => acc + m.averageRenderTime, 0) / componentMetrics.length).toFixed(1)
-                : '0'}ms
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Across all components
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Memory Usage</CardTitle>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {latestMemory ? `${latestMemory.usedPercentage.toFixed(1)}%` : 'N/A'}
-            </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              {latestMemory && getTrendIcon(latestMemory.trend)}
-              <span>{latestMemory?.trend || 'No data'}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Issues</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">
-              {slowComponents.length + highMemoryComponents.length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Performance warnings
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="components" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="components">Components</TabsTrigger>
-          <TabsTrigger value="memory">Memory</TabsTrigger>
-          <TabsTrigger value="charts">Charts</TabsTrigger>
-          <TabsTrigger value="optimization">Optimization</TabsTrigger>
-          <TabsTrigger value="testing">Testing</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="components" className="space-y-4">
-          <ComponentMetricsTable 
-            metrics={componentMetrics} 
-            slowComponents={slowComponents}
-            key={refreshKey}
-          />
-        </TabsContent>
-
-        <TabsContent value="memory" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Memory Pressure</CardTitle>
-                <CardDescription>Current memory usage and trends</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <MemoryPressureIndicator memoryMetrics={memoryMetrics} />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>High Memory Components</CardTitle>
-                <CardDescription>Components with high memory usage</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {highMemoryComponents.length === 0 ? (
-                  <p className="text-muted-foreground">No high memory usage detected</p>
-                ) : (
-                  <div className="space-y-2">
-                    {highMemoryComponents.slice(0, 5).map((metric, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <span className="text-sm">{metric.componentName}</span>
-                        <Badge variant="destructive">
-                          {metric.usedPercentage.toFixed(1)}%
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="charts" className="space-y-4">
-          <MetricsChart 
-            componentMetrics={componentMetrics}
-            memoryMetrics={memoryMetrics}
-            key={refreshKey}
-          />
-        </TabsContent>
-
-        <TabsContent value="optimization" className="space-y-4">
-          <PerformanceOptimizationPanel />
-        </TabsContent>
-
-        <TabsContent value="testing" className="space-y-4">
-          <PerformanceTestingPanel />
-        </TabsContent>
-
-        <TabsContent value="settings" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Tracking Settings</CardTitle>
-              <CardDescription>Configure performance monitoring options</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Performance Tracking</p>
-                  <p className="text-sm text-muted-foreground">
-                    Monitor component renders and memory usage
-                  </p>
+          <CardContent className="space-y-3">
+            {navigationTiming ? (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">DOM Content Loaded:</span>
+                  <Badge variant="outline">{navigationTiming.domContentLoaded.toFixed(0)}ms</Badge>
                 </div>
-                <Badge variant={isEnabled ? "default" : "secondary"}>
-                  {isEnabled ? "Enabled" : "Disabled"}
-                </Badge>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Data Points</p>
-                  <p className="text-sm text-muted-foreground">
-                    Components: {componentMetrics.length}, Memory samples: {memoryMetrics.length}
-                  </p>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Load Complete:</span>
+                  <Badge variant="outline">{navigationTiming.loadComplete.toFixed(0)}ms</Badge>
                 </div>
-                <Button variant="outline" size="sm" onClick={clearMetrics}>
-                  Clear All Data
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">First Paint:</span>
+                  <Badge variant="outline">{navigationTiming.firstPaint.toFixed(0)}ms</Badge>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">Loading metrics...</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Memory Usage */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Memory Usage</CardTitle>
+            <CardDescription>Current memory consumption</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {memoryUsage ? (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Used:</span>
+                  <Badge variant={memoryUsage.percentage > 80 ? "destructive" : "outline"}>
+                    {memoryUsage.percentage.toFixed(1)}%
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Heap Size:</span>
+                  <Badge variant="outline">{(memoryUsage.used / 1024 / 1024).toFixed(1)}MB</Badge>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">Memory info not available</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Bundle Analysis */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Bundle Size</CardTitle>
+            <CardDescription>App bundle metrics</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {latestBundle ? (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Estimated Size:</span>
+                  <Badge variant={latestBundle.estimatedSize > 400 ? "destructive" : "outline"}>
+                    {latestBundle.estimatedSize}KB
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Components:</span>
+                  <Badge variant="outline">{latestBundle.componentCount}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Chunks:</span>
+                  <Badge variant="outline">{latestBundle.chunkCount}</Badge>
+                </div>
+                <Button onClick={handleAnalyzeBundle} size="sm" className="w-full">
+                  Re-analyze
                 </Button>
-              </div>
+              </>
+            ) : (
+              <Button onClick={handleAnalyzeBundle} size="sm" className="w-full">
+                Analyze Bundle
+              </Button>
+            )}
+          </CardContent>
+        </Card>
 
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  Performance tracking is only active in development mode. 
-                  It will be automatically disabled in production builds.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        {/* Cache Performance */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Cache Performance</CardTitle>
+            <CardDescription>Smart cache statistics</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Cache Size:</span>
+              <Badge variant="outline">{cacheStats.size} entries</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Total Hits:</span>
+              <Badge variant="outline">{cacheStats.totalHits}</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Avg Age:</span>
+              <Badge variant="outline">{cacheStats.averageAge.toFixed(1)}s</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Render Metrics */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Render Performance</CardTitle>
+            <CardDescription>Component render times</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {metrics.length > 0 ? (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Avg Render:</span>
+                  <Badge variant="outline">
+                    {(metrics.reduce((sum, m) => sum + m.renderTime, 0) / metrics.length).toFixed(2)}ms
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Samples:</span>
+                  <Badge variant="outline">{metrics.length}</Badge>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">No render data yet</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recommendations */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Optimization Tips</CardTitle>
+            <CardDescription>Performance recommendations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {bundleAnalyzer.getSizeRecommendations().map((rec, index) => (
+                <p key={index} className="text-sm text-muted-foreground">
+                  • {rec}
+                </p>
+              ))}
+              {bundleAnalyzer.getSizeRecommendations().length === 0 && (
+                <p className="text-sm text-green-600">All metrics look good! 🎉</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
