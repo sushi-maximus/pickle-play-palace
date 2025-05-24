@@ -1,22 +1,14 @@
-
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { fetchAllGroups } from "./utils";
+import { fetchAllGroupsOptimized } from "./utils/groupDataUtils"; // Phase 2: Use optimized function
 import { GroupsLoadingState } from "./ui/GroupsLoadingState";
 import { GroupsEmptyState } from "./ui/GroupsEmptyState";
 import { GroupsGridHybrid } from "./ui/GroupsGridHybrid";
 import { useGroupFiltering } from "./hooks/useGroupFiltering";
 import { GroupsPagination } from "./ui/GroupsPagination";
+import { Database } from "@/integrations/supabase/types";
 
-type Group = {
-  id: string;
-  name: string;
-  description: string | null;
-  location: string | null;
-  created_at: string;
-  is_private: boolean;
-  member_count?: number;
-};
+type Group = Database['public']['Tables']['groups']['Row'];
 
 interface GroupsListProps {
   user: any;
@@ -47,7 +39,7 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
       // Only fetch groups if the user is logged in
       if (user) {
         console.log("Fetching groups for user:", user?.email);
-        const data = await fetchAllGroups();
+        const data = await fetchAllGroupsOptimized(); // Phase 2: Use optimized function
         console.log("Fetched groups data:", data);
         setGroups(data || []);
       } else {

@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from "react";
-import { fetchUserMemberships } from "../utils";
+import { fetchUserMembershipsOptimized } from "../utils/groupDataUtils"; // Phase 2: Use optimized function
 
 interface Membership {
   id: string;
   role: string;
-  group: any; // Adjust type as needed
+  group: any; // Using Database types now
 }
 
 export const useUserMemberships = (userId: string, searchTerm: string) => {
@@ -15,7 +16,7 @@ export const useUserMemberships = (userId: string, searchTerm: string) => {
   const refreshMemberships = async () => {
     setLoading(true);
     try {
-      const data = await fetchUserMemberships(userId);
+      const data = await fetchUserMembershipsOptimized(userId); // Phase 2: Use optimized function
       setMemberships(data);
     } catch (error) {
       console.error("Error fetching user memberships:", error);
