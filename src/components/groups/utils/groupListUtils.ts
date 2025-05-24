@@ -80,23 +80,60 @@ export const fetchUserMemberships = async (userId: string) => {
         throw groupsError;
       }
       
-      // Combine membership data with group data
-      memberships = membershipData.map(membership => {
+      // Combine membership data with group data and add member counts
+      const membershipPromises = membershipData.map(async (membership) => {
         const group = groupsData.find(g => g.id === membership.group_id);
+        if (!group) return null;
+
+        // Count the actual members for this group
+        const { count, error: countError } = await supabase
+          .from("group_members")
+          .select("*", { count: "exact", head: true })
+          .eq("group_id", group.id)
+          .eq("status", "active");
+
+        if (countError) {
+          console.error(`Error counting members for group ${group.id}:`, countError);
+        }
+
         return {
           id: membership.id,
           role: membership.role,
-          group: group || null
+          group: {
+            ...group,
+            member_count: count || 0
+          }
         };
-      }).filter(m => m.group !== null);
+      });
+
+      const resolvedMemberships = await Promise.all(membershipPromises);
+      memberships = resolvedMemberships.filter(m => m !== null);
     }
     
-    // Add created groups as admin memberships
-    const createdMemberships = (createdGroups || []).map(group => ({
-      id: `created-${group.id}`,
-      role: "admin",
-      group
-    }));
+    // Add created groups as admin memberships with member counts
+    const createdMembershipPromises = (createdGroups || []).map(async (group) => {
+      // Count the actual members for this group
+      const { count, error: countError } = await supabase
+        .from("group_members")
+        .select("*", { count: "exact", head: true })
+        .eq("group_id", group.id)
+        .eq("status", "active");
+
+      if (countError) {
+        console.error(`Error counting members for group ${group.id}:`, countError);
+      }
+
+      return {
+        id: `created-${group.id}`,
+        role: "admin",
+        group: {
+          ...group,
+          member_count: count || 0
+        }
+      };
+    });
+
+    const createdMemberships = await Promise.all(createdMembershipPromises);
     
     // Combine and deduplicate
     const allMemberships = [...memberships];
