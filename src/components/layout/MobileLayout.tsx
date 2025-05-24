@@ -32,7 +32,7 @@ export const MobileLayout = ({
       <MobilePageHeader title={title} />
       
       {/* Profile Header - Only shown when specified and profile exists */}
-      {profile && (
+      {profile && shouldShowProfileHeader && (
         <MobileProfileSection 
           profile={profile} 
           shouldShow={shouldShowProfileHeader} 
