@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +21,7 @@ const Profile = () => {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col">
         <MobilePageHeader title="Profile" />
-        <main className="flex-1 pt-20 pb-24 flex items-center justify-center">
+        <main className="flex-1 pt-16 pb-20 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-gray-600">Loading...</p>
@@ -40,7 +41,7 @@ const Profile = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <MobilePageHeader title="Profile" />
       
-      <main className="flex-1 pt-20 pb-24">
+      <main className="flex-1 pt-16 pb-20">
         <div className="px-3 py-4 md:px-6 md:py-8">
           <div className="container mx-auto max-w-4xl space-y-3 md:space-y-4">
             {/* Profile content will go here */}
