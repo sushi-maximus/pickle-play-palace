@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Database } from "@/integrations/supabase/types";
 import { skillLevelOptions, getSkillLevelColor, duprToSkillLevel } from "@/lib/constants/skill-levels";
+import { getCurrentLevelDescription, getNextLevelAdvice } from "@/lib/constants/skill-level-descriptions";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -24,6 +25,10 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
   const currentIndex = skillLevelOptions.findIndex(option => option.value === effectiveSkillLevel);
   const nextSkillLevel = currentIndex < skillLevelOptions.length - 1 ? skillLevelOptions[currentIndex + 1] : null;
   const nextLevelColor = nextSkillLevel ? getSkillLevelColor(null, nextSkillLevel.value) : "#e2e8f0";
+
+  // Get descriptions and advice
+  const currentDescription = getCurrentLevelDescription(effectiveSkillLevel);
+  const nextLevelAdvicePoints = nextSkillLevel ? getNextLevelAdvice(nextSkillLevel.value) : [];
 
   return (
     <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
@@ -60,15 +65,14 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
             </div>
             
             <div className="ml-7">
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {effectiveSkillLevel === "2.5" && "New to pickleball. Learning basic rules, shots, and positioning."}
-                {effectiveSkillLevel === "3.0" && "Developing consistency in basic shots and can sustain rallies. Beginning to understand strategy."}
-                {effectiveSkillLevel === "3.5" && "More consistent with all basic shots. Developing advanced shots and strategies. Can play at the non-volley zone."}
-                {effectiveSkillLevel === "4.0" && "Consistent with all shots including directional control. Uses strategy effectively and can force errors."}
-                {effectiveSkillLevel === "4.5" && "Very consistent with all shots. Anticipates opponent's shots and has developed power in shots."}
-                {effectiveSkillLevel === "5.0" && "Highly skilled player with exceptional shot control, strategic play, and minimal unforced errors."}
-                {effectiveSkillLevel === "5.5" && "Tournament-level player with advanced precision, power, and strategic mastery."}
-              </p>
+              <ul className="space-y-1">
+                {currentDescription.map((point, index) => (
+                  <li key={index} className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
@@ -97,14 +101,15 @@ export const ProgressionCard = ({ profile }: ProgressionCardProps) => {
               </div>
               
               <div className="ml-7">
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  {nextSkillLevel.value === "3.0" && "Work on developing consistency in basic shots and sustaining rallies. Begin to understand strategy."}
-                  {nextSkillLevel.value === "3.5" && "Focus on consistency with all basic shots. Develop advanced shots and strategies. Learn to play at the non-volley zone."}
-                  {nextSkillLevel.value === "4.0" && "Achieve consistency with all shots including directional control. Use strategy effectively and learn to force errors."}
-                  {nextSkillLevel.value === "4.5" && "Develop very consistent shots. Learn to anticipate opponent's shots and develop power in your shots."}
-                  {nextSkillLevel.value === "5.0" && "Master exceptional shot control, strategic play, and minimize unforced errors."}
-                  {nextSkillLevel.value === "5.5" && "Achieve tournament-level precision, power, and strategic mastery."}
-                </p>
+                <p className="text-sm font-medium text-gray-700 mb-2">Focus areas to reach the next level:</p>
+                <ul className="space-y-1">
+                  {nextLevelAdvicePoints.map((point, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed">
+                      <span className="w-1.5 h-1.5 bg-primary/60 rounded-full mt-2 flex-shrink-0"></span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           )}
