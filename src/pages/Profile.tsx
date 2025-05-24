@@ -68,9 +68,9 @@ const Profile = () => {
         <MobileProfileHeader profile={profile} />
       </div>
       
-      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20 pb-32 md:pb-4">
-        {/* Container for all cards */}
-        <div className="container mx-auto max-w-4xl">
+      <main className="flex-1 px-3 py-4 md:px-6 md:py-8 pt-48 md:pt-20">
+        {/* Container for all cards with explicit bottom spacing */}
+        <div className="container mx-auto max-w-4xl pb-32">
           <div className="space-y-3 md:space-y-4">
             <ProfileContent 
               profile={profile}
@@ -78,8 +78,13 @@ const Profile = () => {
               onLogout={handleLogout}
             />
             
-            {/* Logout Card */}
-            <LogoutCard onLogout={handleLogout} />
+            {/* Logout Card - Ensure it's always visible */}
+            <div className="relative z-10">
+              <LogoutCard onLogout={handleLogout} />
+            </div>
+            
+            {/* Extra spacing to ensure content is above bottom nav */}
+            <div className="h-20 md:h-0" />
           </div>
         </div>
       </main>
