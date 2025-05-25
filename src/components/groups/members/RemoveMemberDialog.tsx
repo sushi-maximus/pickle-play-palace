@@ -44,25 +44,30 @@ export const RemoveMemberDialog = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="px-3 py-4 md:px-6 md:py-6">
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-destructive" />
+          <AlertDialogTitle className="flex items-center gap-1 md:gap-2 text-sm md:text-base">
+            <AlertCircle className="h-4 w-4 md:h-5 md:w-5 text-destructive" />
             Remove Member
           </AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="text-xs md:text-sm">
             Are you sure you want to remove <strong>{member?.profiles.first_name} {member?.profiles.last_name}</strong> from this group? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="gap-1 md:gap-2">
+          <AlertDialogCancel 
+            disabled={actionLoading}
+            className="text-xs md:text-sm px-2 md:px-3"
+          >
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             disabled={actionLoading}
             onClick={(e) => {
               e.preventDefault();
               handleRemoveMember();
             }}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-xs md:text-sm px-2 md:px-3"
           >
             {actionLoading ? "Removing..." : "Remove Member"}
           </AlertDialogAction>

@@ -37,7 +37,7 @@ export const GroupMembersList = ({
   if (!members || members.length === 0) {
     return (
       <div className={`text-center py-6 ${className || ""}`}>
-        <p className="text-muted-foreground">No members found</p>
+        <p className="text-sm md:text-base text-muted-foreground">No members found</p>
       </div>
     );
   }
@@ -54,7 +54,7 @@ export const GroupMembersList = ({
 
   return (
     <>
-      <div className={`space-y-4 ${className || ""}`}>
+      <div className={`space-y-3 md:space-y-4 ${className || ""}`}>
         {sortedMembers.map((member) => (
           <GroupMemberCard
             key={member.id}
