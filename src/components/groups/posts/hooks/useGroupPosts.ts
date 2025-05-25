@@ -14,8 +14,12 @@ import { queryKeys } from "@/lib/queryKeys";
 export type { GroupPost } from "./types/groupPostTypes";
 export type { PostReactionType2 } from "./usePostReactions2";
 
+interface UseGroupPostsPropsExtended extends UseGroupPostsProps {
+  key?: number;
+}
+
 export const useGroupPosts = (
-  { groupId, userId }: UseGroupPostsProps
+  { groupId, userId, key }: UseGroupPostsPropsExtended
 ): UseGroupPostsResult => {
   const [refreshing, setRefreshing] = useState(false);
   const [groupName, setGroupName] = useState<string>("");
@@ -29,6 +33,7 @@ export const useGroupPosts = (
   console.log(`📍 Group ID: ${groupId}`);
   console.log(`✅ Valid UUID: ${isValidUUID}`);
   console.log(`👤 User ID: ${userId}`);
+  console.log(`🔑 Retry Key: ${key}`);
   console.log(`🕐 Timestamp: ${new Date().toISOString()}`);
   
   // CRITICAL DEBUG - Log query key generation
@@ -45,7 +50,7 @@ export const useGroupPosts = (
     dataUpdatedAt,
     isFetching
   } = useQuery({
-    queryKey: queryKey,
+    queryKey: [...queryKey, key], // Include key for cache busting
     queryFn: async () => {
       console.log(`\n🎯 === REACT QUERY FUNCTION EXECUTING ===`);
       console.log(`📊 Fetching posts for group: ${groupId}`);
@@ -138,7 +143,7 @@ export const useGroupPosts = (
     setRefreshing(true);
     try {
       // Invalidate and refetch
-      await queryClient.invalidateQueries({ queryKey: queryKey });
+      await queryClient.invalidateQueries({ queryKey: [...queryKey, key] });
       await refetch();
       console.log(`✅ Manual refresh completed successfully`);
     } catch (error) {
@@ -147,7 +152,7 @@ export const useGroupPosts = (
       setRefreshing(false);
       console.log(`🏁 Manual refresh process complete`);
     }
-  }, [isValidUUID, refetch, queryClient, queryKey]);
+  }, [isValidUUID, refetch, queryClient, queryKey, key]);
 
   const errorMessage = error instanceof Error ? error.message : null;
 

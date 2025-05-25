@@ -100,6 +100,9 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
     `${post.profiles.first_name} ${post.profiles.last_name}`.trim() || 'Unknown User' : 
     'Unknown User';
 
+  // Convert string error to Error object if needed
+  const commentsErrorObject = commentsError ? new Error(commentsError) : null;
+
   return (
     <FacebookErrorBoundary
       onError={(error) => {
@@ -153,10 +156,10 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
         {/* Comments Section - Enhanced for mobile */}
         {showComments && (
           <div className="animate-fade-in">
-            {commentsError ? (
+            {commentsErrorObject ? (
               <div className="p-4 border-t border-gray-200">
                 <FacebookErrorState
-                  error={commentsError}
+                  error={commentsErrorObject}
                   title="Failed to Load Comments"
                   description="Comments couldn't be loaded. Please try again."
                   onRetry={() => window.location.reload()}

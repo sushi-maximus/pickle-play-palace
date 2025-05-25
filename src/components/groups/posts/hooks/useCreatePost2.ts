@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -10,43 +9,73 @@ interface UseCreatePost2Props {
   onPostCreated?: () => void;
 }
 
+interface UseCreatePost2Result {
+  content: string;
+  setContent: (content: string) => void;
+  isSubmitting: boolean;
+  handleSubmit: () => Promise<void>;
+  error: Error | null;
+}
+
 export const useCreatePost2 = ({ 
   groupId, 
   userId, 
   onPostCreated 
-}: UseCreatePost2Props) => {
+}: UseCreatePost2Props): UseCreatePost2Result => {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const queryClient = useQueryClient();
+  const [error, setError] = useState<Error | null>(null);
 
   const handleSubmit = async () => {
-    if (!content.trim() || !userId) {
+    if (!userId) {
+      const authError = new Error("You must be logged in to create a post");
+      setError(authError);
+      toast.error(authError.message);
+      return;
+    }
+
+    if (!content.trim()) {
+      const contentError = new Error("Please enter some content for your post");
+      setError(contentError);
+      toast.error(contentError.message);
       return;
     }
 
     setIsSubmitting(true);
+    setError(null);
     
     try {
-      const { error } = await supabase
+      console.log("Creating post with:", { groupId, userId, content: content.trim() });
+      
+      const { data, error: insertError } = await supabase
         .from("posts")
         .insert({
-          content: content.trim(),
           group_id: groupId,
           user_id: userId,
-        });
+          content: content.trim(),
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (insertError) {
+        console.error("Error creating post:", insertError);
+        throw new Error("Failed to create post. Please try again.");
+      }
 
+      console.log("Post created successfully:", data);
+      
+      // Clear form and notify success
       setContent("");
       toast.success("Post created successfully!");
       
-      // Invalidate queries to refresh the posts
-      queryClient.invalidateQueries({ queryKey: ["group-posts", groupId] });
-      
+      // Call the callback to refresh posts
       onPostCreated?.();
-    } catch (error) {
-      console.error("Error creating post:", error);
-      toast.error("Failed to create post");
+      
+    } catch (err) {
+      console.error("Error in handleSubmit:", err);
+      const submitError = err instanceof Error ? err : new Error("Failed to create post");
+      setError(submitError);
+      toast.error(submitError.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -57,5 +86,6 @@ export const useCreatePost2 = ({
     setContent,
     isSubmitting,
     handleSubmit,
+    error
   };
 };

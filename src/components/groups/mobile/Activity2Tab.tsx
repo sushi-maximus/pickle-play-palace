@@ -31,7 +31,7 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
     );
   }
 
-  // Fetch posts using existing hook
+  // Fetch posts using existing hook with retry key
   const { posts, loading, error, refreshPosts } = useGroupPosts({
     groupId,
     userId: user?.id,
@@ -56,6 +56,9 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
     // Scroll to top where create post form is
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Convert string error to Error object if needed
+  const errorObject = error ? new Error(error) : null;
 
   return (
     <FacebookErrorBoundary>
@@ -83,7 +86,7 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
                   posts={posts}
                   user={user}
                   loading={loading}
-                  error={error}
+                  error={errorObject}
                   onRetry={handleRetry}
                   onCreatePost={user ? handleCreatePost : undefined}
                 />
