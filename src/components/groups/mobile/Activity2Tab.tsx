@@ -4,10 +4,11 @@ import { useGroupPosts } from "../posts/hooks/useGroupPosts";
 import { FacebookNetworkStatus } from "./FacebookNetworkStatus";
 import { FacebookErrorBoundary } from "./FacebookErrorBoundary";
 import { FacebookErrorState } from "./FacebookErrorState";
+import { FacebookLoadingState } from "./FacebookLoadingState";
+import { FacebookErrorFallback } from "./FacebookErrorFallback";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import { FacebookCreatePost } from "./FacebookCreatePost";
 import { FacebookPostsList } from "./FacebookPostsList";
-import { MobilePostsLoading } from "./MobilePostsLoading";
 
 interface Activity2TabProps {
   groupId: string;
@@ -35,7 +36,7 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
   const { posts, loading, error, refreshPosts } = useGroupPosts({
     groupId,
     userId: user?.id,
-    key: retryKey // Force refresh when retry key changes
+    key: retryKey
   });
 
   const handlePostCreated = async () => {
@@ -53,15 +54,28 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
   };
 
   const handleCreatePost = () => {
-    // Scroll to top where create post form is
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleErrorReset = () => {
+    setRetryKey(prev => prev + 1);
+    refreshPosts();
   };
 
   // Convert string error to Error object if needed
   const errorObject = error ? new Error(error) : null;
 
   return (
-    <FacebookErrorBoundary>
+    <FacebookErrorBoundary
+      fallback={({ error, resetError }) => (
+        <FacebookErrorFallback
+          error={error}
+          resetError={resetError}
+          title="Activity Feed Error"
+          description="There was a problem loading the activity feed. This might be a temporary issue."
+        />
+      )}
+    >
       {/* Main Container - Enhanced for mobile */}
       <main className="flex-1 bg-gray-50 overflow-hidden">
         {/* Network Status Indicator */}
@@ -82,7 +96,17 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
             <div className="pb-4 sm:pb-6 pb-safe">
               {loading ? (
                 <div className="p-3 sm:p-4">
-                  <MobilePostsLoading />
+                  <FacebookLoadingState type="posts" count={3} />
+                </div>
+              ) : errorObject ? (
+                <div className="p-3 sm:p-4">
+                  <FacebookErrorState
+                    error={errorObject}
+                    onRetry={handleRetry}
+                    title="Failed to Load Posts"
+                    description="We couldn't load the posts for this group. Please check your connection and try again."
+                    variant="network"
+                  />
                 </div>
               ) : (
                 <FacebookPostsList 

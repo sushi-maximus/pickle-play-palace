@@ -1,65 +1,57 @@
 
-import React, { Component, ErrorInfo, ReactNode } from "react";
-import { RefreshCw, AlertTriangle } from "lucide-react";
+import React, { ReactNode, ErrorInfo } from "react";
+import { FacebookErrorFallback } from "./FacebookErrorFallback";
 
-interface Props {
+interface FacebookErrorBoundaryProps {
   children: ReactNode;
-  fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  fallback?: (props: { error: Error; resetError: () => void }) => ReactNode;
 }
 
-interface State {
+interface FacebookErrorBoundaryState {
   hasError: boolean;
-  error?: Error;
+  error: Error | null;
 }
 
-export class FacebookErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false
-  };
+export class FacebookErrorBoundary extends React.Component<
+  FacebookErrorBoundaryProps,
+  FacebookErrorBoundaryState
+> {
+  constructor(props: FacebookErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
 
-  public static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): FacebookErrorBoundaryState {
     return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Facebook component error:', error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Facebook Error Boundary caught an error:", error, errorInfo);
+    
+    // Call optional error handler
     this.props.onError?.(error, errorInfo);
   }
 
-  private handleRetry = () => {
-    this.setState({ hasError: false, error: undefined });
+  resetError = () => {
+    this.setState({ hasError: false, error: null });
   };
 
-  public render() {
-    if (this.state.hasError) {
+  render() {
+    if (this.state.hasError && this.state.error) {
+      // Use custom fallback if provided, otherwise use default
       if (this.props.fallback) {
-        return this.props.fallback;
+        return this.props.fallback({
+          error: this.state.error,
+          resetError: this.resetError
+        });
       }
 
       return (
-        <div className="bg-white rounded-lg border border-red-200 p-6 text-center animate-fade-in">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Something went wrong
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                We're having trouble loading this content. Please try again.
-              </p>
-              <button
-                onClick={this.handleRetry}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Try Again
-              </button>
-            </div>
-          </div>
-        </div>
+        <FacebookErrorFallback
+          error={this.state.error}
+          resetError={this.resetError}
+        />
       );
     }
 

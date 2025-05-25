@@ -4,6 +4,7 @@ import { useComments2 } from "../posts/hooks/useComments2";
 import { FacebookCommentCard } from "./FacebookCommentCard";
 import { FacebookCommentForm } from "./FacebookCommentForm";
 import { FacebookErrorState } from "./FacebookErrorState";
+import { FacebookLoadingState } from "./FacebookLoadingState";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookCommentsProps {
@@ -17,10 +18,18 @@ const FacebookCommentsComponent = ({
   user, 
   onCommentAdded 
 }: FacebookCommentsProps) => {
-  const { comments, error } = useComments2({
+  const { comments, loading, error } = useComments2({
     postId,
     userId: user?.id
   });
+
+  if (loading) {
+    return (
+      <div className="border-t border-gray-200 bg-gray-50">
+        <FacebookLoadingState type="comments" count={2} />
+      </div>
+    );
+  }
 
   if (error) {
     return (
