@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { GroupMembersListProps, GroupMember } from "./types";
 import { GroupMemberCard } from "./GroupMemberCard";
 import { RemoveMemberDialog } from "./RemoveMemberDialog";
+import { JoinRequestsManager } from "../JoinRequestsManager";
 
 export const GroupMembersList = ({ 
   members, 
@@ -33,14 +34,6 @@ export const GroupMembersList = ({
         handleRemoveMemberEvent as EventListener);
     };
   }, []);
-  
-  if (!members || members.length === 0) {
-    return (
-      <div className={`text-center py-6 ${className || ""}`}>
-        <p className="text-sm md:text-base text-muted-foreground">No members found</p>
-      </div>
-    );
-  }
 
   // Sort members: admins first, then by join date
   const sortedMembers = [...members].sort((a, b) => {
@@ -52,21 +45,41 @@ export const GroupMembersList = ({
     return new Date(b.joined_at).getTime() - new Date(a.joined_at).getTime();
   });
 
+  if (!members || members.length === 0) {
+    return (
+      <div className={`text-center py-6 ${className || ""}`}>
+        <p className="text-sm md:text-base text-muted-foreground">No members found</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className={`space-y-3 md:space-y-4 ${className || ""}`}>
-        {sortedMembers.map((member) => (
-          <GroupMemberCard
-            key={member.id}
-            member={member}
-            isAdmin={isAdmin}
-            currentUserId={currentUserId}
+        {/* Join Requests Section - Only shown for admins */}
+        {isAdmin && (
+          <JoinRequestsManager
             groupId={groupId}
-            onMemberUpdate={onMemberUpdate}
-            isOpen={openMemberId === member.id}
-            onOpenChange={setOpenMemberId}
+            isAdmin={isAdmin}
           />
-        ))}
+        )}
+
+        {/* Members Section */}
+        <div className="space-y-3 md:space-y-4">
+          <h3 className="text-lg font-medium">Group Members</h3>
+          {sortedMembers.map((member) => (
+            <GroupMemberCard
+              key={member.id}
+              member={member}
+              isAdmin={isAdmin}
+              currentUserId={currentUserId}
+              groupId={groupId}
+              onMemberUpdate={onMemberUpdate}
+              isOpen={openMemberId === member.id}
+              onOpenChange={setOpenMemberId}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Confirmation dialog for removing a member */}

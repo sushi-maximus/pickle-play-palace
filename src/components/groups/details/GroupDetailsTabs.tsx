@@ -1,7 +1,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
-import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
 import { Settings, Users } from "lucide-react";
@@ -37,24 +36,20 @@ export const GroupDetailsTabs = ({
   onJoinRequest,
   onMemberUpdate,
 }: GroupDetailsTabsProps) => {
-  // Determine the default tab based on admin status and pending requests
-  const getDefaultTab = () => {
-    if (membershipStatus.isAdmin && hasPendingRequests) {
-      return "requests";
-    }
-    return "members";
-  };
-
   return (
-    <Tabs defaultValue={getDefaultTab()} className="w-full">
+    <Tabs defaultValue="members" className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="members" className="flex items-center gap-1">
           <Users className="h-4 w-4" />
-          <span>Members ({group?.member_count || 0})</span>
+          <span>
+            Members ({group?.member_count || 0})
+            {membershipStatus.isAdmin && hasPendingRequests && (
+              <span className="ml-1 text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
+                !
+              </span>
+            )}
+          </span>
         </TabsTrigger>
-        {membershipStatus.isAdmin && (
-          <TabsTrigger value="requests">Requests</TabsTrigger>
-        )}
         <TabsTrigger value="about">About</TabsTrigger>
         {membershipStatus.isAdmin && (
           <TabsTrigger value="settings" className="flex items-center gap-1">
@@ -65,7 +60,6 @@ export const GroupDetailsTabs = ({
       </TabsList>
 
       <TabsContent value="members">
-        <h3 className="text-lg font-medium mb-4">Group Members</h3>
         <GroupMembersList
           members={group?.members || []}
           isAdmin={membershipStatus.isAdmin}
@@ -74,15 +68,6 @@ export const GroupDetailsTabs = ({
           onMemberUpdate={onMemberUpdate}
         />
       </TabsContent>
-
-      {membershipStatus.isAdmin && (
-        <TabsContent value="requests">
-          <JoinRequestsManager
-            groupId={group?.id || ""}
-            isAdmin={membershipStatus.isAdmin}
-          />
-        </TabsContent>
-      )}
 
       <TabsContent value="about">
         <GroupAboutTab
