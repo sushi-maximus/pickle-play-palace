@@ -1,9 +1,10 @@
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useFacebookLike } from "./hooks/useFacebookLike";
 import { FacebookReactionSummary } from "./FacebookReactionSummary";
 import { FacebookActionBar } from "./FacebookActionBar";
+import { FacebookComments } from "./FacebookComments";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -24,6 +25,7 @@ interface FacebookPostCardProps {
 }
 
 const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
+  const [showComments, setShowComments] = useState(false);
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
   
   const {
@@ -40,9 +42,41 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
   });
 
   const handleCommentClick = () => {
-    console.log("Comment clicked for post:", post.id);
-    // TODO: Implement comment functionality in next steps
+    setShowComments(!showComments);
   };
+
+  const handleCommentAdded = () => {
+    // TODO: Refresh comments when a new comment is added
+    console.log("Comment added, should refresh comments");
+  };
+
+  // Mock comments data for now
+  const mockComments = [
+    {
+      id: "1",
+      content: "Great post! Thanks for sharing.",
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+      user_id: "user1",
+      user: {
+        id: "user1",
+        first_name: "John",
+        last_name: "Doe",
+        avatar_url: null
+      }
+    },
+    {
+      id: "2", 
+      content: "I totally agree with this!",
+      created_at: new Date(Date.now() - 7200000).toISOString(),
+      user_id: "user2",
+      user: {
+        id: "user2",
+        first_name: "Jane",
+        last_name: "Smith",
+        avatar_url: null
+      }
+    }
+  ];
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -70,7 +104,7 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
       {/* Reaction Summary */}
       <FacebookReactionSummary
         likeCount={likeCount}
-        commentsCount={0}
+        commentsCount={mockComments.length}
         isUserLiked={isLiked}
         user={user}
       />
@@ -85,6 +119,16 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
         onCommentClick={handleCommentClick}
         user={user}
       />
+
+      {/* Comments Section */}
+      {showComments && (
+        <FacebookComments
+          postId={post.id}
+          comments={mockComments}
+          user={user}
+          onCommentAdded={handleCommentAdded}
+        />
+      )}
     </div>
   );
 };
