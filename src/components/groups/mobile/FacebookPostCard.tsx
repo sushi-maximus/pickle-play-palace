@@ -2,6 +2,7 @@
 import { memo } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useFacebookLike } from "./hooks/useFacebookLike";
+import { FacebookReactionSummary } from "./FacebookReactionSummary";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -67,17 +68,12 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
       </div>
 
       {/* Reaction Summary */}
-      {likeCount > 0 && (
-        <div className="px-4 py-2 border-t border-gray-100">
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <div className="flex items-center space-x-1">
-              <span className="text-blue-500">👍</span>
-              <span>{likeCount} {likeCount === 1 ? 'like' : 'likes'}</span>
-            </div>
-            <div>0 comments</div>
-          </div>
-        </div>
-      )}
+      <FacebookReactionSummary
+        likeCount={likeCount}
+        commentsCount={0}
+        isUserLiked={isLiked}
+        user={user}
+      />
 
       {/* Action Buttons */}
       <div className="flex border-t border-gray-100">
