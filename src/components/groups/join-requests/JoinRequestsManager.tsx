@@ -11,8 +11,6 @@ interface JoinRequestsManagerProps {
 }
 
 export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerProps) => {
-  console.log("JoinRequestsManager: Rendering with", { groupId, isAdmin });
-  
   const {
     joinRequests,
     loading,
@@ -25,50 +23,28 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
     setDialogOpen
   } = useJoinRequests(groupId);
 
-  console.log("JoinRequestsManager: Join requests data", {
-    requestsCount: joinRequests.length,
-    loading,
-    isAdmin
-  });
-
   if (!isAdmin) {
-    console.log("JoinRequestsManager: User is not admin, showing message");
-    return (
-      <div className="text-center py-6">
-        <p className="text-sm text-muted-foreground">
-          Only group administrators can view join requests.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <>
-      <Card className="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-l-4 border-l-blue-500/30">
-        <CardHeader className="px-3 py-4 md:px-6 md:py-6">
-          <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-            <UserPlus className="h-4 w-4 text-blue-600" />
+    <div className="mt-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <UserPlus className="h-5 w-5" />
             Join Requests
-            {joinRequests.length > 0 && (
-              <span className="text-xs bg-blue-600 text-white rounded-full px-2 py-0.5">
-                {joinRequests.length}
-              </span>
-            )}
           </CardTitle>
-          <CardDescription className="text-xs md:text-sm">
+          <CardDescription>
             Manage requests from users who want to join this group
           </CardDescription>
         </CardHeader>
-        <CardContent className="px-3 py-4 md:px-6 md:py-6 pt-0">
+        <CardContent>
           {loading ? (
-            <div className="text-center py-4 text-sm md:text-base text-muted-foreground">
-              Loading requests...
-            </div>
+            <div className="text-center py-6">Loading requests...</div>
           ) : joinRequests.length === 0 ? (
-            <div className="text-center py-6">
-              <p className="text-sm md:text-base text-muted-foreground">
-                No pending join requests at this time.
-              </p>
+            <div className="text-center py-8 text-muted-foreground">
+              No pending join requests
             </div>
           ) : (
             <JoinRequestsTable 
@@ -88,6 +64,6 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
         action={action}
         isProcessing={!!processingId}
       />
-    </>
+    </div>
   );
 };

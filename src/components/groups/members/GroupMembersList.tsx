@@ -33,6 +33,14 @@ export const GroupMembersList = ({
         handleRemoveMemberEvent as EventListener);
     };
   }, []);
+  
+  if (!members || members.length === 0) {
+    return (
+      <div className={`text-center py-6 ${className || ""}`}>
+        <p className="text-sm md:text-base text-muted-foreground">No members found</p>
+      </div>
+    );
+  }
 
   // Sort members: admins first, then by join date
   const sortedMembers = [...members].sort((a, b) => {
@@ -43,14 +51,6 @@ export const GroupMembersList = ({
     // Then by join date (newest first)
     return new Date(b.joined_at).getTime() - new Date(a.joined_at).getTime();
   });
-
-  if (!members || members.length === 0) {
-    return (
-      <div className={`text-center py-6 ${className || ""}`}>
-        <p className="text-sm md:text-base text-muted-foreground">No members found</p>
-      </div>
-    );
-  }
 
   return (
     <>

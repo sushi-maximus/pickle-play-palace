@@ -142,7 +142,7 @@ export const GroupDetailsPage = () => {
   }
 
   // Success state - render the group content
-  console.log("GroupDetailsPage: Rendering group successfully:", group?.name, "Admin status:", membershipStatus.isAdmin, "Has pending requests:", hasPendingRequests);
+  console.log("GroupDetailsPage: Rendering group successfully:", group?.name, "Admin status:", membershipStatus.isAdmin);
 
   return (
     <RouteErrorBoundary routeName="Group Details">
@@ -153,7 +153,6 @@ export const GroupDetailsPage = () => {
           activeTab={activeTab}
           onTabChange={handleTabChange}
           isAdmin={membershipStatus.isAdmin}
-          hasPendingRequests={hasPendingRequests}
         >
           <GroupDetailsContent
             activeTab={activeTab}
