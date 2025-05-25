@@ -1,5 +1,7 @@
-import { Users } from "lucide-react";
+
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface MobileGroupHeaderProps {
   groupName: string;
@@ -8,13 +10,23 @@ interface MobileGroupHeaderProps {
 }
 
 export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileGroupHeaderProps) => {
+  const navigate = useNavigate();
+
   return (
     <>
       {/* Main header */}
       <header className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 flex items-center justify-between shadow-lg border-b border-slate-600/30">
-        {/* Left Groups Icon (non-clickable) */}
-        <div className="w-10 flex-shrink-0 flex items-center justify-center">
-          <Users className="h-5 w-5 text-white" />
+        {/* Left Back Button */}
+        <div className="w-10 flex-shrink-0 flex items-center justify-start">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-slate-600/50 transition-all duration-200 hover:scale-105 p-0 h-8 w-8"
+            onClick={() => navigate("/groups")}
+            aria-label="Back to Groups"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
         </div>
         
         <div className="flex-1 text-center px-2">
@@ -33,10 +45,8 @@ export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileG
           </div>
         </div>
         
-        {/* Right Groups Icon (non-clickable) */}
-        <div className="w-10 flex-shrink-0 flex items-center justify-center">
-          <Users className="h-5 w-5 text-white" />
-        </div>
+        {/* Right spacer to balance layout */}
+        <div className="w-10 flex-shrink-0"></div>
       </header>
     </>
   );
