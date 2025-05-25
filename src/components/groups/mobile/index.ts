@@ -12,6 +12,7 @@ export * from './FacebookActionBar';
 export * from './FacebookComments';
 export * from './FacebookCommentCard';
 export * from './FacebookCommentForm';
+export * from './FacebookCommentReactions';
 export * from './MobilePostCard2';
 export * from './MobilePostsList';
 export * from './MobilePostsLoading';

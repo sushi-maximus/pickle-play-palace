@@ -3,6 +3,9 @@ import { memo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useEditComment2 } from "../posts/hooks/useEditComment2";
 import { useDeleteComment2 } from "../posts/hooks/useDeleteComment2";
+import { useCommentThumbsUp2 } from "../posts/hooks/reactions/useCommentThumbsUp2";
+import { useCommentThumbsDown2 } from "../posts/hooks/reactions/useCommentThumbsDown2";
+import { FacebookCommentReactions } from "./FacebookCommentReactions";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface Comment {
@@ -53,6 +56,32 @@ const FacebookCommentCardComponent = ({
   const { handleDelete, isDeleting } = useDeleteComment2({
     onCommentDeleted: onCommentUpdated
   });
+
+  // Thumbs Up reactions
+  const thumbsUpHook = useCommentThumbsUp2({
+    commentId: comment.id,
+    userId: user?.id,
+    initialCount: comment.thumbsup_count,
+    initialIsActive: comment.user_thumbsup,
+    isThumbsDownActive: comment.user_thumbsdown,
+    setIsThumbsDownActive: () => {}, // Will be set by thumbsDownHook
+    setThumbsDownCount: () => {} // Will be set by thumbsDownHook
+  });
+
+  // Thumbs Down reactions
+  const thumbsDownHook = useCommentThumbsDown2({
+    commentId: comment.id,
+    userId: user?.id,
+    initialCount: comment.thumbsdown_count,
+    initialIsActive: comment.user_thumbsdown,
+    isThumbsUpActive: thumbsUpHook.isThumbsUpActive,
+    setIsThumbsUpActive: thumbsUpHook.setIsThumbsUpActive,
+    setThumbsUpCount: thumbsUpHook.setThumbsUpCount
+  });
+
+  // Connect the hooks so they can interact with each other
+  thumbsUpHook.setIsThumbsDownActive = thumbsDownHook.setIsThumbsDownActive;
+  thumbsUpHook.setThumbsDownCount = thumbsDownHook.setThumbsDownCount;
 
   const handleEditClick = () => {
     startEditing(comment.id, comment.content);
@@ -130,31 +159,48 @@ const FacebookCommentCardComponent = ({
         
         {/* Comment Actions */}
         {!isEditing && (
-          <div className="flex items-center space-x-4 mt-1 ml-3">
-            <button className="text-xs font-medium text-gray-500 hover:underline">
-              Like
-            </button>
-            <button className="text-xs font-medium text-gray-500 hover:underline">
-              Reply
-            </button>
-            {isOwner && (
-              <>
-                <button
-                  onClick={handleEditClick}
-                  className="text-xs font-medium text-gray-500 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDeleteClick}
-                  disabled={isDeleting}
-                  className="text-xs font-medium text-gray-500 hover:underline disabled:opacity-50"
-                >
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </button>
-              </>
+          <div className="flex items-center justify-between mt-1 ml-3">
+            <div className="flex items-center space-x-4">
+              <button className="text-xs font-medium text-gray-500 hover:underline">
+                Like
+              </button>
+              <button className="text-xs font-medium text-gray-500 hover:underline">
+                Reply
+              </button>
+              {isOwner && (
+                <>
+                  <button
+                    onClick={handleEditClick}
+                    className="text-xs font-medium text-gray-500 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDeleteClick}
+                    disabled={isDeleting}
+                    className="text-xs font-medium text-gray-500 hover:underline disabled:opacity-50"
+                  >
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </button>
+                </>
+              )}
+              <span className="text-xs text-gray-500">{timeAgo}</span>
+            </div>
+
+            {/* Comment Reactions */}
+            {user && (
+              <FacebookCommentReactions
+                thumbsUpCount={thumbsUpHook.thumbsUpCount}
+                thumbsDownCount={thumbsDownHook.thumbsDownCount}
+                isThumbsUpActive={thumbsUpHook.isThumbsUpActive}
+                isThumbsDownActive={thumbsDownHook.isThumbsDownActive}
+                isThumbsUpSubmitting={thumbsUpHook.isThumbsUpSubmitting}
+                isThumbsDownSubmitting={thumbsDownHook.isThumbsDownSubmitting}
+                onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
+                onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
+                disabled={!user?.id}
+              />
             )}
-            <span className="text-xs text-gray-500">{timeAgo}</span>
           </div>
         )}
       </div>
