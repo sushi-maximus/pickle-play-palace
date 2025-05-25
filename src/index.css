@@ -74,6 +74,8 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    margin: 0;
+    padding: 0;
   }
 }
 
