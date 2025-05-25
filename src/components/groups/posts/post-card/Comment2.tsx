@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -162,7 +161,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
         
         <div className="mt-1">
           {isEditing ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Textarea
                 value={editableContent}
                 onChange={(e) => setEditableContent(e.target.value)}
@@ -170,13 +169,13 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
                 className="text-sm min-h-[60px] resize-none"
                 disabled={isEditSubmitting}
                 autoFocus
-                placeholder="Write your comment..."
+                placeholder="Edit your comment..."
               />
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-500 font-medium">
-                  Press Enter to save, Esc to cancel
+              <div className="flex flex-col gap-2">
+                <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded border">
+                  💡 Press Enter to save • Press Esc to cancel
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-end">
                   <Button 
                     variant="outline" 
                     size="sm" 
