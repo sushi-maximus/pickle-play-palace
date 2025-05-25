@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -159,13 +158,12 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
                 className="text-sm min-h-[60px] resize-none"
                 disabled={isEditSubmitting}
               />
-              <div className="flex justify-end gap-1">
+              <div className="flex justify-end gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={handleCancelEdit}
                   disabled={isEditSubmitting}
-                  className="text-xs px-2 h-6"
                 >
                   Cancel
                 </Button>
@@ -173,7 +171,6 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
                   size="sm" 
                   onClick={handleSaveEdit}
                   disabled={!editContent.trim() || isEditSubmitting}
-                  className="text-xs px-2 h-6"
                 >
                   Save
                 </Button>
