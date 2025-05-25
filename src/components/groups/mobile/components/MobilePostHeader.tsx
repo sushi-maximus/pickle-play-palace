@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { formatDistanceToNow } from "date-fns";
 
 interface MobilePostHeaderProps {
   post: {
@@ -58,6 +59,9 @@ export const MobilePostHeader = ({
     initials = lastName[0].toUpperCase();
   }
 
+  // Format timestamp like in the image
+  const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
+
   return (
     <div className="flex items-start justify-between p-3 md:p-4">
       <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
@@ -71,12 +75,7 @@ export const MobilePostHeader = ({
             {displayName}
           </h3>
           <p className="text-xs md:text-sm text-gray-500">
-            {new Date(post.created_at).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
+            {timeAgo}
           </p>
         </div>
       </div>

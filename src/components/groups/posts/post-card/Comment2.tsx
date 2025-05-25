@@ -11,6 +11,7 @@ import { DeleteCommentDialog2 } from "./DeleteCommentDialog2";
 import { useCommentReactions2 } from "../hooks/useCommentReactions2";
 import { useEditComment2 } from "../hooks/useEditComment2";
 import { useDeleteComment2 } from "../hooks/useDeleteComment2";
+import { formatDistanceToNow } from "date-fns";
 
 interface Comment2Props {
   comment: {
@@ -104,6 +105,9 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   const user = comment.user;
   const fullName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Unknown User';
   const initials = user ? `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}` : 'UU';
+  
+  // Format timestamp to match the design in the image
+  const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
 
   return (
     <div className="flex gap-2 md:gap-3 p-3 md:p-4 border-b border-gray-50 last:border-b-0">
@@ -115,15 +119,10 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-medium text-gray-900 truncate">{fullName}</h4>
-            <p className="text-xs text-gray-500">
-              {new Date(comment.created_at).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </p>
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-medium text-gray-900">{fullName}</h4>
+              <p className="text-xs text-gray-500">{timeAgo}</p>
+            </div>
           </div>
           
           {isOwnComment && (

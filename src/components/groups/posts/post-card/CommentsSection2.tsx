@@ -51,9 +51,9 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   }
 
   return (
-    <div className="border-t border-gray-100">
+    <div className="border-t border-gray-100 bg-gray-50">
       {comments && comments.length > 0 && (
-        <div className="max-h-96 overflow-y-auto">
+        <div className="max-h-96 overflow-y-auto bg-white">
           {comments.map((comment) => (
             <Comment2
               key={comment.id}
@@ -66,13 +66,15 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
       )}
       
       {currentUserId && user && (
-        <CommentForm2
-          content={newCommentContent}
-          setContent={setNewCommentContent}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-          user={user}
-        />
+        <div className="bg-white border-t border-gray-100">
+          <CommentForm2
+            content={newCommentContent}
+            setContent={setNewCommentContent}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            user={user}
+          />
+        </div>
       )}
     </div>
   );
