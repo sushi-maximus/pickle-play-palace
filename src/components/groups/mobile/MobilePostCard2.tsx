@@ -76,6 +76,13 @@ const MobilePostCard2Component = ({
     setShowDeleteDialog(true);
   }, []);
 
+  // Create a proper heart click handler
+  const handleHeartClick = useMemo(() => () => {
+    if (!reactions.isDisabled && !reactions.isHeartSubmitting) {
+      reactions.toggleHeart();
+    }
+  }, [reactions.isDisabled, reactions.isHeartSubmitting, reactions.toggleHeart]);
+
   return (
     <Card className="w-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-none overflow-hidden">
       <CardContent className="p-0">
@@ -108,7 +115,7 @@ const MobilePostCard2Component = ({
           isHeartSubmitting={reactions.isHeartSubmitting}
           onThumbsUpClick={reactions.toggleThumbsUp}
           onThumbsDownClick={reactions.toggleThumbsDown}
-          onHeartClick={reactions.handleHeartClick}
+          onHeartClick={handleHeartClick}
         />
       </CardContent>
       
