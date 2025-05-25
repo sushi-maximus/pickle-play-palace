@@ -117,54 +117,58 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
 
   return (
-    <div className="flex gap-3 p-4 border-b border-gray-100 last:border-b-0">
-      <Avatar className="h-10 w-10 flex-shrink-0">
-        <AvatarImage src={user?.avatar_url || undefined} />
-        <AvatarFallback className="text-sm bg-gray-100">{initials}</AvatarFallback>
-      </Avatar>
-      
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h4 className="text-sm font-medium text-gray-900">{fullName}</h4>
-              <p className="text-xs text-gray-500">{timeAgo}</p>
+    <div className="p-3 md:p-4 border-b border-gray-50 last:border-b-0">
+      <div className="flex gap-2 md:gap-3">
+        <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0 mt-1">
+          <AvatarImage src={user?.avatar_url || undefined} />
+          <AvatarFallback className="text-xs md:text-sm bg-gray-100">{initials}</AvatarFallback>
+        </Avatar>
+        
+        <div className="flex-1 min-w-0 space-y-2 md:space-y-3">
+          {/* Header with name, time, and actions */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+              <h4 className="text-sm md:text-base font-medium text-gray-900">{fullName}</h4>
+              <p className="text-xs md:text-sm text-gray-500">{timeAgo}</p>
             </div>
+            
+            {isOwnComment && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600 flex-shrink-0"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40 bg-white shadow-lg border border-gray-200">
+                  <DropdownMenuItem onClick={handleEdit} disabled={isEditing}>
+                    <Edit className="h-3 w-3 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setShowDeleteDialog(true)} 
+                    className="text-red-600 focus:text-red-600"
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="h-3 w-3 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
           
-          {isOwnComment && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={handleEdit} disabled={isEditing}>
-                  <Edit className="h-3 w-3 mr-2" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setShowDeleteDialog(true)} 
-                  className="text-red-600 focus:text-red-600"
-                  disabled={isDeleting}
-                >
-                  <Trash2 className="h-3 w-3 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-        
-        <div className="mt-2">
+          {/* Comment content */}
           {isEditing ? (
             <div className="space-y-3">
               <Textarea
                 value={editableContent}
                 onChange={(e) => setEditableContent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="text-sm min-h-[60px] resize-none"
+                className="text-sm md:text-base min-h-[80px] md:min-h-[60px] resize-none border-gray-200 focus:border-blue-300"
                 disabled={isEditSubmitting}
                 autoFocus
                 placeholder="Edit your comment..."
@@ -174,27 +178,30 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
               </p>
             </div>
           ) : (
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-900 whitespace-pre-line leading-relaxed">{comment.content}</p>
+            <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
+              <p className="text-sm md:text-base text-gray-900 whitespace-pre-line leading-relaxed">
+                {comment.content}
+              </p>
             </div>
           )}
-        </div>
-        
-        <div className="flex items-center gap-3 mt-3">
-          <CommentThumbsUp2
-            count={thumbsUpCount}
-            isActive={isThumbsUpActive}
-            isSubmitting={isThumbsUpSubmitting}
-            onClick={toggleThumbsUp}
-            disabled={!currentUserId}
-          />
-          <CommentThumbsDown2
-            count={thumbsDownCount}
-            isActive={isThumbsDownActive}
-            isSubmitting={isThumbsDownSubmitting}
-            onClick={toggleThumbsDown}
-            disabled={!currentUserId}
-          />
+          
+          {/* Reaction buttons */}
+          <div className="flex items-center gap-2 md:gap-3 pt-1">
+            <CommentThumbsUp2
+              count={thumbsUpCount}
+              isActive={isThumbsUpActive}
+              isSubmitting={isThumbsUpSubmitting}
+              onClick={toggleThumbsUp}
+              disabled={!currentUserId}
+            />
+            <CommentThumbsDown2
+              count={thumbsDownCount}
+              isActive={isThumbsDownActive}
+              isSubmitting={isThumbsDownSubmitting}
+              onClick={toggleThumbsDown}
+              disabled={!currentUserId}
+            />
+          </div>
         </div>
       </div>
       

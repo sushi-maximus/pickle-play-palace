@@ -42,8 +42,8 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
 
   if (loading) {
     return (
-      <div className="px-4 py-4 border-t border-gray-100">
-        <div className="flex items-center justify-center py-6">
+      <div className="border-t border-gray-100">
+        <div className="flex items-center justify-center py-4 md:py-6">
           <div className="h-4 w-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
@@ -53,7 +53,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   return (
     <div className="border-t border-gray-100">
       {comments && comments.length > 0 && (
-        <div className="max-h-96 overflow-y-auto">
+        <div className="max-h-[50vh] md:max-h-96 overflow-y-auto">
           {comments.map((comment) => (
             <Comment2
               key={comment.id}
