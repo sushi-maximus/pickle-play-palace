@@ -1,10 +1,10 @@
 
 import { useState } from "react";
 
-type ActiveTab = "home2" | "users" | "settings" | "calendar";
+type ActiveTab = "activity2" | "home2" | "users" | "settings" | "calendar";
 
 export const useGroupDetailsState = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("home2");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("activity2");
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab as ActiveTab);
