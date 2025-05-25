@@ -21,10 +21,8 @@ export const CommentThumbsUp2 = ({
     <Button
       variant="ghost"
       size="sm"
-      className={`min-h-[44px] min-w-[44px] px-2 flex items-center gap-1 transition-all duration-200 text-xs font-medium touch-manipulation ${
-        isActive 
-          ? "text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-700" 
-          : "text-muted-foreground hover:text-blue-600 hover:bg-blue-50"
+      className={`min-h-[44px] min-w-[44px] px-2 flex items-center gap-1 transition-all duration-200 text-xs touch-manipulation ${
+        isActive ? "text-blue-500 bg-blue-50 hover:bg-blue-100" : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
       }`}
       onClick={onClick}
       disabled={disabled || isSubmitting}
@@ -32,7 +30,7 @@ export const CommentThumbsUp2 = ({
       {isSubmitting ? (
         <div className="h-3 w-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
       ) : (
-        <ThumbsUp className={`h-3 w-3 transition-all duration-200 ${isActive ? "fill-current" : ""}`} />
+        <ThumbsUp className={`h-3 w-3 ${isActive ? "fill-current" : ""}`} />
       )}
       {count > 0 && (
         <span className="text-xs font-medium">
