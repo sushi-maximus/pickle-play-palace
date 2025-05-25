@@ -21,7 +21,7 @@ export const CommentThumbsUp2 = ({
     <Button
       variant="ghost"
       size="sm"
-      className={`h-8 w-auto px-2 flex items-center gap-1 transition-all duration-200 text-xs ${
+      className={`min-h-[44px] min-w-[44px] px-2 flex items-center gap-1 transition-all duration-200 text-xs touch-manipulation ${
         isActive ? "text-blue-500 bg-blue-50 hover:bg-blue-100" : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
       }`}
       onClick={onClick}

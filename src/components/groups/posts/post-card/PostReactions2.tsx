@@ -35,7 +35,7 @@ export const PostReactions2 = ({
   disabled = false
 }: PostReactions2Props) => {
   return (
-    <div className="flex items-center gap-2 md:gap-3">
+    <div className="flex items-center gap-1 md:gap-3">
       <ThumbsUp2
         count={thumbsUpCount}
         isActive={isThumbsUpActive}

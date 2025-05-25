@@ -52,7 +52,7 @@ export const MobilePostActions = ({
 
   return (
     <div className="flex items-center px-3 md:px-4 py-2 md:py-3 border-t border-gray-100">
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex items-center gap-1 md:gap-3 flex-1">
         <PostReactions2
           thumbsUpCount={thumbsUpCount}
           thumbsDownCount={thumbsDownCount}
@@ -72,7 +72,7 @@ export const MobilePostActions = ({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 px-3 md:h-9 md:px-4 flex items-center gap-1 md:gap-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50"
+          className="min-h-[48px] px-3 md:h-9 md:px-4 flex items-center gap-1 md:gap-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 touch-manipulation"
           onClick={onToggleComments}
         >
           <MessageCircle className="h-4 w-4" />

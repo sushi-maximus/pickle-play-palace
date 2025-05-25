@@ -85,18 +85,26 @@ export const MobilePostHeader = ({
       {isOwnPost && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="min-h-[48px] min-w-[48px] p-0 text-gray-400 hover:text-gray-600 touch-manipulation"
+            >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={onEdit} disabled={isEditing}>
+            <DropdownMenuItem 
+              onClick={onEdit} 
+              disabled={isEditing}
+              className="min-h-[48px] flex items-center touch-manipulation"
+            >
               <Edit className="h-4 w-4 mr-2" />
               Edit Post
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={onDeleteClick} 
-              className="text-red-600 focus:text-red-600"
+              className="min-h-[48px] flex items-center text-red-600 focus:text-red-600 touch-manipulation"
               disabled={isDeleting}
             >
               <Trash2 className="h-4 w-4 mr-2" />
