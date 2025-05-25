@@ -1,3 +1,4 @@
+
 import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -10,8 +11,8 @@ interface MobileGroupHeaderProps {
 export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileGroupHeaderProps) => {
   return (
     <>
-      {/* Main header */}
-      <header className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 flex items-center justify-between shadow-lg border-b border-slate-600/30">
+      {/* Main header with reduced padding */}
+      <header className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-2.5 flex items-center justify-between shadow-lg border-b border-slate-600/30">
         {/* Left Groups Icon (non-clickable) */}
         <div className="w-10 flex-shrink-0 flex items-center justify-center">
           <Users className="h-5 w-5 text-white" />

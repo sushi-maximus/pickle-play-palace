@@ -25,7 +25,7 @@ export const GroupMobileLayout = ({
 }: GroupMobileLayoutProps) => {
   return (
     <>
-      {/* Group Header - Fixed at top with z-60 */}
+      {/* Group Header - Fixed at top with z-60 - Reduced height */}
       <MobileGroupHeader 
         groupName={groupName}
         groupCode={groupCode}
@@ -33,7 +33,7 @@ export const GroupMobileLayout = ({
       />
       
       {/* Horizontal Group Tabs - Fixed below header */}
-      <div className="fixed top-16 left-0 right-0 z-[80] bg-white shadow-sm">
+      <div className="fixed top-14 left-0 right-0 z-[80] bg-white shadow-sm">
         <GroupHorizontalTabs 
           activeTab={activeTab}
           onTabChange={onTabChange}
@@ -41,8 +41,8 @@ export const GroupMobileLayout = ({
         />
       </div>
       
-      {/* Content Area with proper spacing for header and horizontal tabs */}
-      <div className="flex-1 pt-28 pb-20">
+      {/* Content Area with optimized spacing for reduced header height */}
+      <div className="flex-1 pt-26 pb-20">
         {children}
       </div>
       
