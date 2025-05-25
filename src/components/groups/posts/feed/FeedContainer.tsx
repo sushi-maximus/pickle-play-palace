@@ -1,4 +1,3 @@
-
 import { CreatePostForm2 } from "../CreatePostForm2";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { FeedLoadingState } from "./FeedLoadingState";
@@ -98,7 +97,7 @@ export const FeedContainer = ({
       />
 
       {membershipStatus.isMember && (
-        <div className="flex-shrink-0 px-3 md:px-6">
+        <div className="flex-shrink-0">
           <CreatePostForm2 
             groupId={groupId} 
             user={user}
