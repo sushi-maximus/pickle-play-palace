@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -19,14 +20,18 @@ interface CommentsSection2Props {
 
 export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSection2Props) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [newCommentContent, setNewCommentContent] = useState("");
 
   const { comments, loading, refreshComments } = useComments2({
     postId,
     userId: currentUserId
   });
 
-  const { handleSubmit, isSubmitting } = useAddComment2({
+  const { 
+    content: newCommentContent, 
+    setContent: setNewCommentContent,
+    handleSubmit, 
+    isSubmitting 
+  } = useAddComment2({
     postId,
     userId: currentUserId || '',
     onCommentAdded: () => {
@@ -34,12 +39,6 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
       refreshComments();
     }
   });
-
-  const handleAddComment = () => {
-    if (newCommentContent.trim() && currentUserId) {
-      handleSubmit();
-    }
-  };
 
   const handleCommentUpdate = () => {
     refreshComments();
@@ -53,10 +52,6 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
         </div>
       </div>
     );
-  }
-
-  if (!comments?.length && !currentUserId) {
-    return null;
   }
 
   return (
@@ -98,7 +93,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
         <CommentForm2
           content={newCommentContent}
           setContent={setNewCommentContent}
-          onSubmit={handleAddComment}
+          onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
           user={user}
         />

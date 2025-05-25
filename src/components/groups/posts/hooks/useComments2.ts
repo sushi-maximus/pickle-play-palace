@@ -36,6 +36,8 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
       setLoading(true);
       setError(null);
 
+      console.log('Fetching comments for post:', postId);
+
       // First fetch comments
       const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
@@ -43,15 +45,22 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
-      if (commentsError) throw commentsError;
+      if (commentsError) {
+        console.error('Error fetching comments:', commentsError);
+        throw commentsError;
+      }
+
+      console.log('Comments data:', commentsData);
 
       if (!commentsData || commentsData.length === 0) {
+        console.log('No comments found');
         setComments([]);
         return;
       }
 
       // Get unique user IDs
       const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+      console.log('Fetching profiles for users:', userIds);
 
       // Fetch user profiles
       const { data: profilesData, error: profilesError } = await supabase
@@ -59,7 +68,12 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
         .select('id, first_name, last_name, avatar_url')
         .in('id', userIds);
 
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
+
+      console.log('Profiles data:', profilesData);
 
       // Get comment IDs for reaction queries
       const commentIds = commentsData.map(comment => comment.id);
@@ -70,7 +84,10 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
         .select('comment_id, reaction_type')
         .in('comment_id', commentIds);
 
-      if (reactionsError) throw reactionsError;
+      if (reactionsError) {
+        console.error('Error fetching reactions:', reactionsError);
+        // Don't throw here, just log and continue without reactions
+      }
 
       // Get user's reactions if userId is provided
       let userReactionsData = [];
@@ -81,8 +98,12 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
           .in('comment_id', commentIds)
           .eq('user_id', userId);
 
-        if (userReactionsError) throw userReactionsError;
-        userReactionsData = data || [];
+        if (userReactionsError) {
+          console.error('Error fetching user reactions:', userReactionsError);
+          // Don't throw here, just log and continue without user reactions
+        } else {
+          userReactionsData = data || [];
+        }
       }
 
       // Create maps for efficient lookups
@@ -116,7 +137,22 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
       const transformedComments = commentsData
         .map(comment => {
           const user = profilesMap.get(comment.user_id);
-          if (!user) return null;
+          if (!user) {
+            console.warn('No profile found for user:', comment.user_id);
+            return {
+              ...comment,
+              user: {
+                id: comment.user_id,
+                first_name: 'Unknown',
+                last_name: 'User',
+                avatar_url: null
+              },
+              thumbsup_count: thumbsupCountMap.get(comment.id) || 0,
+              thumbsdown_count: thumbsdownCountMap.get(comment.id) || 0,
+              user_thumbsup: userThumbsupSet.has(comment.id),
+              user_thumbsdown: userThumbsdownSet.has(comment.id)
+            };
+          }
           
           return {
             ...comment,
@@ -126,12 +162,12 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
             user_thumbsup: userThumbsupSet.has(comment.id),
             user_thumbsdown: userThumbsdownSet.has(comment.id)
           };
-        })
-        .filter(comment => comment !== null) as Comment2[];
+        }) as Comment2[];
 
+      console.log('Transformed comments:', transformedComments);
       setComments(transformedComments);
     } catch (err) {
-      console.error('Error fetching comments:', err);
+      console.error('Error in fetchComments:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch comments');
     } finally {
       setLoading(false);
@@ -140,6 +176,7 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
 
   useEffect(() => {
     if (postId) {
+      console.log('useComments2 effect triggered for postId:', postId);
       fetchComments();
     }
   }, [postId, userId]);
