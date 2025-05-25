@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroupDetails } from "./hooks/useGroupDetails";
 import { useGroupPosts } from "@/components/groups/posts/hooks/useGroupPosts";
-import { useAutoRefresh } from "@/components/groups/posts/hooks/useAutoRefresh";
 import { useGroupDetailsState } from "./hooks/useGroupDetailsState";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { GroupDetailsErrorStates } from "./GroupDetailsErrorStates";
@@ -75,12 +74,6 @@ const GroupDetailsPage = () => {
   } = useGroupPosts({ 
     groupId: safeGroupId, 
     userId: user?.id 
-  });
-
-  // Auto refresh functionality
-  const { handleManualRefresh } = useAutoRefresh({
-    refreshFunction: refreshPosts,
-    loading: postsLoading
   });
 
   // Handle invalid IDs with redirect - moved after all hooks

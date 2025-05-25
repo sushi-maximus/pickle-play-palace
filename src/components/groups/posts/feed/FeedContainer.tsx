@@ -4,7 +4,6 @@ import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { FeedLoadingState } from "./FeedLoadingState";
 import { FeedErrorState } from "./FeedErrorState";
 import { FeedScrollArea } from "./FeedScrollArea";
-import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
 import type { GroupPost, Profile } from "../hooks/types/groupPostTypes";
 import { useEffect, useState } from "react";
 
@@ -43,11 +42,6 @@ export const FeedContainer = ({
   const [displayedPosts, setDisplayedPosts] = useState<GroupPost[]>(posts);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Log refresh state changes for debugging
-  useEffect(() => {
-    console.log("FeedContainer - refreshing state changed:", refreshing);
-  }, [refreshing]);
-
   // Update displayed posts with transition when posts change
   useEffect(() => {
     if (posts.length > 0 && !loading) {
@@ -75,28 +69,16 @@ export const FeedContainer = ({
 
   // Only show loading state on initial load
   if (loading && !refreshing && displayedPosts.length === 0) {
-    return (
-      <>
-        <RefreshProgressIndicator refreshing={refreshing} />
-        <FeedLoadingState />
-      </>
-    );
+    return <FeedLoadingState />;
   }
 
   // Error state
   if (error) {
-    return (
-      <>
-        <RefreshProgressIndicator refreshing={refreshing} />
-        <FeedErrorState error={error} onRetry={refreshPosts} />
-      </>
-    );
+    return <FeedErrorState error={error} onRetry={refreshPosts} />;
   }
 
   return (
     <div className="h-full flex flex-col">
-      <RefreshProgressIndicator refreshing={refreshing} />
-      
       {membershipStatus.isMember && (
         <div className="flex-shrink-0 px-3 md:px-6">
           <CreatePostForm2 
