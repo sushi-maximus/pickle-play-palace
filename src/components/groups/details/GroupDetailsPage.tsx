@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +16,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
-export const GroupDetailsPage = () => {
+const GroupDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -168,3 +169,6 @@ export const GroupDetailsPage = () => {
     </RouteErrorBoundary>
   );
 };
+
+export default GroupDetailsPage;
+export { GroupDetailsPage };
