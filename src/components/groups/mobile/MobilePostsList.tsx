@@ -1,9 +1,9 @@
 
 import { useEffect, useRef, useMemo, memo, useCallback } from "react";
 import { MobilePostCard2 } from "./MobilePostCard2";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePullToRefresh } from "../posts/hooks/usePullToRefresh";
-import { PullToRefreshIndicator } from "../posts/feed/PullToRefreshIndicator";
+import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
+import { useOptimizedPullToRefresh } from "@/hooks/useOptimizedPullToRefresh";
+import { OptimizedPullToRefreshIndicator } from "../posts/feed/OptimizedPullToRefreshIndicator";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface Post {
@@ -64,33 +64,26 @@ const MobilePostsListComponent = ({
     isPulling,
     bindToElement,
     shouldTrigger
-  } = usePullToRefresh({
+  } = useOptimizedPullToRefresh({
     onRefresh: memoizedOnRefresh,
-    threshold: 80
+    threshold: 80,
+    disabled: refreshing
   });
 
-  // Memoize the bindToElement effect dependencies
-  const bindToElementCallback = useCallback(() => {
+  // Bind pull-to-refresh to scroll element
+  useEffect(() => {
     if (scrollRef.current) {
-      const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
-      if (viewport) {
-        bindToElement(viewport);
-      }
+      bindToElement(scrollRef.current);
     }
   }, [bindToElement]);
-
-  useEffect(() => {
-    bindToElementCallback();
-  }, [bindToElementCallback]);
 
   const isRefreshingState = useMemo(() => 
     refreshing || pullRefreshing, 
     [refreshing, pullRefreshing]
   );
 
-  // Create a more efficient posts memoization that only changes when post IDs or content changes
+  // Create a more efficient posts memoization
   const memoizedPosts = useMemo(() => {
-    // Create a stable reference that only changes when the actual content changes
     return posts.map(post => ({
       id: post.id,
       content: post.content,
@@ -101,21 +94,20 @@ const MobilePostsListComponent = ({
     }));
   }, [posts]);
 
-  // Memoize the posts key for comparison
-  const postsKey = useMemo(() => 
-    posts.map(p => `${p.id}-${p.content}`).join('|'), 
-    [posts]
-  );
-
-  // Memoize transform style to prevent recalculation
-  const transformStyle = useMemo(() => ({
-    transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
+  // Memoize transform style for pull-to-refresh content
+  const contentTransform = useMemo(() => ({
+    transform: isPulling ? `translate3d(0, ${Math.min(pullDistance, 80)}px, 0)` : 'translate3d(0, 0, 0)',
+    willChange: isPulling ? 'transform' : 'auto'
   }), [isPulling, pullDistance]);
 
   return (
-    <ScrollArea className="h-full" ref={scrollRef}>
+    <OptimizedScrollArea 
+      className="h-full" 
+      ref={scrollRef}
+      enableHardwareAcceleration={true}
+    >
       <div className="relative">
-        <PullToRefreshIndicator
+        <OptimizedPullToRefreshIndicator
           pullDistance={pullDistance}
           isRefreshing={isRefreshingState}
           isPulling={isPulling}
@@ -123,8 +115,8 @@ const MobilePostsListComponent = ({
         />
         
         <div 
-          className="py-2 transition-transform duration-200 will-change-transform"
-          style={transformStyle}
+          className="py-2 transition-transform duration-200"
+          style={contentTransform}
         >
           <div className="space-y-2">
             {memoizedPosts.map((post, index) => (
@@ -153,18 +145,18 @@ const MobilePostsListComponent = ({
           </div>
         </div>
       </div>
-    </ScrollArea>
+    </OptimizedScrollArea>
   );
 };
 
-// Enhanced memoization with better change detection
+// Enhanced memoization
 export const MobilePostsList = memo(MobilePostsListComponent, (prevProps, nextProps) => {
-  // Create efficient posts comparison by checking lengths first
+  // Check posts length first for quick comparison
   if (prevProps.posts.length !== nextProps.posts.length) {
     return false;
   }
 
-  // Check if any post content has changed (most efficient check)
+  // Check if any post content has changed
   const postsChanged = prevProps.posts.some((post, index) => {
     const nextPost = nextProps.posts[index];
     return !nextPost || 
@@ -177,7 +169,7 @@ export const MobilePostsList = memo(MobilePostsListComponent, (prevProps, nextPr
     return false;
   }
 
-  // Check other props
+  // Check other critical props
   if (
     prevProps.user?.id !== nextProps.user?.id ||
     prevProps.isEditing !== nextProps.isEditing ||
@@ -189,7 +181,6 @@ export const MobilePostsList = memo(MobilePostsListComponent, (prevProps, nextPr
     return false;
   }
 
-  // All checks passed
   return true;
 });
 

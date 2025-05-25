@@ -4,13 +4,13 @@ import { MobilePostCard2 } from "../../mobile/MobilePostCard2";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { MobilePostsLoading } from "../../mobile/MobilePostsLoading";
 import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePullToRefresh } from "../hooks/usePullToRefresh";
-import { PullToRefreshIndicator } from "./PullToRefreshIndicator";
+import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
+import { useOptimizedPullToRefresh } from "@/hooks/useOptimizedPullToRefresh";
+import { OptimizedPullToRefreshIndicator } from "./OptimizedPullToRefreshIndicator";
 import type { GroupPost, Profile } from "../hooks/types/groupPostTypes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 
 interface FeedContentProps {
   loading: boolean;
@@ -48,26 +48,27 @@ export const FeedContent = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Pull-to-refresh functionality
+  // Memoized refresh function
+  const memoizedRefreshPosts = useCallback(async () => {
+    refreshPosts();
+  }, [refreshPosts]);
+
+  // Optimized pull-to-refresh
   const {
     pullDistance,
     isRefreshing: pullRefreshing,
     isPulling,
     bindToElement,
     shouldTrigger
-  } = usePullToRefresh({
-    onRefresh: async () => {
-      refreshPosts();
-    },
-    threshold: 80
+  } = useOptimizedPullToRefresh({
+    onRefresh: memoizedRefreshPosts,
+    threshold: 80,
+    disabled: refreshing || loading
   });
 
   useEffect(() => {
     if (scrollRef.current) {
-      const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
-      if (viewport) {
-        bindToElement(viewport);
-      }
+      bindToElement(scrollRef.current);
     }
   }, [bindToElement]);
 
@@ -79,32 +80,36 @@ export const FeedContent = ({
   // Update displayed posts with transition when posts change
   useEffect(() => {
     if (posts.length > 0 && !loading) {
-      // Only apply transition when we're refreshing (not on initial load)
       if (refreshing && displayedPosts.length > 0) {
-        // Start transition
         setIsTransitioning(true);
         console.log("FeedContent - starting transition for updated posts");
         
-        // Wait for fade out animation to complete before updating posts
         const timer = setTimeout(() => {
           setDisplayedPosts(posts);
           setIsTransitioning(false);
           console.log("FeedContent - transition complete, posts updated");
-        }, 300); // Match this with the CSS transition duration
+        }, 300);
         
         return () => clearTimeout(timer);
       } else {
-        // For initial load or non-refreshing updates, just update immediately
-        console.log("FeedContent - updating posts immediately (initial load or non-refreshing update)");
+        console.log("FeedContent - updating posts immediately");
         setDisplayedPosts(posts);
       }
     }
-  }, [posts, refreshing, loading]);
+  }, [posts, refreshing, loading, displayedPosts.length]);
 
-  const isRefreshingState = refreshing || pullRefreshing;
+  const isRefreshingState = useMemo(() => 
+    refreshing || pullRefreshing, 
+    [refreshing, pullRefreshing]
+  );
+
+  // Memoized content transform for pull-to-refresh
+  const contentTransform = useMemo(() => ({
+    transform: isPulling ? `translate3d(0, ${Math.min(pullDistance, 80)}px, 0)` : 'translate3d(0, 0, 0)',
+    willChange: isPulling ? 'transform' : 'auto'
+  }), [isPulling, pullDistance]);
 
   // Only show loading state on initial load
-  // For refreshes, we'll keep displaying the existing content
   if (loading && !refreshing && displayedPosts.length === 0) {
     return (
       <>
@@ -129,7 +134,6 @@ export const FeedContent = ({
 
   return (
     <div className="h-full flex flex-col">
-      {/* Always render the progress indicator at the top of the feed */}
       <RefreshProgressIndicator refreshing={refreshing} />
       
       {membershipStatus.isMember && (
@@ -145,9 +149,13 @@ export const FeedContent = ({
       {displayedPosts.length === 0 ? (
         <GroupPostsEmpty isMember={membershipStatus.isMember} />
       ) : (
-        <ScrollArea className="flex-1" ref={scrollRef}>
+        <OptimizedScrollArea 
+          className="flex-1" 
+          ref={scrollRef}
+          enableHardwareAcceleration={true}
+        >
           <div className="relative">
-            <PullToRefreshIndicator
+            <OptimizedPullToRefreshIndicator
               pullDistance={pullDistance}
               isRefreshing={isRefreshingState}
               isPulling={isPulling}
@@ -156,15 +164,12 @@ export const FeedContent = ({
             
             <div 
               className={cn(
-                "space-y-6 pb-6 px-3 md:px-6 transition-all duration-300", 
+                "space-y-6 pb-6 px-3 md:px-6 transition-opacity duration-300", 
                 isTransitioning ? "opacity-50" : "opacity-100"
               )}
-              style={{
-                transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
-              }}
+              style={contentTransform}
             >
               {displayedPosts.map((post) => {
-                // Debug log to see the post data structure
                 console.log("FeedContent - Processing post:", {
                   postId: post.id,
                   postProfiles: post.profiles,
@@ -172,7 +177,6 @@ export const FeedContent = ({
                   userLastName: post.profiles?.last_name
                 });
 
-                // Transform GroupPost to match MobilePostCard2 expected format
                 const transformedPost = {
                   id: post.id,
                   content: post.content,
@@ -207,7 +211,7 @@ export const FeedContent = ({
               })}
             </div>
           </div>
-        </ScrollArea>
+        </OptimizedScrollArea>
       )}
     </div>
   );

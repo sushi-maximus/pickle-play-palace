@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
 import { Comment2 } from "./Comment2";
 import { CommentForm2 } from "./CommentForm2";
 import { useComments2 } from "../hooks/useComments2";
@@ -57,7 +57,10 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   return (
     <div className="border-t border-gray-100 bg-gray-50/30">
       {comments && comments.length > 0 && (
-        <ScrollArea className="max-h-[50vh]">
+        <OptimizedScrollArea 
+          className="max-h-[50vh]"
+          enableHardwareAcceleration={true}
+        >
           <div className="divide-y divide-gray-100/50">
             {comments.map((comment) => (
               <Comment2
@@ -68,7 +71,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
               />
             ))}
           </div>
-        </ScrollArea>
+        </OptimizedScrollArea>
       )}
       
       {currentUserId && user && (
