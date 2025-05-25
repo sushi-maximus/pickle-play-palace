@@ -55,8 +55,8 @@ const FacebookCommentActionsComponent = ({
           disabled={!user || isThumbsUpSubmitting}
           className={`text-xs font-medium transition-all duration-200 active:scale-95 ${
             isThumbsUpActive 
-              ? "text-blue-600" 
-              : "text-gray-500 hover:text-blue-600"
+              ? "text-gray-800" 
+              : "text-gray-500 hover:text-gray-800"
           } ${!user ? "opacity-50 cursor-not-allowed" : "hover:underline"}`}
         >
           {isThumbsUpActive ? "Liked" : "Like"}
@@ -64,7 +64,7 @@ const FacebookCommentActionsComponent = ({
         
         <button 
           onClick={handleReplyClick}
-          className="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-all duration-200 active:scale-95"
+          className="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200 active:scale-95"
         >
           <MessageCircle className="h-3 w-3 transition-all duration-200 hover:scale-110" />
           <span>Reply</span>
@@ -74,7 +74,7 @@ const FacebookCommentActionsComponent = ({
           <>
             <button
               onClick={onEdit}
-              className="text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-all duration-200 active:scale-95"
+              className="text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200 active:scale-95"
             >
               Edit
             </button>
