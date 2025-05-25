@@ -68,15 +68,15 @@ const FacebookActionBarComponent = ({
   };
 
   return (
-    <div className="flex items-center border-t border-gray-200 bg-gray-50">
+    <div className="flex items-center bg-white">
       {/* Like Button */}
       <button
         onClick={handleLikeClick}
         disabled={isDisabled || isSubmitting || !user}
         className={`flex-1 flex items-center justify-center py-2 sm:py-3 min-h-[44px] transition-all duration-200 touch-manipulation active:scale-95 ${
           isLiked 
-            ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
-            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+            ? 'text-gray-800' 
+            : 'text-gray-600 hover:text-gray-800'
         } ${
           (isDisabled || !user) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
         }`}
@@ -99,7 +99,7 @@ const FacebookActionBarComponent = ({
       <button
         onClick={handleCommentClick}
         disabled={!user}
-        className={`flex-1 flex items-center justify-center py-2 sm:py-3 min-h-[44px] text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 touch-manipulation active:scale-95 ${
+        className={`flex-1 flex items-center justify-center py-2 sm:py-3 min-h-[44px] text-gray-600 hover:text-gray-800 transition-all duration-200 touch-manipulation active:scale-95 ${
           !user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
         }`}
       >
