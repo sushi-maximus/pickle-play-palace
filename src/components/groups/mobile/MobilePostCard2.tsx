@@ -1,11 +1,11 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PostContent } from "../posts/post-card/PostContent";
 import { CommentsSection2 } from "../posts/post-card/CommentsSection2";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
 import { usePostReactions2 } from "../posts/hooks/usePostReactions2";
-import { useEditPost } from "../posts/hooks/useEditPost";
-import { useDeletePost } from "../posts/hooks/useDeletePost";
+import { useComments2 } from "../posts/hooks/useComments2";
 import { MobilePostHeader } from "./components/MobilePostHeader";
 import { MobilePostActions } from "./components/MobilePostActions";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
@@ -75,6 +75,11 @@ export const MobilePostCard2 = ({
     initialUserHeart: false
   });
 
+  const { comments, refreshComments } = useComments2({
+    postId: post.id,
+    userId: user?.id
+  });
+
   const handleEdit = () => {
     onStartEditing(post.id, post.content);
   };
@@ -138,6 +143,7 @@ export const MobilePostCard2 = ({
           showComments={showComments}
           onToggleComments={() => setShowComments(!showComments)}
           currentUserId={user?.id}
+          commentsCount={comments?.length || 0}
         />
 
         {showComments && (
