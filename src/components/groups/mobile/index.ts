@@ -5,6 +5,8 @@ export * from './MobileGroupsHeader';
 export * from './MobileHome2Tab';
 export * from './Activity2Tab';
 export * from './FacebookCreatePost';
+export * from './FacebookPostCard';
+export * from './FacebookPostsList';
 export * from './MobilePostCard2';
 export * from './MobilePostsList';
 export * from './MobilePostsLoading';
