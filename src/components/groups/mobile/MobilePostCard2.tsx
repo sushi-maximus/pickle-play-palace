@@ -84,7 +84,7 @@ const MobilePostCard2Component = ({
   }, [reactions.isDisabled, reactions.isHeartSubmitting, reactions.toggleHeart]);
 
   return (
-    <Card className="w-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-none overflow-hidden">
+    <Card className="w-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-lg overflow-hidden">
       <CardContent className="p-0">
         <PostDisplay
           post={post}
