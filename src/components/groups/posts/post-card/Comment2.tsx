@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -172,9 +171,9 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
                 autoFocus
                 placeholder="Edit your comment..."
               />
-              <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded border">
-                💡 Press Enter to save • Press Esc to cancel
-              </div>
+              <p className="text-xs text-gray-500">
+                Press Enter to save, Esc to cancel
+              </p>
             </div>
           ) : (
             <p className="text-sm text-gray-900 whitespace-pre-line leading-relaxed">{comment.content}</p>

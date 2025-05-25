@@ -65,9 +65,9 @@ export const CommentForm2 = ({
           disabled={isSubmitting}
         />
         
-        <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded border">
-          💡 Press Enter to post • Press Esc to clear
-        </div>
+        <p className="text-xs text-gray-500">
+          Press Enter to post, Esc to cancel
+        </p>
         
         {content.trim() && (
           <div className="flex justify-end">
