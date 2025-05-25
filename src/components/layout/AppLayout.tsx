@@ -41,8 +41,8 @@ export const AppLayout = ({
         showProfileHeader={showMobileProfileHeader}
         profile={profile}
       >
-        <main className={`flex-1 px-3 py-4 ${className}`}>
-          <div className="container mx-auto max-w-4xl">
+        <main className={`flex-1 py-4 ${className}`}>
+          <div className="w-full">
             <div className="space-y-3">
               {children}
             </div>
