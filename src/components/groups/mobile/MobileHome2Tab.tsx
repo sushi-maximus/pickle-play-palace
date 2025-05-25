@@ -80,12 +80,12 @@ export const MobileHome2Tab = ({
   }
 
   return (
-    <main className="flex-1 px-4 py-6">
+    <main className="flex-1 px-2 py-6">
       <div className="container mx-auto max-w-4xl">
         <div className="space-y-6">
           {/* Post Creation Form */}
           {user && (
-            <div className="mb-8">
+            <div className="mb-8 px-2">
               <CreatePostForm2
                 groupId={groupId}
                 user={user}

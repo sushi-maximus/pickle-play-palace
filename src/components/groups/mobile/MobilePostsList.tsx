@@ -85,7 +85,7 @@ export const MobilePostsList = ({
         />
         
         <div 
-          className="px-2 py-4 transition-transform duration-200 will-change-transform"
+          className="px-1 py-4 transition-transform duration-200 will-change-transform"
           style={{
             transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
           }}
