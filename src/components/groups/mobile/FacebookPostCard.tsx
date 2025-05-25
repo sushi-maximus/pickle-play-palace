@@ -1,3 +1,4 @@
+
 import { memo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
@@ -6,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Check } from "lucide-react";
 import { useFacebookLike } from "./hooks/useFacebookLike";
-import { FacebookReactionSummary } from "./FacebookReactionSummary";
 import { FacebookActionBar } from "./FacebookActionBar";
 import { FacebookComments } from "./FacebookComments";
 import { FacebookErrorBoundary } from "./FacebookErrorBoundary";
@@ -254,15 +254,7 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
           )}
         </div>
 
-        {/* Reaction Summary */}
-        <FacebookReactionSummary
-          likeCount={likeCount}
-          commentsCount={commentsCount}
-          isUserLiked={isLiked}
-          user={user}
-        />
-
-        {/* Facebook Action Bar */}
+        {/* Facebook Action Bar with counts inline */}
         <FacebookActionBar
           postId={post.id}
           isLiked={isLiked}
@@ -271,6 +263,8 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
           onLikeClick={toggleLike}
           onCommentClick={handleCommentClick}
           user={user}
+          likeCount={likeCount}
+          commentsCount={commentsCount}
         />
 
         {/* Comments Section - Enhanced for mobile */}

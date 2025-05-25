@@ -11,6 +11,8 @@ interface FacebookActionBarProps {
   onLikeClick: () => void;
   onCommentClick: () => void;
   user?: Profile | null;
+  likeCount?: number;
+  commentsCount?: number;
 }
 
 const FacebookActionBarComponent = ({
@@ -20,7 +22,9 @@ const FacebookActionBarComponent = ({
   isDisabled,
   onLikeClick,
   onCommentClick,
-  user
+  user,
+  likeCount = 0,
+  commentsCount = 0
 }: FacebookActionBarProps) => {
   const handleLikeClick = () => {
     if (!isDisabled && !isSubmitting && user) {
@@ -37,6 +41,15 @@ const FacebookActionBarComponent = ({
   const handleShareClick = () => {
     // Placeholder for share functionality
     console.log("Share clicked for post:", postId);
+  };
+
+  const formatCount = (count: number) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
   };
 
   return (
@@ -63,6 +76,9 @@ const FacebookActionBarComponent = ({
           />
           <span className="font-medium text-sm sm:text-base">
             {isLiked ? 'Liked' : 'Like'}
+            {likeCount > 0 && (
+              <span className="ml-1">({formatCount(likeCount)})</span>
+            )}
           </span>
         </div>
       </button>
@@ -77,7 +93,12 @@ const FacebookActionBarComponent = ({
       >
         <div className="flex items-center space-x-2">
           <MessageCircle className="h-5 w-5" />
-          <span className="font-medium text-sm sm:text-base">Comment</span>
+          <span className="font-medium text-sm sm:text-base">
+            Comment
+            {commentsCount > 0 && (
+              <span className="ml-1">({formatCount(commentsCount)})</span>
+            )}
+          </span>
         </div>
       </button>
 
