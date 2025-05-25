@@ -1,6 +1,6 @@
 
 import { memo } from "react";
-import { ThumbsUp, MessageCircle, Share } from "lucide-react";
+import { ThumbsUp, MessageCircle } from "lucide-react";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookActionBarProps {
@@ -36,11 +36,6 @@ const FacebookActionBarComponent = ({
     if (user) {
       onCommentClick();
     }
-  };
-
-  const handleShareClick = () => {
-    // Placeholder for share functionality
-    console.log("Share clicked for post:", postId);
   };
 
   const formatCount = (count: number) => {
@@ -113,17 +108,6 @@ const FacebookActionBarComponent = ({
           <span className="font-medium text-sm sm:text-base">
             {getCommentText()}
           </span>
-        </div>
-      </button>
-
-      {/* Share Button */}
-      <button
-        onClick={handleShareClick}
-        className="flex-1 flex items-center justify-center py-3 sm:py-4 min-h-[52px] text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all duration-200 touch-manipulation active:scale-95 cursor-pointer"
-      >
-        <div className="flex items-center space-x-2">
-          <Share className="h-5 w-5" />
-          <span className="font-medium text-sm sm:text-base">Share</span>
         </div>
       </button>
     </div>
