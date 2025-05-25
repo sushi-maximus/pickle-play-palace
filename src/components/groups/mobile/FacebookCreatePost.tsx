@@ -63,7 +63,7 @@ const FacebookCreatePostComponent = ({
     <Card className="bg-white border-b border-gray-200 rounded-none shadow-sm">
       <div className="p-3 sm:p-4">
         {/* Create Post Header */}
-        <div className="flex items-center justify-center space-x-3 mb-3">
+        <div className="flex items-center space-x-3 mb-3">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
             {userInitials}
           </div>
@@ -71,7 +71,7 @@ const FacebookCreatePostComponent = ({
           {!isExpanded ? (
             <button
               onClick={() => setIsExpanded(true)}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-500 text-center px-4 py-3 rounded-full transition-colors duration-200 text-sm sm:text-base min-h-[44px] touch-manipulation"
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-500 px-4 py-3 rounded-full transition-colors duration-200 text-sm sm:text-base min-h-[44px] touch-manipulation flex items-center justify-center"
             >
               What's on your mind, {user.first_name}?
             </button>
