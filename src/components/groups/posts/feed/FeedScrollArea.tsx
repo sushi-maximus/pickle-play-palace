@@ -1,9 +1,9 @@
 
+import { useRef, useEffect } from "react";
 import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
 import { useOptimizedPullToRefresh } from "@/hooks/useOptimizedPullToRefresh";
 import { OptimizedPullToRefreshIndicator } from "./OptimizedPullToRefreshIndicator";
 import { PostsList } from "./PostsList";
-import { useEffect, useRef, useMemo, useCallback } from "react";
 import type { GroupPost, Profile } from "../hooks/types/groupPostTypes";
 
 interface FeedScrollAreaProps {
@@ -15,22 +15,16 @@ interface FeedScrollAreaProps {
   onRefresh: () => Promise<void>;
 }
 
-export const FeedScrollArea = ({
-  posts,
-  user,
-  isTransitioning,
-  refreshing,
+export const FeedScrollArea = ({ 
+  posts, 
+  user, 
+  isTransitioning, 
+  refreshing, 
   loading,
-  onRefresh
+  onRefresh 
 }: FeedScrollAreaProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Memoized refresh function
-  const memoizedRefreshPosts = useCallback(async () => {
-    await onRefresh();
-  }, [onRefresh]);
-
-  // Optimized pull-to-refresh
+  
   const {
     pullDistance,
     isRefreshing: pullRefreshing,
@@ -38,7 +32,7 @@ export const FeedScrollArea = ({
     bindToElement,
     shouldTrigger
   } = useOptimizedPullToRefresh({
-    onRefresh: memoizedRefreshPosts,
+    onRefresh,
     threshold: 80,
     disabled: refreshing || loading
   });
@@ -49,16 +43,12 @@ export const FeedScrollArea = ({
     }
   }, [bindToElement]);
 
-  const isRefreshingState = useMemo(() => 
-    refreshing || pullRefreshing, 
-    [refreshing, pullRefreshing]
-  );
+  const isRefreshingState = refreshing || pullRefreshing;
 
-  // Memoized content transform for pull-to-refresh
-  const contentTransform = useMemo(() => ({
+  const contentTransform = {
     transform: isPulling ? `translate3d(0, ${Math.min(pullDistance, 80)}px, 0)` : 'translate3d(0, 0, 0)',
     willChange: isPulling ? 'transform' : 'auto'
-  }), [isPulling, pullDistance]);
+  } as React.CSSProperties;
 
   return (
     <OptimizedScrollArea 
