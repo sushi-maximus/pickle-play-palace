@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ProfileMobileLayout } from "@/components/profile/mobile/ProfileMobileLayout";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { LogoutCard } from "@/components/profile/LogoutCard";
+import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { ProfileSkeleton } from "@/components/loading/ProfileSkeleton";
 
@@ -81,6 +82,9 @@ const Profile = () => {
         <div className="animate-fade-in">
           {profile ? (
             <>
+              {/* Mobile Profile Header - Shows the profile card */}
+              <MobileProfileHeader profile={profile} />
+              
               <ProfileContent 
                 profile={profile}
                 onProfileUpdate={handleProfileUpdate}
