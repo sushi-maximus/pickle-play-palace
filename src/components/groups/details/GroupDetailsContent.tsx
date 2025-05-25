@@ -1,6 +1,7 @@
 
 import { MobileHome2Tab } from "@/components/groups/mobile";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
+import { JoinRequestsManager } from "@/components/groups/join-requests/JoinRequestsManager";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
@@ -38,6 +39,8 @@ export const GroupDetailsContent = ({
   onPostCreated,
   onMemberUpdate
 }: GroupDetailsContentProps) => {
+  console.log("GroupDetailsContent: Rendering with activeTab:", activeTab, "isAdmin:", membershipStatus.isAdmin);
+  
   const renderTabContent = () => {
     switch (activeTab) {
       case "home2":
@@ -61,6 +64,21 @@ export const GroupDetailsContent = ({
                   currentUserId={user?.id || ""}
                   groupId={group?.id}
                   onMemberUpdate={onMemberUpdate}
+                />
+              </div>
+            </div>
+          </main>
+        );
+      
+      case "requests":
+        return (
+          <main className="flex-1 px-3 py-4">
+            <div className="container mx-auto max-w-4xl">
+              <div className="space-y-3">
+                <h3 className="text-lg font-medium mb-4">Join Requests</h3>
+                <JoinRequestsManager
+                  groupId={groupId}
+                  isAdmin={membershipStatus.isAdmin}
                 />
               </div>
             </div>
