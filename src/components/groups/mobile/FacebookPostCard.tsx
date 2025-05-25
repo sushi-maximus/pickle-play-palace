@@ -1,4 +1,3 @@
-
 import { memo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
@@ -31,11 +30,13 @@ interface FacebookPostCardProps {
     };
   };
   user?: Profile | null;
+  onPostUpdated?: () => void;
 }
 
-const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
+const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [displayContent, setDisplayContent] = useState(post.content);
   
   // Check if current user is the post author
   const isOwnPost = user?.id === post.user_id;
@@ -50,9 +51,12 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
     cancelEditing,
     handleUpdate,
     currentPostId
-  } = useEditPost({
+  } = useEditPost({ 
     onPostUpdated: () => {
-      // Optionally refresh the post data
+      // Update the displayed content immediately
+      setDisplayContent(editableContent);
+      // Call the parent's refresh callback if provided
+      onPostUpdated?.();
       console.log("Post updated successfully");
     }
   });
@@ -112,7 +116,7 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
   };
 
   const handleEditPost = () => {
-    startEditing(post.id, post.content);
+    startEditing(post.id, displayContent);
   };
 
   const handleDeletePost = () => {
@@ -245,7 +249,7 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
             </div>
           ) : (
             <p className="text-gray-900 text-sm sm:text-base leading-relaxed break-words whitespace-pre-wrap">
-              {post.content}
+              {displayContent}
             </p>
           )}
         </div>
