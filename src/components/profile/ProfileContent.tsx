@@ -20,14 +20,12 @@ export const ProfileContent = ({ profile, onProfileUpdate }: ProfileContentProps
 
   return (
     <div className="px-3 md:px-6 space-y-3">
-      {/* Desktop Profile Header - Now as a scrollable card */}
-      <div className="hidden md:block">
-        <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
-          <CardContent className="pt-6">
-            <ProfileHeader profile={profile} />
-          </CardContent>
-        </Card>
-      </div>
+      {/* Profile Header Card - Now visible on both mobile and desktop */}
+      <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
+        <CardContent className="pt-6">
+          <ProfileHeader profile={profile} />
+        </CardContent>
+      </Card>
       
       {/* My Progression Card */}
       <ProgressionCard profile={profile} />
