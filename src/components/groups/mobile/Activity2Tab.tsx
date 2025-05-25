@@ -83,7 +83,7 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
         
         <div className="max-w-2xl mx-auto h-full flex flex-col">
           {/* Facebook-style Create Post Section - Fixed positioning with safe area support */}
-          <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mt-4 mb-4">
+          <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4">
             <FacebookCreatePost 
               groupId={groupId}
               user={user}
