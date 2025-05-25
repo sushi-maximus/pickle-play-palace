@@ -29,6 +29,9 @@ export const CommentForm2 = ({
       if (content.trim() && !isSubmitting) {
         onSubmit();
       }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setContent("");
     }
   };
 
@@ -56,21 +59,27 @@ export const CommentForm2 = ({
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           placeholder="Write a comment..."
           className="text-xs md:text-sm min-h-[60px] resize-none"
           disabled={isSubmitting}
         />
+        
         {content.trim() && (
-          <div className="flex justify-end">
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting || !content.trim()}
-              size="sm"
-              className="text-xs px-3 h-7"
-            >
-              {isSubmitting ? 'Posting...' : 'Post'}
-            </Button>
+          <div className="flex flex-col gap-2">
+            <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded border">
+              💡 Press Enter to post • Press Esc to clear
+            </div>
+            <div className="flex justify-end">
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting || !content.trim()}
+                size="sm"
+                className="text-xs px-3 h-7"
+              >
+                {isSubmitting ? 'Posting...' : 'Post'}
+              </Button>
+            </div>
           </div>
         )}
       </div>
