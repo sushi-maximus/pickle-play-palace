@@ -33,7 +33,7 @@ export const PostReactions2 = ({
   onHeartClick
 }: PostReactions2Props) => {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       <ThumbsUp2
         count={thumbsUpCount}
         isActive={isThumbsUpActive}
