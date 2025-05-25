@@ -23,7 +23,7 @@ export const ThumbsDown2 = ({
       size="sm"
       onClick={onClick}
       disabled={disabled || isSubmitting}
-      className={`min-h-[48px] min-w-[48px] h-12 px-3 py-2 transition-all duration-200 touch-manipulation ${
+      className={`min-h-[48px] min-w-[48px] px-3 py-2 transition-all duration-200 touch-manipulation ${
         isActive
           ? "text-red-600 bg-red-50 hover:bg-red-100"
           : "text-gray-600 hover:text-red-600 hover:bg-red-50"
