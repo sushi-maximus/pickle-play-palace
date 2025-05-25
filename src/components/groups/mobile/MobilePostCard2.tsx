@@ -17,6 +17,12 @@ interface MobilePostCard2Props {
     created_at: string;
     user_id: string;
     media_urls?: string[] | null;
+    thumbsup_count?: number;
+    thumbsdown_count?: number;
+    heart_count?: number;
+    user_thumbsup?: boolean;
+    user_thumbsdown?: boolean;
+    user_heart?: boolean;
     profiles?: {
       first_name: string;
       last_name: string;
@@ -67,12 +73,12 @@ export const MobilePostCard2 = ({
   } = usePostReactions2({
     postId: post.id,
     userId: user?.id,
-    initialThumbsUp: 0,
-    initialThumbsDown: 0,
-    initialHeart: 0,
-    initialUserThumbsUp: false,
-    initialUserThumbsDown: false,
-    initialUserHeart: false
+    initialThumbsUp: post.thumbsup_count || 0,
+    initialThumbsDown: post.thumbsdown_count || 0,
+    initialHeart: post.heart_count || 0,
+    initialUserThumbsUp: post.user_thumbsup || false,
+    initialUserThumbsDown: post.user_thumbsdown || false,
+    initialUserHeart: post.user_heart || false
   });
 
   const { comments, refreshComments } = useComments2({
