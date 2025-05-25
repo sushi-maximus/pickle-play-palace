@@ -9,6 +9,7 @@ import { useCommentThumbsDown2 } from "../posts/hooks/reactions/useCommentThumbs
 import { FacebookCommentContent } from "./components/FacebookCommentContent";
 import { FacebookCommentEditForm } from "./components/FacebookCommentEditForm";
 import { FacebookCommentActions } from "./components/FacebookCommentActions";
+import { FacebookCommentReactions } from "./FacebookCommentReactions";
 import { DeleteCommentDialog2 } from "../posts/post-card/DeleteCommentDialog2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
@@ -158,6 +159,21 @@ const FacebookCommentCardComponent = ({
               onDelete={handleDeleteClick}
               onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
               onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
+            />
+          )}
+
+          {/* Comment Reactions - Moved below actions */}
+          {!isEditing && user && (
+            <FacebookCommentReactions
+              thumbsUpCount={thumbsUpHook.thumbsUpCount}
+              thumbsDownCount={thumbsDownHook.thumbsDownCount}
+              isThumbsUpActive={thumbsUpHook.isThumbsUpActive}
+              isThumbsDownActive={thumbsDownHook.isThumbsDownActive}
+              isThumbsUpSubmitting={thumbsUpHook.isThumbsUpSubmitting}
+              isThumbsDownSubmitting={thumbsDownHook.isThumbsDownSubmitting}
+              onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
+              onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
+              disabled={!user?.id}
             />
           )}
         </div>

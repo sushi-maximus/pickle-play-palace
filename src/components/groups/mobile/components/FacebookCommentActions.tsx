@@ -1,8 +1,7 @@
 
 import { memo } from "react";
-import { MessageCircle, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { FacebookCommentReactions } from "../FacebookCommentReactions";
 import type { Profile } from "../../posts/hooks/types/groupPostTypes";
 
 interface FacebookCommentActionsProps {
@@ -38,38 +37,9 @@ const FacebookCommentActionsComponent = ({
   onThumbsUpClick,
   onThumbsDownClick
 }: FacebookCommentActionsProps) => {
-  const handleLikeClick = () => {
-    if (user) {
-      onThumbsUpClick();
-    }
-  };
-
-  const handleReplyClick = () => {
-    console.log("Reply to comment clicked");
-  };
-
   return (
     <div className="flex items-center justify-between mt-1 ml-3 animate-fade-in">
       <div className="flex items-center space-x-4">
-        <button 
-          onClick={handleLikeClick}
-          disabled={!user || isThumbsUpSubmitting}
-          className={`text-xs font-medium transition-all duration-200 active:scale-95 ${
-            isThumbsUpActive 
-              ? "text-gray-800" 
-              : "text-gray-500 hover:text-gray-800"
-          } ${!user ? "opacity-50 cursor-not-allowed" : "hover:underline"}`}
-        >
-          {isThumbsUpActive ? "Liked" : "Like"}
-        </button>
-        
-        <button 
-          onClick={handleReplyClick}
-          className="text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200 active:scale-95"
-        >
-          Reply
-        </button>
-        
         <span className="text-xs text-gray-400">{timeAgo}</span>
         
         {isOwner && (
@@ -96,23 +66,6 @@ const FacebookCommentActionsComponent = ({
           </DropdownMenu>
         )}
       </div>
-
-      {/* Comment Reactions */}
-      {user && (
-        <div className="animate-scale-in">
-          <FacebookCommentReactions
-            thumbsUpCount={thumbsUpCount}
-            thumbsDownCount={thumbsDownCount}
-            isThumbsUpActive={isThumbsUpActive}
-            isThumbsDownActive={isThumbsDownActive}
-            isThumbsUpSubmitting={isThumbsUpSubmitting}
-            isThumbsDownSubmitting={isThumbsDownSubmitting}
-            onThumbsUpClick={onThumbsUpClick}
-            onThumbsDownClick={onThumbsDownClick}
-            disabled={!user?.id}
-          />
-        </div>
-      )}
     </div>
   );
 };
