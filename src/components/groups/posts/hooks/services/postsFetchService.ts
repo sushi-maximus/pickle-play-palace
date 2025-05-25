@@ -12,7 +12,7 @@ export const fetchGroupInfo = async (groupId: string): Promise<string> => {
   return groupData?.name || "";
 };
 
-export const fetchUserData = async (userId: string): Promise<PostUser> => {
+export const fetchUserData = async (userId: string): Promise<PostUser | null> => {
   const { data: userData, error: userError } = await supabase
     .from("profiles")
     .select("id, first_name, last_name, avatar_url")
@@ -20,13 +20,20 @@ export const fetchUserData = async (userId: string): Promise<PostUser> => {
     .single();
 
   if (userError) {
-    console.error("Error fetching user data:", userError);
+    console.error("Error fetching user data for user", userId, ":", userError);
+    return null;
   }
 
-  return userData || { 
-    id: userId, 
-    first_name: "Unknown", 
-    last_name: "User" 
+  if (!userData) {
+    console.warn("No profile data found for user:", userId);
+    return null;
+  }
+
+  return {
+    id: userData.id,
+    first_name: userData.first_name || '',
+    last_name: userData.last_name || '',
+    avatar_url: userData.avatar_url
   };
 };
 

@@ -34,35 +34,28 @@ export const MobilePostHeader = ({
   const isOwnPost = currentUserId === post.user_id;
   const profile = post.profiles;
   
-  // Debug logging to understand the data structure
-  console.log("MobilePostHeader - Raw post data:", post);
-  console.log("MobilePostHeader - Profiles data:", profile);
-  
   // Better handling of user name display with more robust fallbacks
   const firstName = profile?.first_name?.trim() || '';
   const lastName = profile?.last_name?.trim() || '';
-  const fullName = `${firstName} ${lastName}`.trim();
   
-  // More descriptive fallback based on data availability
+  // Create display name with proper fallbacks
   let displayName = 'Unknown User';
-  if (fullName) {
-    displayName = fullName;
+  if (firstName && lastName) {
+    displayName = `${firstName} ${lastName}`;
   } else if (firstName) {
     displayName = firstName;
   } else if (lastName) {
     displayName = lastName;
-  } else if (profile) {
-    displayName = 'Group Member';
   }
   
   // Generate initials with better fallback logic
-  let initials = 'GM'; // Group Member default
+  let initials = 'U'; // Unknown default
   if (firstName && lastName) {
-    initials = `${firstName[0]}${lastName[0]}`;
+    initials = `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
   } else if (firstName) {
-    initials = `${firstName[0]}M`;
+    initials = firstName[0].toUpperCase();
   } else if (lastName) {
-    initials = `M${lastName[0]}`;
+    initials = lastName[0].toUpperCase();
   }
 
   return (
