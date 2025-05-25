@@ -1,7 +1,16 @@
 
 import { usePostReactions2 } from "../../posts/hooks/usePostReactions2";
-import type { PostData } from "../types/postTypes";
 import type { Profile } from "../../posts/hooks/types/groupPostTypes";
+
+interface PostData {
+  id: string;
+  thumbsup_count?: number;
+  thumbsdown_count?: number;
+  heart_count?: number;
+  user_thumbsup?: boolean;
+  user_thumbsdown?: boolean;
+  user_heart?: boolean;
+}
 
 interface UseUnifiedPostReactionsProps {
   post: PostData;
@@ -22,16 +31,8 @@ export const useUnifiedPostReactions = ({ post, user }: UseUnifiedPostReactionsP
 
   const reactions = usePostReactions2(hookParams);
 
-  const handleHeartClick = () => {
-    if (!user?.id || reactions.isHeartSubmitting) {
-      return;
-    }
-    reactions.toggleHeart();
-  };
-
   return {
     ...reactions,
-    handleHeartClick,
     isDisabled: !user?.id
   };
 };

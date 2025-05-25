@@ -1,6 +1,7 @@
 
 import { memo } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { useUnifiedPostReactions } from "./hooks/useUnifiedPostReactions";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -9,6 +10,8 @@ interface FacebookPostCardProps {
     content: string;
     created_at: string;
     user_id: string;
+    thumbsup_count?: number;
+    user_thumbsup?: boolean;
     profiles?: {
       first_name: string;
       last_name: string;
@@ -20,6 +23,31 @@ interface FacebookPostCardProps {
 
 const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
+  
+  const {
+    thumbsUpCount,
+    isThumbsUpActive,
+    isThumbsUpSubmitting,
+    toggleThumbsUp,
+    isDisabled
+  } = useUnifiedPostReactions({ 
+    post: {
+      ...post,
+      thumbsup_count: post.thumbsup_count || 0,
+      thumbsdown_count: 0,
+      heart_count: 0,
+      user_thumbsup: post.user_thumbsup || false,
+      user_thumbsdown: false,
+      user_heart: false
+    }, 
+    user 
+  });
+
+  const handleLikeClick = () => {
+    if (!isDisabled && !isThumbsUpSubmitting) {
+      toggleThumbsUp();
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -44,22 +72,34 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
         </p>
       </div>
 
-      {/* Reaction Summary - Placeholder for now */}
-      <div className="px-4 py-2 border-t border-gray-100">
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center space-x-1">
-            <span className="text-blue-500">👍</span>
-            <span>0 reactions</span>
+      {/* Reaction Summary */}
+      {thumbsUpCount > 0 && (
+        <div className="px-4 py-2 border-t border-gray-100">
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center space-x-1">
+              <span className="text-blue-500">👍</span>
+              <span>{thumbsUpCount} {thumbsUpCount === 1 ? 'like' : 'likes'}</span>
+            </div>
+            <div>0 comments</div>
           </div>
-          <div>0 comments</div>
         </div>
-      </div>
+      )}
 
       {/* Action Buttons */}
       <div className="flex border-t border-gray-100">
-        <button className="flex-1 flex items-center justify-center py-3 text-gray-600 hover:bg-gray-50 transition-colors">
+        <button 
+          onClick={handleLikeClick}
+          disabled={isDisabled || isThumbsUpSubmitting}
+          className={`flex-1 flex items-center justify-center py-3 transition-colors ${
+            isThumbsUpActive 
+              ? "text-blue-600 bg-blue-50" 
+              : "text-gray-600 hover:bg-gray-50"
+          } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+        >
           <span className="text-lg mr-2">👍</span>
-          <span className="text-sm font-medium">Like</span>
+          <span className="text-sm font-medium">
+            {isThumbsUpSubmitting ? "..." : isThumbsUpActive ? "Liked" : "Like"}
+          </span>
         </button>
         <button className="flex-1 flex items-center justify-center py-3 text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100">
           <span className="text-lg mr-2">💬</span>

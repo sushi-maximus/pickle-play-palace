@@ -8,6 +8,8 @@ interface Post {
   content: string;
   created_at: string;
   user_id: string;
+  thumbsup_count?: number;
+  user_thumbsup?: boolean;
   profiles?: {
     first_name: string;
     last_name: string;
