@@ -60,7 +60,9 @@ export const PostContent = ({
 
   return (
     <div className="ml-12 md:ml-14">
-      <p className="text-sm md:text-base text-gray-900 whitespace-pre-line leading-relaxed">{content}</p>
+      <div className="bg-blue-50 p-3 rounded-lg">
+        <p className="text-sm md:text-base text-gray-900 whitespace-pre-line leading-relaxed">{content}</p>
+      </div>
       
       {mediaUrls && mediaUrls.length > 0 && (
         <div className="mt-2 md:mt-3 grid gap-1 md:gap-2 grid-cols-1 sm:grid-cols-2">
