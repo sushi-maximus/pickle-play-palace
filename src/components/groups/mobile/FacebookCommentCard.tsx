@@ -1,18 +1,11 @@
 
 import { memo, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { formatDistanceToNow } from "date-fns";
 import { useEditComment2 } from "../posts/hooks/useEditComment2";
 import { useDeleteComment2 } from "../posts/hooks/useDeleteComment2";
 import { useCommentThumbsUp2 } from "../posts/hooks/reactions/useCommentThumbsUp2";
 import { useCommentThumbsDown2 } from "../posts/hooks/reactions/useCommentThumbsDown2";
-import { FacebookCommentContent } from "./components/FacebookCommentContent";
-import { FacebookCommentEditForm } from "./components/FacebookCommentEditForm";
-import { FacebookCommentActions } from "./components/FacebookCommentActions";
-import { FacebookCommentReactions } from "./FacebookCommentReactions";
+import { FacebookCommentHeader } from "./components/FacebookCommentHeader";
+import { FacebookCommentBody } from "./components/FacebookCommentBody";
 import { DeleteCommentDialog2 } from "../posts/post-card/DeleteCommentDialog2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
@@ -47,10 +40,6 @@ const FacebookCommentCardComponent = ({
 }: FacebookCommentCardProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const isOwner = user?.id === comment.user_id;
-
-  const userName = `${comment.user.first_name} ${comment.user.last_name}`.trim() || 'Unknown User';
-  const userInitials = `${comment.user.first_name?.[0] || ''}${comment.user.last_name?.[0] || ''}`.toUpperCase() || 'U';
-  const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
 
   const {
     isEditing,
@@ -122,112 +111,38 @@ const FacebookCommentCardComponent = ({
 
   return (
     <>
-      <div className="flex space-x-2">
-        {/* Comment Avatar */}
-        <Avatar className="w-8 h-8 flex-shrink-0">
-          <AvatarImage src={comment.user.avatar_url || undefined} alt={userName} />
-          <AvatarFallback className="text-xs bg-gray-200 text-gray-700">{userInitials}</AvatarFallback>
-        </Avatar>
+      <div className="space-y-2">
+        <FacebookCommentHeader
+          user={comment.user}
+          createdAt={comment.created_at}
+          isOwner={isOwner}
+          isEditing={isEditing}
+          isDeleting={isDeleting}
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
+        />
         
-        {/* Comment Content */}
-        <div className="flex-1 min-w-0">
-          {/* Comment Header with Name, Time, and Three-dot Menu */}
-          <div className="flex items-start justify-between mb-1">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h4 className="text-sm font-medium text-gray-900">{userName}</h4>
-                <p className="text-xs text-gray-500">{timeAgo}</p>
-              </div>
-            </div>
-            
-            {isOwner && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600 flex-shrink-0 ml-2"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="end" 
-                  className="w-40 bg-white shadow-lg border border-gray-200 z-[9999]"
-                  sideOffset={8}
-                >
-                  <DropdownMenuItem 
-                    onClick={handleEditClick} 
-                    disabled={isEditing}
-                    className="cursor-pointer hover:bg-gray-100"
-                  >
-                    <Edit className="h-3 w-3 mr-2" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={handleDeleteClick} 
-                    className="text-red-600 focus:text-red-600 cursor-pointer hover:bg-red-50"
-                    disabled={isDeleting}
-                  >
-                    <Trash2 className="h-3 w-3 mr-2" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-          
-          {isEditing ? (
-            <FacebookCommentEditForm
-              comment={comment}
-              editableContent={editableContent}
-              setEditableContent={setEditableContent}
-              isSubmitting={isEditSubmitting}
-              onSave={handleSaveEdit}
-              onCancel={cancelEditing}
-              onKeyPress={handleKeyPress}
-            />
-          ) : (
-            <FacebookCommentContent comment={comment} />
-          )}
-          
-          {/* Comment Actions */}
-          {!isEditing && (
-            <FacebookCommentActions
-              isOwner={isOwner}
-              isDeleting={isDeleting}
-              user={user}
-              thumbsUpCount={thumbsUpHook.thumbsUpCount}
-              thumbsDownCount={thumbsDownHook.thumbsDownCount}
-              isThumbsUpActive={thumbsUpHook.isThumbsUpActive}
-              isThumbsDownActive={thumbsDownHook.isThumbsDownActive}
-              isThumbsUpSubmitting={thumbsUpHook.isThumbsUpSubmitting}
-              isThumbsDownSubmitting={thumbsDownHook.isThumbsDownSubmitting}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
-              onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
-              onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
-            />
-          )}
-
-          {/* Comment Reactions - Moved below actions */}
-          {!isEditing && user && (
-            <FacebookCommentReactions
-              thumbsUpCount={thumbsUpHook.thumbsUpCount}
-              thumbsDownCount={thumbsDownHook.thumbsDownCount}
-              isThumbsUpActive={thumbsUpHook.isThumbsUpActive}
-              isThumbsDownActive={thumbsDownHook.isThumbsDownActive}
-              isThumbsUpSubmitting={thumbsUpHook.isThumbsUpSubmitting}
-              isThumbsDownSubmitting={thumbsDownHook.isThumbsDownSubmitting}
-              onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
-              onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
-              disabled={!user?.id}
-            />
-          )}
-        </div>
+        <FacebookCommentBody
+          comment={comment}
+          user={user}
+          isEditing={isEditing}
+          editableContent={editableContent}
+          setEditableContent={setEditableContent}
+          isEditSubmitting={isEditSubmitting}
+          onSave={handleSaveEdit}
+          onCancel={cancelEditing}
+          onKeyPress={handleKeyPress}
+          thumbsUpCount={thumbsUpHook.thumbsUpCount}
+          thumbsDownCount={thumbsDownHook.thumbsDownCount}
+          isThumbsUpActive={thumbsUpHook.isThumbsUpActive}
+          isThumbsDownActive={thumbsDownHook.isThumbsDownActive}
+          isThumbsUpSubmitting={thumbsUpHook.isThumbsUpSubmitting}
+          isThumbsDownSubmitting={thumbsDownHook.isThumbsDownSubmitting}
+          onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
+          onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
+        />
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <DeleteCommentDialog2
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}

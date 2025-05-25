@@ -6,3 +6,5 @@ export * from './PostInteractions';
 export * from './FacebookCommentContent';
 export * from './FacebookCommentEditForm';
 export * from './FacebookCommentActions';
+export * from './FacebookCommentHeader';
+export * from './FacebookCommentBody';
