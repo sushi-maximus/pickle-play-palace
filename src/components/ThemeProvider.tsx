@@ -32,10 +32,26 @@ export function ThemeProvider({
 
   React.useEffect(() => {
     const root = window.document.documentElement;
+    
+    // Remove all theme classes
     root.classList.remove("light", "dark");
     
-    // Always apply light theme, ignore system preferences
+    // Force light theme and override any system preferences
     root.classList.add("light");
+    
+    // Also set the color-scheme CSS property to override system preferences
+    root.style.colorScheme = "light";
+    
+    // Force the theme meta tag for mobile browsers
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute('content', '#ffffff');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = '#ffffff';
+      document.head.appendChild(meta);
+    }
   }, [theme]);
 
   const value = {
