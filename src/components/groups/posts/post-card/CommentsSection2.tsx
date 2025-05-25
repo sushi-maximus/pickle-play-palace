@@ -51,7 +51,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   }
 
   return (
-    <div className="bg-gray-50">
+    <div className="border-t border-gray-100 bg-gray-50">
       {comments && comments.length > 0 && (
         <div className="max-h-96 overflow-y-auto bg-white">
           {comments.map((comment) => (
