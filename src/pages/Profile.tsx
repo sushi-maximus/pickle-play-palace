@@ -85,8 +85,9 @@ const Profile = () => {
       <AppLayout 
         title="Profile" 
         showMobileProfileHeader={true}
+        className="overflow-y-auto"
       >
-        <div className="animate-fade-in">
+        <div className="min-h-full">
           {profile ? (
             <>
               <ProfileContent 
