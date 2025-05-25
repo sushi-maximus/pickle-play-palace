@@ -1,4 +1,3 @@
-
 import { memo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -20,7 +19,9 @@ const TextInputComparisonComponent = ({ user }: TextInputComparisonProps) => {
   const [content1, setContent1] = useState("");
   const [content2, setContent2] = useState("");
   const [content3, setContent3] = useState("");
+  const [content4, setContent4] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpandedComment, setIsExpandedComment] = useState(false);
 
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
 
@@ -30,7 +31,7 @@ const TextInputComparisonComponent = ({ user }: TextInputComparisonProps) => {
       
       {/* Option 1: FacebookCommentForm Style */}
       <Card className="p-4">
-        <h3 className="text-md font-medium mb-3">Option 1: FacebookCommentForm Style</h3>
+        <h3 className="text-md font-medium mb-3">Option 1: FacebookCommentForm Style (Simple)</h3>
         <div className="flex items-start gap-2">
           <Avatar className="h-8 w-8 flex-shrink-0">
             <AvatarImage src={user.avatar_url || undefined} alt={`${user.first_name} ${user.last_name}`} />
@@ -53,7 +54,7 @@ const TextInputComparisonComponent = ({ user }: TextInputComparisonProps) => {
 
       {/* Option 2: CreatePostForm2 Style */}
       <Card className="p-4">
-        <h3 className="text-md font-medium mb-3">Option 2: CreatePostForm2 Style</h3>
+        <h3 className="text-md font-medium mb-3">Option 2: CreatePostForm2 Style (Clean)</h3>
         <Input
           value={content2}
           onChange={(e) => setContent2(e.target.value)}
@@ -64,7 +65,7 @@ const TextInputComparisonComponent = ({ user }: TextInputComparisonProps) => {
 
       {/* Option 3: FacebookCreatePost Style */}
       <Card className="p-4">
-        <h3 className="text-md font-medium mb-3">Option 3: FacebookCreatePost Style</h3>
+        <h3 className="text-md font-medium mb-3">Option 3: FacebookCreatePost Style (Rich - Posts)</h3>
         <div className="space-y-3">
           {/* Create Post Header */}
           <div className="flex items-center space-x-3">
@@ -137,13 +138,79 @@ const TextInputComparisonComponent = ({ user }: TextInputComparisonProps) => {
         </div>
       </Card>
 
+      {/* Option 4: NEW - Expanding Comment Form */}
+      <Card className="p-4">
+        <h3 className="text-md font-medium mb-3">Option 4: Expanding Comment Form (NEW)</h3>
+        <div className="flex items-start gap-2">
+          <Avatar className="h-8 w-8 flex-shrink-0">
+            <AvatarImage src={user.avatar_url || undefined} alt={`${user.first_name} ${user.last_name}`} />
+            <AvatarFallback className="text-xs bg-gray-200 text-gray-700">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div className="flex-1">
+            {!isExpandedComment ? (
+              <button
+                onClick={() => setIsExpandedComment(true)}
+                className="w-full bg-white hover:bg-gray-50 text-gray-500 text-left px-3 py-2 rounded-full border border-gray-200 transition-colors duration-200 text-sm min-h-[36px] touch-manipulation"
+              >
+                Write a comment...
+              </button>
+            ) : (
+              <div className="space-y-2">
+                <Textarea
+                  value={content4}
+                  onChange={(e) => setContent4(e.target.value)}
+                  placeholder="Write a comment..."
+                  className="w-full border border-gray-200 rounded-lg resize-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm min-h-[60px] bg-white"
+                  autoFocus
+                />
+                
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-gray-400">
+                    Press Enter to post
+                  </p>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setIsExpandedComment(false);
+                        setContent4("");
+                      }}
+                      className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 min-h-[32px] px-3 touch-manipulation"
+                    >
+                      Cancel
+                    </Button>
+                    
+                    <Button
+                      disabled={!content4.trim()}
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 min-h-[32px] touch-manipulation disabled:opacity-50"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <Send className="h-3 w-3" />
+                        <span>Post</span>
+                      </div>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
+
       {/* Summary */}
       <Card className="p-4 bg-blue-50">
         <h3 className="text-md font-medium mb-2">Summary</h3>
         <ul className="text-sm space-y-1">
           <li><strong>Option 1:</strong> Simple input with avatar, clean border styling</li>
           <li><strong>Option 2:</strong> Clean rounded input, minimal styling</li>
-          <li><strong>Option 3:</strong> Expandable rich text area with actions, most feature-rich</li>
+          <li><strong>Option 3:</strong> Expandable rich text area with actions, most feature-rich (for posts)</li>
+          <li><strong>Option 4:</strong> Expandable comment form with clean styling (NEW - perfect for comments!)</li>
         </ul>
       </Card>
     </div>
