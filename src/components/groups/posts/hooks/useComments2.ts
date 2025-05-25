@@ -190,10 +190,11 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
     queryFn: queryFn,
     enabled: Boolean(postId),
     retry: false,
-    staleTime: 30 * 1000, // Cache for 30 seconds to reduce re-fetching
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    staleTime: 1 * 60 * 1000, // Increased cache time to 1 minute to reduce re-fetching
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     refetchOnMount: false, // Don't refetch on mount if data exists
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnReconnect: false, // Don't refetch on reconnect
   });
 
   const refreshComments = useMemo(() => async () => {

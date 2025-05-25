@@ -1,5 +1,5 @@
 
-import { useState, memo } from "react";
+import { useState, memo, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
 import { useComments2 } from "../posts/hooks/useComments2";
@@ -39,10 +39,16 @@ const MobilePostCard2Component = ({
 }: MobilePostCard2Props) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // Memoize the current editing state to avoid unnecessary recalculations
+  const isCurrentlyEditing = useMemo(() => 
+    isEditing && currentPostId === post.id, 
+    [isEditing, currentPostId, post.id]
+  );
+
   const editor = usePostEditor({
     postId: post.id,
     content: post.content,
-    isEditing: isEditing && currentPostId === post.id,
+    isEditing: isCurrentlyEditing,
     isSubmitting: isEditSubmitting,
     onStartEditing,
     onCancelEditing,
@@ -56,10 +62,19 @@ const MobilePostCard2Component = ({
     userId: user?.id
   });
 
-  const handleDeleteClick = () => {
+  // Memoize the comments count to avoid recalculation
+  const commentsCount = useMemo(() => comments?.length || 0, [comments?.length]);
+
+  // Memoize delete handler to prevent recreation
+  const handleDeleteClick = useMemo(() => () => {
     onDeleteClick(post.id);
     setShowDeleteDialog(false);
-  };
+  }, [onDeleteClick, post.id]);
+
+  // Memoize show delete dialog handler
+  const handleShowDeleteDialog = useMemo(() => () => {
+    setShowDeleteDialog(true);
+  }, []);
 
   return (
     <Card className="w-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-none overflow-hidden">
@@ -72,7 +87,7 @@ const MobilePostCard2Component = ({
           setEditableContent={setEditableContent}
           isEditSubmitting={editor.isSubmitting}
           onEdit={editor.handleStartEditing}
-          onDeleteClick={() => setShowDeleteDialog(true)}
+          onDeleteClick={handleShowDeleteDialog}
           onCancelEditing={editor.handleCancelEditing}
           onSaveEditing={editor.handleSaveEditing}
         />
@@ -81,7 +96,7 @@ const MobilePostCard2Component = ({
           postId={post.id}
           currentUserId={user?.id}
           user={user}
-          commentsCount={comments?.length || 0}
+          commentsCount={commentsCount}
           thumbsUpCount={reactions.thumbsUpCount}
           thumbsDownCount={reactions.thumbsDownCount}
           heartCount={reactions.heartCount}
@@ -107,19 +122,34 @@ const MobilePostCard2Component = ({
   );
 };
 
-// Memoize the component to prevent unnecessary re-renders
+// Enhanced memoization with more specific comparisons
 export const MobilePostCard2 = memo(MobilePostCard2Component, (prevProps, nextProps) => {
-  // Custom comparison function to optimize re-renders
-  return (
-    prevProps.post.id === nextProps.post.id &&
-    prevProps.post.content === nextProps.post.content &&
-    prevProps.post.created_at === nextProps.post.created_at &&
-    prevProps.user?.id === nextProps.user?.id &&
-    prevProps.isEditing === nextProps.isEditing &&
-    prevProps.currentPostId === nextProps.currentPostId &&
-    prevProps.editableContent === nextProps.editableContent &&
-    prevProps.isEditSubmitting === nextProps.isEditSubmitting
-  );
+  // Check post-specific properties first (most likely to change)
+  if (
+    prevProps.post.id !== nextProps.post.id ||
+    prevProps.post.content !== nextProps.post.content ||
+    prevProps.post.created_at !== nextProps.post.created_at
+  ) {
+    return false;
+  }
+
+  // Check editing state
+  if (
+    prevProps.isEditing !== nextProps.isEditing ||
+    prevProps.currentPostId !== nextProps.currentPostId ||
+    prevProps.editableContent !== nextProps.editableContent ||
+    prevProps.isEditSubmitting !== nextProps.isEditSubmitting
+  ) {
+    return false;
+  }
+
+  // Check user (only check ID to avoid deep object comparison)
+  if (prevProps.user?.id !== nextProps.user?.id) {
+    return false;
+  }
+
+  // All checks passed, component should not re-render
+  return true;
 });
 
 MobilePostCard2Component.displayName = "MobilePostCard2";

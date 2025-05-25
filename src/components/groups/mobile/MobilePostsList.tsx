@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useMemo, memo } from "react";
+import { useEffect, useRef, useMemo, memo, useCallback } from "react";
 import { MobilePostCard2 } from "./MobilePostCard2";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePullToRefresh } from "../posts/hooks/usePullToRefresh";
@@ -53,7 +53,10 @@ const MobilePostsListComponent = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   
   // Memoize the refresh function to prevent recreation on every render
-  const memoizedOnRefresh = useMemo(() => onRefresh || (() => Promise.resolve()), [onRefresh]);
+  const memoizedOnRefresh = useMemo(() => 
+    onRefresh || (() => Promise.resolve()), 
+    [onRefresh]
+  );
   
   const {
     pullDistance,
@@ -66,7 +69,8 @@ const MobilePostsListComponent = ({
     threshold: 80
   });
 
-  useEffect(() => {
+  // Memoize the bindToElement effect dependencies
+  const bindToElementCallback = useCallback(() => {
     if (scrollRef.current) {
       const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
       if (viewport) {
@@ -75,10 +79,38 @@ const MobilePostsListComponent = ({
     }
   }, [bindToElement]);
 
-  const isRefreshingState = refreshing || pullRefreshing;
+  useEffect(() => {
+    bindToElementCallback();
+  }, [bindToElementCallback]);
 
-  // Memoize the posts to prevent unnecessary re-renders when posts order doesn't change
-  const memoizedPosts = useMemo(() => posts, [posts.map(p => p.id).join(','), posts.length]);
+  const isRefreshingState = useMemo(() => 
+    refreshing || pullRefreshing, 
+    [refreshing, pullRefreshing]
+  );
+
+  // Create a more efficient posts memoization that only changes when post IDs or content changes
+  const memoizedPosts = useMemo(() => {
+    // Create a stable reference that only changes when the actual content changes
+    return posts.map(post => ({
+      id: post.id,
+      content: post.content,
+      created_at: post.created_at,
+      user_id: post.user_id,
+      media_urls: post.media_urls,
+      profiles: post.profiles
+    }));
+  }, [posts]);
+
+  // Memoize the posts key for comparison
+  const postsKey = useMemo(() => 
+    posts.map(p => `${p.id}-${p.content}`).join('|'), 
+    [posts]
+  );
+
+  // Memoize transform style to prevent recalculation
+  const transformStyle = useMemo(() => ({
+    transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
+  }), [isPulling, pullDistance]);
 
   return (
     <ScrollArea className="h-full" ref={scrollRef}>
@@ -92,9 +124,7 @@ const MobilePostsListComponent = ({
         
         <div 
           className="py-2 transition-transform duration-200 will-change-transform"
-          style={{
-            transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
-          }}
+          style={transformStyle}
         >
           <div className="space-y-2">
             {memoizedPosts.map((post, index) => (
@@ -127,24 +157,40 @@ const MobilePostsListComponent = ({
   );
 };
 
-// Memoize the component to prevent unnecessary re-renders
+// Enhanced memoization with better change detection
 export const MobilePostsList = memo(MobilePostsListComponent, (prevProps, nextProps) => {
-  // Custom comparison for better performance
-  const postsChanged = prevProps.posts.length !== nextProps.posts.length ||
-    prevProps.posts.some((post, index) => 
-      post.id !== nextProps.posts[index]?.id ||
-      post.content !== nextProps.posts[index]?.content
-    );
+  // Create efficient posts comparison by checking lengths first
+  if (prevProps.posts.length !== nextProps.posts.length) {
+    return false;
+  }
 
-  return (
-    !postsChanged &&
-    prevProps.user?.id === nextProps.user?.id &&
-    prevProps.isEditing === nextProps.isEditing &&
-    prevProps.currentPostId === nextProps.currentPostId &&
-    prevProps.editableContent === nextProps.editableContent &&
-    prevProps.isEditSubmitting === nextProps.isEditSubmitting &&
-    prevProps.refreshing === nextProps.refreshing
-  );
+  // Check if any post content has changed (most efficient check)
+  const postsChanged = prevProps.posts.some((post, index) => {
+    const nextPost = nextProps.posts[index];
+    return !nextPost || 
+           post.id !== nextPost.id || 
+           post.content !== nextPost.content ||
+           post.created_at !== nextPost.created_at;
+  });
+
+  if (postsChanged) {
+    return false;
+  }
+
+  // Check other props
+  if (
+    prevProps.user?.id !== nextProps.user?.id ||
+    prevProps.isEditing !== nextProps.isEditing ||
+    prevProps.currentPostId !== nextProps.currentPostId ||
+    prevProps.editableContent !== nextProps.editableContent ||
+    prevProps.isEditSubmitting !== nextProps.isEditSubmitting ||
+    prevProps.refreshing !== nextProps.refreshing
+  ) {
+    return false;
+  }
+
+  // All checks passed
+  return true;
 });
 
 MobilePostsListComponent.displayName = "MobilePostsList";

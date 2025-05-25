@@ -1,5 +1,5 @@
 
-import { useState, memo } from "react";
+import { useState, memo, useMemo, useCallback } from "react";
 import { CommentHeader } from "./CommentHeader";
 import { CommentContent } from "./CommentContent";
 import { CommentActions } from "./CommentActions";
@@ -51,6 +51,17 @@ const Comment2Component = ({ comment, currentUserId, onCommentUpdate }: Comment2
     initialUserThumbsDown: comment.user_thumbsdown
   });
 
+  // Memoize edit comment update callback
+  const handleCommentUpdated = useCallback(() => {
+    setIsEditing(false);
+    onCommentUpdate?.();
+  }, [onCommentUpdate]);
+
+  // Memoize delete comment callback  
+  const handleCommentDeleted = useCallback(() => {
+    onCommentUpdate?.();
+  }, [onCommentUpdate]);
+
   const { 
     editableContent,
     setEditableContent,
@@ -59,43 +70,48 @@ const Comment2Component = ({ comment, currentUserId, onCommentUpdate }: Comment2
     handleUpdate, 
     isSubmitting: isEditSubmitting 
   } = useEditComment2({
-    onCommentUpdated: () => {
-      setIsEditing(false);
-      onCommentUpdate?.();
-    }
+    onCommentUpdated: handleCommentUpdated
   });
 
   const { handleDelete, isDeleting } = useDeleteComment2({
-    onCommentDeleted: () => {
-      onCommentUpdate?.();
-    }
+    onCommentDeleted: handleCommentDeleted
   });
 
-  const handleEdit = () => {
+  // Memoize edit handler
+  const handleEdit = useCallback(() => {
     setIsEditing(true);
     startEditing(comment.id, comment.content);
-  };
+  }, [comment.id, comment.content, startEditing]);
 
-  const handleSaveEdit = () => {
+  // Memoize save edit handler
+  const handleSaveEdit = useCallback(() => {
     if (editableContent.trim() && editableContent !== comment.content) {
       handleUpdate();
     } else {
       setIsEditing(false);
       cancelEditing();
     }
-  };
+  }, [editableContent, comment.content, handleUpdate, cancelEditing]);
 
-  const handleCancelEdit = () => {
+  // Memoize cancel edit handler
+  const handleCancelEdit = useCallback(() => {
     setIsEditing(false);
     cancelEditing();
-  };
+  }, [cancelEditing]);
 
-  const handleDeleteClick = () => {
+  // Memoize delete click handler
+  const handleDeleteClick = useCallback(() => {
     handleDelete(comment.id);
     setShowDeleteDialog(false);
-  };
+  }, [handleDelete, comment.id]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  // Memoize show delete dialog handler
+  const handleShowDeleteDialog = useCallback(() => {
+    setShowDeleteDialog(true);
+  }, []);
+
+  // Memoize keyboard handler
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSaveEdit();
@@ -103,9 +119,13 @@ const Comment2Component = ({ comment, currentUserId, onCommentUpdate }: Comment2
       e.preventDefault();
       handleCancelEdit();
     }
-  };
+  }, [handleSaveEdit, handleCancelEdit]);
 
-  const isOwnComment = currentUserId === comment.user_id;
+  // Memoize ownership check
+  const isOwnComment = useMemo(() => 
+    currentUserId === comment.user_id, 
+    [currentUserId, comment.user_id]
+  );
 
   return (
     <div className="px-4 py-4 bg-white">
@@ -116,7 +136,7 @@ const Comment2Component = ({ comment, currentUserId, onCommentUpdate }: Comment2
         isEditing={isEditing}
         isDeleting={isDeleting}
         onEdit={handleEdit}
-        onDelete={() => setShowDeleteDialog(true)}
+        onDelete={handleShowDeleteDialog}
       />
       
       <div className="ml-11 space-y-3">
@@ -152,19 +172,46 @@ const Comment2Component = ({ comment, currentUserId, onCommentUpdate }: Comment2
   );
 };
 
-// Memoize the component to prevent unnecessary re-renders
+// Enhanced memoization for Comment2
 export const Comment2 = memo(Comment2Component, (prevProps, nextProps) => {
-  // Custom comparison function
-  return (
-    prevProps.comment.id === nextProps.comment.id &&
-    prevProps.comment.content === nextProps.comment.content &&
-    prevProps.comment.created_at === nextProps.comment.created_at &&
-    prevProps.comment.thumbsup_count === nextProps.comment.thumbsup_count &&
-    prevProps.comment.thumbsdown_count === nextProps.comment.thumbsdown_count &&
-    prevProps.comment.user_thumbsup === nextProps.comment.user_thumbsup &&
-    prevProps.comment.user_thumbsdown === nextProps.comment.user_thumbsdown &&
-    prevProps.currentUserId === nextProps.currentUserId
-  );
+  const prevComment = prevProps.comment;
+  const nextComment = nextProps.comment;
+
+  // Check comment content and metadata
+  if (
+    prevComment.id !== nextComment.id ||
+    prevComment.content !== nextComment.content ||
+    prevComment.created_at !== nextComment.created_at
+  ) {
+    return false;
+  }
+
+  // Check reaction counts and states
+  if (
+    prevComment.thumbsup_count !== nextComment.thumbsup_count ||
+    prevComment.thumbsdown_count !== nextComment.thumbsdown_count ||
+    prevComment.user_thumbsup !== nextComment.user_thumbsup ||
+    prevComment.user_thumbsdown !== nextComment.user_thumbsdown
+  ) {
+    return false;
+  }
+
+  // Check user ID
+  if (prevProps.currentUserId !== nextProps.currentUserId) {
+    return false;
+  }
+
+  // Check user object (only essential fields)
+  if (
+    prevComment.user.id !== nextComment.user.id ||
+    prevComment.user.first_name !== nextComment.user.first_name ||
+    prevComment.user.last_name !== nextComment.user.last_name ||
+    prevComment.user.avatar_url !== nextComment.user.avatar_url
+  ) {
+    return false;
+  }
+
+  return true;
 });
 
 Comment2Component.displayName = "Comment2";
