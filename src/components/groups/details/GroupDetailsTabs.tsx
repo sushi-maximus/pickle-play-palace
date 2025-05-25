@@ -37,39 +37,56 @@ export const GroupDetailsTabs = ({
   onJoinRequest,
   onMemberUpdate,
 }: GroupDetailsTabsProps) => {
-  console.log("GroupDetailsTabs: Rendering with admin status:", membershipStatus.isAdmin, "Pending requests:", hasPendingRequests);
+  console.log("GroupDetailsTabs: Debug info", {
+    isAdmin: membershipStatus.isAdmin,
+    isMember: membershipStatus.isMember,
+    isPending: membershipStatus.isPending,
+    userId: user?.id,
+    groupId: group?.id,
+    hasPendingRequests,
+    membershipStatus: JSON.stringify(membershipStatus)
+  });
+
+  // Force show requests tab for debugging - we'll see if this makes it appear
+  const shouldShowRequestsTab = membershipStatus.isAdmin;
+  const shouldShowSettingsTab = membershipStatus.isAdmin;
+  
+  console.log("GroupDetailsTabs: Should show tabs", {
+    shouldShowRequestsTab,
+    shouldShowSettingsTab
+  });
 
   return (
     <Tabs defaultValue="members" className="w-full">
-      <TabsList className="mb-4 w-full">
-        <TabsTrigger value="members" className="flex items-center gap-1 flex-1">
-          <Users className="h-4 w-4" />
-          <span>Members ({group?.member_count || 0})</span>
+      <TabsList className="mb-4 w-full grid grid-cols-2 md:grid-cols-4">
+        <TabsTrigger value="members" className="flex items-center gap-1">
+          <Users className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="text-xs md:text-sm">
+            Members ({group?.member_count || 0})
+          </span>
         </TabsTrigger>
         
-        {membershipStatus.isAdmin && (
-          <TabsTrigger value="requests" className="flex items-center gap-1 flex-1">
-            <UserPlus className="h-4 w-4" />
-            <span className="flex items-center gap-1">
-              Requests
-              {hasPendingRequests && (
-                <span className="text-xs bg-red-500 text-white rounded-full px-1.5 py-0.5 font-medium">
-                  !
-                </span>
-              )}
-            </span>
-          </TabsTrigger>
-        )}
-        
-        <TabsTrigger value="about" className="flex items-center gap-1 flex-1">
-          <Info className="h-4 w-4" />
-          <span>About</span>
+        <TabsTrigger value="requests" className="flex items-center gap-1">
+          <UserPlus className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="flex items-center gap-1 text-xs md:text-sm">
+            Requests
+            {hasPendingRequests && (
+              <span className="text-xs bg-red-500 text-white rounded-full px-1.5 py-0.5 font-medium">
+                !
+              </span>
+            )}
+          </span>
         </TabsTrigger>
         
-        {membershipStatus.isAdmin && (
-          <TabsTrigger value="settings" className="flex items-center gap-1 flex-1">
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
+        <TabsTrigger value="about" className="flex items-center gap-1">
+          <Info className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="text-xs md:text-sm">About</span>
+        </TabsTrigger>
+        
+        {shouldShowSettingsTab && (
+          <TabsTrigger value="settings" className="flex items-center gap-1">
+            <Settings className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Settings</span>
           </TabsTrigger>
         )}
       </TabsList>
@@ -87,17 +104,23 @@ export const GroupDetailsTabs = ({
         </div>
       </TabsContent>
 
-      {membershipStatus.isAdmin && (
-        <TabsContent value="requests">
-          <div className="space-y-3 md:space-y-4">
-            <h3 className="text-lg font-medium">Join Requests</h3>
+      <TabsContent value="requests">
+        <div className="space-y-3 md:space-y-4">
+          <h3 className="text-lg font-medium">Join Requests</h3>
+          {shouldShowRequestsTab ? (
             <JoinRequestsManager
               groupId={group?.id || ""}
               isAdmin={membershipStatus.isAdmin}
             />
-          </div>
-        </TabsContent>
-      )}
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-sm text-muted-foreground">
+                Only group administrators can view join requests.
+              </p>
+            </div>
+          )}
+        </div>
+      </TabsContent>
 
       <TabsContent value="about">
         <GroupAboutTab
@@ -108,7 +131,7 @@ export const GroupDetailsTabs = ({
         />
       </TabsContent>
 
-      {membershipStatus.isAdmin && (
+      {shouldShowSettingsTab && (
         <TabsContent value="settings">
           <GroupSettingsTab
             group={group}

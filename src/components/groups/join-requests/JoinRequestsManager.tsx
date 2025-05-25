@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPlus, Users } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { useJoinRequests } from "./useJoinRequests";
 import { JoinRequestsTable } from "./JoinRequestsTable";
 import { JoinRequestConfirmDialog } from "./JoinRequestConfirmDialog";
@@ -11,6 +11,8 @@ interface JoinRequestsManagerProps {
 }
 
 export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerProps) => {
+  console.log("JoinRequestsManager: Rendering with", { groupId, isAdmin });
+  
   const {
     joinRequests,
     loading,
@@ -23,13 +25,21 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
     setDialogOpen
   } = useJoinRequests(groupId);
 
-  if (!isAdmin) {
-    return null;
-  }
+  console.log("JoinRequestsManager: Join requests data", {
+    requestsCount: joinRequests.length,
+    loading,
+    isAdmin
+  });
 
-  // If no requests and not loading, don't render anything
-  if (!loading && joinRequests.length === 0) {
-    return null;
+  if (!isAdmin) {
+    console.log("JoinRequestsManager: User is not admin, showing message");
+    return (
+      <div className="text-center py-6">
+        <p className="text-sm text-muted-foreground">
+          Only group administrators can view join requests.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -53,6 +63,12 @@ export const JoinRequestsManager = ({ groupId, isAdmin }: JoinRequestsManagerPro
           {loading ? (
             <div className="text-center py-4 text-sm md:text-base text-muted-foreground">
               Loading requests...
+            </div>
+          ) : joinRequests.length === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-sm md:text-base text-muted-foreground">
+                No pending join requests at this time.
+              </p>
             </div>
           ) : (
             <JoinRequestsTable 
