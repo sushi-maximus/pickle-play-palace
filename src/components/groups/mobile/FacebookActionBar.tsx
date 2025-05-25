@@ -83,13 +83,13 @@ const FacebookActionBarComponent = ({
       >
         <div className="flex items-center space-x-2">
           <ThumbsUp 
-            className={`h-5 w-5 transition-transform duration-200 ${
+            className={`h-4 w-4 transition-transform duration-200 ${
               isSubmitting ? 'animate-pulse' : ''
             } ${
               isLiked ? 'fill-current' : ''
             }`} 
           />
-          <span className="font-medium text-sm sm:text-base">
+          <span className="font-medium text-xs sm:text-sm">
             {getLikeText()}
           </span>
         </div>
@@ -104,8 +104,8 @@ const FacebookActionBarComponent = ({
         }`}
       >
         <div className="flex items-center space-x-2">
-          <MessageCircle className="h-5 w-5" />
-          <span className="font-medium text-sm sm:text-base">
+          <MessageCircle className="h-4 w-4" />
+          <span className="font-medium text-xs sm:text-sm">
             {getCommentText()}
           </span>
         </div>
