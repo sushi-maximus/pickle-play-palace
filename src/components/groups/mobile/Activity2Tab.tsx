@@ -62,13 +62,14 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
 
   return (
     <FacebookErrorBoundary>
+      {/* Main Container - Enhanced for mobile */}
       <main className="flex-1 bg-gray-50 overflow-hidden">
         {/* Network Status Indicator */}
         <FacebookNetworkStatus />
         
         <div className="max-w-2xl mx-auto h-full flex flex-col">
-          {/* Facebook-style Create Post Section */}
-          <div className="flex-shrink-0">
+          {/* Facebook-style Create Post Section - Fixed positioning for mobile */}
+          <div className="flex-shrink-0 sticky top-0 z-10">
             <FacebookCreatePost 
               groupId={groupId}
               user={user}
@@ -76,11 +77,13 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
             />
           </div>
 
-          {/* Posts Feed Area - Enhanced scrolling for mobile */}
-          <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain">
-            <div className="p-3 sm:p-4 pb-safe">
+          {/* Posts Feed Area - Enhanced scrolling and touch interactions for mobile */}
+          <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch">
+            <div className="pb-4 sm:pb-6 pb-safe">
               {loading ? (
-                <MobilePostsLoading />
+                <div className="p-3 sm:p-4">
+                  <MobilePostsLoading />
+                </div>
               ) : (
                 <FacebookPostsList 
                   posts={posts}

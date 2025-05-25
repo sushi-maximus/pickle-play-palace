@@ -5,73 +5,79 @@ import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookReactionSummaryProps {
   likeCount: number;
-  commentsCount?: number;
-  isUserLiked?: boolean;
+  commentsCount: number;
+  isUserLiked: boolean;
   user?: Profile | null;
 }
 
-const FacebookReactionSummaryComponent = ({ 
-  likeCount, 
-  commentsCount = 0, 
-  isUserLiked = false,
-  user 
+const FacebookReactionSummaryComponent = ({
+  likeCount,
+  commentsCount,
+  isUserLiked,
+  user
 }: FacebookReactionSummaryProps) => {
-  // Don't show anything if no reactions or comments
   if (likeCount === 0 && commentsCount === 0) {
     return null;
   }
 
-  const renderLikeText = () => {
-    if (likeCount === 0) return null;
-    
-    if (likeCount === 1) {
-      if (isUserLiked) {
-        return "You";
-      } else {
-        return "1 person";
-      }
+  const formatCount = (count: number) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
     }
+    return count.toString();
+  };
+
+  const getLikeText = () => {
+    if (likeCount === 0) return "";
     
-    if (isUserLiked) {
-      if (likeCount === 2) {
+    if (isUserLiked && user) {
+      if (likeCount === 1) {
+        return "You";
+      } else if (likeCount === 2) {
         return "You and 1 other";
       } else {
-        return `You and ${likeCount - 1} others`;
+        return `You and ${formatCount(likeCount - 1)} others`;
       }
     } else {
-      return `${likeCount} people`;
+      return formatCount(likeCount);
     }
   };
 
-  const likeText = renderLikeText();
+  const getCommentsText = () => {
+    if (commentsCount === 0) return "";
+    if (commentsCount === 1) return "1 comment";
+    return `${formatCount(commentsCount)} comments`;
+  };
 
   return (
-    <div className="px-4 py-2 border-t border-gray-100 animate-fade-in">
-      <div className="flex items-center justify-between text-sm text-gray-500">
-        {/* Reactions summary */}
-        {likeCount > 0 && (
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 animate-scale-in">
-                <ThumbsUp className="h-3 w-3 text-white fill-current" />
-              </div>
-              <span className="hover:underline cursor-pointer font-medium transition-all duration-200 hover:text-blue-600">
-                {likeText}
-              </span>
+    <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 text-gray-500 border-b border-gray-100">
+      {/* Likes Summary - Enhanced for mobile */}
+      {likeCount > 0 && (
+        <div className="flex items-center space-x-1 sm:space-x-2 min-h-[32px] touch-manipulation">
+          <div className="flex items-center space-x-1">
+            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-600 rounded-full flex items-center justify-center">
+              <ThumbsUp className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white fill-current" />
             </div>
+            <span className="text-xs sm:text-sm hover:underline cursor-pointer">
+              {getLikeText()}
+            </span>
           </div>
-        )}
-        
-        {/* Comments summary */}
-        {commentsCount > 0 && (
-          <div className="hover:underline cursor-pointer font-medium transition-all duration-200 hover:text-blue-600">
-            {commentsCount === 1 ? "1 comment" : `${commentsCount} comments`}
-          </div>
-        )}
-        
-        {/* Show placeholder when no reactions but we want to maintain layout */}
-        {likeCount === 0 && commentsCount === 0 && <div></div>}
-      </div>
+        </div>
+      )}
+
+      {/* Comments Count - Enhanced for mobile */}
+      {commentsCount > 0 && (
+        <div className="min-h-[32px] flex items-center touch-manipulation">
+          <button className="text-xs sm:text-sm hover:underline focus:underline transition-all duration-200 p-1 -m-1">
+            {getCommentsText()}
+          </button>
+        </div>
+      )}
+
+      {/* Spacer for better layout */}
+      {likeCount === 0 && commentsCount > 0 && <div />}
     </div>
   );
 };

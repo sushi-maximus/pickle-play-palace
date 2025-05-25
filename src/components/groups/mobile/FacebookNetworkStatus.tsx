@@ -1,50 +1,68 @@
 
-import { memo, useState, useEffect } from "react";
-import { WifiOff, Wifi } from "lucide-react";
+import { memo, useEffect, useState } from "react";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { Wifi, WifiOff, Signal } from "lucide-react";
 
 const FacebookNetworkStatusComponent = () => {
-  const { isOnline, isSlowConnection } = useNetworkStatus();
-  const [showOfflineMessage, setShowOfflineMessage] = useState(false);
-  const [showSlowMessage, setShowSlowMessage] = useState(false);
+  const { isOnline, wasOffline, isSlowConnection } = useNetworkStatus();
+  const [showStatus, setShowStatus] = useState(false);
 
   useEffect(() => {
-    if (!isOnline) {
-      setShowOfflineMessage(true);
-      setShowSlowMessage(false);
-    } else if (isSlowConnection) {
-      setShowSlowMessage(true);
-      setShowOfflineMessage(false);
+    if (!isOnline || wasOffline || isSlowConnection) {
+      setShowStatus(true);
+      
+      // Auto-hide after successful reconnection
+      if (isOnline && !isSlowConnection) {
+        const timer = setTimeout(() => {
+          setShowStatus(false);
+        }, 3000);
+        
+        return () => clearTimeout(timer);
+      }
     } else {
-      // Delay hiding messages to avoid flashing
-      const timer = setTimeout(() => {
-        setShowOfflineMessage(false);
-        setShowSlowMessage(false);
-      }, 1000);
-      return () => clearTimeout(timer);
+      setShowStatus(false);
     }
-  }, [isOnline, isSlowConnection]);
+  }, [isOnline, wasOffline, isSlowConnection]);
 
-  if (!showOfflineMessage && !showSlowMessage) {
+  if (!showStatus) return null;
+
+  const getStatusConfig = () => {
+    if (!isOnline) {
+      return {
+        icon: WifiOff,
+        text: "No internet connection",
+        bgColor: "bg-red-500",
+        textColor: "text-white"
+      };
+    } else if (isSlowConnection) {
+      return {
+        icon: Signal,
+        text: "Slow connection detected",
+        bgColor: "bg-yellow-500",
+        textColor: "text-white"
+      };
+    } else if (wasOffline) {
+      return {
+        icon: Wifi,
+        text: "Connection restored",
+        bgColor: "bg-green-500",
+        textColor: "text-white"
+      };
+    }
+    
     return null;
-  }
+  };
+
+  const statusConfig = getStatusConfig();
+  if (!statusConfig) return null;
+
+  const { icon: Icon, text, bgColor, textColor } = statusConfig;
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 ${
-      showOfflineMessage ? 'bg-red-500' : 'bg-yellow-500'
-    } text-white px-4 py-2 text-center text-sm animate-slide-down`}>
-      <div className="flex items-center justify-center space-x-2">
-        {showOfflineMessage ? (
-          <>
-            <WifiOff className="h-4 w-4" />
-            <span>You're offline. Check your internet connection.</span>
-          </>
-        ) : (
-          <>
-            <Wifi className="h-4 w-4" />
-            <span>Slow connection detected. Some features may be limited.</span>
-          </>
-        )}
+    <div className={`${bgColor} ${textColor} px-3 py-2 sm:px-4 sm:py-3 text-center relative z-50 animate-fade-in`}>
+      <div className="flex items-center justify-center space-x-2 max-w-2xl mx-auto">
+        <Icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+        <span className="text-xs sm:text-sm font-medium">{text}</span>
       </div>
     </div>
   );
