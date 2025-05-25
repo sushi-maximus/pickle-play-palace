@@ -1,7 +1,7 @@
 
 import { memo } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { useUnifiedPostReactions } from "./hooks/useUnifiedPostReactions";
+import { useFacebookLike } from "./hooks/useFacebookLike";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -25,27 +25,21 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
   
   const {
-    thumbsUpCount,
-    isThumbsUpActive,
-    isThumbsUpSubmitting,
-    toggleThumbsUp,
+    likeCount,
+    isLiked,
+    isSubmitting,
+    toggleLike,
     isDisabled
-  } = useUnifiedPostReactions({ 
-    post: {
-      ...post,
-      thumbsup_count: post.thumbsup_count || 0,
-      thumbsdown_count: 0,
-      heart_count: 0,
-      user_thumbsup: post.user_thumbsup || false,
-      user_thumbsdown: false,
-      user_heart: false
-    }, 
-    user 
+  } = useFacebookLike({ 
+    postId: post.id,
+    userId: user?.id,
+    initialLikeCount: post.thumbsup_count || 0,
+    initialUserLiked: post.user_thumbsup || false
   });
 
   const handleLikeClick = () => {
-    if (!isDisabled && !isThumbsUpSubmitting) {
-      toggleThumbsUp();
+    if (!isDisabled && !isSubmitting) {
+      toggleLike();
     }
   };
 
@@ -73,12 +67,12 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
       </div>
 
       {/* Reaction Summary */}
-      {thumbsUpCount > 0 && (
+      {likeCount > 0 && (
         <div className="px-4 py-2 border-t border-gray-100">
           <div className="flex items-center justify-between text-sm text-gray-500">
             <div className="flex items-center space-x-1">
               <span className="text-blue-500">👍</span>
-              <span>{thumbsUpCount} {thumbsUpCount === 1 ? 'like' : 'likes'}</span>
+              <span>{likeCount} {likeCount === 1 ? 'like' : 'likes'}</span>
             </div>
             <div>0 comments</div>
           </div>
@@ -89,16 +83,16 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
       <div className="flex border-t border-gray-100">
         <button 
           onClick={handleLikeClick}
-          disabled={isDisabled || isThumbsUpSubmitting}
+          disabled={isDisabled || isSubmitting}
           className={`flex-1 flex items-center justify-center py-3 transition-colors ${
-            isThumbsUpActive 
+            isLiked 
               ? "text-blue-600 bg-blue-50" 
               : "text-gray-600 hover:bg-gray-50"
           } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           <span className="text-lg mr-2">👍</span>
           <span className="text-sm font-medium">
-            {isThumbsUpSubmitting ? "..." : isThumbsUpActive ? "Liked" : "Like"}
+            {isSubmitting ? "..." : isLiked ? "Liked" : "Like"}
           </span>
         </button>
         <button className="flex-1 flex items-center justify-center py-3 text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100">
