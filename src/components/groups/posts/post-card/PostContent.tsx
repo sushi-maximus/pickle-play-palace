@@ -1,4 +1,5 @@
 
+
 import { memo } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -56,7 +57,7 @@ const PostContentComponent = ({
 
   return (
     <div className="space-y-4">
-      <div className="px-6 py-4">
+      <div>
         <p className="text-gray-900 text-base leading-relaxed whitespace-pre-wrap break-words">
           {content}
         </p>
