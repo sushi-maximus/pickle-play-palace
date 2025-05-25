@@ -5,7 +5,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import type { Profile } from "../../posts/hooks/types/groupPostTypes";
 
 interface FacebookCommentActionsProps {
-  timeAgo: string;
   isOwner: boolean;
   isDeleting: boolean;
   user?: Profile | null;
@@ -22,7 +21,6 @@ interface FacebookCommentActionsProps {
 }
 
 const FacebookCommentActionsComponent = ({
-  timeAgo,
   isOwner,
   isDeleting,
   user,
@@ -39,9 +37,7 @@ const FacebookCommentActionsComponent = ({
 }: FacebookCommentActionsProps) => {
   return (
     <div className="flex items-center justify-between mt-1 ml-3 animate-fade-in">
-      <div className="flex items-center space-x-4">
-        <span className="text-xs text-gray-400">{timeAgo}</span>
-        
+      <div className="flex items-center space-x-4">        
         {isOwner && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

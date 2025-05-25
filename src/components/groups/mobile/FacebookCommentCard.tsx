@@ -1,6 +1,5 @@
 
 import { memo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEditComment2 } from "../posts/hooks/useEditComment2";
 import { useDeleteComment2 } from "../posts/hooks/useDeleteComment2";
@@ -43,7 +42,6 @@ const FacebookCommentCardComponent = ({
   onCommentUpdated 
 }: FacebookCommentCardProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
   const isOwner = user?.id === comment.user_id;
 
   const userName = `${comment.user.first_name} ${comment.user.last_name}`.trim() || 'Unknown User';
@@ -145,7 +143,6 @@ const FacebookCommentCardComponent = ({
           {/* Comment Actions */}
           {!isEditing && (
             <FacebookCommentActions
-              timeAgo={timeAgo}
               isOwner={isOwner}
               isDeleting={isDeleting}
               user={user}
