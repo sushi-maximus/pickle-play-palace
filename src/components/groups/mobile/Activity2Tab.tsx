@@ -1,7 +1,6 @@
 
 import { memo } from "react";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
-import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import { FacebookCreatePost } from "./FacebookCreatePost";
 import { FacebookPostsList } from "./FacebookPostsList";
@@ -44,28 +43,10 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
               {loading ? (
                 <MobilePostsLoading />
               ) : (
-                <>
-                  <FacebookPostsList 
-                    posts={posts}
-                    user={user}
-                  />
-                  
-                  {/* Development Info Card - Show only when posts exist */}
-                  {posts.length > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-                      <h3 className="text-lg font-medium mb-2 text-blue-900">Real Posts Loaded!</h3>
-                      <p className="text-blue-700 text-sm mb-3">
-                        Now displaying actual posts from the database with Facebook-style design.
-                      </p>
-                      <div className="text-xs text-blue-600 space-y-1">
-                        <p>Posts Count: {posts.length}</p>
-                        <p>Group ID: {groupId}</p>
-                        <p>User: {user?.first_name} {user?.last_name}</p>
-                        <p>Next: Add like functionality</p>
-                      </div>
-                    </div>
-                  )}
-                </>
+                <FacebookPostsList 
+                  posts={posts}
+                  user={user}
+                />
               )}
             </div>
           </div>
