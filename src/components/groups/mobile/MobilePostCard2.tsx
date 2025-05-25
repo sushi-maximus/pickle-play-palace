@@ -1,5 +1,3 @@
-
-
 import { useState, memo, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
@@ -85,50 +83,48 @@ const MobilePostCard2Component = ({
   }, [reactions.isDisabled, reactions.isHeartSubmitting, reactions.toggleHeart]);
 
   return (
-    <div className="w-screen -mx-3 md:-mx-6">
-      <Card className="w-full bg-white border-0 border-b border-gray-200 shadow-none hover:shadow-none rounded-none">
-        <CardContent className="p-0">
-          <PostDisplay
-            post={post}
-            currentUserId={user?.id}
-            isEditing={editor.isEditing}
-            editableContent={editableContent}
-            setEditableContent={setEditableContent}
-            isEditSubmitting={editor.isSubmitting}
-            onEdit={editor.handleStartEditing}
-            onDeleteClick={handleShowDeleteDialog}
-            onCancelEditing={editor.handleCancelEditing}
-            onSaveEditing={editor.handleSaveEditing}
-          />
-
-          <PostInteractions
-            postId={post.id}
-            currentUserId={user?.id}
-            user={user}
-            commentsCount={commentsCount}
-            thumbsUpCount={reactions.thumbsUpCount}
-            thumbsDownCount={reactions.thumbsDownCount}
-            heartCount={reactions.heartCount}
-            isThumbsUpActive={reactions.isThumbsUpActive}
-            isThumbsDownActive={reactions.isThumbsDownActive}
-            isHeartActive={reactions.isHeartActive}
-            isThumbsUpSubmitting={reactions.isThumbsUpSubmitting}
-            isThumbsDownSubmitting={reactions.isThumbsDownSubmitting}
-            isHeartSubmitting={reactions.isHeartSubmitting}
-            onThumbsUpClick={reactions.toggleThumbsUp}
-            onThumbsDownClick={reactions.toggleThumbsDown}
-            onHeartClick={handleHeartClick}
-          />
-        </CardContent>
-        
-        <DeletePostDialog
-          isOpen={showDeleteDialog}
-          onOpenChange={(open) => !open && setShowDeleteDialog(false)}
-          onConfirmDelete={handleDeleteClick}
-          isDeleting={false}
+    <Card className="w-full bg-white border-0 border-b border-gray-200 shadow-none hover:shadow-none rounded-none">
+      <CardContent className="p-0">
+        <PostDisplay
+          post={post}
+          currentUserId={user?.id}
+          isEditing={editor.isEditing}
+          editableContent={editableContent}
+          setEditableContent={setEditableContent}
+          isEditSubmitting={editor.isSubmitting}
+          onEdit={editor.handleStartEditing}
+          onDeleteClick={handleShowDeleteDialog}
+          onCancelEditing={editor.handleCancelEditing}
+          onSaveEditing={editor.handleSaveEditing}
         />
-      </Card>
-    </div>
+
+        <PostInteractions
+          postId={post.id}
+          currentUserId={user?.id}
+          user={user}
+          commentsCount={commentsCount}
+          thumbsUpCount={reactions.thumbsUpCount}
+          thumbsDownCount={reactions.thumbsDownCount}
+          heartCount={reactions.heartCount}
+          isThumbsUpActive={reactions.isThumbsUpActive}
+          isThumbsDownActive={reactions.isThumbsDownActive}
+          isHeartActive={reactions.isHeartActive}
+          isThumbsUpSubmitting={reactions.isThumbsUpSubmitting}
+          isThumbsDownSubmitting={reactions.isThumbsDownSubmitting}
+          isHeartSubmitting={reactions.isHeartSubmitting}
+          onThumbsUpClick={reactions.toggleThumbsUp}
+          onThumbsDownClick={reactions.toggleThumbsDown}
+          onHeartClick={handleHeartClick}
+        />
+      </CardContent>
+      
+      <DeletePostDialog
+        isOpen={showDeleteDialog}
+        onOpenChange={(open) => !open && setShowDeleteDialog(false)}
+        onConfirmDelete={handleDeleteClick}
+        isDeleting={false}
+      />
+    </Card>
   );
 };
 
@@ -163,4 +159,3 @@ export const MobilePostCard2 = memo(MobilePostCard2Component, (prevProps, nextPr
 });
 
 MobilePostCard2Component.displayName = "MobilePostCard2";
-

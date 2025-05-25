@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useMemo, memo, useCallback } from "react";
 import { MobilePostCard2 } from "./MobilePostCard2";
 import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
@@ -101,51 +100,53 @@ const MobilePostsListComponent = ({
   }), [isPulling, pullDistance]);
 
   return (
-    <OptimizedScrollArea 
-      className="h-full w-full" 
-      ref={scrollRef}
-      enableHardwareAcceleration={true}
-    >
-      <div className="relative w-full">
-        <OptimizedPullToRefreshIndicator
-          pullDistance={pullDistance}
-          isRefreshing={isRefreshingState}
-          isPulling={isPulling}
-          shouldTrigger={shouldTrigger}
-        />
-        
-        <div 
-          className="transition-transform duration-200 w-full"
-          style={contentTransform}
-        >
-          <div className="w-full">
-            {memoizedPosts.map((post, index) => (
-              <div 
-                key={post.id}
-                className="w-full transform transition-all duration-200 ease-out"
-                style={{
-                  animationDelay: `${index * 50}ms`
-                }}
-              >
-                <MobilePostCard2
-                  post={post}
-                  user={user}
-                  isEditing={isEditing && currentPostId === post.id}
-                  currentPostId={currentPostId}
-                  editableContent={editableContent}
-                  setEditableContent={setEditableContent}
-                  isEditSubmitting={isEditSubmitting}
-                  onStartEditing={onStartEditing}
-                  onCancelEditing={onCancelEditing}
-                  onSaveEditing={onSaveEditing}
-                  onDeleteClick={onDeleteClick}
-                />
-              </div>
-            ))}
+    <div className="w-screen -mx-3 md:-mx-6">
+      <OptimizedScrollArea 
+        className="h-full w-full" 
+        ref={scrollRef}
+        enableHardwareAcceleration={true}
+      >
+        <div className="relative w-full">
+          <OptimizedPullToRefreshIndicator
+            pullDistance={pullDistance}
+            isRefreshing={isRefreshingState}
+            isPulling={isPulling}
+            shouldTrigger={shouldTrigger}
+          />
+          
+          <div 
+            className="transition-transform duration-200 w-full"
+            style={contentTransform}
+          >
+            <div className="w-full">
+              {memoizedPosts.map((post, index) => (
+                <div 
+                  key={post.id}
+                  className="w-full transform transition-all duration-200 ease-out"
+                  style={{
+                    animationDelay: `${index * 50}ms`
+                  }}
+                >
+                  <MobilePostCard2
+                    post={post}
+                    user={user}
+                    isEditing={isEditing && currentPostId === post.id}
+                    currentPostId={currentPostId}
+                    editableContent={editableContent}
+                    setEditableContent={setEditableContent}
+                    isEditSubmitting={isEditSubmitting}
+                    onStartEditing={onStartEditing}
+                    onCancelEditing={onCancelEditing}
+                    onSaveEditing={onSaveEditing}
+                    onDeleteClick={onDeleteClick}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </OptimizedScrollArea>
+      </OptimizedScrollArea>
+    </div>
   );
 };
 
