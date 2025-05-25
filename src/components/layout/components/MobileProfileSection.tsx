@@ -10,7 +10,7 @@ interface MobileProfileSectionProps {
 
 export const MobileProfileSection = ({ profile }: MobileProfileSectionProps) => {
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 bg-slate-50 px-3 pt-2">
+    <div className="px-3 pt-2">
       <MobileProfileHeader profile={profile} />
     </div>
   );

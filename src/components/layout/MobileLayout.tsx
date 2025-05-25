@@ -31,13 +31,12 @@ export const MobileLayout = ({
       {/* Page Header - Fixed at top with z-60 */}
       <MobilePageHeader title={title} />
       
-      {/* Profile Header - Only shown when specified and profile exists */}
-      {profile && shouldShowProfileHeader && (
-        <MobileProfileSection profile={profile} />
-      )}
-      
       {/* Content Area with proper spacing */}
       <MobileLayoutContent topPadding={topPadding}>
+        {/* Profile Header - Now as regular scrollable content when specified and profile exists */}
+        {profile && shouldShowProfileHeader && (
+          <MobileProfileSection profile={profile} />
+        )}
         {children}
       </MobileLayoutContent>
       
