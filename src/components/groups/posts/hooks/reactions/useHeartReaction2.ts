@@ -22,12 +22,22 @@ export const useHeartReaction2 = ({
   
   const { updatePostReactionOptimistically, rollbackOptimisticUpdate } = useOptimisticMutations();
 
+  console.log(`=== HEART HOOK INITIALIZED ===`);
+  console.log(`Post: ${postId}, User: ${userId}`);
+  console.log(`Initial state - count: ${initialCount}, active: ${initialIsActive}`);
+  console.log(`Current state - count: ${heartCount}, active: ${isHeartActive}`);
+
   const toggleHeart = async () => {
     console.log(`=== HEART TOGGLE START ===`);
     console.log(`Post: ${postId}, User: ${userId}, Currently active: ${isHeartActive}`);
     
-    if (!userId || isHeartSubmitting) {
-      console.log(`Toggle blocked - userId: ${userId}, isSubmitting: ${isHeartSubmitting}`);
+    if (!userId) {
+      console.log(`❌ Toggle blocked - no userId`);
+      return;
+    }
+
+    if (isHeartSubmitting) {
+      console.log(`❌ Toggle blocked - already submitting`);
       return;
     }
 
@@ -40,9 +50,10 @@ export const useHeartReaction2 = ({
     const newActive = !currentActive;
     
     console.log(`Current state - active: ${currentActive}, count: ${currentCount}`);
+    console.log(`Will change to - active: ${newActive}, count: ${currentCount + countChange}`);
     
     try {
-      console.log(`Toggling heart: currently ${currentActive} for post ${postId}`);
+      console.log(`🔄 Toggling heart: currently ${currentActive} for post ${postId}`);
       
       // Optimistic update - update UI immediately
       setIsHeartActive(newActive);
@@ -51,22 +62,22 @@ export const useHeartReaction2 = ({
       // Update React Query cache optimistically
       updatePostReactionOptimistically(postId, 'heart', newActive, countChange);
       
-      console.log(`Making API call to ${newActive ? 'add' : 'remove'} reaction...`);
+      console.log(`📡 Making API call to ${newActive ? 'add' : 'remove'} reaction...`);
       
       if (newActive) {
         await reactionService.addReaction(postId, userId, 'heart');
-        console.log('Added heart reaction - API call successful');
+        console.log('✅ Added heart reaction - API call successful');
       } else {
         await reactionService.deleteReaction(postId, userId, 'heart');
-        console.log('Removed heart reaction - API call successful');
+        console.log('✅ Removed heart reaction - API call successful');
       }
       
-      console.log(`Heart toggle successful for post ${postId}`);
+      console.log(`✅ Heart toggle successful for post ${postId}`);
     } catch (error) {
-      console.error('=== HEART ERROR OCCURRED ===');
+      console.error('=== ❌ HEART ERROR OCCURRED ===');
       console.error('Error toggling heart:', error);
       console.error('Error details:', JSON.stringify(error, null, 2));
-      console.log(`Rolling back to previous state - active: ${currentActive}, count: ${currentCount}`);
+      console.log(`🔄 Rolling back to previous state - active: ${currentActive}, count: ${currentCount}`);
       
       // Revert local state
       setIsHeartActive(currentActive);
@@ -75,9 +86,9 @@ export const useHeartReaction2 = ({
       // Rollback optimistic update
       rollbackOptimisticUpdate(['posts']);
       
-      console.log(`State rolled back successfully`);
+      console.log(`✅ State rolled back successfully`);
     } finally {
-      console.log(`Setting isHeartSubmitting to false`);
+      console.log(`🔄 Setting isHeartSubmitting to false`);
       setIsHeartSubmitting(false);
       console.log(`=== HEART TOGGLE END ===`);
     }

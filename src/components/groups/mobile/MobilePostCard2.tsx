@@ -57,6 +57,15 @@ export const MobilePostCard2 = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
+  // Debug logging for heart button
+  console.log(`=== POST ${post.id} HEART DEBUG ===`);
+  console.log('Post heart data:', {
+    heart_count: post.heart_count,
+    user_heart: post.user_heart,
+    user_id: user?.id,
+    post_user_id: post.user_id
+  });
+
   const {
     thumbsUpCount,
     thumbsDownCount,
@@ -79,6 +88,14 @@ export const MobilePostCard2 = ({
     initialUserThumbsUp: post.user_thumbsup || false,
     initialUserThumbsDown: post.user_thumbsdown || false,
     initialUserHeart: post.user_heart || false
+  });
+
+  // Debug logging for reaction hook values
+  console.log('Reaction hook values:', {
+    heartCount,
+    isHeartActive,
+    isHeartSubmitting,
+    toggleHeart: typeof toggleHeart
   });
 
   const { comments, refreshComments } = useComments2({
@@ -106,6 +123,18 @@ export const MobilePostCard2 = ({
   const handleDeleteClick = () => {
     onDeleteClick(post.id);
     setShowDeleteDialog(false);
+  };
+
+  // Debug heart click handler
+  const handleHeartClick = () => {
+    console.log(`=== HEART CLICK DEBUG FOR POST ${post.id} ===`);
+    console.log('Before heart click:', {
+      heartCount,
+      isHeartActive,
+      isHeartSubmitting,
+      userId: user?.id
+    });
+    toggleHeart();
   };
 
   return (
@@ -145,7 +174,7 @@ export const MobilePostCard2 = ({
           isHeartSubmitting={isHeartSubmitting}
           onThumbsUpClick={toggleThumbsUp}
           onThumbsDownClick={toggleThumbsDown}
-          onHeartClick={toggleHeart}
+          onHeartClick={handleHeartClick}
           showComments={showComments}
           onToggleComments={() => setShowComments(!showComments)}
           currentUserId={user?.id}
