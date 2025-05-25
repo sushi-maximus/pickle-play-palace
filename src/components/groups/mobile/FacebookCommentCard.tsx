@@ -1,6 +1,10 @@
 
 import { memo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { formatDistanceToNow } from "date-fns";
 import { useEditComment2 } from "../posts/hooks/useEditComment2";
 import { useDeleteComment2 } from "../posts/hooks/useDeleteComment2";
 import { useCommentThumbsUp2 } from "../posts/hooks/reactions/useCommentThumbsUp2";
@@ -46,6 +50,7 @@ const FacebookCommentCardComponent = ({
 
   const userName = `${comment.user.first_name} ${comment.user.last_name}`.trim() || 'Unknown User';
   const userInitials = `${comment.user.first_name?.[0] || ''}${comment.user.last_name?.[0] || ''}`.toUpperCase() || 'U';
+  const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
 
   const {
     isEditing,
@@ -125,7 +130,53 @@ const FacebookCommentCardComponent = ({
         </Avatar>
         
         {/* Comment Content */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
+          {/* Comment Header with Name, Time, and Three-dot Menu */}
+          <div className="flex items-start justify-between mb-1">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h4 className="text-sm font-medium text-gray-900">{userName}</h4>
+                <p className="text-xs text-gray-500">{timeAgo}</p>
+              </div>
+            </div>
+            
+            {isOwner && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600 flex-shrink-0 ml-2"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-40 bg-white shadow-lg border border-gray-200 z-[9999]"
+                  sideOffset={8}
+                >
+                  <DropdownMenuItem 
+                    onClick={handleEditClick} 
+                    disabled={isEditing}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    <Edit className="h-3 w-3 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={handleDeleteClick} 
+                    className="text-red-600 focus:text-red-600 cursor-pointer hover:bg-red-50"
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="h-3 w-3 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+          
           {isEditing ? (
             <FacebookCommentEditForm
               comment={comment}
