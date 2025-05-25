@@ -65,21 +65,20 @@ export const CommentForm2 = ({
           disabled={isSubmitting}
         />
         
+        <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded border">
+          💡 Press Enter to post • Press Esc to clear
+        </div>
+        
         {content.trim() && (
-          <div className="flex flex-col gap-2">
-            <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded border">
-              💡 Press Enter to post • Press Esc to clear
-            </div>
-            <div className="flex justify-end">
-              <Button
-                onClick={handleSubmit}
-                disabled={isSubmitting || !content.trim()}
-                size="sm"
-                className="text-xs px-3 h-7"
-              >
-                {isSubmitting ? 'Posting...' : 'Post'}
-              </Button>
-            </div>
+          <div className="flex justify-end">
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting || !content.trim()}
+              size="sm"
+              className="text-xs px-3 h-7"
+            >
+              {isSubmitting ? 'Posting...' : 'Post'}
+            </Button>
           </div>
         )}
       </div>
