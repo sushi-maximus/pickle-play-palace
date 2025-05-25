@@ -1,5 +1,5 @@
 
-import { useState, memo } from "react";
+import { memo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAddComment2 } from "../posts/hooks/useAddComment2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
@@ -15,29 +15,24 @@ const FacebookCommentFormComponent = ({
   user, 
   onCommentAdded 
 }: FacebookCommentFormProps) => {
-  const [content, setContent] = useState("");
-
-  const { handleSubmit, isSubmitting } = useAddComment2({
+  const { content, setContent, handleSubmit, isSubmitting } = useAddComment2({
     postId,
     userId: user.id,
-    onCommentAdded: () => {
-      setContent("");
-      onCommentAdded?.();
-    }
+    onCommentAdded
   });
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() || isSubmitting) return;
     
-    await handleSubmit(content);
+    await handleSubmit();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (content.trim() && !isSubmitting) {
-        handleSubmit(content);
+        handleSubmit();
       }
     }
   };
