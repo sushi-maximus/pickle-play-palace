@@ -51,7 +51,7 @@ export const useFacebookLike = ({
       if (isLiked) {
         // Remove like
         const { error: deleteError } = await supabase
-          .from("post_reactions")
+          .from("reactions")
           .delete()
           .eq("post_id", postId)
           .eq("user_id", userId)
@@ -69,7 +69,7 @@ export const useFacebookLike = ({
       } else {
         // Add like
         const { error: insertError } = await supabase
-          .from("post_reactions")
+          .from("reactions")
           .insert({
             post_id: postId,
             user_id: userId,
