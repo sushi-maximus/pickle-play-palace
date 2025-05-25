@@ -71,7 +71,7 @@ const FacebookCreatePostComponent = ({
           {!isExpanded ? (
             <button
               onClick={() => setIsExpanded(true)}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-500 px-4 py-3 rounded-full transition-colors duration-200 text-sm sm:text-base min-h-[44px] touch-manipulation flex items-center justify-center"
+              className="flex-1 bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-500 px-4 py-3 rounded-full transition-colors duration-200 text-sm sm:text-base min-h-[44px] touch-manipulation flex items-center justify-center"
             >
               What's on your mind, {user.first_name}?
             </button>
@@ -82,7 +82,7 @@ const FacebookCreatePostComponent = ({
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder={`What's on your mind, ${user.first_name}?`}
-                className="w-full border-none bg-transparent resize-none focus:ring-0 focus:border-none p-0 text-sm sm:text-base min-h-[80px] placeholder:text-gray-500"
+                className="w-full border-2 border-gray-300 bg-white resize-none focus:ring-0 focus:border-blue-500 p-3 text-sm sm:text-base min-h-[80px] placeholder:text-gray-500 rounded-lg"
                 autoFocus
                 disabled={isSubmitting}
               />
