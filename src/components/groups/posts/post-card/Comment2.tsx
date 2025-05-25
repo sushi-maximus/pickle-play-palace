@@ -18,11 +18,16 @@ interface Comment2Props {
     content: string;
     created_at: string;
     user_id: string;
-    profiles?: {
+    user: {
+      id: string;
       first_name: string;
       last_name: string;
       avatar_url?: string | null;
     };
+    thumbsup_count: number;
+    thumbsdown_count: number;
+    user_thumbsup: boolean;
+    user_thumbsdown: boolean;
   };
   currentUserId?: string;
   onCommentUpdate?: () => void;
@@ -45,10 +50,10 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   } = useCommentReactions2({
     commentId: comment.id,
     userId: currentUserId,
-    initialThumbsUp: 0,
-    initialThumbsDown: 0,
-    initialUserThumbsUp: false,
-    initialUserThumbsDown: false
+    initialThumbsUp: comment.thumbsup_count,
+    initialThumbsDown: comment.thumbsdown_count,
+    initialUserThumbsUp: comment.user_thumbsup,
+    initialUserThumbsDown: comment.user_thumbsdown
   });
 
   const { 
@@ -96,14 +101,14 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   };
 
   const isOwnComment = currentUserId === comment.user_id;
-  const profile = comment.profiles;
-  const fullName = profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : 'Unknown User';
-  const initials = profile ? `${profile.first_name?.[0] || ''}${profile.last_name?.[0] || ''}` : 'UU';
+  const user = comment.user;
+  const fullName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Unknown User';
+  const initials = user ? `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}` : 'UU';
 
   return (
     <div className="flex gap-2 md:gap-3 p-3 md:p-4 border-b border-gray-50 last:border-b-0">
       <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
-        <AvatarImage src={profile?.avatar_url || undefined} />
+        <AvatarImage src={user?.avatar_url || undefined} />
         <AvatarFallback className="text-xs md:text-sm bg-gray-100">{initials}</AvatarFallback>
       </Avatar>
       
