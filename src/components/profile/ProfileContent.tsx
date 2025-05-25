@@ -28,8 +28,8 @@ export const ProfileContent = ({ profile, onProfileUpdate }: ProfileContentProps
       {/* My Progression Card */}
       <ProgressionCard profile={profile} />
       
-      {/* Profile Form Card */}
-      <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white">
+      {/* Profile Form Card - Added proper spacing */}
+      <Card className="border border-gray-200 border-l-primary/30 border-l-4 hover:shadow-md transition-shadow bg-white mt-6">
         <CardContent className="pt-6">
           <ProfileForm 
             profile={profile} 
