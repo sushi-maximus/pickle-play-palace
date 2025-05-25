@@ -1,5 +1,7 @@
+
 import { memo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEditComment2 } from "../posts/hooks/useEditComment2";
 import { useDeleteComment2 } from "../posts/hooks/useDeleteComment2";
 import { useCommentThumbsUp2 } from "../posts/hooks/reactions/useCommentThumbsUp2";
@@ -42,6 +44,9 @@ const FacebookCommentCardComponent = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
   const isOwner = user?.id === comment.user_id;
+
+  const userName = `${comment.user.first_name} ${comment.user.last_name}`.trim() || 'Unknown User';
+  const userInitials = `${comment.user.first_name?.[0] || ''}${comment.user.last_name?.[0] || ''}`.toUpperCase() || 'U';
 
   const {
     isEditing,
@@ -115,7 +120,10 @@ const FacebookCommentCardComponent = ({
     <>
       <div className="flex space-x-2">
         {/* Comment Avatar */}
-        <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0"></div>
+        <Avatar className="w-8 h-8 flex-shrink-0">
+          <AvatarImage src={comment.user.avatar_url || undefined} alt={userName} />
+          <AvatarFallback className="text-xs bg-gray-200 text-gray-700">{userInitials}</AvatarFallback>
+        </Avatar>
         
         {/* Comment Content */}
         <div className="flex-1">

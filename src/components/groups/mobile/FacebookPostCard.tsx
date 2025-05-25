@@ -5,6 +5,7 @@ import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { X, Check } from "lucide-react";
 import { useFacebookLike } from "./hooks/useFacebookLike";
 import { FacebookActionBar } from "./FacebookActionBar";
@@ -44,6 +45,29 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
   // Check if current user is the post author
   const isOwnPost = user?.id === post.user_id;
   
+  // Better handling of user name display with robust fallbacks
+  const firstName = post.profiles?.first_name?.trim() || '';
+  const lastName = post.profiles?.last_name?.trim() || '';
+  
+  let authorName = 'Unknown User';
+  if (firstName && lastName) {
+    authorName = `${firstName} ${lastName}`;
+  } else if (firstName) {
+    authorName = firstName;
+  } else if (lastName) {
+    authorName = lastName;
+  }
+  
+  // Generate initials with better fallback logic
+  let authorInitials = 'U';
+  if (firstName && lastName) {
+    authorInitials = `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
+  } else if (firstName) {
+    authorInitials = firstName[0].toUpperCase();
+  } else if (lastName) {
+    authorInitials = lastName[0].toUpperCase();
+  }
+
   // Edit post functionality
   const {
     isEditing,
@@ -160,9 +184,6 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
   }
 
   const commentsCount = comments?.length || 0;
-  const authorName = post.profiles ? 
-    `${post.profiles.first_name} ${post.profiles.last_name}`.trim() || 'Unknown User' : 
-    'Unknown User';
 
   // Convert string error to Error object if needed
   const commentsErrorObject = commentsError ? new Error(commentsError) : null;
@@ -178,7 +199,12 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
         {/* Post Header - Enhanced for mobile with proper touch targets */}
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <div className="flex items-center space-x-3 min-w-0 flex-1">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex-shrink-0 animate-scale-in"></div>
+            <Avatar className="w-10 h-10 flex-shrink-0">
+              <AvatarImage src={post.profiles?.avatar_url || undefined} alt={authorName} />
+              <AvatarFallback className="bg-gradient-to-br from-blue-400 to-blue-600 text-white text-sm font-semibold">
+                {authorInitials}
+              </AvatarFallback>
+            </Avatar>
             <div className="min-w-0 flex-1">
               <div className="font-semibold text-sm sm:text-base text-gray-900 hover:text-blue-600 transition-colors duration-200 cursor-pointer truncate">
                 {authorName}
