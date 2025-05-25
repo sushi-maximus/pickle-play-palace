@@ -102,11 +102,11 @@ const MobilePostsListComponent = ({
 
   return (
     <OptimizedScrollArea 
-      className="h-full -mx-3" 
+      className="h-full w-full" 
       ref={scrollRef}
       enableHardwareAcceleration={true}
     >
-      <div className="relative">
+      <div className="relative w-full">
         <OptimizedPullToRefreshIndicator
           pullDistance={pullDistance}
           isRefreshing={isRefreshingState}
@@ -115,14 +115,14 @@ const MobilePostsListComponent = ({
         />
         
         <div 
-          className="transition-transform duration-200"
+          className="transition-transform duration-200 w-full"
           style={contentTransform}
         >
-          <div className="space-y-0">
+          <div className="w-full">
             {memoizedPosts.map((post, index) => (
               <div 
                 key={post.id}
-                className="transform transition-all duration-200 ease-out"
+                className="w-full transform transition-all duration-200 ease-out"
                 style={{
                   animationDelay: `${index * 50}ms`
                 }}
