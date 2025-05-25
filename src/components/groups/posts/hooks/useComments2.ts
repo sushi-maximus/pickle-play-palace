@@ -38,18 +38,10 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
 
       console.log('Fetching comments for post:', postId);
 
-      // Fetch comments with joined profile data
+      // First fetch comments
       const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
-        .select(`
-          *,
-          profiles:user_id (
-            id,
-            first_name,
-            last_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
@@ -65,6 +57,23 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
         setComments([]);
         return;
       }
+
+      // Get unique user IDs
+      const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+      console.log('Fetching profiles for users:', userIds);
+
+      // Fetch user profiles
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
+
+      console.log('Profiles data:', profilesData);
 
       // Get comment IDs for reaction queries
       const commentIds = commentsData.map(comment => comment.id);
@@ -98,6 +107,10 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
       }
 
       // Create maps for efficient lookups
+      const profilesMap = new Map(
+        (profilesData || []).map(profile => [profile.id, profile])
+      );
+
       const thumbsupCountMap = new Map();
       const thumbsdownCountMap = new Map();
       (reactionsData || []).forEach(reaction => {
@@ -120,29 +133,36 @@ export const useComments2 = ({ postId, userId }: UseComments2Props) => {
         }
       });
 
-      // Transform comments with proper user data structure
-      const transformedComments = commentsData.map(comment => {
-        const profile = comment.profiles;
-        
-        return {
-          id: comment.id,
-          content: comment.content,
-          created_at: comment.created_at,
-          updated_at: comment.updated_at,
-          user_id: comment.user_id,
-          post_id: comment.post_id,
-          user: {
-            id: comment.user_id,
-            first_name: profile?.first_name || 'Unknown',
-            last_name: profile?.last_name || 'User',
-            avatar_url: profile?.avatar_url || null
-          },
-          thumbsup_count: thumbsupCountMap.get(comment.id) || 0,
-          thumbsdown_count: thumbsdownCountMap.get(comment.id) || 0,
-          user_thumbsup: userThumbsupSet.has(comment.id),
-          user_thumbsdown: userThumbsdownSet.has(comment.id)
-        };
-      }) as Comment2[];
+      // Combine comments with user data and reaction data
+      const transformedComments = commentsData
+        .map(comment => {
+          const user = profilesMap.get(comment.user_id);
+          if (!user) {
+            console.warn('No profile found for user:', comment.user_id);
+            return {
+              ...comment,
+              user: {
+                id: comment.user_id,
+                first_name: 'Unknown',
+                last_name: 'User',
+                avatar_url: null
+              },
+              thumbsup_count: thumbsupCountMap.get(comment.id) || 0,
+              thumbsdown_count: thumbsdownCountMap.get(comment.id) || 0,
+              user_thumbsup: userThumbsupSet.has(comment.id),
+              user_thumbsdown: userThumbsdownSet.has(comment.id)
+            };
+          }
+          
+          return {
+            ...comment,
+            user,
+            thumbsup_count: thumbsupCountMap.get(comment.id) || 0,
+            thumbsdown_count: thumbsdownCountMap.get(comment.id) || 0,
+            user_thumbsup: userThumbsupSet.has(comment.id),
+            user_thumbsdown: userThumbsdownSet.has(comment.id)
+          };
+        }) as Comment2[];
 
       console.log('Transformed comments:', transformedComments);
       setComments(transformedComments);
