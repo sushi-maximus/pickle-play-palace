@@ -1,5 +1,5 @@
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -45,8 +45,10 @@ export const MobileGroupHeader = ({ groupName, groupCode, memberCount }: MobileG
           </div>
         </div>
         
-        {/* Right spacer to balance layout */}
-        <div className="w-10 flex-shrink-0"></div>
+        {/* Right Group Icon */}
+        <div className="w-10 flex-shrink-0 flex items-center justify-end">
+          <Users className="h-5 w-5 text-slate-300" />
+        </div>
       </header>
     </>
   );
