@@ -43,8 +43,8 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
 
   if (loading) {
     return (
-      <div className="border-t border-gray-100">
-        <div className="flex items-center justify-center py-6 md:py-8">
+      <div className="border-t border-gray-100 bg-gray-50/20">
+        <div className="flex items-center justify-center py-6">
           <div className="flex items-center gap-2 text-gray-500">
             <div className="h-4 w-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
             <span className="text-sm">Loading comments...</span>
@@ -55,37 +55,31 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   }
 
   return (
-    <div className="border-t border-gray-100">
+    <div className="border-t border-gray-100 bg-gray-50/20">
       {comments && comments.length > 0 && (
-        <ScrollArea className="max-h-[60vh] md:max-h-96">
-          <div className="space-y-0">
-            {comments.map((comment, index) => (
-              <div 
+        <ScrollArea className="max-h-[50vh]">
+          <div className="divide-y divide-gray-100">
+            {comments.map((comment) => (
+              <Comment2
                 key={comment.id}
-                className={`${index !== comments.length - 1 ? 'border-b border-gray-50' : ''}`}
-              >
-                <Comment2
-                  comment={comment}
-                  currentUserId={currentUserId}
-                  onCommentUpdate={handleCommentUpdate}
-                />
-              </div>
+                comment={comment}
+                currentUserId={currentUserId}
+                onCommentUpdate={handleCommentUpdate}
+              />
             ))}
           </div>
         </ScrollArea>
       )}
       
       {currentUserId && user && (
-        <div className="border-t border-gray-100 bg-gray-50/30">
-          <div className="px-3 md:px-4">
-            <CommentForm2
-              content={newCommentContent}
-              setContent={setNewCommentContent}
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              user={user}
-            />
-          </div>
+        <div className="border-t border-gray-100 bg-white">
+          <CommentForm2
+            content={newCommentContent}
+            setContent={setNewCommentContent}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            user={user}
+          />
         </div>
       )}
     </div>

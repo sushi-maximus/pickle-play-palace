@@ -108,7 +108,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   const isOwnComment = currentUserId === comment.user_id;
 
   return (
-    <div className="p-3 md:p-4 border-b border-gray-50 last:border-b-0">
+    <div className="px-3 py-3 bg-white">
       <CommentHeader
         user={comment.user}
         createdAt={comment.created_at}
@@ -119,7 +119,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
         onDelete={() => setShowDeleteDialog(true)}
       />
       
-      <div className="ml-10 md:ml-13 space-y-2 md:space-y-3">
+      <div className="ml-10 space-y-2">
         <CommentContent
           content={comment.content}
           isEditing={isEditing}
