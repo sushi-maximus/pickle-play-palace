@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
 import { useComments2 } from "../posts/hooks/useComments2";
@@ -24,7 +24,7 @@ interface MobilePostCard2Props {
   onDeleteClick: (postId: string) => void;
 }
 
-export const MobilePostCard2 = ({ 
+const MobilePostCard2Component = ({ 
   post, 
   user,
   isEditing,
@@ -106,3 +106,20 @@ export const MobilePostCard2 = ({
     </Card>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const MobilePostCard2 = memo(MobilePostCard2Component, (prevProps, nextProps) => {
+  // Custom comparison function to optimize re-renders
+  return (
+    prevProps.post.id === nextProps.post.id &&
+    prevProps.post.content === nextProps.post.content &&
+    prevProps.post.created_at === nextProps.post.created_at &&
+    prevProps.user?.id === nextProps.user?.id &&
+    prevProps.isEditing === nextProps.isEditing &&
+    prevProps.currentPostId === nextProps.currentPostId &&
+    prevProps.editableContent === nextProps.editableContent &&
+    prevProps.isEditSubmitting === nextProps.isEditSubmitting
+  );
+});
+
+MobilePostCard2Component.displayName = "MobilePostCard2";

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { CommentHeader } from "./CommentHeader";
 import { CommentContent } from "./CommentContent";
 import { CommentActions } from "./CommentActions";
@@ -29,7 +29,7 @@ interface Comment2Props {
   onCommentUpdate?: () => void;
 }
 
-export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Props) => {
+const Comment2Component = ({ comment, currentUserId, onCommentUpdate }: Comment2Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -151,3 +151,20 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
     </div>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const Comment2 = memo(Comment2Component, (prevProps, nextProps) => {
+  // Custom comparison function
+  return (
+    prevProps.comment.id === nextProps.comment.id &&
+    prevProps.comment.content === nextProps.comment.content &&
+    prevProps.comment.created_at === nextProps.comment.created_at &&
+    prevProps.comment.thumbsup_count === nextProps.comment.thumbsup_count &&
+    prevProps.comment.thumbsdown_count === nextProps.comment.thumbsdown_count &&
+    prevProps.comment.user_thumbsup === nextProps.comment.user_thumbsup &&
+    prevProps.comment.user_thumbsdown === nextProps.comment.user_thumbsdown &&
+    prevProps.currentUserId === nextProps.currentUserId
+  );
+});
+
+Comment2Component.displayName = "Comment2";

@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo, memo } from "react";
 import { MobilePostCard2 } from "./MobilePostCard2";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePullToRefresh } from "../posts/hooks/usePullToRefresh";
@@ -35,7 +35,7 @@ interface MobilePostsListProps {
   refreshing?: boolean;
 }
 
-export const MobilePostsList = ({
+const MobilePostsListComponent = ({
   posts,
   user,
   isEditing,
@@ -52,6 +52,9 @@ export const MobilePostsList = ({
 }: MobilePostsListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   
+  // Memoize the refresh function to prevent recreation on every render
+  const memoizedOnRefresh = useMemo(() => onRefresh || (() => Promise.resolve()), [onRefresh]);
+  
   const {
     pullDistance,
     isRefreshing: pullRefreshing,
@@ -59,7 +62,7 @@ export const MobilePostsList = ({
     bindToElement,
     shouldTrigger
   } = usePullToRefresh({
-    onRefresh: onRefresh || (() => Promise.resolve()),
+    onRefresh: memoizedOnRefresh,
     threshold: 80
   });
 
@@ -73,6 +76,9 @@ export const MobilePostsList = ({
   }, [bindToElement]);
 
   const isRefreshingState = refreshing || pullRefreshing;
+
+  // Memoize the posts to prevent unnecessary re-renders when posts order doesn't change
+  const memoizedPosts = useMemo(() => posts, [posts.map(p => p.id).join(','), posts.length]);
 
   return (
     <ScrollArea className="h-full" ref={scrollRef}>
@@ -91,7 +97,7 @@ export const MobilePostsList = ({
           }}
         >
           <div className="space-y-2">
-            {posts.map((post, index) => (
+            {memoizedPosts.map((post, index) => (
               <div 
                 key={post.id}
                 className="transform transition-all duration-200 ease-out"
@@ -120,3 +126,25 @@ export const MobilePostsList = ({
     </ScrollArea>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const MobilePostsList = memo(MobilePostsListComponent, (prevProps, nextProps) => {
+  // Custom comparison for better performance
+  const postsChanged = prevProps.posts.length !== nextProps.posts.length ||
+    prevProps.posts.some((post, index) => 
+      post.id !== nextProps.posts[index]?.id ||
+      post.content !== nextProps.posts[index]?.content
+    );
+
+  return (
+    !postsChanged &&
+    prevProps.user?.id === nextProps.user?.id &&
+    prevProps.isEditing === nextProps.isEditing &&
+    prevProps.currentPostId === nextProps.currentPostId &&
+    prevProps.editableContent === nextProps.editableContent &&
+    prevProps.isEditSubmitting === nextProps.isEditSubmitting &&
+    prevProps.refreshing === nextProps.refreshing
+  );
+});
+
+MobilePostsListComponent.displayName = "MobilePostsList";
