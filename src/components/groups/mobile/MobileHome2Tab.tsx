@@ -85,7 +85,7 @@ export const MobileHome2Tab = ({
         <div className="space-y-6">
           {/* Post Creation Form */}
           {user && (
-            <div className="mb-6">
+            <div className="mb-8">
               <CreatePostForm2
                 groupId={groupId}
                 user={user}

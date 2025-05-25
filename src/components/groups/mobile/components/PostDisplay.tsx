@@ -40,7 +40,7 @@ export const PostDisplay = ({
         onDeleteClick={onDeleteClick}
       />
 
-      <div className="px-4 pb-4">
+      <div className="px-4 pb-6">
         <PostContent
           content={post.content}
           mediaUrls={post.media_urls}
