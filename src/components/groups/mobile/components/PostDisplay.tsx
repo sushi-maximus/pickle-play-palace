@@ -1,4 +1,5 @@
 
+
 import { PostContent } from "../../posts/post-card/PostContent";
 import { MobilePostHeader } from "./MobilePostHeader";
 import type { PostData } from "../types/postTypes";
@@ -40,7 +41,7 @@ export const PostDisplay = ({
         onDeleteClick={onDeleteClick}
       />
 
-      <div className="px-6 pb-6">
+      <div className="px-8 pb-6">
         <PostContent
           content={post.content}
           mediaUrls={post.media_urls}
@@ -55,3 +56,4 @@ export const PostDisplay = ({
     </>
   );
 };
+
