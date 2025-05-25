@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +8,7 @@ import { useGroupDetailsState } from "./hooks/useGroupDetailsState";
 import { GroupDetailsLoading } from "@/components/groups/GroupDetailsLoading";
 import { GroupDetailsErrorStates } from "./GroupDetailsErrorStates";
 import { GroupDetailsContent } from "./GroupDetailsContent";
-import { RouteErrorBoundary } from "@/components/error-boundaries";
+import { RouteErrorBoundary } from "@/components/error-boundaries/RouteErrorBoundary";
 import { GroupMobileLayout } from "@/components/groups/mobile";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
