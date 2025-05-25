@@ -8,6 +8,7 @@ export * from './FacebookCreatePost';
 export * from './FacebookPostCard';
 export * from './FacebookPostsList';
 export * from './FacebookReactionSummary';
+export * from './FacebookActionBar';
 export * from './MobilePostCard2';
 export * from './MobilePostsList';
 export * from './MobilePostsLoading';

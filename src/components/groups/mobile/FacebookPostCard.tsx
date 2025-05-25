@@ -3,6 +3,7 @@ import { memo } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useFacebookLike } from "./hooks/useFacebookLike";
 import { FacebookReactionSummary } from "./FacebookReactionSummary";
+import { FacebookActionBar } from "./FacebookActionBar";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -38,10 +39,14 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
     initialUserLiked: post.user_thumbsup || false
   });
 
-  const handleLikeClick = () => {
-    if (!isDisabled && !isSubmitting) {
-      toggleLike();
-    }
+  const handleCommentClick = () => {
+    console.log("Comment clicked for post:", post.id);
+    // TODO: Implement comment functionality in next steps
+  };
+
+  const handleShareClick = () => {
+    console.log("Share clicked for post:", post.id);
+    // TODO: Implement share functionality
   };
 
   return (
@@ -75,27 +80,17 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
         user={user}
       />
 
-      {/* Action Buttons */}
-      <div className="flex border-t border-gray-100">
-        <button 
-          onClick={handleLikeClick}
-          disabled={isDisabled || isSubmitting}
-          className={`flex-1 flex items-center justify-center py-3 transition-colors ${
-            isLiked 
-              ? "text-blue-600 bg-blue-50" 
-              : "text-gray-600 hover:bg-gray-50"
-          } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-        >
-          <span className="text-lg mr-2">👍</span>
-          <span className="text-sm font-medium">
-            {isSubmitting ? "..." : isLiked ? "Liked" : "Like"}
-          </span>
-        </button>
-        <button className="flex-1 flex items-center justify-center py-3 text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100">
-          <span className="text-lg mr-2">💬</span>
-          <span className="text-sm font-medium">Comment</span>
-        </button>
-      </div>
+      {/* Facebook Action Bar */}
+      <FacebookActionBar
+        postId={post.id}
+        isLiked={isLiked}
+        isSubmitting={isSubmitting}
+        isDisabled={isDisabled}
+        onLikeClick={toggleLike}
+        onCommentClick={handleCommentClick}
+        onShareClick={handleShareClick}
+        user={user}
+      />
     </div>
   );
 };
