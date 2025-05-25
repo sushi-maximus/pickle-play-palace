@@ -5,6 +5,7 @@ import { useFacebookLike } from "./hooks/useFacebookLike";
 import { FacebookReactionSummary } from "./FacebookReactionSummary";
 import { FacebookActionBar } from "./FacebookActionBar";
 import { FacebookComments } from "./FacebookComments";
+import { useComments2 } from "../posts/hooks/useComments2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -41,42 +42,21 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
     initialUserLiked: post.user_thumbsup || false
   });
 
+  const { comments } = useComments2({
+    postId: post.id,
+    userId: user?.id
+  });
+
   const handleCommentClick = () => {
     setShowComments(!showComments);
   };
 
   const handleCommentAdded = () => {
-    // TODO: Refresh comments when a new comment is added
-    console.log("Comment added, should refresh comments");
+    // Comments will auto-refresh through the hook
+    console.log("Comment added to post:", post.id);
   };
 
-  // Mock comments data for now
-  const mockComments = [
-    {
-      id: "1",
-      content: "Great post! Thanks for sharing.",
-      created_at: new Date(Date.now() - 3600000).toISOString(),
-      user_id: "user1",
-      user: {
-        id: "user1",
-        first_name: "John",
-        last_name: "Doe",
-        avatar_url: null
-      }
-    },
-    {
-      id: "2", 
-      content: "I totally agree with this!",
-      created_at: new Date(Date.now() - 7200000).toISOString(),
-      user_id: "user2",
-      user: {
-        id: "user2",
-        first_name: "Jane",
-        last_name: "Smith",
-        avatar_url: null
-      }
-    }
-  ];
+  const commentsCount = comments?.length || 0;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -104,7 +84,7 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
       {/* Reaction Summary */}
       <FacebookReactionSummary
         likeCount={likeCount}
-        commentsCount={mockComments.length}
+        commentsCount={commentsCount}
         isUserLiked={isLiked}
         user={user}
       />
@@ -124,7 +104,6 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
       {showComments && (
         <FacebookComments
           postId={post.id}
-          comments={mockComments}
           user={user}
           onCommentAdded={handleCommentAdded}
         />

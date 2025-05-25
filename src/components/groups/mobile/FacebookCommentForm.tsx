@@ -1,6 +1,6 @@
 
-import { useState, memo } from "react";
-import { Button } from "@/components/ui/button";
+import { memo } from "react";
+import { useAddComment2 } from "../posts/hooks/useAddComment2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookCommentFormProps {
@@ -9,36 +9,31 @@ interface FacebookCommentFormProps {
   onCommentAdded?: () => void;
 }
 
-const FacebookCommentFormComponent = ({ postId, user, onCommentAdded }: FacebookCommentFormProps) => {
-  const [content, setContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const FacebookCommentFormComponent = ({ 
+  postId, 
+  user, 
+  onCommentAdded 
+}: FacebookCommentFormProps) => {
+  const {
+    content,
+    setContent,
+    isSubmitting,
+    handleSubmit
+  } = useAddComment2({
+    postId,
+    userId: user.id,
+    onCommentAdded
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || isSubmitting) return;
-
-    setIsSubmitting(true);
-    
-    try {
-      // TODO: Implement comment submission logic
-      console.log("Submitting comment:", { postId, content: content.trim() });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setContent("");
-      onCommentAdded?.();
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await handleSubmit();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as any);
+      handleSubmit();
     }
   };
 
@@ -49,7 +44,7 @@ const FacebookCommentFormComponent = ({ postId, user, onCommentAdded }: Facebook
       
       {/* Comment Input */}
       <div className="flex-1">
-        <form onSubmit={handleSubmit} className="space-y-2">
+        <form onSubmit={handleFormSubmit} className="space-y-2">
           <div className="relative">
             <textarea
               value={content}
@@ -65,14 +60,13 @@ const FacebookCommentFormComponent = ({ postId, user, onCommentAdded }: Facebook
           
           {content.trim() && (
             <div className="flex justify-end">
-              <Button 
+              <button 
                 type="submit" 
-                size="sm"
                 disabled={isSubmitting || !content.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 h-7"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 h-7 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "..." : "Post"}
-              </Button>
+                {isSubmitting ? "Posting..." : "Post"}
+              </button>
             </div>
           )}
         </form>
