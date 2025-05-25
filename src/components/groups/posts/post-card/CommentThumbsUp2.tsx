@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ThumbsUp } from "lucide-react";
+import { ThumbsUp, Loader2 } from "lucide-react";
 
 interface CommentThumbsUp2Props {
   count: number;
@@ -21,22 +21,26 @@ export const CommentThumbsUp2 = ({
     <Button
       variant="ghost"
       size="sm"
-      className={`min-h-[44px] min-w-[44px] px-2 flex items-center gap-1 transition-all duration-200 text-xs touch-manipulation ${
-        isActive ? "text-blue-500 bg-blue-50 hover:bg-blue-100" : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
-      }`}
       onClick={onClick}
       disabled={disabled || isSubmitting}
+      className={`min-h-[44px] min-w-[44px] h-11 px-2 py-2 transition-all duration-200 touch-manipulation ${
+        isActive 
+          ? "text-blue-600 bg-blue-50 hover:bg-blue-100" 
+          : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+      }`}
     >
-      {isSubmitting ? (
-        <div className="h-3 w-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-      ) : (
-        <ThumbsUp className={`h-3 w-3 ${isActive ? "fill-current" : ""}`} />
-      )}
-      {count > 0 && (
-        <span className="text-xs font-medium">
-          {count}
-        </span>
-      )}
+      <div className="flex items-center gap-1">
+        {isSubmitting ? (
+          <Loader2 className="h-3 w-3 animate-spin" />
+        ) : (
+          <ThumbsUp className={`h-3 w-3 transition-all duration-200 ${isActive ? "fill-current" : ""}`} />
+        )}
+        {count > 0 && (
+          <span className="text-xs font-medium min-w-[1ch]">
+            {count}
+          </span>
+        )}
+      </div>
     </Button>
   );
 };
