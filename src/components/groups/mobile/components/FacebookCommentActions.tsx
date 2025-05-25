@@ -38,7 +38,9 @@ const FacebookCommentActionsComponent = ({
   onThumbsDownClick
 }: FacebookCommentActionsProps) => {
   const handleLikeClick = () => {
-    console.log("Like comment clicked");
+    if (user) {
+      onThumbsUpClick();
+    }
   };
 
   const handleReplyClick = () => {
@@ -50,9 +52,14 @@ const FacebookCommentActionsComponent = ({
       <div className="flex items-center space-x-4">
         <button 
           onClick={handleLikeClick}
-          className="text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-all duration-200 active:scale-95"
+          disabled={!user || isThumbsUpSubmitting}
+          className={`text-xs font-medium transition-all duration-200 active:scale-95 ${
+            isThumbsUpActive 
+              ? "text-blue-600" 
+              : "text-gray-500 hover:text-blue-600"
+          } ${!user ? "opacity-50 cursor-not-allowed" : "hover:underline"}`}
         >
-          Like
+          {isThumbsUpActive ? "Liked" : "Like"}
         </button>
         
         <button 
