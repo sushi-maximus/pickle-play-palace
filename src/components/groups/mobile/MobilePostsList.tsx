@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useMemo, memo, useCallback } from "react";
 import { MobilePostCard2 } from "./MobilePostCard2";
 import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
@@ -101,7 +102,7 @@ const MobilePostsListComponent = ({
 
   return (
     <OptimizedScrollArea 
-      className="h-full" 
+      className="h-full -mx-3" 
       ref={scrollRef}
       enableHardwareAcceleration={true}
     >
