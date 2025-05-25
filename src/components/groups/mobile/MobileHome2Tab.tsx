@@ -71,6 +71,10 @@ export const MobileHome2Tab = ({
     }
   };
 
+  const handleRefresh = async () => {
+    await refreshPosts();
+  };
+
   if (loading) {
     return <MobilePostsLoading />;
   }
@@ -110,6 +114,8 @@ export const MobileHome2Tab = ({
             onCancelEditing={cancelEditing}
             onSaveEditing={handleUpdate}
             onDeleteClick={handleDeleteClick}
+            onRefresh={handleRefresh}
+            refreshing={refreshing}
           />
 
           <DeletePostDialog 

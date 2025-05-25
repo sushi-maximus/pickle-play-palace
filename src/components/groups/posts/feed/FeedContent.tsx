@@ -5,10 +5,12 @@ import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { MobilePostsLoading } from "../../mobile/MobilePostsLoading";
 import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { usePullToRefresh } from "../hooks/usePullToRefresh";
+import { PullToRefreshIndicator } from "./PullToRefreshIndicator";
 import type { GroupPost, Profile } from "../hooks/types/groupPostTypes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface FeedContentProps {
   loading: boolean;
@@ -44,6 +46,30 @@ export const FeedContent = ({
   // Track previous posts to enable smooth transitions
   const [displayedPosts, setDisplayedPosts] = useState<GroupPost[]>(posts);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Pull-to-refresh functionality
+  const {
+    pullDistance,
+    isRefreshing: pullRefreshing,
+    isPulling,
+    bindToElement,
+    shouldTrigger
+  } = usePullToRefresh({
+    onRefresh: async () => {
+      refreshPosts();
+    },
+    threshold: 80
+  });
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
+      if (viewport) {
+        bindToElement(viewport);
+      }
+    }
+  }, [bindToElement]);
 
   // Log refresh state changes for debugging
   useEffect(() => {
@@ -74,6 +100,8 @@ export const FeedContent = ({
       }
     }
   }, [posts, refreshing, loading]);
+
+  const isRefreshingState = refreshing || pullRefreshing;
 
   // Only show loading state on initial load
   // For refreshes, we'll keep displaying the existing content
@@ -117,55 +145,67 @@ export const FeedContent = ({
       {displayedPosts.length === 0 ? (
         <GroupPostsEmpty isMember={membershipStatus.isMember} />
       ) : (
-        <ScrollArea className="flex-1 px-3 md:px-6">
-          <div 
-            className={cn(
-              "space-y-6 pb-6", 
-              isTransitioning ? "opacity-50 transition-opacity duration-300" : "opacity-100 transition-opacity duration-300"
-            )}
-          >
-            {displayedPosts.map((post) => {
-              // Debug log to see the post data structure
-              console.log("FeedContent - Processing post:", {
-                postId: post.id,
-                postProfiles: post.profiles,
-                userFirstName: post.profiles?.first_name,
-                userLastName: post.profiles?.last_name
-              });
+        <ScrollArea className="flex-1" ref={scrollRef}>
+          <div className="relative">
+            <PullToRefreshIndicator
+              pullDistance={pullDistance}
+              isRefreshing={isRefreshingState}
+              isPulling={isPulling}
+              shouldTrigger={shouldTrigger}
+            />
+            
+            <div 
+              className={cn(
+                "space-y-6 pb-6 px-3 md:px-6 transition-all duration-300", 
+                isTransitioning ? "opacity-50" : "opacity-100"
+              )}
+              style={{
+                transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
+              }}
+            >
+              {displayedPosts.map((post) => {
+                // Debug log to see the post data structure
+                console.log("FeedContent - Processing post:", {
+                  postId: post.id,
+                  postProfiles: post.profiles,
+                  userFirstName: post.profiles?.first_name,
+                  userLastName: post.profiles?.last_name
+                });
 
-              // Transform GroupPost to match MobilePostCard2 expected format
-              const transformedPost = {
-                id: post.id,
-                content: post.content,
-                created_at: post.created_at,
-                user_id: post.user_id,
-                media_urls: post.media_urls,
-                profiles: {
-                  first_name: post.profiles?.first_name || '',
-                  last_name: post.profiles?.last_name || '',
-                  avatar_url: post.profiles?.avatar_url
-                }
-              };
+                // Transform GroupPost to match MobilePostCard2 expected format
+                const transformedPost = {
+                  id: post.id,
+                  content: post.content,
+                  created_at: post.created_at,
+                  user_id: post.user_id,
+                  media_urls: post.media_urls,
+                  profiles: {
+                    first_name: post.profiles?.first_name || '',
+                    last_name: post.profiles?.last_name || '',
+                    avatar_url: post.profiles?.avatar_url
+                  }
+                };
 
-              console.log("FeedContent - Transformed post:", transformedPost);
+                console.log("FeedContent - Transformed post:", transformedPost);
 
-              return (
-                <MobilePostCard2 
-                  key={post.id} 
-                  post={transformedPost}
-                  user={user}
-                  isEditing={false}
-                  currentPostId={null}
-                  editableContent=""
-                  setEditableContent={() => {}}
-                  isEditSubmitting={false}
-                  onStartEditing={() => {}}
-                  onCancelEditing={() => {}}
-                  onSaveEditing={() => {}}
-                  onDeleteClick={() => {}}
-                />
-              );
-            })}
+                return (
+                  <MobilePostCard2 
+                    key={post.id} 
+                    post={transformedPost}
+                    user={user}
+                    isEditing={false}
+                    currentPostId={null}
+                    editableContent=""
+                    setEditableContent={() => {}}
+                    isEditSubmitting={false}
+                    onStartEditing={() => {}}
+                    onCancelEditing={() => {}}
+                    onSaveEditing={() => {}}
+                    onDeleteClick={() => {}}
+                  />
+                );
+              })}
+            </div>
           </div>
         </ScrollArea>
       )}
