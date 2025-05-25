@@ -6,7 +6,7 @@ export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type Post = Database['public']['Tables']['posts']['Row'];
 export type Group = Database['public']['Tables']['groups']['Row'];
 
-// Enhanced post with joined profile data
+// Enhanced post with joined profile data and reaction counts
 export interface GroupPost {
   id: string;
   content: string;
@@ -16,12 +16,28 @@ export interface GroupPost {
   user_id: string;
   media_urls?: string[] | null;
   pinned?: boolean | null;
-  // Profile data joined from the profiles table
-  profiles?: Profile | null;
-  // Computed fields for reactions and comments
-  reactions: Record<string, number>;
+  
+  // Reaction counts (individual fields for compatibility)
+  like_count: number;
+  thumbsup_count: number;
+  thumbsdown_count: number;
+  heart_count: number;
+  
+  // User's reaction status
+  user_like: boolean;
+  user_thumbsup: boolean;
+  user_thumbsdown: boolean;
+  user_heart: boolean;
+  
+  // Comments count
   comments_count: number;
-  user_reactions: Record<string, boolean>;
+  
+  // Profile data joined from the profiles table
+  profiles?: {
+    first_name: string;
+    last_name: string;
+    avatar_url?: string | null;
+  } | null;
 }
 
 export interface UseGroupPostsProps {

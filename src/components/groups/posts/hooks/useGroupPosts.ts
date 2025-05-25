@@ -8,7 +8,7 @@ import {
   UseGroupPostsResult 
 } from "./types/groupPostTypes";
 import { fetchGroupInfo } from "./services/postsFetchService";
-import { mapPostsWithDetails } from "./utils/postsMapper";
+import { enrichPostsWithCounts } from "./utils/postsMapper";
 
 export type { GroupPost } from "./types/groupPostTypes";
 export type { PostReactionType } from "./usePostReactions";
@@ -58,7 +58,7 @@ export const useGroupPosts = (
         }
 
         // Map posts with all their related data
-        const postsWithData = await mapPostsWithDetails(postsData, userId);
+        const postsWithData = await enrichPostsWithCounts(postsData, userId);
         return postsWithData;
       } catch (err) {
         console.error("Error fetching posts:", err);

@@ -58,7 +58,7 @@ export const enrichPostsWithCounts = async (
             first_name: userData.first_name,
             last_name: userData.last_name,
             avatar_url: userData.avatar_url
-          } : undefined
+          } : null
         };
 
         console.log(`✅ Enriched post ${post.id} with data:`, {
@@ -92,7 +92,8 @@ export const enrichPostsWithCounts = async (
           user_thumbsup: false,
           user_thumbsdown: false,
           user_heart: false,
-          comments_count: 0
+          comments_count: 0,
+          profiles: null
         };
       }
     })
@@ -101,3 +102,6 @@ export const enrichPostsWithCounts = async (
   console.log(`🎉 Successfully enriched ${enrichedPosts.length} posts`);
   return enrichedPosts;
 };
+
+// Export alias for the function name used in useGroupPosts
+export const mapPostsWithDetails = enrichPostsWithCounts;
