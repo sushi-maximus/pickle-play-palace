@@ -48,7 +48,8 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
     isSubmitting: isEditSubmitting,
     startEditing,
     cancelEditing,
-    handleUpdate
+    handleUpdate,
+    currentPostId
   } = useEditPost({
     onPostUpdated: () => {
       // Optionally refresh the post data
@@ -56,7 +57,7 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
     }
   });
   
-  const isCurrentlyEditing = isEditing && post.id;
+  const isCurrentlyEditing = isEditing && currentPostId === post.id;
   
   // Validate required data
   if (!post?.id || !post?.content) {
