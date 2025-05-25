@@ -19,13 +19,16 @@ const FacebookCreatePostComponent = ({
   onPostCreated 
 }: FacebookCreatePostProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [content, setContent] = useState("");
   
-  const { handleSubmit, isSubmitting } = useCreatePost2({
+  const { 
+    content, 
+    setContent, 
+    handleSubmit, 
+    isSubmitting 
+  } = useCreatePost2({
     groupId,
     userId: user?.id || '',
     onPostCreated: () => {
-      setContent("");
       setIsExpanded(false);
       onPostCreated();
     }
@@ -33,7 +36,7 @@ const FacebookCreatePostComponent = ({
 
   const handlePostSubmit = async () => {
     if (content.trim() && !isSubmitting) {
-      await handleSubmit(content);
+      await handleSubmit();
     }
   };
 
