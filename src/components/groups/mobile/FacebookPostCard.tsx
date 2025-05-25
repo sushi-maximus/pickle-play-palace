@@ -4,6 +4,8 @@ import { formatDistanceToNow } from "date-fns";
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { X, Check } from "lucide-react";
 import { useFacebookLike } from "./hooks/useFacebookLike";
 import { FacebookReactionSummary } from "./FacebookReactionSummary";
 import { FacebookActionBar } from "./FacebookActionBar";
@@ -11,6 +13,7 @@ import { FacebookComments } from "./FacebookComments";
 import { FacebookErrorBoundary } from "./FacebookErrorBoundary";
 import { FacebookErrorState } from "./FacebookErrorState";
 import { useComments2 } from "../posts/hooks/useComments2";
+import { useEditPost } from "../posts/hooks/useEditPost";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -36,6 +39,24 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
   
   // Check if current user is the post author
   const isOwnPost = user?.id === post.user_id;
+  
+  // Edit post functionality
+  const {
+    isEditing,
+    editableContent,
+    setEditableContent,
+    isSubmitting: isEditSubmitting,
+    startEditing,
+    cancelEditing,
+    handleUpdate
+  } = useEditPost({
+    onPostUpdated: () => {
+      // Optionally refresh the post data
+      console.log("Post updated successfully");
+    }
+  });
+  
+  const isCurrentlyEditing = isEditing && post.id;
   
   // Validate required data
   if (!post?.id || !post?.content) {
@@ -90,13 +111,20 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
   };
 
   const handleEditPost = () => {
-    console.log("Edit post clicked for post:", post.id);
-    // TODO: Implement edit functionality
+    startEditing(post.id, post.content);
   };
 
   const handleDeletePost = () => {
     console.log("Delete post clicked for post:", post.id);
     // TODO: Implement delete functionality
+  };
+
+  const handleSaveEdit = () => {
+    handleUpdate();
+  };
+
+  const handleCancelEdit = () => {
+    cancelEditing();
   };
 
   // Show error state if there's a critical error
@@ -139,7 +167,7 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
             </div>
           </div>
           
-          {isOwnPost && (
+          {isOwnPost && !isCurrentlyEditing && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -176,9 +204,49 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
 
         {/* Post Content - Enhanced readability on mobile */}
         <div className="px-4 py-3">
-          <p className="text-gray-900 text-sm sm:text-base leading-relaxed break-words whitespace-pre-wrap">
-            {post.content}
-          </p>
+          {isCurrentlyEditing ? (
+            <div className="space-y-2">
+              <Textarea
+                value={editableContent}
+                onChange={(e) => setEditableContent(e.target.value)}
+                className="w-full resize-none text-sm sm:text-base"
+                rows={3}
+                disabled={isEditSubmitting}
+              />
+              <div className="flex justify-end gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleCancelEdit}
+                  disabled={isEditSubmitting}
+                  className="text-xs sm:text-sm"
+                >
+                  <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Cancel
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={handleSaveEdit}
+                  disabled={!editableContent.trim() || isEditSubmitting}
+                  className="text-xs sm:text-sm"
+                >
+                  {isEditSubmitting ? (
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
+                      Saving...
+                    </div>
+                  ) : (
+                    <>
+                      <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Save
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-900 text-sm sm:text-base leading-relaxed break-words whitespace-pre-wrap">
+              {post.content}
+            </p>
+          )}
         </div>
 
         {/* Reaction Summary */}
