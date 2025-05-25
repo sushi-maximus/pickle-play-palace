@@ -80,7 +80,10 @@ export const fetchCommentsCount = async (postId: string): Promise<number> => {
 };
 
 export const fetchUserReactions = async (postId: string, userId?: string) => {
+  console.log(`🔍 FETCHING USER REACTIONS for post ${postId}, user: ${userId}`);
+  
   if (!userId) {
+    console.log(`❌ No userId provided, returning false for all reactions`);
     return {
       like: false,
       thumbsup: false,
@@ -89,42 +92,36 @@ export const fetchUserReactions = async (postId: string, userId?: string) => {
     };
   }
 
-  const { data: likeReaction } = await supabase
+  // Fetch all user reactions for this post in one query for efficiency
+  const { data: userReactions, error } = await supabase
     .from("reactions")
-    .select("*")
+    .select("reaction_type")
     .eq("post_id", postId)
-    .eq("user_id", userId)
-    .eq("reaction_type", "like")
-    .maybeSingle();
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error(`❌ Error fetching user reactions for post ${postId}:`, error);
+    return {
+      like: false,
+      thumbsup: false,
+      thumbsdown: false,
+      heart: false
+    };
+  }
+
+  console.log(`✅ Raw user reactions data for post ${postId}:`, userReactions);
+
+  // Convert array of reactions to boolean flags
+  const reactionTypes = userReactions?.map(r => r.reaction_type) || [];
   
-  const { data: thumbsUpReaction } = await supabase
-    .from("reactions")
-    .select("*")
-    .eq("post_id", postId)
-    .eq("user_id", userId)
-    .eq("reaction_type", "thumbsup")
-    .maybeSingle();
-  
-  const { data: thumbsDownReaction } = await supabase
-    .from("reactions")
-    .select("*")
-    .eq("post_id", postId)
-    .eq("user_id", userId)
-    .eq("reaction_type", "thumbsdown")
-    .maybeSingle();
-  
-  const { data: heartReaction } = await supabase
-    .from("reactions")
-    .select("*")
-    .eq("post_id", postId)
-    .eq("user_id", userId)
-    .eq("reaction_type", "heart")
-    .maybeSingle();
-  
-  return {
-    like: !!likeReaction,
-    thumbsup: !!thumbsUpReaction,
-    thumbsdown: !!thumbsDownReaction,
-    heart: !!heartReaction
+  const reactions = {
+    like: reactionTypes.includes("like"),
+    thumbsup: reactionTypes.includes("thumbsup"),
+    thumbsdown: reactionTypes.includes("thumbsdown"),
+    heart: reactionTypes.includes("heart")
   };
+
+  console.log(`📊 Processed user reactions for post ${postId}:`, reactions);
+
+  return reactions;
 };
