@@ -17,15 +17,45 @@ export const PostHeart2 = ({
   onClick,
   disabled = false
 }: PostHeart2Props) => {
+  
+  // CRITICAL DEBUG - Log what props the heart component receives
+  console.log(`💖 === POST HEART COMPONENT RENDER ===`);
+  console.log('Heart component props:', {
+    count,
+    isActive,
+    isSubmitting,
+    disabled,
+    onClickType: typeof onClick,
+    onClickExists: !!onClick
+  });
+
   const handleClick = () => {
-    console.log(`=== POST HEART COMPONENT CLICK ===`);
+    console.log(`💗 === POST HEART COMPONENT CLICK START ===`);
     console.log('Heart button clicked with state:', {
       count,
       isActive,
       isSubmitting,
       disabled
     });
-    onClick();
+    
+    if (disabled) {
+      console.log('❌ Heart click blocked - button disabled');
+      return;
+    }
+    
+    if (isSubmitting) {
+      console.log('❌ Heart click blocked - currently submitting');
+      return;
+    }
+    
+    console.log('✅ Heart click proceeding - calling onClick...');
+    try {
+      onClick();
+      console.log('✅ Heart onClick called successfully');
+    } catch (error) {
+      console.error('❌ Heart onClick error:', error);
+    }
+    console.log(`💗 === POST HEART COMPONENT CLICK END ===`);
   };
 
   return (

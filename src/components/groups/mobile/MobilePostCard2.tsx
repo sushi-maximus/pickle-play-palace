@@ -57,14 +57,34 @@ export const MobilePostCard2 = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
-  // Debug logging for heart button
-  console.log(`=== POST ${post.id} HEART DEBUG ===`);
-  console.log('Post heart data:', {
+  // CRITICAL DEBUG - Log the exact post data we're receiving
+  console.log(`🔍 === POST ${post.id} RAW DATA INSPECTION ===`);
+  console.log('Complete post object:', JSON.stringify(post, null, 2));
+  console.log('Heart specific data:', {
     heart_count: post.heart_count,
     user_heart: post.user_heart,
-    user_id: user?.id,
-    post_user_id: post.user_id
+    heart_count_type: typeof post.heart_count,
+    user_heart_type: typeof post.user_heart
   });
+  console.log('User data:', {
+    userId: user?.id,
+    userExists: !!user
+  });
+
+  // CRITICAL DEBUG - Log what we're passing to the hook
+  const hookParams = {
+    postId: post.id,
+    userId: user?.id,
+    initialThumbsUp: post.thumbsup_count || 0,
+    initialThumbsDown: post.thumbsdown_count || 0,
+    initialHeart: post.heart_count || 0,
+    initialUserThumbsUp: post.user_thumbsup || false,
+    initialUserThumbsDown: post.user_thumbsdown || false,
+    initialUserHeart: post.user_heart || false
+  };
+  
+  console.log(`🔧 === HOOK PARAMETERS FOR POST ${post.id} ===`);
+  console.log('Hook params:', JSON.stringify(hookParams, null, 2));
 
   const {
     thumbsUpCount,
@@ -79,23 +99,16 @@ export const MobilePostCard2 = ({
     toggleThumbsUp,
     toggleThumbsDown,
     toggleHeart
-  } = usePostReactions2({
-    postId: post.id,
-    userId: user?.id,
-    initialThumbsUp: post.thumbsup_count || 0,
-    initialThumbsDown: post.thumbsdown_count || 0,
-    initialHeart: post.heart_count || 0,
-    initialUserThumbsUp: post.user_thumbsup || false,
-    initialUserThumbsDown: post.user_thumbsdown || false,
-    initialUserHeart: post.user_heart || false
-  });
+  } = usePostReactions2(hookParams);
 
-  // Debug logging for reaction hook values
-  console.log('Reaction hook values:', {
+  // CRITICAL DEBUG - Log what the hook returned
+  console.log(`📊 === HOOK RESULTS FOR POST ${post.id} ===`);
+  console.log('Hook returned values:', {
     heartCount,
     isHeartActive,
     isHeartSubmitting,
-    toggleHeart: typeof toggleHeart
+    toggleHeartType: typeof toggleHeart,
+    toggleHeartExists: !!toggleHeart
   });
 
   const { comments, refreshComments } = useComments2({
@@ -125,16 +138,34 @@ export const MobilePostCard2 = ({
     setShowDeleteDialog(false);
   };
 
-  // Debug heart click handler
+  // CRITICAL DEBUG - Heart click handler with extensive logging
   const handleHeartClick = () => {
-    console.log(`=== HEART CLICK DEBUG FOR POST ${post.id} ===`);
-    console.log('Before heart click:', {
+    console.log(`💗 === HEART CLICK HANDLER FOR POST ${post.id} ===`);
+    console.log('Click handler called with state:', {
       heartCount,
       isHeartActive,
       isHeartSubmitting,
-      userId: user?.id
+      userId: user?.id,
+      postId: post.id
     });
-    toggleHeart();
+    
+    if (!user?.id) {
+      console.log('❌ HEART CLICK BLOCKED: No user ID');
+      return;
+    }
+    
+    if (isHeartSubmitting) {
+      console.log('❌ HEART CLICK BLOCKED: Already submitting');
+      return;
+    }
+    
+    console.log('✅ HEART CLICK PROCEEDING: Calling toggleHeart...');
+    try {
+      toggleHeart();
+      console.log('✅ HEART CLICK: toggleHeart called successfully');
+    } catch (error) {
+      console.error('❌ HEART CLICK ERROR:', error);
+    }
   };
 
   return (
