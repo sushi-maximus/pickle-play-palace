@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   GroupPost, 
@@ -9,15 +9,17 @@ import {
 } from "./types/groupPostTypes";
 import { fetchGroupInfo } from "./services/postsFetchService";
 import { enrichPostsWithCounts } from "./utils/postsMapper";
+import { queryKeys } from "@/lib/queryKeys";
 
 export type { GroupPost } from "./types/groupPostTypes";
-export type { PostReactionType } from "./usePostReactions";
+export type { PostReactionType2 } from "./usePostReactions2";
 
 export const useGroupPosts = (
   { groupId, userId }: UseGroupPostsProps
 ): UseGroupPostsResult => {
   const [refreshing, setRefreshing] = useState(false);
   const [groupName, setGroupName] = useState<string>("");
+  const queryClient = useQueryClient();
 
   // Validate group ID - must be non-empty and valid UUID
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -28,19 +30,27 @@ export const useGroupPosts = (
   console.log(`✅ Valid UUID: ${isValidUUID}`);
   console.log(`👤 User ID: ${userId}`);
   console.log(`🕐 Timestamp: ${new Date().toISOString()}`);
+  
+  // CRITICAL DEBUG - Log query key generation
+  const queryKey = queryKeys.posts.list(groupId);
+  console.log(`🔑 QUERY KEY GENERATED:`, queryKey);
+  console.log(`🔑 QUERY KEY STRING:`, JSON.stringify(queryKey));
 
   // Use React Query for posts data - only enabled with valid UUID
   const {
     data: posts = [],
     isLoading: loading,
     error,
-    refetch
+    refetch,
+    dataUpdatedAt,
+    isFetching
   } = useQuery({
-    queryKey: ['group-posts', groupId, userId],
+    queryKey: queryKey,
     queryFn: async () => {
       console.log(`\n🎯 === REACT QUERY FUNCTION EXECUTING ===`);
       console.log(`📊 Fetching posts for group: ${groupId}`);
       console.log(`👤 Current user: ${userId}`);
+      console.log(`🕐 Query function timestamp: ${new Date().toISOString()}`);
       
       try {
         // Get posts for this group
@@ -76,12 +86,21 @@ export const useGroupPosts = (
         console.log(`🎉 === REACT QUERY FUNCTION COMPLETE ===`);
         console.log(`📊 Returning ${postsWithData.length} enriched posts`);
         
-        // Log any posts with heart reactions for debugging
-        postsWithData.forEach(post => {
-          if (post.heart_count > 0 || post.user_heart) {
-            console.log(`💖 Post ${post.id} has heart reactions: count=${post.heart_count}, user_active=${post.user_heart}`);
-          }
-        });
+        // CRITICAL DEBUG - Log post 543 specifically
+        const post543 = postsWithData.find(p => p.id.includes('543') || p.content.includes('543'));
+        if (post543) {
+          console.log(`🎯 === POST 543 FOUND IN QUERY RESULT ===`);
+          console.log(`Post 543 heart data:`, {
+            id: post543.id,
+            heart_count: post543.heart_count,
+            user_heart: post543.user_heart,
+            content_preview: post543.content.substring(0, 50)
+          });
+        } else {
+          console.log(`🔍 Post 543 NOT FOUND in results. Available posts:`, 
+            postsWithData.map(p => ({ id: p.id, content: p.content.substring(0, 30) }))
+          );
+        }
         
         return postsWithData;
       } catch (err) {
@@ -93,8 +112,18 @@ export const useGroupPosts = (
     },
     enabled: Boolean(isValidUUID), // Convert to boolean and only run with valid UUID
     retry: false,
-    staleTime: 30 * 1000,
+    staleTime: 0, // CRITICAL: Set to 0 to force fresh data on navigation
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
+
+  console.log(`🔄 === QUERY STATE INFORMATION ===`);
+  console.log(`📊 Posts count: ${posts?.length || 0}`);
+  console.log(`⏳ Loading: ${loading}`);
+  console.log(`🔄 Is Fetching: ${isFetching}`);
+  console.log(`🕐 Data Updated At: ${new Date(dataUpdatedAt || 0).toISOString()}`);
+  console.log(`❌ Error: ${error?.message}`);
 
   // Manual refresh function
   const refreshPosts = useCallback(async () => {
@@ -104,8 +133,12 @@ export const useGroupPosts = (
     }
 
     console.log(`🔄 === MANUAL REFRESH TRIGGERED ===`);
+    console.log(`🗑️ Invalidating query cache for key:`, queryKey);
+    
     setRefreshing(true);
     try {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({ queryKey: queryKey });
       await refetch();
       console.log(`✅ Manual refresh completed successfully`);
     } catch (error) {
@@ -114,7 +147,7 @@ export const useGroupPosts = (
       setRefreshing(false);
       console.log(`🏁 Manual refresh process complete`);
     }
-  }, [isValidUUID, refetch]);
+  }, [isValidUUID, refetch, queryClient, queryKey]);
 
   const errorMessage = error instanceof Error ? error.message : null;
 

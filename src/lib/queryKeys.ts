@@ -12,11 +12,11 @@ export const queryKeys = {
     myGroups: (userId: string) => [...queryKeys.groups.all, 'my', userId] as const,
   },
   
-  // Posts
+  // Posts - CRITICAL: Include userId in query key for user-specific data
   posts: {
     all: ['posts'] as const,
     lists: () => [...queryKeys.posts.all, 'list'] as const,
-    list: (groupId: string) => [...queryKeys.posts.lists(), { groupId }] as const,
+    list: (groupId: string, userId?: string) => [...queryKeys.posts.lists(), { groupId, userId }] as const,
     details: () => [...queryKeys.posts.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.posts.details(), id] as const,
     comments: (postId: string) => [...queryKeys.posts.detail(postId), 'comments'] as const,
