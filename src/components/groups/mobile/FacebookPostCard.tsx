@@ -5,6 +5,7 @@ import { FacebookActionBar } from "./FacebookActionBar";
 import { FacebookComments } from "./FacebookComments";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import { useFacebookLike } from "./hooks/useFacebookLike";
 import type { GroupPost, Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -21,6 +22,17 @@ const FacebookPostCardComponent = ({ post, user, index }: FacebookPostCardProps)
     index
   });
 
+  const {
+    isLiked,
+    isSubmitting,
+    isDisabled,
+    likeCount,
+    toggleLike
+  } = useFacebookLike({
+    postId: post.id,
+    userId: user?.id
+  });
+
   const getInitials = (firstName?: string, lastName?: string) => {
     if (!firstName && !lastName) return "U";
     return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
@@ -34,6 +46,11 @@ const FacebookPostCardComponent = ({ post, user, index }: FacebookPostCardProps)
       console.error("Error formatting date:", error);
       return "Unknown time";
     }
+  };
+
+  const handleCommentClick = () => {
+    // Scroll to comments section or focus comment input
+    console.log("Comment clicked for post:", post.id);
   };
 
   return (
@@ -90,7 +107,16 @@ const FacebookPostCardComponent = ({ post, user, index }: FacebookPostCardProps)
         )}
 
         {/* Action Bar */}
-        <FacebookActionBar postId={post.id} />
+        <FacebookActionBar 
+          postId={post.id}
+          isLiked={isLiked}
+          isSubmitting={isSubmitting}
+          isDisabled={isDisabled}
+          onLikeClick={toggleLike}
+          onCommentClick={handleCommentClick}
+          user={user}
+          likeCount={likeCount}
+        />
 
         {/* Comments Section */}
         <FacebookComments 

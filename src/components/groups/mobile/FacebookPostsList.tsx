@@ -48,9 +48,7 @@ const FacebookPostsListComponent = ({
   if (!loading && (!posts || posts.length === 0)) {
     return (
       <div className="w-full">
-        <FacebookEmptyState 
-          onCreatePost={onCreatePost}
-        />
+        <FacebookEmptyState />
       </div>
     );
   }
