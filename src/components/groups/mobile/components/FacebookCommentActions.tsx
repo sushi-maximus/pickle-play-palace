@@ -1,6 +1,7 @@
 
 import { memo } from "react";
-import { Heart, MessageCircle } from "lucide-react";
+import { MessageCircle, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { FacebookCommentReactions } from "../FacebookCommentReactions";
 import type { Profile } from "../../posts/hooks/types/groupPostTypes";
 
@@ -64,38 +65,36 @@ const FacebookCommentActionsComponent = ({
         
         <button 
           onClick={handleReplyClick}
-          className="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200 active:scale-95"
+          className="text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200 active:scale-95"
         >
-          <MessageCircle className="h-3 w-3 transition-all duration-200 hover:scale-110" />
-          <span>Reply</span>
+          Reply
         </button>
         
-        {isOwner && (
-          <>
-            <button
-              onClick={onEdit}
-              className="text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200 active:scale-95"
-            >
-              Edit
-            </button>
-            <button
-              onClick={onDelete}
-              disabled={isDeleting}
-              className="text-xs font-medium text-gray-500 hover:text-red-600 hover:underline disabled:opacity-50 transition-all duration-200 active:scale-95"
-            >
-              {isDeleting ? (
-                <span className="flex items-center">
-                  <div className="animate-spin h-3 w-3 border border-red-500 border-t-transparent rounded-full mr-1"></div>
-                  Deleting...
-                </span>
-              ) : (
-                "Delete"
-              )}
-            </button>
-          </>
-        )}
-        
         <span className="text-xs text-gray-400">{timeAgo}</span>
+        
+        {isOwner && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1">
+                <MoreHorizontal className="h-3 w-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
+                <Edit className="h-3 w-3 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={onDelete} 
+                disabled={isDeleting}
+                className="cursor-pointer text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="h-3 w-3 mr-2" />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* Comment Reactions */}
