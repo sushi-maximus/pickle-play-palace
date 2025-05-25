@@ -1,5 +1,5 @@
 
-import { Activity, Users, Info, Calendar, Settings } from "lucide-react";
+import { Activity, Users, Calendar, Settings } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface GroupHorizontalTabsProps {
@@ -12,8 +12,7 @@ export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }:
   const baseTabs = [
     { id: "home2", label: "Activity", icon: Activity },
     { id: "calendar", label: "Calendar", icon: Calendar },
-    { id: "users", label: "Members", icon: Users },
-    { id: "about", label: "About", icon: Info }
+    { id: "users", label: "Members", icon: Users }
   ];
 
   // Always add Settings tab for admins

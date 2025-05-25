@@ -43,7 +43,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
 
   if (loading) {
     return (
-      <div className="border-t border-gray-100 bg-gray-50/20">
+      <div className="border-t border-gray-100 bg-gray-50/30">
         <div className="flex items-center justify-center py-6">
           <div className="flex items-center gap-2 text-gray-500">
             <div className="h-4 w-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
@@ -55,10 +55,10 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   }
 
   return (
-    <div className="border-t border-gray-100 bg-gray-50/20">
+    <div className="border-t border-gray-100 bg-gray-50/30">
       {comments && comments.length > 0 && (
         <ScrollArea className="max-h-[50vh]">
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100/50">
             {comments.map((comment) => (
               <Comment2
                 key={comment.id}
@@ -72,7 +72,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
       )}
       
       {currentUserId && user && (
-        <div className="border-t border-gray-100 bg-white">
+        <div className="border-t border-gray-100/50 bg-white">
           <CommentForm2
             content={newCommentContent}
             setContent={setNewCommentContent}

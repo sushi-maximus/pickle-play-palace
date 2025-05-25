@@ -34,17 +34,17 @@ export const CommentHeader = ({
   const timeAgo = formatDistanceToNow(new Date(createdAt), { addSuffix: true });
 
   return (
-    <div className="flex gap-2 md:gap-3">
-      <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0 mt-1">
+    <div className="flex gap-3">
+      <Avatar className="h-8 w-8 flex-shrink-0 mt-1">
         <AvatarImage src={user?.avatar_url || undefined} />
-        <AvatarFallback className="text-xs md:text-sm bg-gray-100">{initials}</AvatarFallback>
+        <AvatarFallback className="text-xs bg-gray-100">{initials}</AvatarFallback>
       </Avatar>
       
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-            <h4 className="text-sm md:text-base font-medium text-gray-900">{fullName}</h4>
-            <p className="text-xs md:text-sm text-gray-500">{timeAgo}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h4 className="text-sm font-medium text-gray-900">{fullName}</h4>
+            <p className="text-xs text-gray-500">{timeAgo}</p>
           </div>
           
           {isOwnComment && (
