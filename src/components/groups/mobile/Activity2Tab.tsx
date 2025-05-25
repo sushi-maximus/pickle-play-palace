@@ -9,6 +9,7 @@ import { FacebookErrorFallback } from "./FacebookErrorFallback";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import { FacebookCreatePost } from "./FacebookCreatePost";
 import { FacebookPostsList } from "./FacebookPostsList";
+import { TextInputDemo } from "./TextInputDemo";
 
 interface Activity2TabProps {
   groupId: string;
@@ -18,6 +19,7 @@ interface Activity2TabProps {
 
 const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabProps) => {
   const [retryKey, setRetryKey] = useState(0);
+  const [showComparison, setShowComparison] = useState(true);
   
   console.log("Activity2Tab - Rendering with:", { groupId, userId: user?.id });
 
@@ -29,6 +31,25 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
         description="Group information is missing. Please try navigating back and selecting a group again."
         showRetry={false}
       />
+    );
+  }
+
+  // Show comparison demo first
+  if (showComparison) {
+    return (
+      <div className="flex-1 bg-gray-50 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          <div className="p-4 bg-white border-b">
+            <button
+              onClick={() => setShowComparison(false)}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              ← Back to Activity Feed
+            </button>
+          </div>
+          <TextInputDemo />
+        </div>
+      </div>
     );
   }
 
@@ -82,6 +103,16 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
         <FacebookNetworkStatus />
         
         <div className="max-w-2xl mx-auto h-full flex flex-col">
+          {/* Demo Button */}
+          <div className="flex-shrink-0 p-2 bg-blue-50 border-b">
+            <button
+              onClick={() => setShowComparison(true)}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              🔍 View Text Input Comparison
+            </button>
+          </div>
+
           {/* Facebook-style Create Post Section - Fixed positioning with safe area support */}
           <div className="flex-shrink-0 sticky top-0 z-10 pt-safe">
             <FacebookCreatePost 
