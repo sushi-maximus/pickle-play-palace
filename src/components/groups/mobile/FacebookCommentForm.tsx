@@ -1,5 +1,5 @@
 
-import { memo } from "react";
+import { useState, memo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAddComment2 } from "../posts/hooks/useAddComment2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
@@ -15,10 +15,15 @@ const FacebookCommentFormComponent = ({
   user, 
   onCommentAdded 
 }: FacebookCommentFormProps) => {
-  const { content, setContent, handleSubmit, isSubmitting } = useAddComment2({
+  const [content, setContent] = useState("");
+
+  const { handleSubmit, isSubmitting } = useAddComment2({
     postId,
     userId: user.id,
-    onCommentAdded
+    onCommentAdded: () => {
+      setContent("");
+      onCommentAdded?.();
+    }
   });
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -56,7 +61,7 @@ const FacebookCommentFormComponent = ({
           onKeyPress={handleKeyPress}
           placeholder="Write a comment..."
           disabled={isSubmitting}
-          className="w-full px-3 py-2 text-sm bg-gray-100 border-0 rounded-full focus:outline-none focus:ring-0 placeholder-gray-500"
+          className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
         />
       </div>
     </form>
