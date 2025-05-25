@@ -47,13 +47,15 @@ export const GroupMemberCard = ({
             </Avatar>
             
             <div className="flex-1">
-              <div className="font-medium flex items-center gap-1 md:gap-2">
-                <span className="text-sm md:text-base">{member.profiles.first_name} {member.profiles.last_name}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-sm md:text-base">
+                  {member.profiles.first_name} {member.profiles.last_name}
+                </span>
                 {member.role === "admin" && (
                   <Badge className="text-xs">Admin</Badge>
                 )}
               </div>
-              <p className="text-xs md:text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
                 Joined {formatDistanceToNow(new Date(member.joined_at), { addSuffix: true })}
               </p>
             </div>
