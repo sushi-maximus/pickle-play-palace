@@ -1,4 +1,3 @@
-
 import { memo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useEditComment2 } from "../posts/hooks/useEditComment2";
@@ -8,6 +7,7 @@ import { useCommentThumbsDown2 } from "../posts/hooks/reactions/useCommentThumbs
 import { FacebookCommentContent } from "./components/FacebookCommentContent";
 import { FacebookCommentEditForm } from "./components/FacebookCommentEditForm";
 import { FacebookCommentActions } from "./components/FacebookCommentActions";
+import { DeleteCommentDialog2 } from "../posts/post-card/DeleteCommentDialog2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface Comment {
@@ -39,6 +39,7 @@ const FacebookCommentCardComponent = ({
   user, 
   onCommentUpdated 
 }: FacebookCommentCardProps) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
   const isOwner = user?.id === comment.user_id;
 
@@ -87,11 +88,13 @@ const FacebookCommentCardComponent = ({
     startEditing(comment.id, comment.content);
   };
 
-  const handleDeleteClick = async () => {
-    if (window.confirm("Are you sure you want to delete this comment?")) {
-      console.log("Deleting comment:", comment.id);
-      await handleDelete(comment.id);
-    }
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    await handleDelete(comment.id);
+    setShowDeleteDialog(false);
   };
 
   const handleSaveEdit = async () => {
@@ -109,47 +112,57 @@ const FacebookCommentCardComponent = ({
   };
 
   return (
-    <div className="flex space-x-2">
-      {/* Comment Avatar */}
-      <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0"></div>
-      
-      {/* Comment Content */}
-      <div className="flex-1">
-        {isEditing ? (
-          <FacebookCommentEditForm
-            comment={comment}
-            editableContent={editableContent}
-            setEditableContent={setEditableContent}
-            isSubmitting={isEditSubmitting}
-            onSave={handleSaveEdit}
-            onCancel={cancelEditing}
-            onKeyPress={handleKeyPress}
-          />
-        ) : (
-          <FacebookCommentContent comment={comment} />
-        )}
+    <>
+      <div className="flex space-x-2">
+        {/* Comment Avatar */}
+        <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0"></div>
         
-        {/* Comment Actions */}
-        {!isEditing && (
-          <FacebookCommentActions
-            timeAgo={timeAgo}
-            isOwner={isOwner}
-            isDeleting={isDeleting}
-            user={user}
-            thumbsUpCount={thumbsUpHook.thumbsUpCount}
-            thumbsDownCount={thumbsDownHook.thumbsDownCount}
-            isThumbsUpActive={thumbsUpHook.isThumbsUpActive}
-            isThumbsDownActive={thumbsDownHook.isThumbsDownActive}
-            isThumbsUpSubmitting={thumbsUpHook.isThumbsUpSubmitting}
-            isThumbsDownSubmitting={thumbsDownHook.isThumbsDownSubmitting}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
-            onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
-          />
-        )}
+        {/* Comment Content */}
+        <div className="flex-1">
+          {isEditing ? (
+            <FacebookCommentEditForm
+              comment={comment}
+              editableContent={editableContent}
+              setEditableContent={setEditableContent}
+              isSubmitting={isEditSubmitting}
+              onSave={handleSaveEdit}
+              onCancel={cancelEditing}
+              onKeyPress={handleKeyPress}
+            />
+          ) : (
+            <FacebookCommentContent comment={comment} />
+          )}
+          
+          {/* Comment Actions */}
+          {!isEditing && (
+            <FacebookCommentActions
+              timeAgo={timeAgo}
+              isOwner={isOwner}
+              isDeleting={isDeleting}
+              user={user}
+              thumbsUpCount={thumbsUpHook.thumbsUpCount}
+              thumbsDownCount={thumbsDownHook.thumbsDownCount}
+              isThumbsUpActive={thumbsUpHook.isThumbsUpActive}
+              isThumbsDownActive={thumbsDownHook.isThumbsDownActive}
+              isThumbsUpSubmitting={thumbsUpHook.isThumbsUpSubmitting}
+              isThumbsDownSubmitting={thumbsDownHook.isThumbsDownSubmitting}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteClick}
+              onThumbsUpClick={thumbsUpHook.toggleThumbsUp}
+              onThumbsDownClick={thumbsDownHook.toggleThumbsDown}
+            />
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteCommentDialog2
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        isSubmitting={isDeleting}
+      />
+    </>
   );
 };
 
