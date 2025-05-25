@@ -45,9 +45,7 @@ const Profile = () => {
           title="Profile" 
           showMobileProfileHeader={false}
         >
-          <div className="px-3 md:px-6">
-            <ProfileSkeleton />
-          </div>
+          <ProfileSkeleton />
         </AppLayout>
       </RouteErrorBoundary>
     );
@@ -84,9 +82,9 @@ const Profile = () => {
     <RouteErrorBoundary routeName="Profile">
       <AppLayout 
         title="Profile" 
-        showMobileProfileHeader={false}
+        showMobileProfileHeader={true}
       >
-        <div className="px-3 md:px-6 py-4 space-y-6">
+        <div className="animate-fade-in">
           {profile ? (
             <>
               <ProfileContent 

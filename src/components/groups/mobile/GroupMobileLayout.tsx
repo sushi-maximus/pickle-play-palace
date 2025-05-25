@@ -41,8 +41,8 @@ export const GroupMobileLayout = ({
         />
       </div>
       
-      {/* Content Area with proper spacing for header and horizontal tabs - REMOVED PADDING */}
-      <div className="flex-1 pt-28 pb-20 w-full">
+      {/* Content Area with proper spacing for header and horizontal tabs */}
+      <div className="flex-1 pt-28 pb-20">
         {children}
       </div>
       
