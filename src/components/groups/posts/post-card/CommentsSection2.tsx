@@ -53,7 +53,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   return (
     <div className="border-t border-gray-100 bg-gray-50">
       {comments && comments.length > 0 && (
-        <div className="max-h-96 overflow-y-auto bg-white">
+        <div className="max-h-96 overflow-y-auto bg-white border-l-4 border-gray-200 ml-6">
           {comments.map((comment) => (
             <Comment2
               key={comment.id}
@@ -66,7 +66,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
       )}
       
       {currentUserId && user && (
-        <div className="bg-white border-t border-gray-100">
+        <div className="bg-white border-t border-gray-100 border-l-4 border-gray-200 ml-6">
           <CommentForm2
             content={newCommentContent}
             setContent={setNewCommentContent}

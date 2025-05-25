@@ -71,12 +71,14 @@ export const MobilePostHeader = ({
         </Avatar>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm md:text-base text-gray-900 truncate">
-            {displayName}
-          </h3>
-          <p className="text-xs md:text-sm text-gray-500">
-            {timeAgo}
-          </p>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-sm md:text-base text-gray-900">
+              {displayName}
+            </h3>
+            <p className="text-xs md:text-sm text-gray-500">
+              {timeAgo}
+            </p>
+          </div>
         </div>
       </div>
       
