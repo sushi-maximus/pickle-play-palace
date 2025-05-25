@@ -1,57 +1,53 @@
 
-import React from "react";
-import { Button } from "@/components/ui/button";
+import { memo } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PostContentProps {
   content: string;
   mediaUrls?: string[] | null;
-  isEditing: boolean;
-  editableContent: string;
-  setEditableContent: (content: string) => void;
-  onCancelEditing: () => void;
-  onSaveEditing: () => void;
-  isEditSubmitting: boolean;
+  isEditing?: boolean;
+  editableContent?: string;
+  setEditableContent?: (content: string) => void;
+  onCancelEditing?: () => void;
+  onSaveEditing?: () => void;
+  isEditSubmitting?: boolean;
 }
 
-export const PostContent = ({
+const PostContentComponent = ({
   content,
   mediaUrls,
-  isEditing,
-  editableContent,
+  isEditing = false,
+  editableContent = "",
   setEditableContent,
   onCancelEditing,
   onSaveEditing,
-  isEditSubmitting
+  isEditSubmitting = false
 }: PostContentProps) => {
   if (isEditing) {
     return (
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Textarea
           value={editableContent}
-          onChange={(e) => setEditableContent(e.target.value)}
-          className="w-full resize-none text-sm md:text-base"
-          rows={3}
-          disabled={isEditSubmitting}
+          onChange={(e) => setEditableContent?.(e.target.value)}
+          className="min-h-[100px] resize-none border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          placeholder="What's on your mind?"
         />
-        <div className="flex justify-end gap-1 md:gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+        <div className="flex justify-end space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onCancelEditing}
             disabled={isEditSubmitting}
-            className="text-xs md:text-sm px-2 md:px-3"
           >
-            <X className="h-3 w-3 md:h-4 md:w-4 mr-1" /> Cancel
+            Cancel
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             onClick={onSaveEditing}
-            disabled={!editableContent.trim() || isEditSubmitting}
-            className="text-xs md:text-sm px-2 md:px-3"
+            disabled={isEditSubmitting || !editableContent.trim()}
           >
-            <Check className="h-3 w-3 md:h-4 md:w-4 mr-1" /> Save
+            {isEditSubmitting ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>
@@ -59,24 +55,29 @@ export const PostContent = ({
   }
 
   return (
-    <div className="ml-12 md:ml-14">
-      <div className="bg-blue-50 p-3 rounded-lg">
-        <p className="text-sm md:text-base text-gray-900 whitespace-pre-line leading-relaxed">{content}</p>
+    <div className="space-y-4">
+      <div className="px-1 py-2">
+        <p className="text-gray-900 text-base leading-relaxed whitespace-pre-wrap break-words">
+          {content}
+        </p>
       </div>
       
       {mediaUrls && mediaUrls.length > 0 && (
-        <div className="mt-2 md:mt-3 grid gap-1 md:gap-2 grid-cols-1 sm:grid-cols-2">
+        <div className="space-y-3">
           {mediaUrls.map((url, index) => (
-            <img
-              key={index}
-              src={url}
-              alt={`Post attachment ${index + 1}`}
-              className="rounded-md w-full object-cover"
-              style={{ maxHeight: "250px" }}
-            />
+            <div key={index} className="rounded-lg overflow-hidden border border-gray-200">
+              <img
+                src={url}
+                alt={`Post media ${index + 1}`}
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
+            </div>
           ))}
         </div>
       )}
     </div>
   );
 };
+
+export const PostContent = memo(PostContentComponent);
