@@ -18,10 +18,16 @@ const FacebookCommentsComponent = ({
   user, 
   onCommentAdded 
 }: FacebookCommentsProps) => {
-  const { comments, loading, error } = useComments2({
+  const { comments, loading, error, refreshComments } = useComments2({
     postId,
     userId: user?.id
   });
+
+  const handleCommentUpdated = () => {
+    console.log("Comment updated/deleted, refreshing comments list");
+    refreshComments();
+    onCommentAdded?.(); // Also notify parent if needed
+  };
 
   if (loading) {
     return (
@@ -55,6 +61,7 @@ const FacebookCommentsComponent = ({
                 key={comment.id}
                 comment={comment}
                 user={user}
+                onCommentUpdated={handleCommentUpdated}
               />
             ))}
           </div>
@@ -67,7 +74,7 @@ const FacebookCommentsComponent = ({
           <FacebookCommentForm
             postId={postId}
             user={user}
-            onCommentAdded={onCommentAdded}
+            onCommentAdded={handleCommentUpdated}
           />
         </div>
       )}
@@ -78,7 +85,7 @@ const FacebookCommentsComponent = ({
           <FacebookCommentForm
             postId={postId}
             user={user}
-            onCommentAdded={onCommentAdded}
+            onCommentAdded={handleCommentUpdated}
           />
         </div>
       )}

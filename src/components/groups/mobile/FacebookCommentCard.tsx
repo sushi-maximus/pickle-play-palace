@@ -55,7 +55,10 @@ const FacebookCommentCardComponent = ({
   });
 
   const { handleDelete, isDeleting } = useDeleteComment2({
-    onCommentDeleted: onCommentUpdated
+    onCommentDeleted: () => {
+      console.log("Comment deleted, refreshing comments list");
+      onCommentUpdated?.();
+    }
   });
 
   // Initialize thumbs down hook first
@@ -86,6 +89,7 @@ const FacebookCommentCardComponent = ({
 
   const handleDeleteClick = async () => {
     if (window.confirm("Are you sure you want to delete this comment?")) {
+      console.log("Deleting comment:", comment.id);
       await handleDelete(comment.id);
     }
   };
