@@ -52,6 +52,26 @@ const FacebookActionBarComponent = ({
     return count.toString();
   };
 
+  const getLikeText = () => {
+    if (likeCount === 0) {
+      return isLiked ? 'Liked' : 'Like';
+    } else if (likeCount === 1) {
+      return '1 like';
+    } else {
+      return `${formatCount(likeCount)} likes`;
+    }
+  };
+
+  const getCommentText = () => {
+    if (commentsCount === 0) {
+      return 'Comment';
+    } else if (commentsCount === 1) {
+      return '1 comment';
+    } else {
+      return `${formatCount(commentsCount)} comments`;
+    }
+  };
+
   return (
     <div className="flex items-center border-t border-gray-200 bg-gray-50">
       {/* Like Button */}
@@ -75,10 +95,7 @@ const FacebookActionBarComponent = ({
             }`} 
           />
           <span className="font-medium text-sm sm:text-base">
-            {isLiked ? 'Liked' : 'Like'}
-            {likeCount > 0 && (
-              <span className="ml-1">({formatCount(likeCount)})</span>
-            )}
+            {getLikeText()}
           </span>
         </div>
       </button>
@@ -94,10 +111,7 @@ const FacebookActionBarComponent = ({
         <div className="flex items-center space-x-2">
           <MessageCircle className="h-5 w-5" />
           <span className="font-medium text-sm sm:text-base">
-            Comment
-            {commentsCount > 0 && (
-              <span className="ml-1">({formatCount(commentsCount)})</span>
-            )}
+            {getCommentText()}
           </span>
         </div>
       </button>
