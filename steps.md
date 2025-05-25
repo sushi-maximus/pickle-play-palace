@@ -1,363 +1,267 @@
 
-# Mobile-First Activity Design System - Chunked Implementation Plan
+# Mobile-Specific UI Patterns Enhancement Plan
 
 ## OVERVIEW
-This document outlines a step-by-step mobile-first design system implementation for the activity section, broken into small, manageable chunks to prevent errors and ensure smooth execution.
+This document outlines the implementation plan for advanced mobile-specific UI patterns to create a more native mobile app experience while maintaining desktop compatibility.
 
 ## IMPLEMENTATION APPROACH
-- Each chunk focuses on 1-2 specific components
-- Changes are isolated to prevent cascading errors
-- Testing after each chunk before proceeding
-- Incremental improvements maintaining existing functionality
+- Replace modal dialogs with bottom sheets on mobile
+- Add floating action button for quick post creation
+- Implement sticky comment input with smart positioning
+- Create enhanced mobile action patterns with gestures
+- Build improved sheet-based workflows
 
 ---
 
-## CHUNK 1: Tab Navigation Touch Targets
-**Target:** `src/components/groups/mobile/GroupHorizontalTabs.tsx`
-**Focus:** Fix touch target sizing and basic mobile accessibility
+## PHASE 1: Bottom Action Sheets Instead of Modal Dialogs
+**Target:** Replace current modal dialogs with mobile-friendly bottom sheets
+
+### Components to Update:
+- `src/components/groups/posts/post-card/DeletePostDialog.tsx`
+- `src/components/groups/posts/post-card/DeleteCommentDialog2.tsx`
+- `src/components/groups/JoinRequestDialog.tsx`
 
 ### Changes:
-- Increase tab button height to minimum 48px
-- Add proper touch-friendly padding
-- Implement basic hover/active states
-- Add transition animations
+- Create responsive dialog wrapper that switches between modal (desktop) and bottom sheet (mobile)
+- Use existing `Sheet` component with `side="bottom"` for mobile
+- Add proper backdrop blur effects and touch-to-dismiss functionality
+- Implement smooth slide-up animations
+- Maintain all existing functionality while improving mobile UX
 
 ### Success Criteria:
-- All tabs meet 48px minimum touch target
-- Smooth transitions on state changes
-- Proper visual feedback on tap
+- Dialogs appear as bottom sheets on mobile screens (< 768px)
+- Dialogs remain as modals on desktop screens
+- Smooth animations and proper touch interactions
+- All existing functionality preserved
 
 ### How to Verify Success:
-1. Navigate to `/groups/:id` (any group page)
-2. Use browser dev tools to inspect tab button heights - should be minimum 48px
-3. Tap each tab on mobile/touch device - should feel responsive
-4. Check that active tab has clear visual distinction
-5. Verify smooth transitions when switching between tabs
+1. Navigate to `/groups/:id` and try to delete a post on mobile - should see bottom sheet
+2. Try the same action on desktop - should see modal dialog
+3. Test touch-to-dismiss functionality on mobile
+4. Verify all dialog content and actions work properly
+5. Check animation smoothness during open/close
 
 ---
 
-## CHUNK 2: Tab Navigation Visual States
-**Target:** `src/components/groups/mobile/GroupHorizontalTabs.tsx`
-**Focus:** Implement proper active/inactive visual states
+## PHASE 2: Floating Action Button for Post Creation
+**Target:** Add a fixed FAB for quick post creation
+
+### New Components to Create:
+- `src/components/groups/mobile/FloatingActionButton.tsx`
+- `src/components/groups/mobile/QuickPostSheet.tsx`
 
 ### Changes:
-- Replace border-based active state with background
-- Add semantic color system for states
-- Improve contrast ratios for accessibility
-- Add focus indicators for keyboard navigation
+- Create a floating action button positioned in bottom-right corner
+- Position above bottom navigation but below sheets/modals (z-index management)
+- Add smooth slide-up animation for post creation sheet
+- Integrate with existing `CreatePostForm2` functionality
+- Include proper touch targets and accessibility
 
 ### Success Criteria:
-- Clear visual distinction between active/inactive tabs
-- WCAG AA contrast compliance
-- Keyboard navigation support
+- FAB visible and accessible on mobile group pages
+- Opens quick post creation sheet with smooth animation
+- Proper layering with existing UI elements
+- Touch-friendly and accessible
 
 ### How to Verify Success:
-1. Navigate to `/groups/:id` and observe tab visual states
-2. Active tab should have background highlight (not just border)
-3. Use Tab key to navigate - focus indicators should be visible
-4. Test contrast with browser accessibility tools
-5. Verify inactive tabs have subtle hover effects
+1. Navigate to `/groups/:id` and see FAB in bottom-right corner
+2. Tap FAB and verify post creation sheet slides up smoothly
+3. Test post creation functionality works as expected
+4. Verify FAB doesn't interfere with bottom navigation
+5. Check z-index layering with other UI elements
 
 ---
 
-## CHUNK 3: Main Reaction Buttons - ThumbsUp2
-**Target:** `src/components/groups/posts/post-card/ThumbsUp2.tsx`
-**Focus:** Fix touch targets and visual states for thumbs up
+## PHASE 3: Sticky Comment Input with Smart Positioning
+**Target:** Make comment input follow scroll behavior intelligently
+
+### Components to Update:
+- `src/components/groups/posts/post-card/CommentsSection2.tsx`
+- `src/components/groups/posts/post-card/CommentForm2.tsx`
+
+### New Components to Create:
+- `src/components/groups/mobile/StickyCommentInput.tsx`
 
 ### Changes:
-- Ensure 48px minimum touch target
-- Implement proper loading states
-- Add smooth transitions
-- Improve active/inactive visual feedback
+- Implement sticky positioning for comment input when comments are open
+- Add smooth transitions when toggling between states
+- Ensure compatibility with virtual keyboard on mobile
+- Maintain existing comment functionality
+- Add smart scroll behavior detection
 
 ### Success Criteria:
-- 48px touch target compliance
-- Smooth loading animations
-- Clear visual feedback
+- Comment input stays accessible at bottom when comments section is open
+- Smooth transitions between sticky and normal positioning
+- Works well with mobile virtual keyboard
+- No interference with other UI elements
 
 ### How to Verify Success:
-1. Go to `/groups/:id` and view posts with thumbs up buttons
-2. Inspect button size - should be minimum 48px x 48px
-3. Click thumbs up button and verify loading state appears
-4. Check that active state is visually distinct
-5. Verify smooth transition animations on state changes
+1. Navigate to `/groups/:id` and open comments on a post
+2. Scroll through comments and verify input stays accessible
+3. Test virtual keyboard interaction on mobile device
+4. Verify smooth transitions when opening/closing comments
+5. Check comment submission functionality still works
 
 ---
 
-## CHUNK 4: Main Reaction Buttons - ThumbsDown2
-**Target:** `src/components/groups/posts/post-card/ThumbsDown2.tsx`
-**Focus:** Fix touch targets and visual states for thumbs down
+## PHASE 4: Enhanced Mobile Action Patterns
+**Target:** Implement gesture-based interactions for better mobile UX
+
+### New Components to Create:
+- `src/components/groups/mobile/SwipeablePostCard.tsx`
+- `src/components/groups/mobile/LongPressMenu.tsx`
+- `src/components/groups/mobile/hooks/useSwipeGestures.ts`
+- `src/components/groups/mobile/hooks/useLongPress.ts`
 
 ### Changes:
-- Ensure 48px minimum touch target
-- Implement proper loading states
-- Add smooth transitions
-- Improve active/inactive visual feedback
+- Add swipe-to-react gestures on post cards
+- Implement long-press context menus for quick actions
+- Create haptic feedback hooks (ready for Capacitor integration)
+- Add visual feedback for gesture recognition
+- Maintain all existing functionality while adding gesture support
 
 ### Success Criteria:
-- 48px touch target compliance
-- Smooth loading animations
-- Clear visual feedback
+- Swipe right on posts to quickly like/react
+- Long-press on posts shows context menu
+- Visual feedback during gesture interactions
+- Haptic feedback hooks ready for mobile integration
+- No interference with existing touch interactions
 
 ### How to Verify Success:
-1. Go to `/groups/:id` and view posts with thumbs down buttons
-2. Inspect button size - should be minimum 48px x 48px
-3. Click thumbs down button and verify loading state appears
-4. Check that active state is visually distinct
-5. Verify smooth transition animations on state changes
+1. Navigate to `/groups/:id` and try swiping right on posts
+2. Long-press on posts to see context menu
+3. Verify existing touch interactions still work
+4. Test visual feedback during gestures
+5. Check that gestures don't interfere with scrolling
 
 ---
 
-## CHUNK 5: Main Reaction Buttons - PostHeart2
-**Target:** `src/components/groups/posts/post-card/PostHeart2.tsx`
-**Focus:** Fix touch targets and visual states for heart reactions
+## PHASE 5: Improved Sheet-Based Workflows
+**Target:** Create unified sheet patterns for mobile workflows
+
+### New Components to Create:
+- `src/components/groups/mobile/ActionSheet.tsx`
+- `src/components/groups/mobile/SettingsSheet.tsx`
+- `src/components/groups/mobile/ResponsiveDialog.tsx`
 
 ### Changes:
-- Ensure 48px minimum touch target
-- Implement proper loading states
-- Add smooth transitions
-- Improve active/inactive visual feedback
+- Create reusable action sheet component for common actions
+- Convert settings forms to use bottom sheets on mobile
+- Add slide-up animations and backdrop blur effects
+- Implement unified touch-to-dismiss functionality
+- Create responsive dialog wrapper for consistent behavior
 
 ### Success Criteria:
-- 48px touch target compliance
-- Smooth loading animations
-- Clear visual feedback
+- Unified action sheet patterns across the app
+- Consistent animations and interactions
+- Proper backdrop and blur effects
+- Touch-friendly dismissal patterns
+- Seamless mobile-to-desktop responsive behavior
 
 ### How to Verify Success:
-1. Go to `/groups/:id` and view posts with heart buttons
-2. Inspect button size - should be minimum 48px x 48px
-3. Click heart button and verify loading state appears
-4. Check that active state shows filled heart with proper color
-5. Verify smooth transition animations on state changes
+1. Navigate to group settings and verify bottom sheet on mobile
+2. Test various action sheets throughout the app
+3. Verify consistent animation patterns
+4. Test touch-to-dismiss functionality
+5. Check responsive behavior between mobile and desktop
 
 ---
 
-## CHUNK 6: Comment Reaction Buttons - ThumbsUp
-**Target:** `src/components/groups/posts/post-card/CommentThumbsUp2.tsx`
-**Focus:** Fix comment-level reaction touch targets
+## DESIGN TOKENS FOR MOBILE PATTERNS
 
-### Changes:
-- Ensure 44px minimum touch target for secondary actions
-- Implement proper loading states
-- Add smooth transitions
-- Improve spacing and alignment
-
-### Success Criteria:
-- 44px touch target compliance
-- Consistent with main reactions
-- Proper spacing within comment actions
-
-### How to Verify Success:
-1. Go to `/groups/:id` and expand comments on any post
-2. Inspect comment thumbs up button size - should be minimum 44px x 44px
-3. Click button and verify loading state
-4. Check spacing between comment action buttons
-5. Verify visual consistency with main post reactions
-
----
-
-## CHUNK 7: Comment Reaction Buttons - ThumbsDown
-**Target:** `src/components/groups/posts/post-card/CommentThumbsDown2.tsx`
-**Focus:** Fix comment-level reaction touch targets
-
-### Changes:
-- Ensure 44px minimum touch target for secondary actions
-- Implement proper loading states
-- Add smooth transitions
-- Improve spacing and alignment
-
-### Success Criteria:
-- 44px touch target compliance
-- Consistent with main reactions
-- Proper spacing within comment actions
-
-### How to Verify Success:
-1. Go to `/groups/:id` and expand comments on any post
-2. Inspect comment thumbs down button size - should be minimum 44px x 44px
-3. Click button and verify loading state
-4. Check spacing between comment action buttons
-5. Verify visual consistency with main post reactions
-
----
-
-## CHUNK 8: Post Card Container Design
-**Target:** `src/components/groups/mobile/MobilePostCard2.tsx`
-**Focus:** Implement proper card container with visual separation
-
-### Changes:
-- Add card container with shadow and border
-- Implement proper mobile-first padding
-- Improve content spacing and hierarchy
-- Add visual separation between posts
-
-### Success Criteria:
-- Clear visual card boundaries
-- Proper content hierarchy
-- Consistent spacing system
-
-### How to Verify Success:
-1. Go to `/groups/:id` and view the posts feed
-2. Each post should have clear card boundaries with shadows
-3. Check padding consistency across all posts
-4. Verify visual separation between individual posts
-5. Test on different screen sizes for responsive behavior
-
----
-
-## CHUNK 9: Post List Layout & Spacing
-**Target:** `src/components/groups/mobile/MobilePostsList.tsx`
-**Focus:** Optimize overall list layout and spacing
-
-### Changes:
-- Implement consistent gap between posts
-- Optimize padding for mobile screens
-- Improve scroll performance
-- Add proper container spacing
-
-### Success Criteria:
-- Consistent spacing throughout list
-- Smooth scrolling performance
-- Optimized for mobile viewports
-
-### How to Verify Success:
-1. Go to `/groups/:id` and scroll through posts
-2. Check that gaps between posts are consistent
-3. Verify smooth scrolling on mobile devices
-4. Test container padding on different screen sizes
-5. Check for any layout shifts or performance issues
-
----
-
-## CHUNK 10: Post Reactions Container
-**Target:** `src/components/groups/posts/post-card/PostReactions2.tsx`
-**Focus:** Improve reaction buttons layout and spacing
-
-### Changes:
-- Optimize spacing between reaction buttons
-- Ensure consistent alignment
-- Improve responsive behavior
-- Add proper touch-friendly gaps
-
-### Success Criteria:
-- Proper spacing between buttons
-- No overlap on small screens
-- Consistent alignment
-
-### How to Verify Success:
-1. Go to `/groups/:id` and view post reaction sections
-2. Check spacing between thumbs up, thumbs down, and heart buttons
-3. Test on narrow screens to ensure no button overlap
-4. Verify consistent alignment across all posts
-5. Test touch interaction feels natural
-
----
-
-## CHUNK 11: Comment Actions Layout
-**Target:** `src/components/groups/posts/post-card/CommentActions.tsx`
-**Focus:** Optimize comment-level actions spacing
-
-### Changes:
-- Improve spacing between comment reaction buttons
-- Ensure proper mobile-first responsive design
-- Add consistent gap patterns
-- Optimize for touch interaction
-
-### Success Criteria:
-- Proper spacing between comment actions
-- Touch-friendly interaction areas
-- Consistent with post-level actions
-
-### How to Verify Success:
-1. Go to `/groups/:id` and expand comments on posts
-2. Check spacing between comment thumbs up/down buttons
-3. Verify touch targets don't overlap
-4. Compare spacing consistency with main post reactions
-5. Test on various screen sizes
-
----
-
-## CHUNK 12: Comments Section Mobile Optimization
-**Target:** `src/components/groups/posts/post-card/CommentsSection2.tsx`
-**Focus:** Optimize comments display for mobile
-
-### Changes:
-- Improve mobile scroll behavior
-- Optimize comment spacing
-- Add proper mobile-first padding
-- Improve loading states
-
-### Success Criteria:
-- Smooth mobile scrolling
-- Optimized content density
-- Clear loading feedback
-
-### How to Verify Success:
-1. Go to `/groups/:id` and interact with comments sections
-2. Scroll through long comment threads smoothly
-3. Check spacing between individual comments
-4. Verify loading states when comments are being fetched
-5. Test comment density feels appropriate for mobile
-
----
-
-## DESIGN TOKENS (Applied Throughout)
-
-### Touch Targets
+### Sheet Animations
 ```css
-/* Primary actions (post reactions) */
-.touch-target-primary { min-height: 48px; min-width: 48px; }
+/* Slide-up animation for bottom sheets */
+.sheet-slide-up {
+  transform: translateY(100%);
+  transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+}
 
-/* Secondary actions (comment reactions) */
-.touch-target-secondary { min-height: 44px; min-width: 44px; }
+.sheet-slide-up.open {
+  transform: translateY(0);
+}
 ```
 
-### Spacing System
+### Floating Action Button
 ```css
-/* Mobile-first spacing */
-.spacing-mobile-container { padding: 0.75rem; }
-.spacing-mobile-gap { gap: 0.75rem; }
-.spacing-mobile-section { margin-bottom: 1rem; }
+/* FAB positioning and animation */
+.fab-container {
+  position: fixed;
+  bottom: 80px; /* Above bottom navigation */
+  right: 16px;
+  z-index: 40;
+  transform: scale(0);
+  transition: transform 200ms ease-out;
+}
 
-/* Desktop spacing */
-.spacing-desktop-container { padding: 1.5rem; }
-.spacing-desktop-gap { gap: 1rem; }
-.spacing-desktop-section { margin-bottom: 1.5rem; }
+.fab-container.visible {
+  transform: scale(1);
+}
 ```
 
-### Color System
+### Gesture Feedback
 ```css
-/* Semantic colors for states */
-.state-active-primary { background: hsl(var(--primary) / 0.1); color: hsl(var(--primary)); }
-.state-hover-primary { background: hsl(var(--primary) / 0.05); }
-.state-active-blue { background: hsl(217 91% 60% / 0.1); color: hsl(217 91% 60%); }
-.state-active-red { background: hsl(0 84% 60% / 0.1); color: hsl(0 84% 60%); }
+/* Visual feedback for gestures */
+.swipe-feedback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 200ms ease-out;
+}
+
+.swipe-feedback.active {
+  transform: translateX(0);
+}
 ```
 
-### Transitions
+### Backdrop Effects
 ```css
-/* Standard transitions */
-.transition-standard { transition: all 200ms ease-in-out; }
-.transition-touch { transition: transform 150ms ease-out; }
-.transition-color { transition: background-color 200ms ease-in-out, color 200ms ease-in-out; }
+/* Enhanced backdrop for sheets */
+.sheet-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  transition: all 200ms ease-out;
+}
+```
+
+## RESPONSIVE BREAKPOINTS
+
+### Mobile-First Approach
+- **Mobile**: < 768px (use sheets, FAB, sticky inputs)
+- **Tablet**: 768px - 1024px (hybrid approach)
+- **Desktop**: > 1024px (use modals, traditional patterns)
+
+### Component Switching Logic
+```typescript
+const isMobile = window.innerWidth < 768;
+const DialogComponent = isMobile ? BottomSheet : Modal;
 ```
 
 ## TESTING CHECKLIST
 
-### After Each Chunk:
-- [ ] Component renders without errors
-- [ ] Touch targets meet minimum requirements
-- [ ] Visual states work correctly
-- [ ] Responsive design functions properly
+### After Each Phase:
+- [ ] Component renders without errors on mobile and desktop
+- [ ] Responsive switching works correctly
+- [ ] Animations are smooth and performant
+- [ ] Touch interactions feel natural
 - [ ] No regression in existing functionality
+- [ ] Accessibility requirements met
 
-### Final Validation:
-- [ ] All touch targets 48px+ (primary) or 44px+ (secondary)
-- [ ] Consistent spacing throughout activity section
-- [ ] Smooth animations and transitions
-- [ ] WCAG AA contrast compliance
-- [ ] Keyboard navigation support
-- [ ] Mobile-first responsive design
-- [ ] Performance optimization maintained
+### Final Integration Testing:
+- [ ] All mobile patterns work together seamlessly
+- [ ] No z-index conflicts between components
+- [ ] Smooth transitions between different UI states
+- [ ] Performance remains optimal on low-end devices
+- [ ] Gesture interactions don't interfere with each other
+- [ ] Virtual keyboard handling works correctly
 
 ## IMPLEMENTATION ORDER
-Execute chunks 1-12 in sequence, testing after each chunk before proceeding to the next. This ensures any issues are caught early and can be addressed without affecting the entire system.
+Execute phases 1-5 in sequence, testing after each phase before proceeding to the next. This ensures mobile-specific patterns are integrated smoothly without breaking existing functionality.
+
+## FUTURE ENHANCEMENTS
+- Integration with Capacitor for native haptic feedback
+- Advanced gesture recognition for custom interactions
+- Voice input integration for accessibility
+- Offline support with optimistic UI updates
+- Progressive Web App (PWA) features for app-like experience
