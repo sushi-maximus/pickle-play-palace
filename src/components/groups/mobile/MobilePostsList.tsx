@@ -85,27 +85,36 @@ export const MobilePostsList = ({
         />
         
         <div 
-          className="space-y-3 md:space-y-4 p-3 md:p-6 transition-transform duration-200"
+          className="px-3 py-4 md:px-6 md:py-6 transition-transform duration-200 will-change-transform"
           style={{
             transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
           }}
         >
-          {posts.map((post) => (
-            <MobilePostCard2
-              key={post.id}
-              post={post}
-              user={user}
-              isEditing={isEditing && currentPostId === post.id}
-              currentPostId={currentPostId}
-              editableContent={editableContent}
-              setEditableContent={setEditableContent}
-              isEditSubmitting={isEditSubmitting}
-              onStartEditing={onStartEditing}
-              onCancelEditing={onCancelEditing}
-              onSaveEditing={onSaveEditing}
-              onDeleteClick={onDeleteClick}
-            />
-          ))}
+          <div className="space-y-4 md:space-y-6">
+            {posts.map((post, index) => (
+              <div 
+                key={post.id}
+                className="transform transition-all duration-200 ease-out"
+                style={{
+                  animationDelay: `${index * 50}ms`
+                }}
+              >
+                <MobilePostCard2
+                  post={post}
+                  user={user}
+                  isEditing={isEditing && currentPostId === post.id}
+                  currentPostId={currentPostId}
+                  editableContent={editableContent}
+                  setEditableContent={setEditableContent}
+                  isEditSubmitting={isEditSubmitting}
+                  onStartEditing={onStartEditing}
+                  onCancelEditing={onCancelEditing}
+                  onSaveEditing={onSaveEditing}
+                  onDeleteClick={onDeleteClick}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </ScrollArea>
