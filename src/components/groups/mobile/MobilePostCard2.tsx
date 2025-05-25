@@ -169,7 +169,7 @@ export const MobilePostCard2 = ({
   };
 
   return (
-    <Card className="w-full border-0 shadow-sm bg-white rounded-lg overflow-hidden">
+    <Card className="w-full border-0 shadow-sm bg-blue-50 rounded-lg overflow-hidden">
       <CardContent className="p-0">
         <MobilePostHeader
           post={post}

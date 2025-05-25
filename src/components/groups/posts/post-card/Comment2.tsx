@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -119,7 +120,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
 
   return (
-    <div className="flex gap-2 md:gap-3 p-3 md:p-4 border-b border-gray-50 last:border-b-0">
+    <div className="flex gap-2 md:gap-3 p-3 md:p-4 border-b border-gray-100 last:border-b-0 bg-blue-50">
       <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
         <AvatarImage src={user?.avatar_url || undefined} />
         <AvatarFallback className="text-xs md:text-sm bg-gray-100">{initials}</AvatarFallback>
