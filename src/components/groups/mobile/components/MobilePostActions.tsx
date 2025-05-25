@@ -66,7 +66,6 @@ export const MobilePostActions = ({
           onThumbsUpClick={onThumbsUpClick}
           onThumbsDownClick={onThumbsDownClick}
           onHeartClick={onHeartClick}
-          disabled={!currentUserId}
         />
         
         <Button
