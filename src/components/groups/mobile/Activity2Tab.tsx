@@ -1,6 +1,7 @@
 
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
+import { FacebookCreatePost } from "./FacebookCreatePost";
 
 interface Activity2TabProps {
   groupId: string;
@@ -16,18 +17,11 @@ export const Activity2Tab = ({ groupId, user, onPostCreated }: Activity2TabProps
       <div className="max-w-2xl mx-auto h-full">
         <div className="flex flex-col h-full">
           {/* Facebook-style Create Post Section */}
-          <div className="bg-white border-b border-gray-200 px-4 py-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
-              <div className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-gray-500 cursor-pointer hover:bg-gray-200 transition-colors">
-                What's on your mind, {user?.first_name || 'User'}?
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
-              <div className="text-sm text-gray-600">Photo/Video placeholder</div>
-              <div className="text-sm text-gray-600">Feeling/Activity placeholder</div>
-            </div>
-          </div>
+          <FacebookCreatePost 
+            groupId={groupId}
+            user={user}
+            onPostCreated={onPostCreated}
+          />
 
           {/* Posts Feed Area */}
           <div className="flex-1 overflow-y-auto">
@@ -80,15 +74,15 @@ export const Activity2Tab = ({ groupId, user, onPostCreated }: Activity2TabProps
 
               {/* Development Info Card */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="text-lg font-medium mb-2 text-blue-900">Simplified Facebook-Style Layout!</h3>
+                <h3 className="text-lg font-medium mb-2 text-blue-900">Functional Create Post Added!</h3>
                 <p className="text-blue-700 text-sm mb-3">
-                  The layout now uses only Like and Comment actions, just like Facebook's simplified approach.
+                  You can now create posts using the Facebook-style create post component.
                 </p>
                 <div className="text-xs text-blue-600 space-y-1">
                   <p>Group ID: {groupId}</p>
                   <p>User: {user?.first_name} {user?.last_name}</p>
-                  <p>Actions: Like + Comment only</p>
-                  <p>Next: Will add functional create post component</p>
+                  <p>Features: Expandable create post form</p>
+                  <p>Next: Will add real posts display</p>
                 </div>
               </div>
             </div>
