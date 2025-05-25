@@ -57,31 +57,27 @@ const FacebookCommentCardComponent = ({
     onCommentDeleted: onCommentUpdated
   });
 
-  // Thumbs Up reactions
-  const thumbsUpHook = useCommentThumbsUp2({
-    commentId: comment.id,
-    userId: user?.id,
-    initialCount: comment.thumbsup_count,
-    initialIsActive: comment.user_thumbsup,
-    isThumbsDownActive: comment.user_thumbsdown,
-    setIsThumbsDownActive: () => {}, // Will be set by thumbsDownHook
-    setThumbsDownCount: () => {} // Will be set by thumbsDownHook
-  });
-
-  // Thumbs Down reactions
+  // Initialize thumbs down hook first
   const thumbsDownHook = useCommentThumbsDown2({
     commentId: comment.id,
     userId: user?.id,
     initialCount: comment.thumbsdown_count,
     initialIsActive: comment.user_thumbsdown,
-    isThumbsUpActive: thumbsUpHook.isThumbsUpActive,
-    setIsThumbsUpActive: thumbsUpHook.setIsThumbsUpActive,
-    setThumbsUpCount: thumbsUpHook.setThumbsUpCount
+    isThumbsUpActive: false, // Will be updated by thumbsUpHook
+    setIsThumbsUpActive: () => {}, // Will be updated by thumbsUpHook
+    setThumbsUpCount: () => {} // Will be updated by thumbsUpHook
   });
 
-  // Connect the hooks so they can interact with each other
-  thumbsUpHook.setIsThumbsDownActive = thumbsDownHook.setIsThumbsDownActive;
-  thumbsUpHook.setThumbsDownCount = thumbsDownHook.setThumbsDownCount;
+  // Initialize thumbs up hook with thumbs down dependencies
+  const thumbsUpHook = useCommentThumbsUp2({
+    commentId: comment.id,
+    userId: user?.id,
+    initialCount: comment.thumbsup_count,
+    initialIsActive: comment.user_thumbsup,
+    isThumbsDownActive: thumbsDownHook.isThumbsDownActive,
+    setIsThumbsDownActive: thumbsDownHook.setIsThumbsDownActive,
+    setThumbsDownCount: thumbsDownHook.setThumbsDownCount
+  });
 
   const handleEditClick = () => {
     startEditing(comment.id, comment.content);
