@@ -11,6 +11,7 @@ interface GroupHorizontalTabsProps {
 export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }: GroupHorizontalTabsProps) => {
   const baseTabs = [
     { id: "home2", label: "Activity", icon: Activity },
+    { id: "activity2", label: "Activity2", icon: Activity },
     { id: "calendar", label: "Calendar", icon: Calendar },
     { id: "users", label: "Members", icon: Users }
   ];

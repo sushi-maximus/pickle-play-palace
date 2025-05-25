@@ -1,5 +1,6 @@
 
 import { MobileHome2Tab } from "@/components/groups/mobile";
+import { Activity2Tab } from "@/components/groups/mobile/Activity2Tab";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
 import type { Database } from "@/integrations/supabase/types";
@@ -43,6 +44,15 @@ export const GroupDetailsContent = ({
       case "home2":
         return (
           <MobileHome2Tab
+            groupId={groupId}
+            user={user}
+            onPostCreated={onPostCreated}
+          />
+        );
+
+      case "activity2":
+        return (
+          <Activity2Tab
             groupId={groupId}
             user={user}
             onPostCreated={onPostCreated}
