@@ -45,7 +45,7 @@ export const MobilePostsList = ({
 }: MobilePostsListProps) => {
   return (
     <ScrollArea className="h-full">
-      <div className="space-y-3 md:space-y-4 p-3 md:p-6">
+      <div className="space-y-4 md:space-y-6 p-4 md:p-6 max-w-4xl mx-auto">
         {posts.map((post) => (
           <MobilePostCard2
             key={post.id}

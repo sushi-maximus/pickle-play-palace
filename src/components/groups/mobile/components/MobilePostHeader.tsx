@@ -63,19 +63,19 @@ export const MobilePostHeader = ({
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
 
   return (
-    <div className="flex items-start justify-between p-3 md:p-4">
-      <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-        <Avatar className="h-10 w-10 md:h-12 md:w-12 flex-shrink-0">
+    <div className="flex items-start justify-between p-4 md:p-6 border-b border-border/50">
+      <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+        <Avatar className="h-12 w-12 md:h-14 md:w-14 flex-shrink-0 shadow-sm border-2 border-border/10">
           <AvatarImage src={profile?.avatar_url || undefined} />
-          <AvatarFallback className="text-sm bg-gray-100">{initials}</AvatarFallback>
+          <AvatarFallback className="text-sm font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
         </Avatar>
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-sm md:text-base text-gray-900">
+          <div className="flex flex-col gap-1">
+            <h3 className="font-semibold text-base md:text-lg text-foreground leading-tight">
               {displayName}
             </h3>
-            <p className="text-xs md:text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {timeAgo}
             </p>
           </div>
@@ -88,23 +88,23 @@ export const MobilePostHeader = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              className="min-h-[48px] min-w-[48px] p-0 text-gray-400 hover:text-gray-600 touch-manipulation"
+              className="min-h-[48px] min-w-[48px] p-0 text-muted-foreground hover:text-foreground hover:bg-primary/5 transition-all duration-200 touch-manipulation"
             >
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuContent align="end" className="w-40 bg-white shadow-lg border">
             <DropdownMenuItem 
               onClick={onEdit} 
               disabled={isEditing}
-              className="min-h-[48px] flex items-center touch-manipulation"
+              className="min-h-[48px] flex items-center touch-manipulation hover:bg-primary/5"
             >
               <Edit className="h-4 w-4 mr-2" />
               Edit Post
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={onDeleteClick} 
-              className="min-h-[48px] flex items-center text-red-600 focus:text-red-600 touch-manipulation"
+              className="min-h-[48px] flex items-center text-destructive focus:text-destructive hover:bg-destructive/5 touch-manipulation"
               disabled={isDeleting}
             >
               <Trash2 className="h-4 w-4 mr-2" />
