@@ -53,11 +53,15 @@ export const useThumbsUpReaction2 = ({
       
       console.log(`Making API call to ${newActive ? 'add' : 'remove'} reaction...`);
       
+      // FIXED: Always delete first, then add if needed
+      // This prevents duplicate key constraint violations
+      await reactionService.deleteReaction(postId, userId, 'thumbsup');
+      console.log('✅ Successfully deleted existing thumbs up reaction (if any)');
+      
       if (newActive) {
         await reactionService.addReaction(postId, userId, 'thumbsup');
         console.log('Added thumbs up reaction - API call successful');
       } else {
-        await reactionService.deleteReaction(postId, userId, 'thumbsup');
         console.log('Removed thumbs up reaction - API call successful');
       }
       
