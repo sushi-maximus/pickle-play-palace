@@ -4,6 +4,7 @@ import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
 import { Comment2 } from "./Comment2";
 import { FacebookExpandingCommentForm } from "../../mobile/FacebookExpandingCommentForm";
 import { useComments2 } from "../hooks/useComments2";
+import type { Profile } from "../hooks/types/groupPostTypes";
 
 interface CommentsSection2Props {
   postId: string;
@@ -25,6 +26,23 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   const handleCommentUpdate = () => {
     refreshComments();
   };
+
+  // Convert the simplified user object to Profile type for the form
+  const profileUser: Profile | undefined = user ? {
+    id: user.id,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    avatar_url: user.avatar_url,
+    // Add required Profile fields with default values
+    birthday: null,
+    created_at: new Date().toISOString(),
+    dupr_profile_link: null,
+    dupr_rating: null,
+    gender: 'Male' as const,
+    phone_number: null,
+    skill_level: '2.5',
+    updated_at: new Date().toISOString()
+  } : undefined;
 
   if (loading) {
     return (
@@ -59,11 +77,11 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
         </OptimizedScrollArea>
       )}
       
-      {currentUserId && user && (
+      {currentUserId && profileUser && (
         <div className="border-t border-gray-100/50 bg-white">
           <FacebookExpandingCommentForm
             postId={postId}
-            user={user}
+            user={profileUser}
             onCommentAdded={handleCommentUpdate}
           />
         </div>
