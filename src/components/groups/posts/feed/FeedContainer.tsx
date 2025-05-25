@@ -4,6 +4,8 @@ import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { FeedLoadingState } from "./FeedLoadingState";
 import { FeedErrorState } from "./FeedErrorState";
 import { FeedScrollArea } from "./FeedScrollArea";
+import { NewPostsBanner } from "./NewPostsBanner";
+import { useNewPostsIndicator } from "../hooks/useNewPostsIndicator";
 import type { GroupPost, Profile } from "../hooks/types/groupPostTypes";
 import { useEffect, useState } from "react";
 
@@ -42,6 +44,16 @@ export const FeedContainer = ({
   const [displayedPosts, setDisplayedPosts] = useState<GroupPost[]>(posts);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // KISS: Simple new posts indicator
+  const { 
+    showNewPostsBanner, 
+    handleScrollToTop 
+  } = useNewPostsIndicator({ 
+    posts: displayedPosts, 
+    refreshing, 
+    loading 
+  });
+
   // Update displayed posts with transition when posts change
   useEffect(() => {
     if (posts.length > 0 && !loading) {
@@ -78,7 +90,13 @@ export const FeedContainer = ({
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
+      {/* KISS: Simple new posts banner */}
+      <NewPostsBanner 
+        show={showNewPostsBanner} 
+        onScrollToTop={handleScrollToTop}
+      />
+
       {membershipStatus.isMember && (
         <div className="flex-shrink-0 px-3 md:px-6">
           <CreatePostForm2 

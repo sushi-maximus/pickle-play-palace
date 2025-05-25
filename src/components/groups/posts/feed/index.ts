@@ -6,3 +6,4 @@ export * from './FeedScrollArea';
 export * from './PostsList';
 export * from './FeedErrorState';
 export * from './FeedLoadingState';
+export * from './NewPostsBanner';

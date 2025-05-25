@@ -7,7 +7,8 @@ export const createAppQueryClient = () => {
     defaultOptions: {
       queries: {
         staleTime: 5 * 60 * 1000, // 5 minutes
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: true, // KISS: Auto-refresh when user returns to app
+        refetchOnMount: true, // Always refetch when component mounts
         retry: (failureCount, error) => {
           // Don't retry auth errors
           if (error instanceof Error && error.message.includes('auth')) {
@@ -19,10 +20,6 @@ export const createAppQueryClient = () => {
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
         // Enhanced caching strategy
         gcTime: 10 * 60 * 1000, // 10 minutes garbage collection time
-        refetchOnMount: (query) => {
-          // Only refetch if data is older than 2 minutes
-          return Date.now() - (query.state.dataUpdatedAt || 0) > 2 * 60 * 1000;
-        },
       },
       mutations: {
         retry: (failureCount, error) => {

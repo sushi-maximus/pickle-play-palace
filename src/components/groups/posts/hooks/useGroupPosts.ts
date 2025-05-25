@@ -117,10 +117,10 @@ export const useGroupPosts = (
     },
     enabled: Boolean(isValidUUID), // Convert to boolean and only run with valid UUID
     retry: false,
-    staleTime: 0, // CRITICAL: Set to 0 to force fresh data on navigation
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes (updated from cacheTime)
+    staleTime: 2 * 60 * 1000, // KISS: 2 minutes stale time for fresh data
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     refetchOnMount: true, // Always refetch when component mounts
-    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnWindowFocus: true, // KISS: Auto-refresh when user returns to app
   });
 
   console.log(`🔄 === QUERY STATE INFORMATION ===`);
@@ -130,7 +130,7 @@ export const useGroupPosts = (
   console.log(`🕐 Data Updated At: ${new Date(dataUpdatedAt || 0).toISOString()}`);
   console.log(`❌ Error: ${error?.message}`);
 
-  // Manual refresh function
+  // Manual refresh function - KISS approach
   const refreshPosts = useCallback(async () => {
     if (!isValidUUID) {
       console.log("useGroupPosts: Cannot refresh - invalid group ID");
@@ -142,7 +142,7 @@ export const useGroupPosts = (
     
     setRefreshing(true);
     try {
-      // Invalidate and refetch
+      // KISS: Simple invalidate and refetch
       await queryClient.invalidateQueries({ queryKey: [...queryKey, key] });
       await refetch();
       console.log(`✅ Manual refresh completed successfully`);
