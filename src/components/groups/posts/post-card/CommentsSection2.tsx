@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Comment2 } from "./Comment2";
 import { CommentForm2 } from "./CommentForm2";
 import { useComments2 } from "../hooks/useComments2";
@@ -53,16 +54,18 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   return (
     <div className="border-t border-gray-100">
       {comments && comments.length > 0 && (
-        <div className="max-h-[50vh] md:max-h-96 overflow-y-auto">
-          {comments.map((comment) => (
-            <Comment2
-              key={comment.id}
-              comment={comment}
-              currentUserId={currentUserId}
-              onCommentUpdate={handleCommentUpdate}
-            />
-          ))}
-        </div>
+        <ScrollArea className="max-h-[50vh] md:max-h-96">
+          <div className="space-y-0">
+            {comments.map((comment) => (
+              <Comment2
+                key={comment.id}
+                comment={comment}
+                currentUserId={currentUserId}
+                onCommentUpdate={handleCommentUpdate}
+              />
+            ))}
+          </div>
+        </ScrollArea>
       )}
       
       {currentUserId && user && (

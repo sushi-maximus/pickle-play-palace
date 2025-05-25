@@ -4,6 +4,7 @@ import { MobilePostCard2 } from "../../mobile/MobilePostCard2";
 import { GroupPostsEmpty } from "../GroupPostsEmpty";
 import { MobilePostsLoading } from "../../mobile/MobilePostsLoading";
 import { RefreshProgressIndicator } from "./RefreshProgressIndicator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { GroupPost, Profile } from "../hooks/types/groupPostTypes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -99,70 +100,74 @@ export const FeedContent = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col">
       {/* Always render the progress indicator at the top of the feed */}
       <RefreshProgressIndicator refreshing={refreshing} />
       
       {membershipStatus.isMember && (
-        <CreatePostForm2 
-          groupId={groupId} 
-          user={user}
-          onPostCreated={onPostCreated}
-        />
+        <div className="flex-shrink-0 px-3 md:px-6">
+          <CreatePostForm2 
+            groupId={groupId} 
+            user={user}
+            onPostCreated={onPostCreated}
+          />
+        </div>
       )}
       
       {displayedPosts.length === 0 ? (
         <GroupPostsEmpty isMember={membershipStatus.isMember} />
       ) : (
-        <div 
-          className={cn(
-            "space-y-6", 
-            isTransitioning ? "opacity-50 transition-opacity duration-300" : "opacity-100 transition-opacity duration-300"
-          )}
-        >
-          {displayedPosts.map((post) => {
-            // Debug log to see the post data structure
-            console.log("FeedContent - Processing post:", {
-              postId: post.id,
-              postProfiles: post.profiles,
-              userFirstName: post.profiles?.first_name,
-              userLastName: post.profiles?.last_name
-            });
+        <ScrollArea className="flex-1 px-3 md:px-6">
+          <div 
+            className={cn(
+              "space-y-6 pb-6", 
+              isTransitioning ? "opacity-50 transition-opacity duration-300" : "opacity-100 transition-opacity duration-300"
+            )}
+          >
+            {displayedPosts.map((post) => {
+              // Debug log to see the post data structure
+              console.log("FeedContent - Processing post:", {
+                postId: post.id,
+                postProfiles: post.profiles,
+                userFirstName: post.profiles?.first_name,
+                userLastName: post.profiles?.last_name
+              });
 
-            // Transform GroupPost to match MobilePostCard2 expected format
-            const transformedPost = {
-              id: post.id,
-              content: post.content,
-              created_at: post.created_at,
-              user_id: post.user_id,
-              media_urls: post.media_urls,
-              profiles: {
-                first_name: post.profiles?.first_name || '',
-                last_name: post.profiles?.last_name || '',
-                avatar_url: post.profiles?.avatar_url
-              }
-            };
+              // Transform GroupPost to match MobilePostCard2 expected format
+              const transformedPost = {
+                id: post.id,
+                content: post.content,
+                created_at: post.created_at,
+                user_id: post.user_id,
+                media_urls: post.media_urls,
+                profiles: {
+                  first_name: post.profiles?.first_name || '',
+                  last_name: post.profiles?.last_name || '',
+                  avatar_url: post.profiles?.avatar_url
+                }
+              };
 
-            console.log("FeedContent - Transformed post:", transformedPost);
+              console.log("FeedContent - Transformed post:", transformedPost);
 
-            return (
-              <MobilePostCard2 
-                key={post.id} 
-                post={transformedPost}
-                user={user}
-                isEditing={false}
-                currentPostId={null}
-                editableContent=""
-                setEditableContent={() => {}}
-                isEditSubmitting={false}
-                onStartEditing={() => {}}
-                onCancelEditing={() => {}}
-                onSaveEditing={() => {}}
-                onDeleteClick={() => {}}
-              />
-            );
-          })}
-        </div>
+              return (
+                <MobilePostCard2 
+                  key={post.id} 
+                  post={transformedPost}
+                  user={user}
+                  isEditing={false}
+                  currentPostId={null}
+                  editableContent=""
+                  setEditableContent={() => {}}
+                  isEditSubmitting={false}
+                  onStartEditing={() => {}}
+                  onCancelEditing={() => {}}
+                  onSaveEditing={() => {}}
+                  onDeleteClick={() => {}}
+                />
+              );
+            })}
+          </div>
+        </ScrollArea>
       )}
     </div>
   );

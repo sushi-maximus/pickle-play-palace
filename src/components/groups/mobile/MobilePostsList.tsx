@@ -1,5 +1,6 @@
 
 import { MobilePostCard2 } from "./MobilePostCard2";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface Post {
@@ -43,23 +44,25 @@ export const MobilePostsList = ({
   onDeleteClick
 }: MobilePostsListProps) => {
   return (
-    <div className="space-y-3 md:space-y-4">
-      {posts.map((post) => (
-        <MobilePostCard2
-          key={post.id}
-          post={post}
-          user={user}
-          isEditing={isEditing && currentPostId === post.id}
-          currentPostId={currentPostId}
-          editableContent={editableContent}
-          setEditableContent={setEditableContent}
-          isEditSubmitting={isEditSubmitting}
-          onStartEditing={onStartEditing}
-          onCancelEditing={onCancelEditing}
-          onSaveEditing={onSaveEditing}
-          onDeleteClick={onDeleteClick}
-        />
-      ))}
-    </div>
+    <ScrollArea className="h-full">
+      <div className="space-y-3 md:space-y-4 p-3 md:p-6">
+        {posts.map((post) => (
+          <MobilePostCard2
+            key={post.id}
+            post={post}
+            user={user}
+            isEditing={isEditing && currentPostId === post.id}
+            currentPostId={currentPostId}
+            editableContent={editableContent}
+            setEditableContent={setEditableContent}
+            isEditSubmitting={isEditSubmitting}
+            onStartEditing={onStartEditing}
+            onCancelEditing={onCancelEditing}
+            onSaveEditing={onSaveEditing}
+            onDeleteClick={onDeleteClick}
+          />
+        ))}
+      </div>
+    </ScrollArea>
   );
 };
