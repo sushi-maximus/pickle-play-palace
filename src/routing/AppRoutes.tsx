@@ -87,14 +87,13 @@ export const AppRoutes = () => {
           </RouteLoader>
         </ProtectedRoute>
       } />
-      
-      {/* Group details - Public but with limited functionality for non-members */}
       <Route path="/groups/:id" element={
-        <RouteLoader routeName="Group Details">
-          <LazyGroupDetails />
-        </RouteLoader>
+        <ProtectedRoute>
+          <RouteLoader routeName="Group Details">
+            <LazyGroupDetails />
+          </RouteLoader>
+        </ProtectedRoute>
       } />
-      
       <Route path="/admin" element={
         <ProtectedRoute>
           <RouteLoader routeName="Admin">

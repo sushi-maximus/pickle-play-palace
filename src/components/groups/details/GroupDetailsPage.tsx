@@ -141,7 +141,7 @@ export const GroupDetailsPage = () => {
     return <GroupDetailsErrorStates error={null} group={null} />;
   }
 
-  // Success state - render the group content (now accessible to non-authenticated users)
+  // Success state - render the group content
   console.log("GroupDetailsPage: Rendering group successfully:", group?.name, "Admin status:", membershipStatus.isAdmin);
 
   return (
