@@ -19,8 +19,8 @@ export const queryKeys = {
     list: (groupId: string, userId?: string) => [...queryKeys.posts.lists(), { groupId, userId }] as const,
     details: () => [...queryKeys.posts.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.posts.details(), id] as const,
-    comments: (postId: string) => [...queryKeys.posts.detail(postId), 'comments'] as const,
-    reactions: (postId: string) => [...queryKeys.posts.detail(postId), 'reactions'] as const,
+    comments: (postId: string, userId?: string) => [...queryKeys.posts.detail(postId), 'comments', { userId }] as const,
+    reactions: (postId: string, userId?: string) => [...queryKeys.posts.detail(postId), 'reactions', { userId }] as const,
   },
   
   // Profile
@@ -30,10 +30,10 @@ export const queryKeys = {
     detail: (userId: string) => [...queryKeys.profile.details(), userId] as const,
   },
   
-  // Comments
+  // Comments - CRITICAL: Include userId for user-specific reaction data
   comments: {
     all: ['comments'] as const,
-    reactions: (commentId: string) => [...queryKeys.comments.all, commentId, 'reactions'] as const,
+    reactions: (commentId: string, userId?: string) => [...queryKeys.comments.all, commentId, 'reactions', { userId }] as const,
   }
 } as const;
 
