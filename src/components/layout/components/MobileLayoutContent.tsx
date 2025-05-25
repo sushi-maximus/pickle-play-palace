@@ -8,7 +8,7 @@ interface MobileLayoutContentProps {
 
 export const MobileLayoutContent = ({ children, topPadding }: MobileLayoutContentProps) => {
   return (
-    <div className={`flex-1 ${topPadding} pb-20`}>
+    <div className={`flex-1 ${topPadding} pb-20 w-full`}>
       {children}
     </div>
   );

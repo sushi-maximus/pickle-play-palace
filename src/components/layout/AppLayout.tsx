@@ -21,7 +21,7 @@ export const AppLayout = ({
   // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="min-h-screen bg-slate-50 flex flex-col w-full">
         <MobileLayout title={title || "Loading"}>
           <main className="flex-1 flex items-center justify-center">
             <div className="text-center">
@@ -35,13 +35,13 @@ export const AppLayout = ({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col w-full">
       <MobileLayout 
         title={title} 
         showProfileHeader={showMobileProfileHeader}
         profile={profile}
       >
-        <main className={`flex-1 ${className}`}>
+        <main className={`flex-1 w-full ${className}`}>
           {children}
         </main>
       </MobileLayout>
