@@ -1,5 +1,4 @@
 
-import { MobileHome2Tab } from "@/components/groups/mobile";
 import { Activity2Tab } from "@/components/groups/mobile/Activity2Tab";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
@@ -41,15 +40,6 @@ export const GroupDetailsContent = ({
 }: GroupDetailsContentProps) => {
   const renderTabContent = () => {
     switch (activeTab) {
-      case "home2":
-        return (
-          <MobileHome2Tab
-            groupId={groupId}
-            user={user}
-            onPostCreated={onPostCreated}
-          />
-        );
-
       case "activity2":
         return (
           <Activity2Tab
