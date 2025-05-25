@@ -59,19 +59,19 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
   const commentsCount = comments?.length || 0;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in">
       {/* Post Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex-shrink-0 animate-scale-in"></div>
           <div>
-            <div className="font-semibold text-sm text-gray-900">
+            <div className="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors duration-200 cursor-pointer">
               {post.profiles?.first_name} {post.profiles?.last_name}
             </div>
             <div className="text-xs text-gray-500">{timeAgo}</div>
           </div>
         </div>
-        <div className="text-gray-400 text-lg">•••</div>
+        <div className="text-gray-400 text-lg hover:text-gray-600 cursor-pointer transition-colors duration-200">•••</div>
       </div>
 
       {/* Post Content */}
@@ -102,11 +102,13 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
 
       {/* Comments Section */}
       {showComments && (
-        <FacebookComments
-          postId={post.id}
-          user={user}
-          onCommentAdded={handleCommentAdded}
-        />
+        <div className="animate-fade-in">
+          <FacebookComments
+            postId={post.id}
+            user={user}
+            onCommentAdded={handleCommentAdded}
+          />
+        </div>
       )}
     </div>
   );

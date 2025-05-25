@@ -46,16 +46,16 @@ const FacebookReactionSummaryComponent = ({
   const likeText = renderLikeText();
 
   return (
-    <div className="px-4 py-2 border-t border-gray-100">
+    <div className="px-4 py-2 border-t border-gray-100 animate-fade-in">
       <div className="flex items-center justify-between text-sm text-gray-500">
         {/* Reactions summary */}
         {likeCount > 0 && (
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-1">
-              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 animate-scale-in">
                 <ThumbsUp className="h-3 w-3 text-white fill-current" />
               </div>
-              <span className="hover:underline cursor-pointer font-medium">
+              <span className="hover:underline cursor-pointer font-medium transition-all duration-200 hover:text-blue-600">
                 {likeText}
               </span>
             </div>
@@ -64,7 +64,7 @@ const FacebookReactionSummaryComponent = ({
         
         {/* Comments summary */}
         {commentsCount > 0 && (
-          <div className="hover:underline cursor-pointer font-medium">
+          <div className="hover:underline cursor-pointer font-medium transition-all duration-200 hover:text-blue-600">
             {commentsCount === 1 ? "1 comment" : `${commentsCount} comments`}
           </div>
         )}

@@ -46,20 +46,20 @@ const FacebookCommentActionsComponent = ({
   };
 
   return (
-    <div className="flex items-center justify-between mt-1 ml-3">
+    <div className="flex items-center justify-between mt-1 ml-3 animate-fade-in">
       <div className="flex items-center space-x-4">
         <button 
           onClick={handleLikeClick}
-          className="text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-colors"
+          className="text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-all duration-200 active:scale-95"
         >
           Like
         </button>
         
         <button 
           onClick={handleReplyClick}
-          className="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-colors"
+          className="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-all duration-200 active:scale-95"
         >
-          <MessageCircle className="h-3 w-3" />
+          <MessageCircle className="h-3 w-3 transition-all duration-200 hover:scale-110" />
           <span>Reply</span>
         </button>
         
@@ -67,16 +67,23 @@ const FacebookCommentActionsComponent = ({
           <>
             <button
               onClick={onEdit}
-              className="text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-colors"
+              className="text-xs font-medium text-gray-500 hover:text-blue-600 hover:underline transition-all duration-200 active:scale-95"
             >
               Edit
             </button>
             <button
               onClick={onDelete}
               disabled={isDeleting}
-              className="text-xs font-medium text-gray-500 hover:text-red-600 hover:underline disabled:opacity-50 transition-colors"
+              className="text-xs font-medium text-gray-500 hover:text-red-600 hover:underline disabled:opacity-50 transition-all duration-200 active:scale-95"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? (
+                <span className="flex items-center">
+                  <div className="animate-spin h-3 w-3 border border-red-500 border-t-transparent rounded-full mr-1"></div>
+                  Deleting...
+                </span>
+              ) : (
+                "Delete"
+              )}
             </button>
           </>
         )}
@@ -86,17 +93,19 @@ const FacebookCommentActionsComponent = ({
 
       {/* Comment Reactions */}
       {user && (
-        <FacebookCommentReactions
-          thumbsUpCount={thumbsUpCount}
-          thumbsDownCount={thumbsDownCount}
-          isThumbsUpActive={isThumbsUpActive}
-          isThumbsDownActive={isThumbsDownActive}
-          isThumbsUpSubmitting={isThumbsUpSubmitting}
-          isThumbsDownSubmitting={isThumbsDownSubmitting}
-          onThumbsUpClick={onThumbsUpClick}
-          onThumbsDownClick={onThumbsDownClick}
-          disabled={!user?.id}
-        />
+        <div className="animate-scale-in">
+          <FacebookCommentReactions
+            thumbsUpCount={thumbsUpCount}
+            thumbsDownCount={thumbsDownCount}
+            isThumbsUpActive={isThumbsUpActive}
+            isThumbsDownActive={isThumbsDownActive}
+            isThumbsUpSubmitting={isThumbsUpSubmitting}
+            isThumbsDownSubmitting={isThumbsDownSubmitting}
+            onThumbsUpClick={onThumbsUpClick}
+            onThumbsDownClick={onThumbsDownClick}
+            disabled={!user?.id}
+          />
+        </div>
       )}
     </div>
   );
