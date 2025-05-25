@@ -83,11 +83,15 @@ export const useHeartReaction2 = ({
       
       console.log(`📡 Making API call to ${newActive ? 'add' : 'remove'} heart reaction...`);
       
+      // FIXED: Always delete first, then add if needed
+      // This prevents duplicate key constraint violations
+      await reactionService.deleteReaction(postId, userId, 'heart');
+      console.log('✅ Successfully deleted existing heart reaction (if any)');
+      
       if (newActive) {
         await reactionService.addReaction(postId, userId, 'heart');
         console.log('✅ API SUCCESS: Added heart reaction');
       } else {
-        await reactionService.deleteReaction(postId, userId, 'heart');
         console.log('✅ API SUCCESS: Removed heart reaction');
       }
       
