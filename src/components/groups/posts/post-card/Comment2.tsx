@@ -100,6 +100,17 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
     setShowDeleteDialog(false);
   };
 
+  // Add keyboard event handler for Enter and Esc keys
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSaveEdit();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancelEdit();
+    }
+  };
+
   const isOwnComment = currentUserId === comment.user_id;
   const user = comment.user;
   const fullName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Unknown User';
@@ -155,25 +166,32 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
               <Textarea
                 value={editableContent}
                 onChange={(e) => setEditableContent(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="text-sm min-h-[60px] resize-none"
                 disabled={isEditSubmitting}
+                autoFocus
               />
-              <div className="flex justify-end gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleCancelEdit}
-                  disabled={isEditSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={handleSaveEdit}
-                  disabled={!editableContent.trim() || isEditSubmitting}
-                >
-                  Save
-                </Button>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-gray-500">
+                  Press Enter to save, Esc to cancel
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleCancelEdit}
+                    disabled={isEditSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={handleSaveEdit}
+                    disabled={!editableContent.trim() || isEditSubmitting}
+                  >
+                    Save
+                  </Button>
+                </div>
               </div>
             </div>
           ) : (
