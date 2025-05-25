@@ -1,5 +1,6 @@
 
 import { memo } from "react";
+import { ThumbsUp } from "lucide-react";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookReactionSummaryProps {
@@ -49,17 +50,21 @@ const FacebookReactionSummaryComponent = ({
       <div className="flex items-center justify-between text-sm text-gray-500">
         {/* Reactions summary */}
         {likeCount > 0 && (
-          <div className="flex items-center space-x-1">
-            <span className="text-blue-500">👍</span>
-            <span className="hover:underline cursor-pointer">
-              {likeText}
-            </span>
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
+              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                <ThumbsUp className="h-3 w-3 text-white fill-current" />
+              </div>
+              <span className="hover:underline cursor-pointer font-medium">
+                {likeText}
+              </span>
+            </div>
           </div>
         )}
         
         {/* Comments summary */}
         {commentsCount > 0 && (
-          <div className="hover:underline cursor-pointer">
+          <div className="hover:underline cursor-pointer font-medium">
             {commentsCount === 1 ? "1 comment" : `${commentsCount} comments`}
           </div>
         )}
