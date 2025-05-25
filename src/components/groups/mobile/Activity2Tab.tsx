@@ -27,28 +27,28 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
   };
 
   return (
-    <main className="flex-1 bg-gray-50">
-      <div className="max-w-2xl mx-auto h-full">
-        <div className="flex flex-col h-full">
-          {/* Facebook-style Create Post Section */}
+    <main className="flex-1 bg-gray-50 overflow-hidden">
+      <div className="max-w-2xl mx-auto h-full flex flex-col">
+        {/* Facebook-style Create Post Section */}
+        <div className="flex-shrink-0">
           <FacebookCreatePost 
             groupId={groupId}
             user={user}
             onPostCreated={handlePostCreated}
           />
+        </div>
 
-          {/* Posts Feed Area */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4">
-              {loading ? (
-                <MobilePostsLoading />
-              ) : (
-                <FacebookPostsList 
-                  posts={posts}
-                  user={user}
-                />
-              )}
-            </div>
+        {/* Posts Feed Area - Enhanced scrolling for mobile */}
+        <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain">
+          <div className="p-3 sm:p-4 pb-safe">
+            {loading ? (
+              <MobilePostsLoading />
+            ) : (
+              <FacebookPostsList 
+                posts={posts}
+                user={user}
+              />
+            )}
           </div>
         </div>
       </div>

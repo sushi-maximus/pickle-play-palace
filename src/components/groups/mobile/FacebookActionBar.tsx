@@ -40,40 +40,40 @@ const FacebookActionBarComponent = ({
 
   return (
     <div className="flex border-t border-gray-100">
-      {/* Like Button */}
+      {/* Like Button - Enhanced for mobile */}
       <button 
         onClick={handleLikeClick}
         disabled={isDisabled || isSubmitting}
-        className={`flex-1 flex items-center justify-center py-3 text-sm font-medium transition-all duration-200 hover:bg-gray-50 active:bg-gray-100 active:scale-95 ${
+        className={`flex-1 flex items-center justify-center py-3 px-2 text-sm font-medium transition-all duration-200 hover:bg-gray-50 active:bg-gray-100 active:scale-95 min-h-[44px] touch-manipulation ${
           isLiked 
             ? "text-blue-600" 
             : "text-gray-600 hover:text-blue-600"
         } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
       >
-        <ThumbsUp className={`h-4 w-4 mr-2 transition-all duration-200 ${
+        <ThumbsUp className={`h-4 w-4 mr-2 sm:h-5 sm:w-5 transition-all duration-200 ${
           isLiked ? "fill-current scale-110" : "hover:scale-110"
         } ${isSubmitting ? "animate-pulse" : ""}`} />
-        <span className={`transition-all duration-200 ${isSubmitting ? "animate-pulse" : ""}`}>
+        <span className={`transition-all duration-200 text-xs sm:text-sm ${isSubmitting ? "animate-pulse" : ""}`}>
           {isSubmitting ? "..." : "Like"}
         </span>
       </button>
 
-      {/* Comment Button */}
+      {/* Comment Button - Enhanced for mobile */}
       <button 
         onClick={handleCommentClick}
-        className="flex-1 flex items-center justify-center py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600 active:bg-gray-100 active:scale-95 transition-all duration-200 border-l border-gray-100"
+        className="flex-1 flex items-center justify-center py-3 px-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600 active:bg-gray-100 active:scale-95 transition-all duration-200 border-l border-gray-100 min-h-[44px] touch-manipulation"
       >
-        <MessageCircle className="h-4 w-4 mr-2 transition-all duration-200 hover:scale-110" />
-        <span>Comment</span>
+        <MessageCircle className="h-4 w-4 mr-2 sm:h-5 sm:w-5 transition-all duration-200 hover:scale-110" />
+        <span className="text-xs sm:text-sm">Comment</span>
       </button>
 
-      {/* Share Button */}
+      {/* Share Button - Enhanced for mobile */}
       <button 
         onClick={handleShareClick}
-        className="flex-1 flex items-center justify-center py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-green-600 active:bg-gray-100 active:scale-95 transition-all duration-200 border-l border-gray-100"
+        className="flex-1 flex items-center justify-center py-3 px-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-green-600 active:bg-gray-100 active:scale-95 transition-all duration-200 border-l border-gray-100 min-h-[44px] touch-manipulation"
       >
-        <Share className="h-4 w-4 mr-2 transition-all duration-200 hover:scale-110" />
-        <span>Share</span>
+        <Share className="h-4 w-4 mr-2 sm:h-5 sm:w-5 transition-all duration-200 hover:scale-110" />
+        <span className="text-xs sm:text-sm">Share</span>
       </button>
     </div>
   );

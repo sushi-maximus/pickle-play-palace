@@ -26,12 +26,12 @@ const FacebookCommentReactionsComponent = ({
   disabled = false
 }: FacebookCommentReactionsProps) => {
   return (
-    <div className="flex items-center space-x-3">
-      {/* Thumbs Up */}
+    <div className="flex items-center space-x-2 sm:space-x-3">
+      {/* Thumbs Up - Enhanced for mobile */}
       <button
         onClick={onThumbsUpClick}
         disabled={disabled || isThumbsUpSubmitting}
-        className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 active:scale-95 ${
+        className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 active:scale-95 min-h-[28px] sm:min-h-[32px] touch-manipulation ${
           isThumbsUpActive
             ? "text-blue-600 bg-blue-50 scale-105"
             : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
@@ -47,11 +47,11 @@ const FacebookCommentReactionsComponent = ({
         )}
       </button>
 
-      {/* Thumbs Down */}
+      {/* Thumbs Down - Enhanced for mobile */}
       <button
         onClick={onThumbsDownClick}
         disabled={disabled || isThumbsDownSubmitting}
-        className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 active:scale-95 ${
+        className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 active:scale-95 min-h-[28px] sm:min-h-[32px] touch-manipulation ${
           isThumbsDownActive
             ? "text-red-600 bg-red-50 scale-105"
             : "text-gray-500 hover:text-red-600 hover:bg-red-50"
