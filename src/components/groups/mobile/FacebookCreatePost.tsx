@@ -49,7 +49,7 @@ const FacebookCreatePostComponent = ({
 
   if (!user) {
     return (
-      <Card className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
+      <Card className="bg-white shadow-sm border border-gray-200 mb-4 w-full rounded-none">
         <div className="p-4 text-center">
           <p className="text-gray-500 text-sm">Please log in to create posts</p>
         </div>
@@ -58,7 +58,7 @@ const FacebookCreatePostComponent = ({
   }
 
   return (
-    <Card className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
+    <Card className="bg-white shadow-sm border border-gray-200 mb-4 w-full rounded-none">
       <div className="p-3 sm:p-4">
         {/* Create Post Header */}
         <div className="mb-3">

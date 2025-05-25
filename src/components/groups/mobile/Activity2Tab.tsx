@@ -76,14 +76,14 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
         />
       )}
     >
-      {/* Main Container - Optimized for mobile with safe areas */}
-      <main className="flex-1 bg-gray-50 overflow-hidden min-h-0">
+      {/* Main Container - Full width without max-width constraint and padding removed */}
+      <main className="flex-1 bg-gray-50 overflow-hidden min-h-0 w-full">
         {/* Network Status Indicator */}
         <FacebookNetworkStatus />
         
-        <div className="max-w-2xl mx-auto h-full flex flex-col">
-          {/* Facebook-style Create Post Section - Fixed positioning with safe area support */}
-          <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4">
+        <div className="w-full h-full flex flex-col">
+          {/* Facebook-style Create Post Section - Full width, no padding */}
+          <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4 w-full">
             <FacebookCreatePost 
               groupId={groupId}
               user={user}
@@ -91,11 +91,11 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
             />
           </div>
 
-          {/* Posts Feed Area - Enhanced scrolling with momentum and safe areas */}
-          <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch min-h-0">
-            <div className="pb-4 sm:pb-6 pb-safe">
+          {/* Posts Feed Area - Full width scrolling */}
+          <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch min-h-0 w-full">
+            <div className="pb-4 sm:pb-6 pb-safe w-full">
               {loading ? (
-                <div className="p-3 sm:p-4">
+                <div className="w-full">
                   <FacebookLoadingState type="posts" count={3} />
                 </div>
               ) : errorObject ? (
