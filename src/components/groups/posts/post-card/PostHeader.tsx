@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-  DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
 
 interface PostHeaderProps {
@@ -74,31 +73,28 @@ export const PostHeader = ({
                 <span className="sr-only">Post options</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent 
-                align="end" 
-                side="bottom"
-                className="w-40 z-[10000]"
-                sideOffset={8}
-                avoidCollisions={true}
+            <DropdownMenuContent 
+              align="end" 
+              side="bottom"
+              className="w-40 bg-white shadow-lg border border-gray-200 z-[9999]"
+              sideOffset={8}
+            >
+              <DropdownMenuItem 
+                onClick={onStartEditing}
+                className="cursor-pointer hover:bg-gray-100"
               >
-                <DropdownMenuItem 
-                  onClick={onStartEditing}
-                  className="cursor-pointer"
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit post
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={onDeleteClick}
-                  className="cursor-pointer text-red-600 focus:text-red-600"
-                >
-                  <Trash className="mr-2 h-4 w-4" />
-                  Delete post
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit post
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={onDeleteClick}
+                className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete post
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
         </div>
       )}

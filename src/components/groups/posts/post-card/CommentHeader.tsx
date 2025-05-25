@@ -58,14 +58,22 @@ export const CommentHeader = ({
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 bg-white shadow-lg border border-gray-200">
-                <DropdownMenuItem onClick={onEdit} disabled={isEditing}>
+              <DropdownMenuContent 
+                align="end" 
+                className="w-40 bg-white shadow-lg border border-gray-200 z-[9999]"
+                sideOffset={8}
+              >
+                <DropdownMenuItem 
+                  onClick={onEdit} 
+                  disabled={isEditing}
+                  className="cursor-pointer hover:bg-gray-100"
+                >
                   <Edit className="h-3 w-3 mr-2" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={onDelete} 
-                  className="text-red-600 focus:text-red-600"
+                  className="text-red-600 focus:text-red-600 cursor-pointer hover:bg-red-50"
                   disabled={isDeleting}
                 >
                   <Trash2 className="h-3 w-3 mr-2" />

@@ -93,18 +93,22 @@ export const MobilePostHeader = ({
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuContent 
+            align="end" 
+            className="w-40 bg-white shadow-lg border border-gray-200 z-[9999]"
+            sideOffset={8}
+          >
             <DropdownMenuItem 
               onClick={onEdit} 
               disabled={isEditing}
-              className="min-h-[48px] flex items-center touch-manipulation"
+              className="min-h-[48px] flex items-center touch-manipulation cursor-pointer hover:bg-gray-100"
             >
               <Edit className="h-4 w-4 mr-2" />
               Edit Post
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={onDeleteClick} 
-              className="min-h-[48px] flex items-center text-red-600 focus:text-red-600 touch-manipulation"
+              className="min-h-[48px] flex items-center text-red-600 focus:text-red-600 touch-manipulation cursor-pointer hover:bg-red-50"
               disabled={isDeleting}
             >
               <Trash2 className="h-4 w-4 mr-2" />

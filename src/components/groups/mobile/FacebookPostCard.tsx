@@ -123,7 +123,7 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
             </div>
           </div>
           <button className="text-gray-400 text-lg hover:text-gray-600 cursor-pointer transition-colors duration-200 p-2 rounded-full hover:bg-gray-100 min-h-[44px] min-w-[44px] touch-manipulation flex items-center justify-center">
-            •••
+            <MoreHorizontal className="h-5 w-5" />
           </button>
         </div>
 
