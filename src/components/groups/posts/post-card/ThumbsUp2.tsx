@@ -21,18 +21,18 @@ export const ThumbsUp2 = ({
     <Button
       variant="ghost"
       size="sm"
-      className={`h-8 w-auto px-2 md:h-9 md:px-3 flex items-center gap-1 md:gap-2 transition-colors ${
+      className={`h-11 w-auto px-3 md:h-12 md:px-4 flex items-center gap-2 transition-all duration-200 text-sm ${
         isActive ? "text-blue-500 bg-blue-50 hover:bg-blue-100" : "text-gray-600 hover:text-blue-500 hover:bg-blue-50"
       }`}
       onClick={onClick}
       disabled={disabled || isSubmitting}
     >
       {isSubmitting ? (
-        <div className="h-3 w-3 md:h-4 md:w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
       ) : (
-        <ThumbsUp className={`h-3 w-3 md:h-4 md:w-4 ${isActive ? "fill-current" : ""}`} />
+        <ThumbsUp className={`h-4 w-4 ${isActive ? "fill-current" : ""}`} />
       )}
-      <span className="text-xs md:text-sm font-medium">
+      <span className="text-sm font-medium">
         {count > 0 ? count : ""}
       </span>
     </Button>

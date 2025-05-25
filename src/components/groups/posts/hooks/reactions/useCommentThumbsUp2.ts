@@ -73,7 +73,6 @@ export const useCommentThumbsUp2 = ({
         await commentReactionService.deleteReaction(commentId, userId, 'thumbsup');
       }
     } catch (error) {
-      console.error('Error toggling comment thumbs up reaction:', error);
       // Revert optimistic update on error
       setIsThumbsUpActive(currentThumbsUpActive);
       setIsThumbsDownActive(currentThumbsDownActive);

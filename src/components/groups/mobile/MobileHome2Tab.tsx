@@ -76,12 +76,12 @@ export const MobileHome2Tab = ({
   }
 
   return (
-    <main className="flex-1 px-3 py-4">
+    <main className="flex-1 px-4 py-6">
       <div className="container mx-auto max-w-4xl">
-        <div className="space-y-3">
-          {/* Post Creation Form - mobile first responsive */}
+        <div className="space-y-6">
+          {/* Post Creation Form */}
           {user && (
-            <div className="mb-4 md:mb-6">
+            <div className="mb-6">
               <CreatePostForm2
                 groupId={groupId}
                 user={user}
@@ -92,12 +92,12 @@ export const MobileHome2Tab = ({
           )}
           
           {refreshing && (
-            <div className="text-center py-2 md:py-3 mb-3 md:mb-4">
+            <div className="text-center py-4 mb-6">
               <LoadingSpinner size="sm" text="Refreshing posts..." />
             </div>
           )}
           
-          {/* Posts Feed - mobile first responsive */}
+          {/* Posts Feed */}
           <MobilePostsList
             posts={posts}
             user={user}

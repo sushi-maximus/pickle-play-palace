@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Comment2 } from "./Comment2";
 import { CommentForm2 } from "./CommentForm2";
@@ -41,8 +42,8 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
 
   if (loading) {
     return (
-      <div className="ml-12 md:ml-14 p-3 md:p-4">
-        <div className="flex items-center justify-center py-4">
+      <div className="px-4 py-4 border-t border-gray-100">
+        <div className="flex items-center justify-center py-6">
           <div className="h-4 w-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
@@ -50,7 +51,7 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   }
 
   return (
-    <div className="ml-12 md:ml-14">
+    <div className="border-t border-gray-100">
       {comments && comments.length > 0 && (
         <div className="max-h-96 overflow-y-auto">
           {comments.map((comment) => (

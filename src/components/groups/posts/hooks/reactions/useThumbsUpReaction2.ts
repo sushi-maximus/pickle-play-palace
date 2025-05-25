@@ -23,11 +23,7 @@ export const useThumbsUpReaction2 = ({
   const { updatePostReactionOptimistically, rollbackOptimisticUpdate } = useOptimisticMutations();
 
   const toggleThumbsUp = async () => {
-    console.log(`=== THUMBS UP TOGGLE START ===`);
-    console.log(`Post: ${postId}, User: ${userId}, Currently active: ${isThumbsUpActive}`);
-    
     if (!userId || isThumbsUpSubmitting) {
-      console.log(`Toggle blocked - userId: ${userId}, isSubmitting: ${isThumbsUpSubmitting}`);
       return;
     }
 
@@ -39,11 +35,7 @@ export const useThumbsUpReaction2 = ({
     const countChange = currentActive ? -1 : 1;
     const newActive = !currentActive;
     
-    console.log(`Current state - active: ${currentActive}, count: ${currentCount}`);
-    
     try {
-      console.log(`Toggling thumbs up: currently ${currentActive} for post ${postId}`);
-      
       // Optimistic update - update UI immediately
       setIsThumbsUpActive(newActive);
       setThumbsUpCount(prev => Math.max(0, prev + countChange));
@@ -51,39 +43,21 @@ export const useThumbsUpReaction2 = ({
       // Update React Query cache optimistically
       updatePostReactionOptimistically(postId, 'thumbsup', newActive, countChange);
       
-      console.log(`Making API call to ${newActive ? 'add' : 'remove'} reaction...`);
-      
-      // FIXED: Always delete first, then add if needed
-      // This prevents duplicate key constraint violations
+      // Always delete first, then add if needed to prevent duplicates
       await reactionService.deleteReaction(postId, userId, 'thumbsup');
-      console.log('✅ Successfully deleted existing thumbs up reaction (if any)');
       
       if (newActive) {
         await reactionService.addReaction(postId, userId, 'thumbsup');
-        console.log('Added thumbs up reaction - API call successful');
-      } else {
-        console.log('Removed thumbs up reaction - API call successful');
       }
-      
-      console.log(`Thumbs up toggle successful for post ${postId}`);
     } catch (error) {
-      console.error('=== THUMBS UP ERROR OCCURRED ===');
-      console.error('Error toggling thumbs up:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      console.log(`Rolling back to previous state - active: ${currentActive}, count: ${currentCount}`);
-      
       // Revert local state
       setIsThumbsUpActive(currentActive);
       setThumbsUpCount(currentCount);
       
       // Rollback optimistic update in React Query cache
       rollbackOptimisticUpdate(['posts']);
-      
-      console.log(`State rolled back successfully`);
     } finally {
-      console.log(`Setting isThumbsUpSubmitting to false`);
       setIsThumbsUpSubmitting(false);
-      console.log(`=== THUMBS UP TOGGLE END ===`);
     }
   };
 

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -99,7 +100,6 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
     setShowDeleteDialog(false);
   };
 
-  // Keyboard event handler for Enter and Esc keys
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -114,15 +114,13 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   const user = comment.user;
   const fullName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Unknown User';
   const initials = user ? `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}` : 'UU';
-  
-  // Format timestamp to match the design in the image
   const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
 
   return (
-    <div className="flex gap-2 md:gap-3 p-3 md:p-4 border-b border-gray-100 last:border-b-0">
-      <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
+    <div className="flex gap-3 p-4 border-b border-gray-100 last:border-b-0">
+      <Avatar className="h-10 w-10 flex-shrink-0">
         <AvatarImage src={user?.avatar_url || undefined} />
-        <AvatarFallback className="text-xs md:text-sm bg-gray-100">{initials}</AvatarFallback>
+        <AvatarFallback className="text-sm bg-gray-100">{initials}</AvatarFallback>
       </Avatar>
       
       <div className="flex-1 min-w-0">
@@ -137,7 +135,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
           {isOwnComment && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -159,9 +157,9 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
           )}
         </div>
         
-        <div className="mt-1">
+        <div className="mt-2">
           {isEditing ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Textarea
                 value={editableContent}
                 onChange={(e) => setEditableContent(e.target.value)}
@@ -182,7 +180,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
           )}
         </div>
         
-        <div className="flex items-center gap-2 mt-2">
+        <div className="flex items-center gap-3 mt-3">
           <CommentThumbsUp2
             count={thumbsUpCount}
             isActive={isThumbsUpActive}

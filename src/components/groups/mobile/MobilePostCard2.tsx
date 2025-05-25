@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PostContent } from "../posts/post-card/PostContent";
@@ -56,21 +57,6 @@ export const MobilePostCard2 = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
-  // CRITICAL DEBUG - Log the exact post data we're receiving
-  console.log(`🔍 === POST ${post.id} RAW DATA INSPECTION ===`);
-  console.log('Complete post object:', JSON.stringify(post, null, 2));
-  console.log('Heart specific data:', {
-    heart_count: post.heart_count,
-    user_heart: post.user_heart,
-    heart_count_type: typeof post.heart_count,
-    user_heart_type: typeof post.user_heart
-  });
-  console.log('User data:', {
-    userId: user?.id,
-    userExists: !!user
-  });
-
-  // CRITICAL DEBUG - Log what we're passing to the hook
   const hookParams = {
     postId: post.id,
     userId: user?.id,
@@ -81,9 +67,6 @@ export const MobilePostCard2 = ({
     initialUserThumbsDown: post.user_thumbsdown || false,
     initialUserHeart: post.user_heart || false
   };
-  
-  console.log(`🔧 === HOOK PARAMETERS FOR POST ${post.id} ===`);
-  console.log('Hook params:', JSON.stringify(hookParams, null, 2));
 
   const {
     thumbsUpCount,
@@ -99,16 +82,6 @@ export const MobilePostCard2 = ({
     toggleThumbsDown,
     toggleHeart
   } = usePostReactions2(hookParams);
-
-  // CRITICAL DEBUG - Log what the hook returned
-  console.log(`📊 === HOOK RESULTS FOR POST ${post.id} ===`);
-  console.log('Hook returned values:', {
-    heartCount,
-    isHeartActive,
-    isHeartSubmitting,
-    toggleHeartType: typeof toggleHeart,
-    toggleHeartExists: !!toggleHeart
-  });
 
   const { comments, refreshComments } = useComments2({
     postId: post.id,
@@ -137,34 +110,11 @@ export const MobilePostCard2 = ({
     setShowDeleteDialog(false);
   };
 
-  // CRITICAL DEBUG - Heart click handler with extensive logging
   const handleHeartClick = () => {
-    console.log(`💗 === HEART CLICK HANDLER FOR POST ${post.id} ===`);
-    console.log('Click handler called with state:', {
-      heartCount,
-      isHeartActive,
-      isHeartSubmitting,
-      userId: user?.id,
-      postId: post.id
-    });
-    
-    if (!user?.id) {
-      console.log('❌ HEART CLICK BLOCKED: No user ID');
+    if (!user?.id || isHeartSubmitting) {
       return;
     }
-    
-    if (isHeartSubmitting) {
-      console.log('❌ HEART CLICK BLOCKED: Already submitting');
-      return;
-    }
-    
-    console.log('✅ HEART CLICK PROCEEDING: Calling toggleHeart...');
-    try {
-      toggleHeart();
-      console.log('✅ HEART CLICK: toggleHeart called successfully');
-    } catch (error) {
-      console.error('❌ HEART CLICK ERROR:', error);
-    }
+    toggleHeart();
   };
 
   return (
@@ -179,7 +129,7 @@ export const MobilePostCard2 = ({
           onDeleteClick={() => setShowDeleteDialog(true)}
         />
 
-        <div className="px-3 md:px-4 pb-3">
+        <div className="px-4 pb-4">
           <PostContent
             content={post.content}
             mediaUrls={post.media_urls}
