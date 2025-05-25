@@ -45,7 +45,9 @@ const Profile = () => {
           title="Profile" 
           showMobileProfileHeader={false}
         >
-          <ProfileSkeleton />
+          <div className="px-3 md:px-6">
+            <ProfileSkeleton />
+          </div>
         </AppLayout>
       </RouteErrorBoundary>
     );
@@ -94,12 +96,12 @@ const Profile = () => {
               />
               
               {/* Logout Card - Always visible at the bottom with extra margin */}
-              <div className="mt-8 mb-8">
+              <div className="mt-8 mb-8 px-3 md:px-6">
                 <LogoutCard onLogout={handleLogout} />
               </div>
             </>
           ) : (
-            <div className="text-center py-8">
+            <div className="text-center py-8 px-3 md:px-6">
               <p className="text-gray-600 mb-4">
                 No profile found. This is normal for new accounts.
               </p>

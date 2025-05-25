@@ -19,7 +19,7 @@ export const ProfileContent = ({ profile, onProfileUpdate }: ProfileContentProps
   };
 
   return (
-    <>
+    <div className="px-3 md:px-6 space-y-3">
       {/* Desktop Profile Header - Hidden on mobile, shown on desktop, no card wrapper */}
       <div className="hidden md:block mb-4 md:mb-6">
         <ProfileHeader profile={profile} />
@@ -37,6 +37,6 @@ export const ProfileContent = ({ profile, onProfileUpdate }: ProfileContentProps
           />
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 };
