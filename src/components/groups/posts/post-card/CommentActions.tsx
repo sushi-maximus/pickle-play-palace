@@ -26,7 +26,7 @@ export const CommentActions = ({
   currentUserId
 }: CommentActionsProps) => {
   return (
-    <div className="flex items-center gap-2 md:gap-3 pt-1">
+    <div className="flex items-center gap-1 md:gap-2 pt-2">
       <CommentThumbsUp2
         count={thumbsUpCount}
         isActive={isThumbsUpActive}
