@@ -75,9 +75,9 @@ export const MobilePostHeader = ({
             <h3 className="font-semibold text-sm md:text-base text-gray-900">
               {displayName}
             </h3>
-            <p className="text-xs md:text-sm text-gray-400">
+            <span className="text-xs md:text-sm text-gray-400">
               {timeAgo}
-            </p>
+            </span>
           </div>
         </div>
       </div>
