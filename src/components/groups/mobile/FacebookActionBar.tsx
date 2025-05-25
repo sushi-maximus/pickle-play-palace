@@ -1,6 +1,6 @@
 
 import { memo } from "react";
-import { ThumbsUp, MessageCircle, Share2 } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share } from "lucide-react";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookActionBarProps {
@@ -22,50 +22,74 @@ const FacebookActionBarComponent = ({
   onCommentClick,
   user
 }: FacebookActionBarProps) => {
-  
-  const handleShare = () => {
+  const handleLikeClick = () => {
+    if (!isDisabled && !isSubmitting && user) {
+      onLikeClick();
+    }
+  };
+
+  const handleCommentClick = () => {
+    if (user) {
+      onCommentClick();
+    }
+  };
+
+  const handleShareClick = () => {
     // Placeholder for share functionality
-    console.log("Share post:", postId);
+    console.log("Share clicked for post:", postId);
   };
 
   return (
-    <div className="flex items-center border-t border-gray-200 bg-white">
-      {/* Like Button - Enhanced touch target and mobile responsiveness */}
+    <div className="flex items-center border-t border-gray-200 bg-gray-50">
+      {/* Like Button */}
       <button
-        onClick={onLikeClick}
-        disabled={isDisabled || !user}
-        className={`flex-1 flex items-center justify-center space-x-1 sm:space-x-2 py-3 sm:py-4 transition-all duration-200 min-h-[52px] touch-manipulation active:scale-95 ${
-          isLiked
-            ? "text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200"
-            : "text-gray-600 hover:text-blue-600 hover:bg-gray-50 active:bg-gray-100"
-        } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+        onClick={handleLikeClick}
+        disabled={isDisabled || isSubmitting || !user}
+        className={`flex-1 flex items-center justify-center py-3 sm:py-4 min-h-[52px] transition-all duration-200 touch-manipulation active:scale-95 ${
+          isLiked 
+            ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
+            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+        } ${
+          (isDisabled || !user) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+        }`}
       >
-        <ThumbsUp 
-          className={`h-4 w-4 sm:h-5 sm:w-5 transition-all duration-200 ${
-            isLiked ? "fill-current" : ""
-          }`} 
-        />
-        <span className="text-sm sm:text-base font-medium">
-          {isSubmitting ? "..." : "Like"}
-        </span>
+        <div className="flex items-center space-x-2">
+          <ThumbsUp 
+            className={`h-5 w-5 transition-transform duration-200 ${
+              isSubmitting ? 'animate-pulse' : ''
+            } ${
+              isLiked ? 'fill-current' : ''
+            }`} 
+          />
+          <span className="font-medium text-sm sm:text-base">
+            {isLiked ? 'Liked' : 'Like'}
+          </span>
+        </div>
       </button>
 
-      {/* Comment Button - Enhanced for mobile */}
+      {/* Comment Button */}
       <button
-        onClick={onCommentClick}
-        className="flex-1 flex items-center justify-center space-x-1 sm:space-x-2 py-3 sm:py-4 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-all duration-200 min-h-[52px] touch-manipulation active:scale-95 active:bg-gray-100"
+        onClick={handleCommentClick}
+        disabled={!user}
+        className={`flex-1 flex items-center justify-center py-3 sm:py-4 min-h-[52px] text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 touch-manipulation active:scale-95 ${
+          !user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+        }`}
       >
-        <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-        <span className="text-sm sm:text-base font-medium">Comment</span>
+        <div className="flex items-center space-x-2">
+          <MessageCircle className="h-5 w-5" />
+          <span className="font-medium text-sm sm:text-base">Comment</span>
+        </div>
       </button>
 
-      {/* Share Button - Enhanced for mobile */}
+      {/* Share Button */}
       <button
-        onClick={handleShare}
-        className="flex-1 flex items-center justify-center space-x-1 sm:space-x-2 py-3 sm:py-4 text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-all duration-200 min-h-[52px] touch-manipulation active:scale-95 active:bg-gray-100"
+        onClick={handleShareClick}
+        className="flex-1 flex items-center justify-center py-3 sm:py-4 min-h-[52px] text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all duration-200 touch-manipulation active:scale-95 cursor-pointer"
       >
-        <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
-        <span className="text-sm sm:text-base font-medium">Share</span>
+        <div className="flex items-center space-x-2">
+          <Share className="h-5 w-5" />
+          <span className="font-medium text-sm sm:text-base">Share</span>
+        </div>
       </button>
     </div>
   );
