@@ -32,7 +32,7 @@ export const useGroupPosts = (
   console.log(`🕐 Timestamp: ${new Date().toISOString()}`);
   
   // CRITICAL DEBUG - Log query key generation
-  const queryKey = queryKeys.posts.list(groupId);
+  const queryKey = queryKeys.posts.list(groupId, userId);
   console.log(`🔑 QUERY KEY GENERATED:`, queryKey);
   console.log(`🔑 QUERY KEY STRING:`, JSON.stringify(queryKey));
 
@@ -113,7 +113,7 @@ export const useGroupPosts = (
     enabled: Boolean(isValidUUID), // Convert to boolean and only run with valid UUID
     retry: false,
     staleTime: 0, // CRITICAL: Set to 0 to force fresh data on navigation
-    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes (updated from cacheTime)
     refetchOnMount: true, // Always refetch when component mounts
     refetchOnWindowFocus: false, // Don't refetch on window focus
   });
