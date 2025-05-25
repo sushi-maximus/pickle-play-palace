@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
+import { ProfileMobileLayout } from "@/components/profile/mobile/ProfileMobileLayout";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { LogoutCard } from "@/components/profile/LogoutCard";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
@@ -41,12 +41,9 @@ const Profile = () => {
     console.log("⏳ Still loading authentication state");
     return (
       <RouteErrorBoundary routeName="Profile">
-        <AppLayout 
-          title="Profile" 
-          showMobileProfileHeader={false}
-        >
+        <ProfileMobileLayout title="Profile">
           <ProfileSkeleton />
-        </AppLayout>
+        </ProfileMobileLayout>
       </RouteErrorBoundary>
     );
   }
@@ -80,10 +77,7 @@ const Profile = () => {
 
   return (
     <RouteErrorBoundary routeName="Profile">
-      <AppLayout 
-        title="Profile" 
-        showMobileProfileHeader={true}
-      >
+      <ProfileMobileLayout title="Profile">
         <div className="animate-fade-in">
           {profile ? (
             <>
@@ -112,7 +106,7 @@ const Profile = () => {
             </div>
           )}
         </div>
-      </AppLayout>
+      </ProfileMobileLayout>
     </RouteErrorBoundary>
   );
 };
