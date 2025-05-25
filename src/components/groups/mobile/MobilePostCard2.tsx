@@ -62,7 +62,7 @@ export const MobilePostCard2 = ({
   };
 
   return (
-    <Card className="w-full shadow-sm border border-border rounded-lg overflow-hidden bg-white transition-all duration-200 hover:shadow-md">
+    <Card className="w-full border-0 shadow-sm bg-white rounded-lg overflow-hidden">
       <CardContent className="p-0">
         <PostDisplay
           post={post}

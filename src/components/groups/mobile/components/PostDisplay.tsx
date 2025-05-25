@@ -30,7 +30,7 @@ export const PostDisplay = ({
   onSaveEditing
 }: PostDisplayProps) => {
   return (
-    <div className="bg-white">
+    <>
       <MobilePostHeader
         post={post}
         currentUserId={currentUserId}
@@ -40,7 +40,7 @@ export const PostDisplay = ({
         onDeleteClick={onDeleteClick}
       />
 
-      <div className="px-4 pb-4 md:px-6 md:pb-6">
+      <div className="px-4 pb-4">
         <PostContent
           content={post.content}
           mediaUrls={post.media_urls}
@@ -52,6 +52,6 @@ export const PostDisplay = ({
           isEditSubmitting={isEditSubmitting}
         />
       </div>
-    </div>
+    </>
   );
 };
