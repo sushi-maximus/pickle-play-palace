@@ -84,10 +84,9 @@ const Profile = () => {
     <RouteErrorBoundary routeName="Profile">
       <AppLayout 
         title="Profile" 
-        showMobileProfileHeader={true}
-        className="overflow-y-auto"
+        showMobileProfileHeader={false}
       >
-        <div className="min-h-full">
+        <div className="overflow-y-auto h-full">
           {profile ? (
             <>
               <ProfileContent 
