@@ -13,6 +13,8 @@ import { FacebookErrorBoundary } from "./FacebookErrorBoundary";
 import { FacebookErrorState } from "./FacebookErrorState";
 import { useComments2 } from "../posts/hooks/useComments2";
 import { useEditPost } from "../posts/hooks/useEditPost";
+import { useDeletePost } from "../posts/hooks/useDeletePost";
+import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookPostCardProps {
@@ -37,6 +39,7 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
   const [showComments, setShowComments] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [displayContent, setDisplayContent] = useState(post.content);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   // Check if current user is the post author
   const isOwnPost = user?.id === post.user_id;
@@ -58,6 +61,14 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
       // Call the parent's refresh callback if provided
       onPostUpdated?.();
       console.log("Post updated successfully");
+    }
+  });
+
+  // Delete post functionality
+  const { isDeleting, handleDelete } = useDeletePost({
+    onPostDeleted: () => {
+      console.log("Post deleted successfully");
+      onPostUpdated?.();
     }
   });
   
@@ -120,8 +131,12 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
   };
 
   const handleDeletePost = () => {
-    console.log("Delete post clicked for post:", post.id);
-    // TODO: Implement delete functionality
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    await handleDelete(post.id);
+    setShowDeleteDialog(false);
   };
 
   const handleSaveEdit = () => {
@@ -290,6 +305,14 @@ const FacebookPostCardComponent = ({ post, user, onPostUpdated }: FacebookPostCa
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeletePostDialog
+        isOpen={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirmDelete={handleConfirmDelete}
+        isDeleting={isDeleting}
+      />
     </FacebookErrorBoundary>
   );
 };
