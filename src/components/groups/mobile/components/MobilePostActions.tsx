@@ -51,8 +51,8 @@ export const MobilePostActions = ({
   };
 
   return (
-    <div className="flex items-center px-3 md:px-4 py-2 md:py-3 border-t border-gray-100">
-      <div className="flex items-center gap-1 md:gap-3 flex-1">
+    <div className="flex items-center justify-between px-3 md:px-4 py-3 md:py-4 border-t border-gray-100 bg-gray-50/30">
+      <div className="flex items-center gap-3 md:gap-4">
         <PostReactions2
           thumbsUpCount={thumbsUpCount}
           thumbsDownCount={thumbsDownCount}
@@ -67,19 +67,19 @@ export const MobilePostActions = ({
           onThumbsDownClick={onThumbsDownClick}
           onHeartClick={onHeartClick}
         />
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          className="min-h-[48px] px-3 md:h-9 md:px-4 flex items-center gap-1 md:gap-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 touch-manipulation"
-          onClick={onToggleComments}
-        >
-          <MessageCircle className="h-4 w-4" />
-          <span className="text-sm font-medium">
-            {getCommentsText()}
-          </span>
-        </Button>
       </div>
+      
+      <Button
+        variant="ghost"
+        size="sm"
+        className="min-h-[48px] px-4 md:h-10 md:px-6 flex items-center gap-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 transition-colors duration-200 touch-manipulation rounded-lg"
+        onClick={onToggleComments}
+      >
+        <MessageCircle className="h-4 w-4 md:h-5 md:w-5" />
+        <span className="text-sm md:text-base font-medium whitespace-nowrap">
+          {getCommentsText()}
+        </span>
+      </Button>
     </div>
   );
 };
