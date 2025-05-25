@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useMemo, memo, useCallback } from "react";
 import { MobilePostCard2 } from "./MobilePostCard2";
 import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
@@ -115,10 +114,10 @@ const MobilePostsListComponent = ({
         />
         
         <div 
-          className="py-2 transition-transform duration-200"
+          className="transition-transform duration-200"
           style={contentTransform}
         >
-          <div className="space-y-2">
+          <div className="space-y-0">
             {memoizedPosts.map((post, index) => (
               <div 
                 key={post.id}

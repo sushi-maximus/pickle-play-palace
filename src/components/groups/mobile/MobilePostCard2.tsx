@@ -1,4 +1,3 @@
-
 import { useState, memo, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
@@ -84,7 +83,7 @@ const MobilePostCard2Component = ({
   }, [reactions.isDisabled, reactions.isHeartSubmitting, reactions.toggleHeart]);
 
   return (
-    <Card className="w-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-lg overflow-hidden">
+    <Card className="w-full bg-white border-0 border-b border-gray-200 shadow-none hover:shadow-none rounded-none mb-2">
       <CardContent className="p-0">
         <PostDisplay
           post={post}
