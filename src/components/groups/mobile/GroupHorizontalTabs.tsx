@@ -21,7 +21,7 @@ export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }:
   }
 
   return (
-    <div className="border-b border-border bg-white">
+    <div className="border-b border-gray-200 bg-white">
       <div className="flex">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
@@ -29,10 +29,10 @@ export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }:
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 text-sm font-medium transition-all duration-200 min-h-[48px] ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                  ? "text-primary border-b-2 border-primary bg-primary/5"
+                  : "text-gray-600 hover:text-primary hover:bg-gray-50"
               }`}
             >
               <IconComponent className="h-4 w-4" />
