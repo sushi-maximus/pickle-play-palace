@@ -1,36 +1,48 @@
 
 import { ReactNode } from "react";
+import { MobilePageHeader } from "@/components/navigation/MobilePageHeader";
 import { OptimizedBottomNavigation } from "@/components/navigation/OptimizedBottomNavigation";
-import { OptimizedMobilePageHeader } from "@/components/navigation/OptimizedMobilePageHeader";
-import { MobileLayoutContent } from "./components/MobileLayoutContent";
+import { MobileLayoutContent, MobileProfileSection } from "./components";
+import { useMobileLayout } from "./hooks";
+import type { Database } from "@/integrations/supabase/types";
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface MobileLayoutProps {
   children: ReactNode;
-  title: string;
+  title?: string;
   showProfileHeader?: boolean;
-  fullWidth?: boolean;
+  profile?: Profile | null;
 }
 
 export const MobileLayout = ({ 
   children, 
-  title, 
-  showProfileHeader = true,
-  fullWidth = false
+  title = "PicklePlay",
+  showProfileHeader = false,
+  profile 
 }: MobileLayoutProps) => {
+  const { topPadding, shouldShowProfileHeader } = useMobileLayout({
+    showProfileHeader,
+    profile
+  });
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
-      {showProfileHeader && (
-        <OptimizedMobilePageHeader title={title} />
+    <>
+      {/* Page Header - Fixed at top with z-60 */}
+      <MobilePageHeader title={title} />
+      
+      {/* Profile Header - Only shown when specified and profile exists */}
+      {profile && shouldShowProfileHeader && (
+        <MobileProfileSection profile={profile} />
       )}
       
-      <MobileLayoutContent 
-        topPadding={showProfileHeader ? "pt-16" : "pt-0"}
-        fullWidth={fullWidth}
-      >
+      {/* Content Area with proper spacing */}
+      <MobileLayoutContent topPadding={topPadding}>
         {children}
       </MobileLayoutContent>
       
+      {/* Bottom Navigation - Fixed at bottom with z-100 */}
       <OptimizedBottomNavigation />
-    </div>
+    </>
   );
 };

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useGroupDetails } from "./hooks/useGroupDetails";
 import type { Database } from "@/integrations/supabase/types";
-import type { User } from "@supabase/supabase-js";
+import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 type Group = Database['public']['Tables']['groups']['Row'];
 
@@ -24,15 +24,15 @@ interface MembershipStatus {
 }
 
 interface GroupDetailsContainerProps {
-  groupId: string;
-  user: User | null;
-  breadcrumbItems?: BreadcrumbItem[];
+  id: string;
+  user: Profile | null;
+  breadcrumbItems: BreadcrumbItem[];
 }
 
 export const GroupDetailsContainer = ({ 
-  groupId,
+  id,
   user,
-  breadcrumbItems = []
+  breadcrumbItems 
 }: GroupDetailsContainerProps) => {
   const navigate = useNavigate();
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
@@ -43,12 +43,12 @@ export const GroupDetailsContainer = ({
     membershipStatus,
     hasPendingRequests,
     handleMemberUpdate
-  } = useGroupDetails(groupId, user?.id);
+  } = useGroupDetails(id, user?.id);
   
   const handleJoinRequest = () => {
     if (!user) {
       toast.error("You need to be logged in to request to join");
-      navigate("/login", { state: { from: `/groups/${groupId}` } });
+      navigate("/login", { state: { from: `/groups/${id}` } });
       return;
     }
     
