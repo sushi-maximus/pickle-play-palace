@@ -44,11 +44,6 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
     // TODO: Implement comment functionality in next steps
   };
 
-  const handleShareClick = () => {
-    console.log("Share clicked for post:", post.id);
-    // TODO: Implement share functionality
-  };
-
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
       {/* Post Header */}
@@ -88,7 +83,6 @@ const FacebookPostCardComponent = ({ post, user }: FacebookPostCardProps) => {
         isDisabled={isDisabled}
         onLikeClick={toggleLike}
         onCommentClick={handleCommentClick}
-        onShareClick={handleShareClick}
         user={user}
       />
     </div>

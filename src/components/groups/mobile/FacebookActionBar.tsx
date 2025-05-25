@@ -1,6 +1,6 @@
 
 import { memo } from "react";
-import { ThumbsUp, MessageCircle, Share } from "lucide-react";
+import { ThumbsUp, MessageCircle } from "lucide-react";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface FacebookActionBarProps {
@@ -10,7 +10,6 @@ interface FacebookActionBarProps {
   isDisabled: boolean;
   onLikeClick: () => void;
   onCommentClick?: () => void;
-  onShareClick?: () => void;
   user?: Profile | null;
 }
 
@@ -21,7 +20,6 @@ const FacebookActionBarComponent = ({
   isDisabled,
   onLikeClick,
   onCommentClick,
-  onShareClick,
   user
 }: FacebookActionBarProps) => {
   
@@ -33,10 +31,6 @@ const FacebookActionBarComponent = ({
 
   const handleCommentClick = () => {
     onCommentClick?.();
-  };
-
-  const handleShareClick = () => {
-    onShareClick?.();
   };
 
   return (
@@ -64,15 +58,6 @@ const FacebookActionBarComponent = ({
       >
         <MessageCircle className="h-4 w-4 mr-2" />
         <span>Comment</span>
-      </button>
-
-      {/* Share Button */}
-      <button 
-        onClick={handleShareClick}
-        className="flex-1 flex items-center justify-center py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100"
-      >
-        <Share className="h-4 w-4 mr-2" />
-        <span>Share</span>
       </button>
     </div>
   );
