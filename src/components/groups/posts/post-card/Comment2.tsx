@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,6 @@ interface Comment2Props {
 
 export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Props) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(comment.content);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { 
@@ -57,6 +57,8 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
   });
 
   const { 
+    editableContent,
+    setEditableContent,
     startEditing, 
     cancelEditing, 
     handleUpdate, 
@@ -76,12 +78,11 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
 
   const handleEdit = () => {
     setIsEditing(true);
-    setEditContent(comment.content);
     startEditing(comment.id, comment.content);
   };
 
   const handleSaveEdit = () => {
-    if (editContent.trim() && editContent !== comment.content) {
+    if (editableContent.trim() && editableContent !== comment.content) {
       handleUpdate();
     } else {
       setIsEditing(false);
@@ -91,7 +92,6 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setEditContent(comment.content);
     cancelEditing();
   };
 
@@ -153,8 +153,8 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
           {isEditing ? (
             <div className="space-y-2">
               <Textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
+                value={editableContent}
+                onChange={(e) => setEditableContent(e.target.value)}
                 className="text-sm min-h-[60px] resize-none"
                 disabled={isEditSubmitting}
               />
@@ -170,7 +170,7 @@ export const Comment2 = ({ comment, currentUserId, onCommentUpdate }: Comment2Pr
                 <Button 
                   size="sm" 
                   onClick={handleSaveEdit}
-                  disabled={!editContent.trim() || isEditSubmitting}
+                  disabled={!editableContent.trim() || isEditSubmitting}
                 >
                   Save
                 </Button>
