@@ -1,5 +1,4 @@
 
-
 import { memo } from "react";
 
 interface Comment {
@@ -26,11 +25,10 @@ interface FacebookCommentContentProps {
 
 const FacebookCommentContentComponent = ({ comment }: FacebookCommentContentProps) => {
   return (
-    <div className="rounded-2xl px-4 py-3 max-w-xs">
+    <div className="px-3 py-2 max-w-xs">
       <p className="text-sm text-gray-900 break-words whitespace-pre-wrap leading-relaxed">{comment.content}</p>
     </div>
   );
 };
 
 export const FacebookCommentContent = memo(FacebookCommentContentComponent);
-

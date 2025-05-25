@@ -1,5 +1,6 @@
 
-import { memo } from "react";
+import { useState, memo } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAddComment2 } from "../posts/hooks/useAddComment2";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
@@ -14,63 +15,56 @@ const FacebookCommentFormComponent = ({
   user, 
   onCommentAdded 
 }: FacebookCommentFormProps) => {
-  const {
-    content,
-    setContent,
-    isSubmitting,
-    handleSubmit
-  } = useAddComment2({
+  const [content, setContent] = useState("");
+
+  const { handleSubmit, isSubmitting } = useAddComment2({
     postId,
     userId: user.id,
-    onCommentAdded
+    onCommentAdded: () => {
+      setContent("");
+      onCommentAdded?.();
+    }
   });
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleSubmit();
+    if (!content.trim() || isSubmitting) return;
+    
+    await handleSubmit(content);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit();
+      if (content.trim() && !isSubmitting) {
+        handleSubmit(content);
+      }
     }
   };
 
+  const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
+
   return (
-    <div className="flex space-x-2 sm:space-x-3">
-      {/* User Avatar - Responsive sizing */}
-      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full flex-shrink-0"></div>
+    <form onSubmit={onSubmit} className="flex items-start gap-2 p-2">
+      <Avatar className="h-8 w-8 flex-shrink-0">
+        <AvatarImage src={user.avatar_url || undefined} alt={`${user.first_name} ${user.last_name}`} />
+        <AvatarFallback className="text-xs bg-gray-200 text-gray-700">
+          {initials}
+        </AvatarFallback>
+      </Avatar>
       
-      {/* Comment Input - Enhanced for mobile */}
-      <div className="flex-1 min-w-0">
-        <form onSubmit={handleFormSubmit} className="space-y-2">
-          <div className="relative">
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Write a comment..."
-              className="w-full bg-gray-100 border-0 rounded-full px-3 py-2 sm:px-4 text-xs sm:text-sm placeholder-gray-500 focus:ring-0 focus:outline-none resize-none min-h-[32px] sm:min-h-[36px] touch-manipulation"
-              rows={1}
-              disabled={isSubmitting}
-            />
-          </div>
-          
-          {content.trim() && (
-            <div className="flex justify-end">
-              <button 
-                type="submit" 
-                disabled={isSubmitting || !content.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 h-6 sm:h-7 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95 touch-manipulation"
-              >
-                {isSubmitting ? "Posting..." : "Post"}
-              </button>
-            </div>
-          )}
-        </form>
+      <div className="flex-1">
+        <input
+          type="text"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Write a comment..."
+          disabled={isSubmitting}
+          className="w-full px-3 py-2 text-sm bg-gray-100 border-0 rounded-full focus:outline-none focus:ring-0 placeholder-gray-500"
+        />
       </div>
-    </div>
+    </form>
   );
 };
 
