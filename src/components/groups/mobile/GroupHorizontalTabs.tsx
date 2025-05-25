@@ -9,17 +9,17 @@ interface GroupHorizontalTabsProps {
 }
 
 export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }: GroupHorizontalTabsProps) => {
-  const tabs = [
+  const baseTabs = [
     { id: "home2", label: "Activity", icon: Activity },
     { id: "calendar", label: "Calendar", icon: Calendar },
     { id: "users", label: "Members", icon: Users },
     { id: "about", label: "About", icon: Info }
   ];
 
-  // Add Settings tab only for admins
-  if (isAdmin) {
-    tabs.push({ id: "settings", label: "Settings", icon: Settings });
-  }
+  // Always add Settings tab for admins
+  const tabs = isAdmin 
+    ? [...baseTabs, { id: "settings", label: "Settings", icon: Settings }]
+    : baseTabs;
 
   return (
     <div className="border-b border-gray-200 bg-white">

@@ -85,16 +85,16 @@ export const MobilePostsList = ({
         />
         
         <div 
-          className="py-4 transition-transform duration-200 will-change-transform"
+          className="py-2 transition-transform duration-200 will-change-transform"
           style={{
             transform: isPulling ? `translateY(${Math.min(pullDistance, 80)}px)` : 'translateY(0)'
           }}
         >
-          <div className="space-y-3">
+          <div className="space-y-2">
             {posts.map((post, index) => (
               <div 
                 key={post.id}
-                className="transform transition-all duration-200 ease-out px-2"
+                className="transform transition-all duration-200 ease-out"
                 style={{
                   animationDelay: `${index * 50}ms`
                 }}
