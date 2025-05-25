@@ -63,7 +63,7 @@ export const MobilePostHeader = ({
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
 
   return (
-    <div className="flex items-start justify-between p-4 md:p-6">
+    <div className="flex items-start justify-between p-4 md:p-6 border-b border-border/50">
       <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
         <Avatar className="h-12 w-12 md:h-14 md:w-14 flex-shrink-0 shadow-sm border-2 border-border/10">
           <AvatarImage src={profile?.avatar_url || undefined} />
