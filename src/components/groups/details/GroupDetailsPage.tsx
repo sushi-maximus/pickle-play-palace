@@ -29,7 +29,7 @@ const GroupDetailsPage = () => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const isValidUUID = cleanId && cleanId !== ':id' && uuidRegex.test(cleanId);
   
-  // Use empty string when ID is invalid to prevent any queries
+  // CRITICAL FIX: Always use the same groupId for hooks to prevent hook order changes
   const safeGroupId = isValidUUID ? cleanId! : "";
 
   console.log("GroupDetailsPage: ID validation", {
@@ -38,25 +38,6 @@ const GroupDetailsPage = () => {
     isValidUUID,
     safeGroupId
   });
-
-  // Handle invalid IDs with redirect
-  useEffect(() => {
-    if (!cleanId || cleanId === '' || cleanId === ':id') {
-      console.error("GroupDetailsPage: No valid group ID provided, ID:", id);
-      toast.error("Invalid group URL - missing group ID");
-      navigate("/groups", { replace: true });
-      return;
-    }
-    
-    if (!isValidUUID) {
-      console.error("GroupDetailsPage: Invalid UUID format:", cleanId);
-      toast.error("Invalid group ID format");
-      navigate("/groups", { replace: true });
-      return;
-    }
-    
-    console.log("GroupDetailsPage: Valid group ID found:", cleanId);
-  }, [cleanId, isValidUUID, navigate, id]);
 
   // Convert Supabase Auth User to Profile for component compatibility
   const userProfile: Profile | null = user ? {
@@ -74,7 +55,8 @@ const GroupDetailsPage = () => {
     skill_level: user.user_metadata?.skill_level || '2.5'
   } : null;
 
-  // Hooks - these will only execute with valid IDs due to the enabled condition
+  // CRITICAL FIX: Always call hooks in the same order, regardless of validation
+  // This prevents the "rendered more hooks" error
   const {
     group,
     loading: groupLoading,
@@ -100,6 +82,25 @@ const GroupDetailsPage = () => {
     refreshFunction: refreshPosts,
     loading: postsLoading
   });
+
+  // Handle invalid IDs with redirect - moved after all hooks
+  useEffect(() => {
+    if (!cleanId || cleanId === '' || cleanId === ':id') {
+      console.error("GroupDetailsPage: No valid group ID provided, ID:", id);
+      toast.error("Invalid group URL - missing group ID");
+      navigate("/groups", { replace: true });
+      return;
+    }
+    
+    if (!isValidUUID) {
+      console.error("GroupDetailsPage: Invalid UUID format:", cleanId);
+      toast.error("Invalid group ID format");
+      navigate("/groups", { replace: true });
+      return;
+    }
+    
+    console.log("GroupDetailsPage: Valid group ID found:", cleanId);
+  }, [cleanId, isValidUUID, navigate, id]);
 
   // Event handlers
   const handlePostCreated = () => {
