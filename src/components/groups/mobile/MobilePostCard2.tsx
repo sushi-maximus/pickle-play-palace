@@ -1,34 +1,17 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { PostContent } from "../posts/post-card/PostContent";
-import { CommentsSection2 } from "../posts/post-card/CommentsSection2";
 import { DeletePostDialog } from "../posts/post-card/DeletePostDialog";
-import { usePostReactions2 } from "../posts/hooks/usePostReactions2";
 import { useComments2 } from "../posts/hooks/useComments2";
-import { MobilePostHeader } from "./components/MobilePostHeader";
-import { MobilePostActions } from "./components/MobilePostActions";
+import { PostDisplay } from "./components/PostDisplay";
+import { PostInteractions } from "./components/PostInteractions";
+import { usePostEditor } from "./hooks/usePostEditor";
+import { useUnifiedPostReactions } from "./hooks/useUnifiedPostReactions";
+import type { PostData, PostActions } from "./types/postTypes";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 
 interface MobilePostCard2Props {
-  post: {
-    id: string;
-    content: string;
-    created_at: string;
-    user_id: string;
-    media_urls?: string[] | null;
-    thumbsup_count?: number;
-    thumbsdown_count?: number;
-    heart_count?: number;
-    user_thumbsup?: boolean;
-    user_thumbsdown?: boolean;
-    user_heart?: boolean;
-    profiles?: {
-      first_name: string;
-      last_name: string;
-      avatar_url?: string | null;
-    };
-  };
+  post: PostData;
   user?: Profile | null;
   isEditing: boolean;
   currentPostId: string | null;
@@ -55,119 +38,63 @@ export const MobilePostCard2 = ({
   onDeleteClick
 }: MobilePostCard2Props) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showComments, setShowComments] = useState(false);
 
-  const hookParams = {
+  const editor = usePostEditor({
     postId: post.id,
-    userId: user?.id,
-    initialThumbsUp: post.thumbsup_count || 0,
-    initialThumbsDown: post.thumbsdown_count || 0,
-    initialHeart: post.heart_count || 0,
-    initialUserThumbsUp: post.user_thumbsup || false,
-    initialUserThumbsDown: post.user_thumbsdown || false,
-    initialUserHeart: post.user_heart || false
-  };
+    content: post.content,
+    isEditing: isEditing && currentPostId === post.id,
+    isSubmitting: isEditSubmitting,
+    onStartEditing,
+    onCancelEditing,
+    onSaveEditing
+  });
 
-  const {
-    thumbsUpCount,
-    thumbsDownCount,
-    heartCount,
-    isThumbsUpActive,
-    isThumbsDownActive,
-    isHeartActive,
-    isThumbsUpSubmitting,
-    isThumbsDownSubmitting,
-    isHeartSubmitting,
-    toggleThumbsUp,
-    toggleThumbsDown,
-    toggleHeart
-  } = usePostReactions2(hookParams);
+  const reactions = useUnifiedPostReactions({ post, user });
 
-  const { comments, refreshComments } = useComments2({
+  const { comments } = useComments2({
     postId: post.id,
     userId: user?.id
   });
-
-  const handleEdit = () => {
-    onStartEditing(post.id, post.content);
-  };
-
-  const handleSaveEditing = () => {
-    if (editableContent.trim() && editableContent !== post.content) {
-      onSaveEditing();
-    } else {
-      onCancelEditing();
-    }
-  };
-
-  const handleCancelEditing = () => {
-    setEditableContent(post.content);
-    onCancelEditing();
-  };
 
   const handleDeleteClick = () => {
     onDeleteClick(post.id);
     setShowDeleteDialog(false);
   };
 
-  const handleHeartClick = () => {
-    if (!user?.id || isHeartSubmitting) {
-      return;
-    }
-    toggleHeart();
-  };
-
   return (
     <Card className="w-full border-0 shadow-sm bg-white rounded-lg overflow-hidden">
       <CardContent className="p-0">
-        <MobilePostHeader
+        <PostDisplay
           post={post}
           currentUserId={user?.id}
-          isEditing={isEditing}
-          isDeleting={false}
-          onEdit={handleEdit}
+          isEditing={editor.isEditing}
+          editableContent={editableContent}
+          setEditableContent={setEditableContent}
+          isEditSubmitting={editor.isSubmitting}
+          onEdit={editor.handleStartEditing}
           onDeleteClick={() => setShowDeleteDialog(true)}
+          onCancelEditing={editor.handleCancelEditing}
+          onSaveEditing={editor.handleSaveEditing}
         />
 
-        <div className="px-4 pb-4">
-          <PostContent
-            content={post.content}
-            mediaUrls={post.media_urls}
-            isEditing={isEditing}
-            editableContent={editableContent}
-            setEditableContent={setEditableContent}
-            onCancelEditing={handleCancelEditing}
-            onSaveEditing={handleSaveEditing}
-            isEditSubmitting={isEditSubmitting}
-          />
-        </div>
-
-        <MobilePostActions
-          thumbsUpCount={thumbsUpCount}
-          thumbsDownCount={thumbsDownCount}
-          heartCount={heartCount}
-          isThumbsUpActive={isThumbsUpActive}
-          isThumbsDownActive={isThumbsDownActive}
-          isHeartActive={isHeartActive}
-          isThumbsUpSubmitting={isThumbsUpSubmitting}
-          isThumbsDownSubmitting={isThumbsDownSubmitting}
-          isHeartSubmitting={isHeartSubmitting}
-          onThumbsUpClick={toggleThumbsUp}
-          onThumbsDownClick={toggleThumbsDown}
-          onHeartClick={handleHeartClick}
-          showComments={showComments}
-          onToggleComments={() => setShowComments(!showComments)}
+        <PostInteractions
+          postId={post.id}
           currentUserId={user?.id}
+          user={user}
           commentsCount={comments?.length || 0}
+          thumbsUpCount={reactions.thumbsUpCount}
+          thumbsDownCount={reactions.thumbsDownCount}
+          heartCount={reactions.heartCount}
+          isThumbsUpActive={reactions.isThumbsUpActive}
+          isThumbsDownActive={reactions.isThumbsDownActive}
+          isHeartActive={reactions.isHeartActive}
+          isThumbsUpSubmitting={reactions.isThumbsUpSubmitting}
+          isThumbsDownSubmitting={reactions.isThumbsDownSubmitting}
+          isHeartSubmitting={reactions.isHeartSubmitting}
+          onThumbsUpClick={reactions.toggleThumbsUp}
+          onThumbsDownClick={reactions.toggleThumbsDown}
+          onHeartClick={reactions.handleHeartClick}
         />
-
-        {showComments && (
-          <CommentsSection2
-            postId={post.id}
-            currentUserId={user?.id}
-            user={user}
-          />
-        )}
       </CardContent>
       
       <DeletePostDialog
