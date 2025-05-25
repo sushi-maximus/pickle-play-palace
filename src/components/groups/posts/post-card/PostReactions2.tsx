@@ -16,7 +16,6 @@ interface PostReactions2Props {
   onThumbsUpClick: () => void;
   onThumbsDownClick: () => void;
   onHeartClick: () => void;
-  disabled?: boolean;
 }
 
 export const PostReactions2 = ({
@@ -31,32 +30,34 @@ export const PostReactions2 = ({
   isHeartSubmitting,
   onThumbsUpClick,
   onThumbsDownClick,
-  onHeartClick,
-  disabled = false
+  onHeartClick
 }: PostReactions2Props) => {
   return (
-    <div className="flex items-center gap-1 md:gap-3">
-      <ThumbsUp2
-        count={thumbsUpCount}
-        isActive={isThumbsUpActive}
-        isSubmitting={isThumbsUpSubmitting}
-        onClick={onThumbsUpClick}
-        disabled={disabled}
-      />
-      <ThumbsDown2
-        count={thumbsDownCount}
-        isActive={isThumbsDownActive}
-        isSubmitting={isThumbsDownSubmitting}
-        onClick={onThumbsDownClick}
-        disabled={disabled}
-      />
-      <PostHeart2
-        count={heartCount}
-        isActive={isHeartActive}
-        isSubmitting={isHeartSubmitting}
-        onClick={onHeartClick}
-        disabled={disabled}
-      />
+    <div className="flex items-center gap-2 md:gap-3 px-4 py-3 border-t border-gray-100 bg-gray-50/30">
+      <div className="flex items-center gap-1 md:gap-2">
+        <ThumbsUp2
+          count={thumbsUpCount}
+          isActive={isThumbsUpActive}
+          isSubmitting={isThumbsUpSubmitting}
+          onClick={onThumbsUpClick}
+        />
+        
+        <ThumbsDown2
+          count={thumbsDownCount}
+          isActive={isThumbsDownActive}
+          isSubmitting={isThumbsDownSubmitting}
+          onClick={onThumbsDownClick}
+        />
+      </div>
+      
+      <div className="flex items-center">
+        <PostHeart2
+          count={heartCount}
+          isActive={isHeartActive}
+          isSubmitting={isHeartSubmitting}
+          onClick={onHeartClick}
+        />
+      </div>
     </div>
   );
 };
