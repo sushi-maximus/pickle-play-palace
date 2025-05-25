@@ -40,6 +40,16 @@ export const MobilePostActions = ({
   currentUserId,
   commentsCount = 0
 }: MobilePostActionsProps) => {
+  const getCommentsText = () => {
+    if (commentsCount === 0) {
+      return showComments ? 'Hide comments' : 'Comment';
+    } else if (commentsCount === 1) {
+      return showComments ? 'Hide comments' : '1 comment';
+    } else {
+      return showComments ? 'Hide comments' : `${commentsCount} comments`;
+    }
+  };
+
   return (
     <div className="flex items-center px-3 md:px-4 py-2 md:py-3 border-t border-gray-100">
       <div className="flex items-center gap-2 md:gap-3">
@@ -67,8 +77,7 @@ export const MobilePostActions = ({
         >
           <MessageCircle className="h-4 w-4" />
           <span className="text-sm font-medium">
-            {showComments ? 'Hide' : 'Comments'}
-            {commentsCount > 0 && ` (${commentsCount})`}
+            {getCommentsText()}
           </span>
         </Button>
       </div>
