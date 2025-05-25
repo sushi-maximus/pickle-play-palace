@@ -33,14 +33,14 @@ const FacebookExpandingCommentFormComponent = ({
 
   const onSubmit = async () => {
     if (!content.trim() || isSubmitting) return;
-    await handleSubmit();
+    await handleSubmit(content);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (content.trim() && !isSubmitting) {
-        handleSubmit();
+        onSubmit();
       }
     }
   };

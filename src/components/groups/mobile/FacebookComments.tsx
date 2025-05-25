@@ -2,7 +2,7 @@
 import { memo } from "react";
 import { useComments2 } from "../posts/hooks/useComments2";
 import { FacebookCommentCard } from "./FacebookCommentCard";
-import { FacebookCommentForm } from "./FacebookCommentForm";
+import { FacebookExpandingCommentForm } from "./FacebookExpandingCommentForm";
 import { FacebookErrorState } from "./FacebookErrorState";
 import { FacebookLoadingState } from "./FacebookLoadingState";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
@@ -70,8 +70,8 @@ const FacebookCommentsComponent = ({
 
       {/* Comment Form - Enhanced for mobile */}
       {user && (
-        <div className="p-3 sm:p-4 bg-white border-t border-gray-200">
-          <FacebookCommentForm
+        <div className="bg-white border-t border-gray-200">
+          <FacebookExpandingCommentForm
             postId={postId}
             user={user}
             onCommentAdded={handleCommentUpdated}
@@ -81,8 +81,8 @@ const FacebookCommentsComponent = ({
 
       {/* Empty State for Comments */}
       {(!comments || comments.length === 0) && user && (
-        <div className="p-3 sm:p-4 bg-white border-t border-gray-200">
-          <FacebookCommentForm
+        <div className="bg-white border-t border-gray-200">
+          <FacebookExpandingCommentForm
             postId={postId}
             user={user}
             onCommentAdded={handleCommentUpdated}

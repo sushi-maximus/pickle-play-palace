@@ -14,21 +14,23 @@ export const useAddComment2 = ({ postId, userId, onCommentAdded }: UseAddComment
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    if (!userId || !content.trim() || isSubmitting) return;
+  const handleSubmit = async (commentContent?: string) => {
+    const contentToSubmit = commentContent || content;
+    
+    if (!userId || !contentToSubmit.trim() || isSubmitting) return;
 
     try {
       setIsSubmitting(true);
       setError(null);
 
-      console.log('Adding comment:', { postId, userId, content: content.trim() });
+      console.log('Adding comment:', { postId, userId, content: contentToSubmit.trim() });
 
       const { error: insertError } = await supabase
         .from('comments')
         .insert({
           post_id: postId,
           user_id: userId,
-          content: content.trim()
+          content: contentToSubmit.trim()
         });
 
       if (insertError) {

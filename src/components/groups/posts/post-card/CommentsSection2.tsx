@@ -2,9 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
 import { Comment2 } from "./Comment2";
-import { CommentForm2 } from "./CommentForm2";
+import { FacebookExpandingCommentForm } from "../../mobile/FacebookExpandingCommentForm";
 import { useComments2 } from "../hooks/useComments2";
-import { useAddComment2 } from "../hooks/useAddComment2";
 
 interface CommentsSection2Props {
   postId: string;
@@ -21,20 +20,6 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
   const { comments, loading, refreshComments } = useComments2({
     postId,
     userId: currentUserId
-  });
-
-  const { 
-    content: newCommentContent, 
-    setContent: setNewCommentContent,
-    handleSubmit, 
-    isSubmitting 
-  } = useAddComment2({
-    postId,
-    userId: currentUserId || '',
-    onCommentAdded: () => {
-      setNewCommentContent("");
-      refreshComments();
-    }
   });
 
   const handleCommentUpdate = () => {
@@ -76,12 +61,10 @@ export const CommentsSection2 = ({ postId, currentUserId, user }: CommentsSectio
       
       {currentUserId && user && (
         <div className="border-t border-gray-100/50 bg-white">
-          <CommentForm2
-            content={newCommentContent}
-            setContent={setNewCommentContent}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
+          <FacebookExpandingCommentForm
+            postId={postId}
             user={user}
+            onCommentAdded={handleCommentUpdate}
           />
         </div>
       )}
