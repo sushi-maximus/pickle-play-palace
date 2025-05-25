@@ -65,7 +65,7 @@ export const Activity2Tab = ({ groupId, user, onPostCreated }: Activity2TabProps
                   </div>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons - Simplified to Like and Comment only */}
                 <div className="flex border-t border-gray-100">
                   <button className="flex-1 flex items-center justify-center py-3 text-gray-600 hover:bg-gray-50 transition-colors">
                     <span className="text-lg mr-2">👍</span>
@@ -75,22 +75,19 @@ export const Activity2Tab = ({ groupId, user, onPostCreated }: Activity2TabProps
                     <span className="text-lg mr-2">💬</span>
                     <span className="text-sm font-medium">Comment</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center py-3 text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100">
-                    <span className="text-lg mr-2">📤</span>
-                    <span className="text-sm font-medium">Share</span>
-                  </button>
                 </div>
               </div>
 
               {/* Development Info Card */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="text-lg font-medium mb-2 text-blue-900">Facebook-Style Layout Ready!</h3>
+                <h3 className="text-lg font-medium mb-2 text-blue-900">Simplified Facebook-Style Layout!</h3>
                 <p className="text-blue-700 text-sm mb-3">
-                  The Facebook-style layout structure is now in place with proper sections and styling.
+                  The layout now uses only Like and Comment actions, just like Facebook's simplified approach.
                 </p>
                 <div className="text-xs text-blue-600 space-y-1">
                   <p>Group ID: {groupId}</p>
                   <p>User: {user?.first_name} {user?.last_name}</p>
+                  <p>Actions: Like + Comment only</p>
                   <p>Next: Will add functional create post component</p>
                 </div>
               </div>
