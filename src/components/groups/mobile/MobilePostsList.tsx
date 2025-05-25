@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useMemo, memo, useCallback } from "react";
 import { MobilePostCard2 } from "./MobilePostCard2";
 import { OptimizedScrollArea } from "@/components/ui/OptimizedScrollArea";
@@ -100,7 +101,7 @@ const MobilePostsListComponent = ({
   }), [isPulling, pullDistance]);
 
   return (
-    <div className="w-screen -mx-3 md:-mx-6">
+    <div className="w-full">
       <OptimizedScrollArea 
         className="h-full w-full" 
         ref={scrollRef}

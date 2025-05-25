@@ -83,7 +83,7 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
         
         <div className="max-w-2xl mx-auto h-full flex flex-col">
           {/* Facebook-style Create Post Section - Fixed positioning with safe area support */}
-          <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4">
+          <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4 px-3 sm:px-0">
             <FacebookCreatePost 
               groupId={groupId}
               user={user}
@@ -95,11 +95,11 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
           <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch min-h-0">
             <div className="pb-4 sm:pb-6 pb-safe">
               {loading ? (
-                <div className="p-3 sm:p-4">
+                <div className="px-3 sm:px-4">
                   <FacebookLoadingState type="posts" count={3} />
                 </div>
               ) : errorObject ? (
-                <div className="p-3 sm:p-4">
+                <div className="px-3 sm:px-4">
                   <FacebookErrorState
                     error={errorObject}
                     onRetry={handleRetry}

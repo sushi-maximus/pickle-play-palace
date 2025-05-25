@@ -8,7 +8,7 @@ interface FeedErrorStateProps {
 
 export const FeedErrorState = ({ error, onRetry }: FeedErrorStateProps) => {
   return (
-    <div className="p-8 text-center">
+    <div className="p-8 text-center w-full">
       <div className="text-red-500 mb-4">{error}</div>
       <Button variant="outline" onClick={onRetry}>Try Again</Button>
     </div>

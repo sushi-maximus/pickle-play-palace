@@ -47,7 +47,7 @@ export const PostsList = ({
   return (
     <div 
       className={cn(
-        "space-y-6 pb-6 transition-opacity duration-300", 
+        "space-y-6 pb-6 transition-opacity duration-300 w-full", 
         isTransitioning ? "opacity-50" : "opacity-100"
       )}
       style={contentTransform}
