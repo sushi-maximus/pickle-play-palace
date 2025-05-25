@@ -21,7 +21,7 @@ export const CommentThumbsUp2 = ({
     <Button
       variant="ghost"
       size="sm"
-      className={`h-6 w-auto px-1 md:h-7 md:px-2 flex items-center gap-1 transition-colors text-xs ${
+      className={`h-6 w-auto px-1.5 md:h-7 md:px-2 flex items-center gap-1 transition-colors text-xs ${
         isActive ? "text-blue-500 bg-blue-50 hover:bg-blue-100" : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
       }`}
       onClick={onClick}
@@ -32,9 +32,11 @@ export const CommentThumbsUp2 = ({
       ) : (
         <ThumbsUp className={`h-3 w-3 ${isActive ? "fill-current" : ""}`} />
       )}
-      <span className="text-xs font-medium">
-        {count > 0 ? count : ""}
-      </span>
+      {count > 0 && (
+        <span className="text-xs font-medium">
+          {count}
+        </span>
+      )}
     </Button>
   );
 };
