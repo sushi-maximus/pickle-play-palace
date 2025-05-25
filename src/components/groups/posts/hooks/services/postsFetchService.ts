@@ -38,6 +38,8 @@ export const fetchUserData = async (userId: string): Promise<PostUser | null> =>
 };
 
 export const fetchReactionCounts = async (postId: string) => {
+  console.log(`🔢 FETCHING REACTION COUNTS for post ${postId}`);
+  
   const { count: likeCount } = await supabase
     .from("reactions")
     .select("*", { count: "exact", head: true })
@@ -62,12 +64,15 @@ export const fetchReactionCounts = async (postId: string) => {
     .eq("post_id", postId)
     .eq("reaction_type", "heart");
 
-  return {
+  const counts = {
     like: likeCount || 0,
     thumbsup: thumbsUpCount || 0,
     thumbsdown: thumbsDownCount || 0,
     heart: heartCount || 0
   };
+
+  console.log(`📊 REACTION COUNTS for post ${postId}:`, counts);
+  return counts;
 };
 
 export const fetchCommentsCount = async (postId: string): Promise<number> => {
@@ -80,7 +85,9 @@ export const fetchCommentsCount = async (postId: string): Promise<number> => {
 };
 
 export const fetchUserReactions = async (postId: string, userId?: string) => {
-  console.log(`🔍 FETCHING USER REACTIONS for post ${postId}, user: ${userId}`);
+  console.log(`🔍 === FETCHING USER REACTIONS ===`);
+  console.log(`Post ID: ${postId}`);
+  console.log(`User ID: ${userId}`);
   
   if (!userId) {
     console.log(`❌ No userId provided, returning false for all reactions`);
@@ -93,6 +100,7 @@ export const fetchUserReactions = async (postId: string, userId?: string) => {
   }
 
   // Fetch all user reactions for this post in one query for efficiency
+  console.log(`📡 Making database query for user reactions...`);
   const { data: userReactions, error } = await supabase
     .from("reactions")
     .select("reaction_type")
@@ -100,7 +108,7 @@ export const fetchUserReactions = async (postId: string, userId?: string) => {
     .eq("user_id", userId);
 
   if (error) {
-    console.error(`❌ Error fetching user reactions for post ${postId}:`, error);
+    console.error(`❌ Database error fetching user reactions for post ${postId}:`, error);
     return {
       like: false,
       thumbsup: false,
@@ -109,10 +117,11 @@ export const fetchUserReactions = async (postId: string, userId?: string) => {
     };
   }
 
-  console.log(`✅ Raw user reactions data for post ${postId}:`, userReactions);
+  console.log(`✅ Raw database response for post ${postId}:`, userReactions);
 
   // Convert array of reactions to boolean flags
   const reactionTypes = userReactions?.map(r => r.reaction_type) || [];
+  console.log(`🎯 Extracted reaction types for post ${postId}:`, reactionTypes);
   
   const reactions = {
     like: reactionTypes.includes("like"),
@@ -121,7 +130,8 @@ export const fetchUserReactions = async (postId: string, userId?: string) => {
     heart: reactionTypes.includes("heart")
   };
 
-  console.log(`📊 Processed user reactions for post ${postId}:`, reactions);
+  console.log(`📋 Final processed user reactions for post ${postId}:`, reactions);
+  console.log(`🔍 === USER REACTIONS FETCH COMPLETE ===`);
 
   return reactions;
 };
