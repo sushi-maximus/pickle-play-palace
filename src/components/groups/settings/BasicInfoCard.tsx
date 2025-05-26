@@ -17,9 +17,9 @@ export const BasicInfoCard = ({ group, form, isSubmitting, onGroupUpdate }: Basi
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col md:flex-row gap-6 items-start">
+        <div className="flex flex-col md:flex-row gap-6 items-center">
           <GroupAvatarSection group={group} onGroupUpdate={onGroupUpdate} />
-          <div className="flex-grow">
+          <div className="flex-grow text-center md:text-left">
             <CardTitle>Basic Information</CardTitle>
             <CardDescription>
               Manage the basic details of your group.

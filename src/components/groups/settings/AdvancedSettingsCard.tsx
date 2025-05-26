@@ -14,8 +14,8 @@ interface AdvancedSettingsCardProps {
 export const AdvancedSettingsCard = ({ form, isSubmitting }: AdvancedSettingsCardProps) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
+      <CardHeader className="text-center">
+        <CardTitle className="flex items-center justify-center">
           <Award className="h-5 w-5 mr-2" />
           Skill Level Range
         </CardTitle>
