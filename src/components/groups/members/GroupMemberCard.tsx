@@ -28,34 +28,34 @@ export const GroupMemberCard = ({
     >
       <HoverCardTrigger asChild>
         <div 
-          className="bg-white shadow-sm rounded-lg px-3 py-4 md:px-6 md:py-8 hover:shadow-md cursor-pointer transition-all duration-200"
+          className="bg-white shadow-sm rounded-lg px-3 py-4 sm:px-4 sm:py-5 hover:shadow-md cursor-pointer transition-all duration-200 min-h-[60px] sm:min-h-[72px] animate-fade-in"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             onOpenChange(isOpen ? null : member.id);
           }}
         >
-          <div className="flex items-center space-x-2 md:space-x-3">
-            <Avatar className="h-8 w-8 md:h-10 md:w-10">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
               <AvatarImage 
                 src={member.profiles.avatar_url || ""} 
                 alt={`${member.profiles.first_name} ${member.profiles.last_name}`}
               />
               <AvatarFallback className="bg-primary/10">
-                <User className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+                <User className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
               </AvatarFallback>
             </Avatar>
             
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-sm md:text-base">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-medium text-sm sm:text-base text-gray-900 truncate">
                   {member.profiles.first_name} {member.profiles.last_name}
                 </span>
                 {member.role === "admin" && (
-                  <Badge className="text-xs">Admin</Badge>
+                  <Badge className="text-xs font-medium flex-shrink-0">Admin</Badge>
                 )}
               </div>
-              <p className="text-xs md:text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Joined {formatDistanceToNow(new Date(member.joined_at), { addSuffix: true })}
               </p>
             </div>

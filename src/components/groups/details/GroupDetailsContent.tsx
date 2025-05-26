@@ -87,10 +87,10 @@ export const GroupDetailsContent = ({
               <FacebookNetworkStatus />
               
               <div className="max-w-2xl mx-auto h-full flex flex-col">
-                {/* Pull to Refresh Indicator */}
+                {/* Pull to Refresh Indicator - Sticky positioned */}
                 {(isPulling || isRefreshing) && (
                   <div 
-                    className="flex-shrink-0 flex items-center justify-center py-2 bg-blue-50 border-b border-blue-100"
+                    className="flex-shrink-0 sticky top-0 z-20 flex items-center justify-center py-2 bg-blue-50 border-b border-blue-100 animate-fade-in"
                     style={{ 
                       transform: isPulling ? `translateY(${Math.min(pullDistance, 60)}px)` : 'none',
                       opacity: isPulling ? Math.min(pullDistance / 60, 1) : 1
@@ -102,12 +102,12 @@ export const GroupDetailsContent = ({
                   </div>
                 )}
 
-                {/* Members Header - Centered without card */}
-                <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4">
+                {/* Members Header - Sticky with proper z-index and background */}
+                <div className="flex-shrink-0 sticky top-0 z-10 bg-gray-50 pt-safe mb-4 animate-fade-in">
                   <div className="text-center py-4">
-                    <h3 className="text-lg md:text-xl font-medium">Group Members</h3>
-                    <div className="mt-2">
-                      <Badge variant="secondary" className="text-sm">
+                    <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2">Group Members</h3>
+                    <div className="flex items-center justify-center">
+                      <Badge variant="secondary" className="text-xs sm:text-sm font-medium px-2.5 py-1">
                         {group?.member_count || 0} {(group?.member_count || 0) === 1 ? 'member' : 'members'}
                       </Badge>
                     </div>
@@ -118,8 +118,9 @@ export const GroupDetailsContent = ({
                 <div 
                   ref={bindToElement}
                   className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch min-h-0"
+                  style={{ WebkitOverflowScrolling: 'touch' }}
                 >
-                  <div className="p-3 sm:p-4 pb-4 sm:pb-6 pb-safe space-y-4">
+                  <div className="p-3 sm:p-4 pb-4 sm:pb-6 pb-safe space-y-3 sm:space-y-4">
                     {/* Member Requests Section - Admin Only and only show if there are pending requests */}
                     {membershipStatus.isAdmin && hasPendingRequests && (
                       <div className="animate-fade-in">
@@ -131,7 +132,7 @@ export const GroupDetailsContent = ({
                     )}
                     
                     {/* Group Members Section */}
-                    <div className="space-y-3 md:space-y-4 animate-fade-in">
+                    <div className="space-y-3 sm:space-y-4 animate-fade-in">
                       <GroupMembersList
                         members={group?.members || []}
                         isAdmin={membershipStatus.isAdmin}
@@ -161,7 +162,7 @@ export const GroupDetailsContent = ({
             <div className="max-w-2xl mx-auto h-full flex flex-col">
               <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch min-h-0">
                 <div className="p-3 sm:p-4 pb-safe">
-                  <div className="space-y-3 md:space-y-4">
+                  <div className="space-y-3 sm:space-y-4 animate-fade-in">
                     <p className="text-center text-slate-500">Coming soon...</p>
                   </div>
                 </div>
