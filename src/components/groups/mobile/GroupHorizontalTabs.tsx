@@ -22,7 +22,7 @@ export const GroupHorizontalTabs = ({
   const baseTabs = [
     { id: "activity2", label: "Activity", icon: Activity },
     { id: "calendar", label: "Calendar", icon: Calendar },
-    { id: "users", label: "Members", icon: Users, showBadge: isAdmin && hasPendingRequests, showCount: true }
+    { id: "users", label: "Members", icon: Users, showBadge: isAdmin && hasPendingRequests }
   ];
 
   return (
@@ -45,9 +45,6 @@ export const GroupHorizontalTabs = ({
                 <IconComponent className="h-4 w-4 flex-shrink-0" />
                 {tab.showBadge && (
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-                )}
-                {tab.showCount && memberCount > 0 && (
-                  <span className="text-xs">{memberCount}</span>
                 )}
               </div>
             </button>

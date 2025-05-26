@@ -68,7 +68,12 @@ export const GroupDetailsContent = ({
                 
                 {/* Group Members Section */}
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-center">Group Members</h3>
+                  <div className="text-center">
+                    <h3 className="text-lg font-medium">Group Members</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {group?.member_count || 0} {(group?.member_count || 0) === 1 ? 'member' : 'members'}
+                    </p>
+                  </div>
                   <GroupMembersList
                     members={group?.members || []}
                     isAdmin={membershipStatus.isAdmin}
