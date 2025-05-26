@@ -16,7 +16,7 @@ interface BasicInfoFormProps {
 
 export const BasicInfoForm = ({ form, isSubmitting }: BasicInfoFormProps) => {
   return (
-    <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
+    <div className="space-y-4">
       <FormField
         control={form.control}
         name="name"
@@ -108,6 +108,6 @@ export const BasicInfoForm = ({ form, isSubmitting }: BasicInfoFormProps) => {
           </>
         )}
       </Button>
-    </form>
+    </div>
   );
 };
