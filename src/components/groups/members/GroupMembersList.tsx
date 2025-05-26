@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { Users } from "lucide-react";
 import { GroupMembersListProps, GroupMember } from "./types";
 import { GroupMemberCard } from "./GroupMemberCard";
 import { RemoveMemberDialog } from "./RemoveMemberDialog";
@@ -36,8 +37,22 @@ export const GroupMembersList = ({
   
   if (!members || members.length === 0) {
     return (
-      <div className={`text-center py-6 ${className || ""}`}>
-        <p className="text-sm md:text-base text-muted-foreground">No members found</p>
+      <div className={`text-center py-8 sm:py-12 ${className || ""}`}>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8 animate-fade-in">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+              <Users className="h-8 w-8 text-gray-400" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No members yet
+              </h3>
+              <p className="text-sm text-gray-600 max-w-sm">
+                This group is just getting started. Be the first to join and connect with other players!
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

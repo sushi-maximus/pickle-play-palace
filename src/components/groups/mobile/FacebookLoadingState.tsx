@@ -2,7 +2,7 @@
 import { memo } from "react";
 
 interface FacebookLoadingStateProps {
-  type?: "posts" | "comments" | "reactions" | "settings";
+  type?: "posts" | "comments" | "reactions" | "settings" | "members";
   count?: number;
 }
 
@@ -73,6 +73,36 @@ const FacebookLoadingStateComponent = ({
               
               {/* Save Button */}
               <div className="h-10 bg-gray-300 rounded w-32 mt-6"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "members") {
+    return (
+      <div className="space-y-3 md:space-y-4">
+        {Array.from({ length: count }).map((_, index) => (
+          <div 
+            key={index} 
+            className="bg-white shadow-sm rounded-lg p-3 md:p-4 animate-pulse"
+          >
+            {/* Member Card Content */}
+            <div className="flex items-center space-x-2 md:space-x-3">
+              {/* Avatar */}
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
+              
+              {/* Member Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="h-3 md:h-4 bg-gray-300 rounded w-24 md:w-32"></div>
+                  {index === 0 && (
+                    <div className="h-5 bg-gray-200 rounded-full w-12"></div>
+                  )}
+                </div>
+                <div className="h-2 md:h-3 bg-gray-200 rounded w-20 md:w-24"></div>
+              </div>
             </div>
           </div>
         ))}
