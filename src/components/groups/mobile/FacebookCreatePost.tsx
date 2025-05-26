@@ -59,13 +59,13 @@ const FacebookCreatePostComponent = ({
 
   return (
     <Card className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
-      <div className="p-3 sm:p-4">
+      <div className="p-4">
         {/* Create Post Header */}
         <div className="mb-3">
           {!isExpanded ? (
             <button
               onClick={() => setIsExpanded(true)}
-              className="w-full bg-white border border-gray-300 hover:border-gray-400 text-gray-500 px-4 py-3 rounded-full transition-colors duration-200 text-sm sm:text-base min-h-[44px] touch-manipulation flex items-center justify-center"
+              className="w-full bg-gray-50 border border-gray-300 hover:border-gray-400 text-gray-500 px-4 py-3 rounded-full transition-colors duration-200 text-left text-sm sm:text-base min-h-[44px] touch-manipulation flex items-center"
             >
               What's on your mind, {user.first_name}?
             </button>
