@@ -3,6 +3,7 @@ import { Activity2Tab } from "@/components/groups/mobile/Activity2Tab";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
 import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
+import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import type { GroupMember } from "../members/types";
@@ -77,6 +78,18 @@ export const GroupDetailsContent = ({
                   />
                 </div>
               </div>
+            </div>
+          </main>
+        );
+      
+      case "settings":
+        return (
+          <main className="flex-1 px-3 py-4">
+            <div className="container mx-auto max-w-4xl">
+              <GroupSettingsTab
+                group={group}
+                onGroupUpdate={onMemberUpdate}
+              />
             </div>
           </main>
         );
