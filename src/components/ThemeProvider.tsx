@@ -32,15 +32,23 @@ export function ThemeProvider({
 
   React.useEffect(() => {
     const root = window.document.documentElement;
+    const body = document.body;
     
-    // Remove all theme classes
+    // Remove all theme classes from both root and body
     root.classList.remove("light", "dark");
+    body.classList.remove("light", "dark");
     
     // Force light theme and override any system preferences
     root.classList.add("light");
+    body.classList.add("light");
     
     // Also set the color-scheme CSS property to override system preferences
     root.style.colorScheme = "light";
+    body.style.colorScheme = "light";
+    
+    // Force specific CSS variables for light theme
+    root.style.setProperty('--background', 'white');
+    root.style.setProperty('--foreground', 'black');
     
     // Force the theme meta tag for mobile browsers
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
@@ -52,6 +60,28 @@ export function ThemeProvider({
       meta.content = '#ffffff';
       document.head.appendChild(meta);
     }
+    
+    // Add viewport meta tag if it doesn't exist to ensure proper mobile rendering
+    const viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (!viewportMeta) {
+      const meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, initial-scale=1.0';
+      document.head.appendChild(meta);
+    }
+    
+    // Override any media query preferences
+    const style = document.createElement('style');
+    style.textContent = `
+      @media (prefers-color-scheme: dark) {
+        html, body {
+          color-scheme: light !important;
+          background-color: white !important;
+          color: black !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   }, [theme]);
 
   const value = {
