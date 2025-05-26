@@ -1,10 +1,10 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import type { GroupMember } from "@/components/groups/members/types";
 
 type GroupData = Database['public']['Tables']['groups']['Row'] & {
   member_count: number;
-  members: any[];
+  members: GroupMember[];
 };
 
 /**
