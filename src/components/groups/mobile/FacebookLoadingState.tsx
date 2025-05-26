@@ -2,7 +2,7 @@
 import { memo } from "react";
 
 interface FacebookLoadingStateProps {
-  type?: "posts" | "comments" | "reactions";
+  type?: "posts" | "comments" | "reactions" | "settings";
   count?: number;
 }
 
@@ -41,6 +41,41 @@ const FacebookLoadingStateComponent = ({
       <div className="flex items-center space-x-1 sm:space-x-2 animate-pulse">
         <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-300 rounded-full"></div>
         <div className="h-2 sm:h-3 bg-gray-300 rounded w-12 sm:w-16"></div>
+      </div>
+    );
+  }
+
+  if (type === "settings") {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        {Array.from({ length: count }).map((_, index) => (
+          <div 
+            key={index} 
+            className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden animate-pulse"
+          >
+            {/* Settings Card Header */}
+            <div className="p-4 sm:p-6 border-b border-gray-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-5 h-5 bg-gray-300 rounded"></div>
+                <div className="h-4 sm:h-5 bg-gray-300 rounded w-32 sm:w-40"></div>
+              </div>
+              <div className="h-3 bg-gray-200 rounded w-48 sm:w-56 mt-2"></div>
+            </div>
+
+            {/* Settings Form Fields */}
+            <div className="p-4 sm:p-6 space-y-4">
+              {Array.from({ length: 3 }).map((_, fieldIndex) => (
+                <div key={fieldIndex} className="space-y-2">
+                  <div className="h-3 bg-gray-300 rounded w-20 sm:w-24"></div>
+                  <div className="h-10 bg-gray-100 rounded"></div>
+                </div>
+              ))}
+              
+              {/* Save Button */}
+              <div className="h-10 bg-gray-300 rounded w-32 mt-6"></div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
