@@ -16,7 +16,7 @@ interface AdvancedSettingsFormProps {
 
 export const AdvancedSettingsForm = ({ form, isSubmitting }: AdvancedSettingsFormProps) => {
   return (
-    <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SelectField
           control={form.control}
@@ -78,6 +78,6 @@ export const AdvancedSettingsForm = ({ form, isSubmitting }: AdvancedSettingsFor
           </>
         )}
       </Button>
-    </form>
+    </div>
   );
 };
