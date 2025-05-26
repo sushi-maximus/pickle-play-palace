@@ -86,23 +86,33 @@ const FacebookLoadingStateComponent = ({
         {Array.from({ length: count }).map((_, index) => (
           <div 
             key={index} 
-            className="bg-white shadow-sm rounded-lg p-3 md:p-4 animate-pulse"
+            className="bg-white shadow-sm rounded-xl p-3 md:p-4 animate-pulse border border-gray-100"
+            style={{
+              animationDelay: `${index * 100}ms`,
+              animationDuration: '1.5s'
+            }}
           >
-            {/* Member Card Content */}
-            <div className="flex items-center space-x-2 md:space-x-3">
-              {/* Avatar */}
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
+            {/* Enhanced Member Card Content */}
+            <div className="flex items-center space-x-3 md:space-x-4">
+              {/* Enhanced Avatar with ring */}
+              <div className="relative">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex-shrink-0"></div>
+                <div className="absolute inset-0 w-8 h-8 md:w-10 md:h-10 border-2 border-gray-100 rounded-full"></div>
+              </div>
               
-              {/* Member Info */}
+              {/* Enhanced Member Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="h-3 md:h-4 bg-gray-300 rounded w-24 md:w-32"></div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="h-3.5 md:h-4 bg-gradient-to-r from-gray-300 to-gray-200 rounded w-28 md:w-36"></div>
                   {index === 0 && (
-                    <div className="h-5 bg-gray-200 rounded-full w-12"></div>
+                    <div className="h-5 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-full w-14"></div>
                   )}
                 </div>
-                <div className="h-2 md:h-3 bg-gray-200 rounded w-20 md:w-24"></div>
+                <div className="h-2.5 md:h-3 bg-gray-200 rounded w-24 md:w-28"></div>
               </div>
+              
+              {/* Visual indicator */}
+              <div className="flex-shrink-0 w-2 h-2 rounded-full bg-gray-200"></div>
             </div>
           </div>
         ))}
