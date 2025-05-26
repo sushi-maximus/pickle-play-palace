@@ -1,10 +1,9 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
-import { Settings, Users } from "lucide-react";
+import { Settings } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import type { GroupMember } from "../members/types";
@@ -42,16 +41,12 @@ export const GroupDetailsTabs = ({
     if (membershipStatus.isAdmin && hasPendingRequests) {
       return "requests";
     }
-    return "members";
+    return "about";
   };
 
   return (
     <Tabs defaultValue={getDefaultTab()} className="w-full">
       <TabsList className="mb-4">
-        <TabsTrigger value="members" className="flex items-center gap-1">
-          <Users className="h-4 w-4" />
-          <span>Members ({group?.member_count || 0})</span>
-        </TabsTrigger>
         {membershipStatus.isAdmin && (
           <TabsTrigger value="requests">Requests</TabsTrigger>
         )}
@@ -63,17 +58,6 @@ export const GroupDetailsTabs = ({
           </TabsTrigger>
         )}
       </TabsList>
-
-      <TabsContent value="members">
-        <h3 className="text-lg font-medium mb-4">Group Members</h3>
-        <GroupMembersList
-          members={group?.members || []}
-          isAdmin={membershipStatus.isAdmin}
-          currentUserId={user?.id || ""}
-          groupId={group?.id || ""}
-          onMemberUpdate={onMemberUpdate}
-        />
-      </TabsContent>
 
       {membershipStatus.isAdmin && (
         <TabsContent value="requests">
