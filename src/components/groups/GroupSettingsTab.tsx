@@ -1,18 +1,19 @@
 
 import React, { useState } from "react";
-import { AlertCircle, Settings, Save } from "lucide-react";
+import { Settings, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { updateGroup } from "@/components/groups/utils"; // Updated import path
+import { updateGroup } from "@/components/groups/utils";
 import { updateGroupSchema, UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
 import { toast } from "sonner";
-import { BasicInfoCard, AdvancedSettingsCard } from "./settings";
+import { GroupAvatarSection } from "./settings";
 import { FacebookErrorBoundary } from "./mobile/FacebookErrorBoundary";
 import { FacebookErrorFallback } from "./mobile/FacebookErrorFallback";
 import { FacebookLoadingState } from "./mobile/FacebookLoadingState";
 import { FacebookNetworkStatus } from "./mobile/FacebookNetworkStatus";
+import { CombinedSettingsForm } from "./settings/CombinedSettingsForm";
 import type { Database } from "@/integrations/supabase/types";
 import type { GroupMember } from "./members/types";
 
@@ -56,11 +57,6 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
     }
   };
 
-  const handleErrorReset = () => {
-    // Reset form to default values
-    form.reset();
-  };
-
   return (
     <FacebookErrorBoundary
       fallback={({ error, resetError }) => (
@@ -72,13 +68,11 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
         />
       )}
     >
-      {/* Main Container - Following Activity page design */}
       <main className="flex-1 bg-gray-50 overflow-hidden min-h-0">
-        {/* Network Status Indicator */}
         <FacebookNetworkStatus />
         
         <div className="max-w-2xl mx-auto h-full flex flex-col">
-          {/* Settings Header - Centered without card */}
+          {/* Settings Header */}
           <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4">
             <div className="text-center py-4">
               <div className="flex items-center justify-center gap-2 mb-2">
@@ -89,29 +83,27 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
             </div>
           </div>
 
-          {/* Settings Content Area - Enhanced scrolling with momentum and safe areas */}
+          {/* Settings Content */}
           <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch min-h-0">
             <div className="pb-4 sm:pb-6 pb-safe">
               {isSubmitting ? (
                 <div className="p-3 sm:p-4">
-                  <FacebookLoadingState type="settings" count={2} />
+                  <FacebookLoadingState type="settings" count={1} />
                 </div>
               ) : (
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                    <BasicInfoCard 
-                      group={group} 
-                      form={form} 
-                      isSubmitting={isSubmitting} 
-                      onGroupUpdate={onGroupUpdate} 
-                    />
-                    
-                    <AdvancedSettingsCard 
-                      form={form} 
-                      isSubmitting={isSubmitting} 
-                    />
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                    {/* Avatar Section */}
+                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                      <div className="flex justify-center">
+                        <GroupAvatarSection group={group} onGroupUpdate={onGroupUpdate} />
+                      </div>
+                    </div>
 
-                    {/* Single Save Button - Mobile-first design */}
+                    {/* Combined Settings Form */}
+                    <CombinedSettingsForm form={form} isSubmitting={isSubmitting} />
+
+                    {/* Save Button */}
                     <div className="sticky bottom-0 bg-white border-t p-4 -mx-3 mt-6">
                       <Button 
                         type="submit" 
