@@ -68,7 +68,7 @@ export const GroupDetailsContent = ({
                 
                 {/* Group Members Section */}
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium">Group Members</h3>
+                  <h3 className="text-lg font-medium text-center">Group Members</h3>
                   <GroupMembersList
                     members={group?.members || []}
                     isAdmin={membershipStatus.isAdmin}
@@ -84,14 +84,10 @@ export const GroupDetailsContent = ({
       
       case "settings":
         return (
-          <main className="flex-1 px-3 py-4">
-            <div className="container mx-auto max-w-4xl">
-              <GroupSettingsTab
-                group={group}
-                onGroupUpdate={onMemberUpdate}
-              />
-            </div>
-          </main>
+          <GroupSettingsTab
+            group={group}
+            onGroupUpdate={onMemberUpdate}
+          />
         );
       
       default:

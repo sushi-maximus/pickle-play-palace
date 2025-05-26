@@ -77,14 +77,14 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
         <FacebookNetworkStatus />
         
         <div className="max-w-2xl mx-auto h-full flex flex-col">
-          {/* Settings Header - Following Activity page sticky pattern */}
+          {/* Settings Header - Centered without card */}
           <div className="flex-shrink-0 sticky top-0 z-10 pt-safe mb-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <div className="flex items-center gap-2">
+            <div className="text-center py-4">
+              <div className="flex items-center justify-center gap-2 mb-2">
                 <Settings className="h-5 w-5 text-gray-600" />
                 <h3 className="text-lg font-medium">Group Settings</h3>
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin Only</span>
               </div>
+              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin Only</span>
             </div>
           </div>
 
