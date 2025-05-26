@@ -4,6 +4,7 @@ import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
 import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
+import { Badge } from "@/components/ui/badge";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import type { GroupMember } from "../members/types";
@@ -70,9 +71,11 @@ export const GroupDetailsContent = ({
                 <div className="space-y-3">
                   <div className="text-center">
                     <h3 className="text-lg font-medium">Group Members</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {group?.member_count || 0} {(group?.member_count || 0) === 1 ? 'member' : 'members'}
-                    </p>
+                    <div className="mt-2">
+                      <Badge variant="secondary" className="text-sm">
+                        {group?.member_count || 0} {(group?.member_count || 0) === 1 ? 'member' : 'members'}
+                      </Badge>
+                    </div>
                   </div>
                   <GroupMembersList
                     members={group?.members || []}
