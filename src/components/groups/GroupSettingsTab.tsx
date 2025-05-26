@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
-import { AlertCircle, Settings } from "lucide-react";
+import { AlertCircle, Settings, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { updateGroup } from "@/components/groups/utils"; // Updated import path
 import { updateGroupSchema, UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
 import { toast } from "sonner";
@@ -109,6 +110,25 @@ export const GroupSettingsTab = ({ group, onGroupUpdate }: GroupSettingsTabProps
                       form={form} 
                       isSubmitting={isSubmitting} 
                     />
+
+                    {/* Single Save Button - Mobile-first design */}
+                    <div className="sticky bottom-0 bg-white border-t p-4 -mx-3 mt-6">
+                      <Button 
+                        type="submit" 
+                        disabled={isSubmitting}
+                        className="w-full h-12 text-base font-medium"
+                        size="lg"
+                      >
+                        {isSubmitting ? (
+                          "Saving Settings..."
+                        ) : (
+                          <>
+                            <Save className="h-5 w-5 mr-2" />
+                            Save All Settings
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </form>
                 </Form>
               )}

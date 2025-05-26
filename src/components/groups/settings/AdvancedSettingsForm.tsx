@@ -2,8 +2,7 @@
 import React from "react";
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Save, Users, Award } from "lucide-react";
+import { Users } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
 import { SelectField } from "@/components/auth/form-fields/SelectField";
@@ -67,17 +66,6 @@ export const AdvancedSettingsForm = ({ form, isSubmitting }: AdvancedSettingsFor
           );
         }}
       />
-      
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? (
-          "Saving..."
-        ) : (
-          <>
-            <Save className="h-4 w-4 mr-2" />
-            Save Advanced Settings
-          </>
-        )}
-      </Button>
     </div>
   );
 };

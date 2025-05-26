@@ -4,8 +4,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescripti
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Save, Lock, Globe } from "lucide-react";
+import { Lock, Globe } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
 
@@ -97,17 +96,6 @@ export const BasicInfoForm = ({ form, isSubmitting }: BasicInfoFormProps) => {
           </FormItem>
         )}
       />
-      
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? (
-          "Saving..."
-        ) : (
-          <>
-            <Save className="h-4 w-4 mr-2" />
-            Save Changes
-          </>
-        )}
-      </Button>
     </div>
   );
 };
