@@ -34,7 +34,7 @@ export const GroupMobileLayout = ({
       />
       
       {/* Horizontal Group Tabs - Fixed directly below header with no gap */}
-      <div className="fixed top-16 left-0 right-0 z-[80] bg-white shadow-sm">
+      <div className="fixed top-[64px] left-0 right-0 z-[80] bg-white shadow-sm">
         <GroupHorizontalTabs 
           activeTab={activeTab}
           onTabChange={onTabChange}
