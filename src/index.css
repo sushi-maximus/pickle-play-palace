@@ -136,21 +136,3 @@
   0%, 100% { opacity: 0.8; }
   50% { opacity: 1; }
 }
-
-/* Mobile force light theme override */
-@media (max-width: 768px) {
-  .dark {
-    --background: 0 0% 100% !important;
-    --foreground: 222.2 84% 4.9% !important;
-    --card: 0 0% 100% !important;
-    --card-foreground: 222.2 84% 4.9% !important;
-    --popover: 0 0% 100% !important;
-    --popover-foreground: 222.2 84% 4.9% !important;
-    --muted: 210 40% 96.1% !important;
-    --muted-foreground: 215.4 16.3% 46.9% !important;
-    --accent: 210 40% 96.1% !important;
-    --accent-foreground: 222.2 47.4% 11.2% !important;
-    --border: 214.3 31.8% 91.4% !important;
-    --input: 214.3 31.8% 91.4% !important;
-  }
-}
