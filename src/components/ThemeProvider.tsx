@@ -70,9 +70,33 @@ export function ThemeProvider({
       document.head.appendChild(meta);
     }
     
-    // Override any media query preferences with more aggressive CSS
+    // Override any media query preferences with mobile-specific CSS
     const style = document.createElement('style');
     style.textContent = `
+      /* Mobile Safari and iOS specific overrides */
+      @supports (-webkit-touch-callout: none) {
+        html, body, * {
+          color-scheme: light !important;
+          background-color: white !important;
+          color: black !important;
+        }
+      }
+      
+      /* General mobile device targeting */
+      @media screen and (max-width: 768px) {
+        html, body, * {
+          color-scheme: light !important;
+          background-color: white !important;
+          color: black !important;
+        }
+        
+        :root {
+          color-scheme: light !important;
+          --background: white !important;
+          --foreground: black !important;
+        }
+      }
+      
       @media (prefers-color-scheme: dark) {
         html, body {
           color-scheme: light !important;
