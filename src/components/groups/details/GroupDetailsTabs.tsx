@@ -1,6 +1,4 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
 import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
 import { Settings } from "lucide-react";
@@ -36,20 +34,14 @@ export const GroupDetailsTabs = ({
   onJoinRequest,
   onMemberUpdate,
 }: GroupDetailsTabsProps) => {
-  // Determine the default tab based on admin status and pending requests
+  // Determine the default tab - now defaults to about since requests moved to members tab
   const getDefaultTab = () => {
-    if (membershipStatus.isAdmin && hasPendingRequests) {
-      return "requests";
-    }
     return "about";
   };
 
   return (
     <Tabs defaultValue={getDefaultTab()} className="w-full">
       <TabsList className="mb-4">
-        {membershipStatus.isAdmin && (
-          <TabsTrigger value="requests">Requests</TabsTrigger>
-        )}
         <TabsTrigger value="about">About</TabsTrigger>
         {membershipStatus.isAdmin && (
           <TabsTrigger value="settings" className="flex items-center gap-1">
@@ -58,15 +50,6 @@ export const GroupDetailsTabs = ({
           </TabsTrigger>
         )}
       </TabsList>
-
-      {membershipStatus.isAdmin && (
-        <TabsContent value="requests">
-          <JoinRequestsManager
-            groupId={group?.id || ""}
-            isAdmin={membershipStatus.isAdmin}
-          />
-        </TabsContent>
-      )}
 
       <TabsContent value="about">
         <GroupAboutTab

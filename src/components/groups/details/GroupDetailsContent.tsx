@@ -2,6 +2,7 @@
 import { Activity2Tab } from "@/components/groups/mobile/Activity2Tab";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
+import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import type { GroupMember } from "../members/types";
@@ -53,15 +54,28 @@ export const GroupDetailsContent = ({
         return (
           <main className="flex-1 px-3 py-4">
             <div className="container mx-auto max-w-4xl">
-              <div className="space-y-3">
-                <h3 className="text-lg font-medium mb-4">Group Members</h3>
-                <GroupMembersList
-                  members={group?.members || []}
-                  isAdmin={membershipStatus.isAdmin}
-                  currentUserId={user?.id || ""}
-                  groupId={group?.id}
-                  onMemberUpdate={onMemberUpdate}
-                />
+              <div className="space-y-6">
+                {/* Member Requests Section - Admin Only */}
+                {membershipStatus.isAdmin && (
+                  <div>
+                    <JoinRequestsManager
+                      groupId={group?.id || ""}
+                      isAdmin={membershipStatus.isAdmin}
+                    />
+                  </div>
+                )}
+                
+                {/* Group Members Section */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-medium">Group Members</h3>
+                  <GroupMembersList
+                    members={group?.members || []}
+                    isAdmin={membershipStatus.isAdmin}
+                    currentUserId={user?.id || ""}
+                    groupId={group?.id}
+                    onMemberUpdate={onMemberUpdate}
+                  />
+                </div>
               </div>
             </div>
           </main>
