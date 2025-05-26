@@ -12,6 +12,7 @@ interface GroupMobileLayoutProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   isAdmin?: boolean;
+  hasPendingRequests?: boolean;
 }
 
 export const GroupMobileLayout = ({ 
@@ -21,7 +22,8 @@ export const GroupMobileLayout = ({
   memberCount,
   activeTab,
   onTabChange,
-  isAdmin = false
+  isAdmin = false,
+  hasPendingRequests = false
 }: GroupMobileLayoutProps) => {
   return (
     <>
@@ -29,7 +31,6 @@ export const GroupMobileLayout = ({
       <MobileGroupHeader 
         groupName={groupName}
         groupCode={groupCode}
-        memberCount={memberCount}
       />
       
       {/* Horizontal Group Tabs - Fixed below header */}
@@ -38,6 +39,8 @@ export const GroupMobileLayout = ({
           activeTab={activeTab}
           onTabChange={onTabChange}
           isAdmin={isAdmin}
+          hasPendingRequests={hasPendingRequests}
+          memberCount={memberCount}
         />
       </div>
       

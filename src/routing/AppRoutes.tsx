@@ -15,7 +15,6 @@ import {
   LazyGroups,
   LazyGroupDetails,
   LazyAdmin,
-  LazyAbout,
   LazyContact,
   LazyPrivacy,
   LazyForgotPassword,
@@ -49,11 +48,6 @@ export const AppRoutes = () => {
       } />
       
       {/* Public informational pages */}
-      <Route path="/about" element={
-        <RouteLoader routeName="About">
-          <LazyAbout />
-        </RouteLoader>
-      } />
       <Route path="/contact" element={
         <RouteLoader routeName="Contact">
           <LazyContact />

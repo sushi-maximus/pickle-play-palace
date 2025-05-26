@@ -31,11 +31,6 @@ export const LazyAdmin = createLazyComponent(
   'Admin'
 );
 
-export const LazyAbout = createLazyComponent(
-  () => import('@/pages/About'),
-  'About'
-);
-
 export const LazyContact = createLazyComponent(
   () => import('@/pages/Contact'),
   'Contact'

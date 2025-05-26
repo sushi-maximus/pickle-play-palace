@@ -55,8 +55,8 @@ export const GroupDetailsContent = ({
           <main className="flex-1 px-3 py-4">
             <div className="container mx-auto max-w-4xl">
               <div className="space-y-6">
-                {/* Member Requests Section - Admin Only */}
-                {membershipStatus.isAdmin && (
+                {/* Member Requests Section - Admin Only and only show if there are pending requests */}
+                {membershipStatus.isAdmin && hasPendingRequests && (
                   <div>
                     <JoinRequestsManager
                       groupId={group?.id || ""}
@@ -76,24 +76,6 @@ export const GroupDetailsContent = ({
                     onMemberUpdate={onMemberUpdate}
                   />
                 </div>
-              </div>
-            </div>
-          </main>
-        );
-      
-      case "settings":
-        return (
-          <main className="flex-1 px-3 py-4">
-            <div className="container mx-auto max-w-4xl">
-              <div className="space-y-3">
-                <GroupDetailsTabs
-                  group={group}
-                  membershipStatus={membershipStatus}
-                  user={user}
-                  hasPendingRequests={hasPendingRequests}
-                  onJoinRequest={() => {}}
-                  onMemberUpdate={onMemberUpdate}
-                />
               </div>
             </div>
           </main>

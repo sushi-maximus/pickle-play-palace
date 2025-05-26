@@ -1,7 +1,6 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GroupAboutTab } from "@/components/groups/GroupAboutTab";
-import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
-import { Settings } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import type { GroupMember } from "../members/types";
@@ -34,21 +33,10 @@ export const GroupDetailsTabs = ({
   onJoinRequest,
   onMemberUpdate,
 }: GroupDetailsTabsProps) => {
-  // Determine the default tab - now defaults to about since requests moved to members tab
-  const getDefaultTab = () => {
-    return "about";
-  };
-
   return (
-    <Tabs defaultValue={getDefaultTab()} className="w-full">
+    <Tabs defaultValue="about" className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="about">About</TabsTrigger>
-        {membershipStatus.isAdmin && (
-          <TabsTrigger value="settings" className="flex items-center gap-1">
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
-          </TabsTrigger>
-        )}
       </TabsList>
 
       <TabsContent value="about">
@@ -59,15 +47,6 @@ export const GroupDetailsTabs = ({
           onJoinRequest={onJoinRequest}
         />
       </TabsContent>
-
-      {membershipStatus.isAdmin && (
-        <TabsContent value="settings">
-          <GroupSettingsTab
-            group={group}
-            onGroupUpdate={(updatedGroup) => onMemberUpdate()}
-          />
-        </TabsContent>
-      )}
     </Tabs>
   );
 };

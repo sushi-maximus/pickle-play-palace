@@ -2,18 +2,27 @@
 import { Activity, Users, Calendar, Settings, MoreVertical } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface GroupHorizontalTabsProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   isAdmin?: boolean;
+  hasPendingRequests?: boolean;
+  memberCount?: number;
 }
 
-export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }: GroupHorizontalTabsProps) => {
+export const GroupHorizontalTabs = ({ 
+  activeTab, 
+  onTabChange, 
+  isAdmin = false, 
+  hasPendingRequests = false,
+  memberCount = 0
+}: GroupHorizontalTabsProps) => {
   const baseTabs = [
     { id: "activity2", label: "Activity", icon: Activity },
     { id: "calendar", label: "Calendar", icon: Calendar },
-    { id: "users", label: "Members", icon: Users }
+    { id: "users", label: "Members", icon: Users, showBadge: isAdmin && hasPendingRequests, showCount: true }
   ];
 
   return (
@@ -26,13 +35,21 @@ export const GroupHorizontalTabs = ({ activeTab, onTabChange, isAdmin = false }:
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               aria-label={tab.label}
-              className={`flex-1 flex items-center justify-center min-h-[56px] px-4 py-3 text-sm font-medium transition-all duration-200 touch-manipulation ${
+              className={`flex-1 flex flex-col items-center justify-center min-h-[56px] px-4 py-3 text-sm font-medium transition-all duration-200 touch-manipulation relative ${
                 activeTab === tab.id
                   ? "text-primary bg-primary/10 border-b-2 border-primary"
                   : "text-gray-600 hover:text-primary hover:bg-primary/5"
               }`}
             >
-              <IconComponent className="h-4 w-4 flex-shrink-0" />
+              <div className="relative">
+                <IconComponent className="h-4 w-4 flex-shrink-0" />
+                {tab.showBadge && (
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                )}
+              </div>
+              {tab.showCount && memberCount > 0 && (
+                <span className="text-xs mt-1">{memberCount}</span>
+              )}
             </button>
           );
         })}
