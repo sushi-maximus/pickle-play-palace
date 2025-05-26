@@ -109,8 +109,8 @@ export const GroupDetailsContent = ({
                   </div>
                 )}
 
-                {/* Members Header - Enhanced sticky positioning with backdrop */}
-                <div className="flex-shrink-0 sticky top-0 z-20 bg-gray-50/95 backdrop-blur-sm pt-safe mb-4 animate-fade-in border-b border-gray-100/50">
+                {/* Members Header - Removed sticky positioning */}
+                <div className="flex-shrink-0 bg-gray-50 pt-safe mb-4 animate-fade-in border-b border-gray-100/50">
                   <div className="text-center py-4 px-3">
                     <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 tracking-tight">Group Members</h3>
                     <div className="flex items-center justify-center">
