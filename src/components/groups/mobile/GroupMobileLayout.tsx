@@ -45,7 +45,7 @@ export const GroupMobileLayout = ({
       </div>
       
       {/* Horizontal Group Tabs - Fixed directly below header with no gap */}
-      <div className="fixed top-[72px] left-0 right-0 z-[80] bg-white shadow-sm">
+      <div className="fixed top-[60px] left-0 right-0 z-[80] bg-white shadow-sm">
         <GroupHorizontalTabs 
           activeTab={activeTab}
           onTabChange={onTabChange}
@@ -56,7 +56,7 @@ export const GroupMobileLayout = ({
       </div>
       
       {/* Content Area with proper spacing for header and horizontal tabs */}
-      <div className="flex-1 pt-32 pb-20 px-3">
+      <div className="flex-1 pt-28 pb-20 px-3">
         {children}
       </div>
       
