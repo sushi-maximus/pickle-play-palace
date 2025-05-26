@@ -2,7 +2,7 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { updateGroupAvatar } from "@/components/groups/utils"; // Updated import path
+import { updateGroupAvatar } from "@/components/groups/utils/updateGroupUtils";
 import { Upload, X, Check, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -20,16 +20,29 @@ export const GroupAvatarUpload = ({ groupId, onSuccess, onCancel }: GroupAvatarU
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("File input changed");
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      console.log("Selected file:", file.name, file.size, file.type);
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please select an image file");
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size must be less than 5MB");
+        return;
+      }
+      
       setSelectedFile(file);
       
       // Create preview
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
-      
-      // Clean up preview URL when component unmounts
-      return () => URL.revokeObjectURL(objectUrl);
+      console.log("Preview URL created:", objectUrl);
     }
   };
 
@@ -39,22 +52,31 @@ export const GroupAvatarUpload = ({ groupId, onSuccess, onCancel }: GroupAvatarU
       return;
     }
 
+    console.log("Starting upload for group:", groupId);
     setIsUploading(true);
 
     try {
       // Generate a unique filename
       const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `${groupId}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const fileName = `${groupId}_${Date.now()}.${fileExt}`;
       const filePath = `group_avatars/${fileName}`;
+      
+      console.log("Uploading to path:", filePath);
       
       // Upload the file to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, selectedFile);
+        .upload(filePath, selectedFile, {
+          cacheControl: '3600',
+          upsert: true
+        });
         
       if (uploadError) {
+        console.error("Upload error:", uploadError);
         throw uploadError;
       }
+      
+      console.log("Upload successful:", uploadData);
       
       // Get the public URL
       const { data: publicUrlData } = supabase.storage
@@ -65,21 +87,31 @@ export const GroupAvatarUpload = ({ groupId, onSuccess, onCancel }: GroupAvatarU
         throw new Error("Failed to get public URL for uploaded file");
       }
       
+      console.log("Public URL:", publicUrlData.publicUrl);
+      
       // Update the group's avatar URL in the database
       await updateGroupAvatar(groupId, publicUrlData.publicUrl);
+      
+      console.log("Database updated successfully");
+      toast.success("Avatar updated successfully!");
       
       // Call the onSuccess callback
       onSuccess(publicUrlData.publicUrl);
       
     } catch (error) {
       console.error("Error uploading avatar:", error);
-      toast.error("Failed to upload avatar. Please try again.");
+      if (error.message?.includes('Bucket not found')) {
+        toast.error("Storage not configured. Please contact support.");
+      } else {
+        toast.error("Failed to upload avatar. Please try again.");
+      }
     } finally {
       setIsUploading(false);
     }
   };
 
   const triggerFileInput = () => {
+    console.log("Triggering file input");
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
