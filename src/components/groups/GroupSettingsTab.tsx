@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { updateGroup } from "@/components/groups/utils";
+import { updateGroup } from "@/components/groups/utils/updateGroupUtils";
 import { updateGroupSchema, UpdateGroupFormValues } from "@/components/groups/schemas/groupSchemas";
 import { toast } from "sonner";
 import { GroupAvatarSection } from "./settings";

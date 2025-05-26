@@ -4,10 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
 import { GroupAvatarUpload } from "@/components/groups/details/GroupAvatarUpload";
+import type { Database } from "@/integrations/supabase/types";
+import type { GroupMember } from "../members/types";
+
+type Group = Database['public']['Tables']['groups']['Row'] & {
+  members?: GroupMember[];
+  member_count: number;
+};
 
 interface GroupAvatarSectionProps {
-  group: any;
-  onGroupUpdate: (updatedGroup: any) => void;
+  group: Group;
+  onGroupUpdate: (updatedGroup: Group) => void;
 }
 
 export const GroupAvatarSection = ({ group, onGroupUpdate }: GroupAvatarSectionProps) => {
