@@ -70,7 +70,7 @@ export function ThemeProvider({
       document.head.appendChild(meta);
     }
     
-    // Override any media query preferences
+    // Override any media query preferences with more aggressive CSS
     const style = document.createElement('style');
     style.textContent = `
       @media (prefers-color-scheme: dark) {
@@ -79,9 +79,48 @@ export function ThemeProvider({
           background-color: white !important;
           color: black !important;
         }
+        * {
+          color-scheme: light !important;
+        }
+      }
+      
+      /* Force all elements to use light theme */
+      html, body, * {
+        color-scheme: light !important;
+      }
+      
+      /* Override any dark mode backgrounds */
+      html {
+        background-color: white !important;
+        color: black !important;
+      }
+      
+      body {
+        background-color: white !important;
+        color: black !important;
+      }
+      
+      /* Force light theme for all CSS custom properties */
+      :root {
+        color-scheme: light !important;
+        --background: white !important;
+        --foreground: black !important;
+      }
+      
+      /* Override webkit dark mode detection */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: light !important;
+        }
       }
     `;
     document.head.appendChild(style);
+    
+    // Force the document to always report light color scheme
+    Object.defineProperty(window.matchMedia('(prefers-color-scheme: dark)'), 'matches', {
+      value: false,
+      writable: false
+    });
   }, [theme]);
 
   const value = {
