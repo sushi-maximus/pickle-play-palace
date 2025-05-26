@@ -41,15 +41,15 @@ export const GroupHorizontalTabs = ({
                   : "text-gray-600 hover:text-primary hover:bg-primary/5"
               }`}
             >
-              <div className="relative">
+              <div className="relative flex items-center gap-1">
                 <IconComponent className="h-4 w-4 flex-shrink-0" />
                 {tab.showBadge && (
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
                 )}
+                {tab.showCount && memberCount > 0 && (
+                  <span className="text-xs">{memberCount}</span>
+                )}
               </div>
-              {tab.showCount && memberCount > 0 && (
-                <span className="text-xs mt-1">{memberCount}</span>
-              )}
             </button>
           );
         })}
