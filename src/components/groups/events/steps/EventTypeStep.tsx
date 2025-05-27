@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -89,18 +90,6 @@ export const EventTypeStep = ({
     );
   };
 
-  const getEventTypeDisplay = () => {
-    if (!eventType) return null;
-    
-    return (
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-600">
-          {eventType === "one-time" ? "One-Time" : "Multi-Week"}
-        </span>
-      </div>
-    );
-  };
-
   return (
     <div className="flex-1 overflow-auto">
       <div className="px-4 py-12 space-y-6">
@@ -110,14 +99,10 @@ export const EventTypeStep = ({
             Select whether you want to create a single event or a series of events
           </p>
           
-          {/* Selections Display - Clean inline text */}
-          {(eventFormat || eventType) && (
+          {/* Selections Display - Only show event format */}
+          {eventFormat && (
             <div className="flex items-center justify-center gap-4 mt-4">
-              {eventFormat && getFormatDisplay()}
-              {eventFormat && eventType && (
-                <div className="w-1 h-1 rounded-full bg-gray-400"></div>
-              )}
-              {eventType && getEventTypeDisplay()}
+              {getFormatDisplay()}
             </div>
           )}
         </div>
