@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -76,19 +77,6 @@ export const EventTypeStep = ({
     onEventsChange(newEvents);
   };
 
-  const getFormatDisplay = () => {
-    const format = eventFormats.find(f => f.id === eventFormat);
-    if (!format) return null;
-    
-    const Icon = format.icon;
-    return (
-      <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-gray-600" />
-        <span className="text-sm font-medium text-gray-700">{format.label}</span>
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -96,13 +84,6 @@ export const EventTypeStep = ({
         <p className="text-sm text-gray-600">
           Select whether you want to create a single event or a series of events
         </p>
-        
-        {/* Selections Display - Only show event format */}
-        {eventFormat && (
-          <div className="flex items-center justify-center gap-4 mt-4">
-            {getFormatDisplay()}
-          </div>
-        )}
       </div>
 
       <div className="space-y-4">
