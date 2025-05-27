@@ -4,9 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
 import { WizardFooter } from "./WizardFooter";
 import { StepIndicator } from "./StepIndicator";
-import { EventFormatStep } from "./steps";
+import { EventFormatStep, EventTypeStep } from "./steps";
 import { wizardReducer, initialWizardState } from "./hooks/useWizardState";
-import type { WizardStep } from "./types";
 
 export const EventCreationWizard = () => {
   const { id: groupId } = useParams<{ id: string }>();
@@ -26,6 +25,10 @@ export const EventCreationWizard = () => {
 
   const handleNext = () => {
     if (state.currentStep < 6) {
+      // Add haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate(200);
+      }
       dispatch({ type: 'NEXT_STEP' });
     }
   };
@@ -61,7 +64,11 @@ export const EventCreationWizard = () => {
       case 1:
         return !!state.formData.eventFormat;
       case 2:
-        return !!state.formData.eventType;
+        if (!state.formData.eventType) return false;
+        if (state.formData.eventType === "multi-week") {
+          return !!(state.formData.seriesTitle && state.formData.events.length > 0);
+        }
+        return true;
       case 3:
         return !!(state.formData.eventTitle && state.formData.eventDate && state.formData.eventTime && state.formData.location);
       case 4:
@@ -83,6 +90,19 @@ export const EventCreationWizard = () => {
             value={state.formData.eventFormat}
             onChange={(eventFormat) => handleFormDataUpdate({ eventFormat })}
             error={state.validationErrors.eventFormat}
+          />
+        );
+      
+      case 2:
+        return (
+          <EventTypeStep
+            eventType={state.formData.eventType}
+            seriesTitle={state.formData.seriesTitle}
+            events={state.formData.events}
+            onEventTypeChange={(eventType) => handleFormDataUpdate({ eventType })}
+            onSeriesTitleChange={(seriesTitle) => handleFormDataUpdate({ seriesTitle })}
+            onEventsChange={(events) => handleFormDataUpdate({ events })}
+            error={state.validationErrors.eventType}
           />
         );
       
