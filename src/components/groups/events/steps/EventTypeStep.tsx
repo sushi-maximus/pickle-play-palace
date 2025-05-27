@@ -91,7 +91,7 @@ export const EventTypeStep = ({
   };
 
   return (
-    <>
+    <div>
       <div className="text-center space-y-2">
         <h2 className="text-xl font-semibold text-gray-900">Choose Event Type</h2>
         <p className="text-sm text-gray-600">
@@ -210,6 +210,6 @@ export const EventTypeStep = ({
         event={editingEvent}
         isEditing={editingIndex !== null}
       />
-    </>
+    </div>
   );
 };
