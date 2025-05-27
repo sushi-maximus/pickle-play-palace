@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -84,9 +83,7 @@ export const EventTypeStep = ({
     const Icon = format.icon;
     return (
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-          <Icon className="h-3 w-3 text-white" />
-        </div>
+        <Icon className="h-4 w-4 text-gray-600" />
         <span className="text-sm font-medium text-gray-700">{format.label}</span>
       </div>
     );
@@ -97,13 +94,8 @@ export const EventTypeStep = ({
     
     return (
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-          <span className="text-xs text-white font-medium">
-            {eventType === "one-time" ? "1" : "M"}
-          </span>
-        </div>
-        <span className="text-sm font-medium text-gray-700">
-          {eventType === "one-time" ? "One-Time Event" : "Multi-Week Event"}
+        <span className="text-sm font-medium text-gray-600">
+          {eventType === "one-time" ? "One-Time" : "Multi-Week"}
         </span>
       </div>
     );
