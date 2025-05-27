@@ -3,10 +3,18 @@
 interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
+  onStepClick?: (step: number) => void;
 }
 
-export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) => {
+export const StepIndicator = ({ currentStep, totalSteps, onStepClick }: StepIndicatorProps) => {
   const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
+
+  const handleStepClick = (step: number) => {
+    // Only allow clicking on completed steps (steps less than current step)
+    if (step < currentStep && onStepClick) {
+      onStepClick(step);
+    }
+  };
 
   return (
     <div className="fixed top-[58px] left-0 right-0 z-50 bg-white border-b border-gray-200">
@@ -34,6 +42,7 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
             const isCompleted = step < currentStep;
             const isCurrent = step === currentStep;
             const isUpcoming = step > currentStep;
+            const isClickable = isCompleted;
             
             return (
               <div
@@ -49,7 +58,9 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
                       ? 'bg-white border-primary ring-4 ring-primary/20' 
                       : 'bg-white border-gray-300'
                     }
+                    ${isClickable ? 'cursor-pointer hover:scale-110 active:scale-95' : ''}
                   `}
+                  onClick={() => handleStepClick(step)}
                 >
                   {isCompleted ? (
                     <svg 
