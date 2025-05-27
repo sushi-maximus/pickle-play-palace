@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -70,7 +69,7 @@ export const EventTypeStep = ({
 
   return (
     <div className="flex-1 overflow-auto">
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-12 space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-xl font-semibold text-gray-900">Choose Event Type</h2>
           <p className="text-sm text-gray-600">
