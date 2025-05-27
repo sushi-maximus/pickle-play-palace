@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 interface CreateEventButtonProps {
   groupId: string;
   isAdmin?: boolean;
+  className?: string;
 }
 
-export const CreateEventButton = ({ groupId, isAdmin = false }: CreateEventButtonProps) => {
+export const CreateEventButton = ({ groupId, isAdmin = false, className }: CreateEventButtonProps) => {
   const navigate = useNavigate();
 
   if (!isAdmin) {
@@ -22,7 +23,7 @@ export const CreateEventButton = ({ groupId, isAdmin = false }: CreateEventButto
   return (
     <Button
       onClick={handleCreateEvent}
-      className="hover-scale min-h-[48px] bg-primary hover:bg-primary/90"
+      className={`hover-scale min-h-[48px] ${className || "bg-primary hover:bg-primary/90"}`}
     >
       <Plus className="mr-2 h-4 w-4" />
       Create Event
