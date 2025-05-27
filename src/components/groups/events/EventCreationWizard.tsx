@@ -1,11 +1,12 @@
-
 import { useReducer } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
 import { WizardFooter } from "./WizardFooter";
 import { StepIndicator } from "./StepIndicator";
-import { EventFormatStep, EventTypeStep, EventDetailsStep, PlayerDetailsStep, RankingDetailsStep } from "./steps";
+import { EventFormatStep, EventTypeStep, EventDetailsStep, PlayerDetailsStep, RankingDetailsStep, ReviewAndConfirmStep } from "./steps";
 import { wizardReducer, initialWizardState } from "./hooks/useWizardState";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const EventCreationWizard = () => {
   const { id: groupId } = useParams<{ id: string }>();
@@ -23,13 +24,127 @@ export const EventCreationWizard = () => {
     return null;
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (state.currentStep < 6) {
       // Add haptic feedback
       if (navigator.vibrate) {
         navigator.vibrate(200);
       }
       dispatch({ type: 'NEXT_STEP' });
+    } else if (state.currentStep === 6) {
+      // Handle event creation on final step
+      await handleEventSubmission();
+    }
+  };
+
+  const handleEventSubmission = async () => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        toast.error("You must be logged in to create an event");
+        return;
+      }
+
+      if (state.formData.eventType === "multi-week") {
+        // Create event series first
+        const { data: seriesData, error: seriesError } = await supabase
+          .from('event_series')
+          .insert({
+            group_id: groupId,
+            organizer_id: user.id,
+            series_title: state.formData.seriesTitle,
+            event_type: state.formData.eventType,
+            event_format: state.formData.eventFormat
+          })
+          .select()
+          .single();
+
+        if (seriesError) {
+          toast.error("Failed to create event series");
+          console.error("Series creation error:", seriesError);
+          return;
+        }
+
+        // Create individual events
+        const eventPromises = state.formData.events.map(event => 
+          supabase.from('events').insert({
+            series_id: seriesData.id,
+            group_id: groupId,
+            event_title: event.eventTitle,
+            description: event.description,
+            event_date: event.eventDate,
+            event_time: event.eventTime,
+            location: event.location,
+            max_players: event.maxPlayers,
+            allow_reserves: event.allowReserves,
+            pricing_model: event.pricingModel,
+            fee_amount: event.feeAmount,
+            ranking_method: event.rankingMethod,
+            skill_category: event.skillCategory,
+            event_format: state.formData.eventFormat
+          })
+        );
+
+        await Promise.all(eventPromises);
+        toast.success("Multi-week event series created successfully!");
+      } else {
+        // Create single event series entry
+        const { data: seriesData, error: seriesError } = await supabase
+          .from('event_series')
+          .insert({
+            group_id: groupId,
+            organizer_id: user.id,
+            event_type: state.formData.eventType,
+            event_format: state.formData.eventFormat
+          })
+          .select()
+          .single();
+
+        if (seriesError) {
+          toast.error("Failed to create event series");
+          console.error("Series creation error:", seriesError);
+          return;
+        }
+
+        // Create single event
+        const { error: eventError } = await supabase
+          .from('events')
+          .insert({
+            series_id: seriesData.id,
+            group_id: groupId,
+            event_title: state.formData.eventTitle,
+            description: state.formData.description,
+            event_date: state.formData.eventDate,
+            event_time: state.formData.eventTime,
+            location: state.formData.location,
+            max_players: state.formData.maxPlayers,
+            allow_reserves: state.formData.allowReserves,
+            pricing_model: state.formData.pricingModel,
+            fee_amount: state.formData.feeAmount,
+            ranking_method: state.formData.rankingMethod,
+            skill_category: state.formData.skillCategory,
+            event_format: state.formData.eventFormat
+          });
+
+        if (eventError) {
+          toast.error("Failed to create event");
+          console.error("Event creation error:", eventError);
+          return;
+        }
+
+        toast.success("Event created successfully!");
+      }
+
+      // Navigate back to group page
+      navigate(`/groups/${groupId}`);
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
@@ -211,6 +326,15 @@ export const EventCreationWizard = () => {
             onRankingMethodChange={(rankingMethod) => handleFormDataUpdate({ rankingMethod })}
             onSkillCategoryChange={(skillCategory) => handleFormDataUpdate({ skillCategory })}
             errors={getValidationErrors()}
+          />
+        );
+
+      case 6:
+        return (
+          <ReviewAndConfirmStep
+            formData={state.formData}
+            onSubmit={handleEventSubmission}
+            isLoading={state.isLoading}
           />
         );
       
