@@ -84,7 +84,7 @@ export const EventTypeStep = ({
     const Icon = format.icon;
     return (
       <div className="flex items-center gap-2">
-        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
           <Icon className="h-3 w-3 text-white" />
         </div>
         <span className="text-sm font-medium text-gray-700">{format.label}</span>
@@ -97,7 +97,7 @@ export const EventTypeStep = ({
     
     return (
       <div className="flex items-center gap-2">
-        <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+        <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
           <span className="text-xs text-white font-medium">
             {eventType === "one-time" ? "1" : "M"}
           </span>
@@ -117,18 +117,18 @@ export const EventTypeStep = ({
           <p className="text-sm text-gray-600">
             Select whether you want to create a single event or a series of events
           </p>
+          
+          {/* Selections Display - Clean inline text */}
+          {(eventFormat || eventType) && (
+            <div className="flex items-center justify-center gap-4 mt-4">
+              {eventFormat && getFormatDisplay()}
+              {eventFormat && eventType && (
+                <div className="w-1 h-1 rounded-full bg-gray-400"></div>
+              )}
+              {eventType && getEventTypeDisplay()}
+            </div>
+          )}
         </div>
-
-        {/* Selections Display Bar */}
-        {(eventFormat || eventType) && (
-          <div className="flex items-center justify-center gap-4 py-3 px-4 bg-gray-50 rounded-lg border">
-            {eventFormat && getFormatDisplay()}
-            {eventFormat && eventType && (
-              <div className="w-1 h-1 rounded-full bg-gray-400"></div>
-            )}
-            {eventType && getEventTypeDisplay()}
-          </div>
-        )}
 
         <div className="space-y-4">
           <Label className="text-base font-medium text-gray-900">Event Type</Label>
