@@ -1,4 +1,5 @@
 
+
 interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
@@ -11,7 +12,7 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
     <div className="fixed top-[58px] left-0 right-0 z-50 bg-white border-b border-gray-200">
       <div className="px-4 py-3">
         {/* Circles container */}
-        <div className="flex items-center justify-between relative">
+        <div className="flex items-center justify-between relative mx-3 md:mx-4">
           {/* Connecting line */}
           <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2 z-0" />
           <div 
@@ -78,3 +79,4 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
     </div>
   );
 };
+
