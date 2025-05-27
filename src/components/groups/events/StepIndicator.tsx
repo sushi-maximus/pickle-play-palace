@@ -1,5 +1,4 @@
 
-
 interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
@@ -17,15 +16,15 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
           <div 
             className="absolute top-1/2 h-0.5 bg-gray-200 -translate-y-1/2 z-0"
             style={{ 
-              left: '12px', // Half of mobile circle width (24px)
-              right: '12px' // Half of mobile circle width (24px)
+              left: '24px', // Full mobile circle width (24px)
+              right: '24px' // Full mobile circle width (24px)
             }}
           />
           <div 
             className="absolute top-1/2 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-300"
             style={{ 
-              left: '12px', // Half of mobile circle width (24px)
-              width: `calc(${((currentStep - 1) / (totalSteps - 1)) * 100}% - 24px)` // Subtract full circle width
+              left: '24px', // Full mobile circle width (24px)
+              width: `calc(${((currentStep - 1) / (totalSteps - 1)) * 100}% - 48px)` // Subtract both circle widths
             }}
           />
           
@@ -53,7 +52,7 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
                 >
                   {isCompleted ? (
                     <svg 
-                      className="w-3 h-3 md:w-4 md:h-4" 
+                      className="w-3 h-3 md:w-4 md:w-4" 
                       fill="currentColor" 
                       viewBox="0 0 20 20"
                     >
@@ -88,4 +87,3 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
     </div>
   );
 };
-
