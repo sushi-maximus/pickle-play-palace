@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
 import { WizardFooter } from "./WizardFooter";
 import { StepIndicator } from "./StepIndicator";
-import { EventFormatStep, EventTypeStep } from "./steps";
+import { EventFormatStep, EventTypeStep, EventDetailsStep } from "./steps";
 import { wizardReducer, initialWizardState } from "./hooks/useWizardState";
 
 export const EventCreationWizard = () => {
@@ -70,7 +70,18 @@ export const EventCreationWizard = () => {
         }
         return true;
       case 3:
-        return !!(state.formData.eventTitle && state.formData.eventDate && state.formData.eventTime && state.formData.location);
+        if (!state.formData.eventTitle.trim()) return false;
+        if (!state.formData.description.trim()) return false;
+        if (!state.formData.eventDate) return false;
+        if (!state.formData.eventTime) return false;
+        if (!state.formData.location.trim()) return false;
+        
+        // Validate date/time is in the future
+        const eventDateTime = new Date(`${state.formData.eventDate}T${state.formData.eventTime}`);
+        const currentTime = new Date("2025-05-26T20:41:00-07:00");
+        if (eventDateTime <= currentTime) return false;
+        
+        return true;
       case 4:
         return state.formData.maxPlayers > 0;
       case 5:
@@ -80,6 +91,35 @@ export const EventCreationWizard = () => {
       default:
         return false;
     }
+  };
+
+  const getValidationErrors = () => {
+    const errors: any = {};
+    
+    if (state.currentStep === 3) {
+      if (!state.formData.eventTitle.trim()) {
+        errors.eventTitle = "Event title is required";
+      }
+      if (!state.formData.description.trim()) {
+        errors.description = "Description is required";
+      }
+      if (!state.formData.eventDate) {
+        errors.eventDate = "Date is required";
+      } else if (!state.formData.eventTime) {
+        errors.eventTime = "Time is required";
+      } else {
+        const eventDateTime = new Date(`${state.formData.eventDate}T${state.formData.eventTime}`);
+        const currentTime = new Date("2025-05-26T20:41:00-07:00");
+        if (eventDateTime <= currentTime) {
+          errors.eventDate = "Date/Time must be in the future";
+        }
+      }
+      if (!state.formData.location.trim()) {
+        errors.location = "Location is required";
+      }
+    }
+    
+    return errors;
   };
 
   const renderCurrentStep = () => {
@@ -103,6 +143,23 @@ export const EventCreationWizard = () => {
             onSeriesTitleChange={(seriesTitle) => handleFormDataUpdate({ seriesTitle })}
             onEventsChange={(events) => handleFormDataUpdate({ events })}
             error={state.validationErrors.eventType}
+          />
+        );
+      
+      case 3:
+        return (
+          <EventDetailsStep
+            eventTitle={state.formData.eventTitle}
+            description={state.formData.description}
+            eventDate={state.formData.eventDate}
+            eventTime={state.formData.eventTime}
+            location={state.formData.location}
+            onEventTitleChange={(eventTitle) => handleFormDataUpdate({ eventTitle })}
+            onDescriptionChange={(description) => handleFormDataUpdate({ description })}
+            onEventDateChange={(eventDate) => handleFormDataUpdate({ eventDate })}
+            onEventTimeChange={(eventTime) => handleFormDataUpdate({ eventTime })}
+            onLocationChange={(location) => handleFormDataUpdate({ location })}
+            errors={getValidationErrors()}
           />
         );
       
