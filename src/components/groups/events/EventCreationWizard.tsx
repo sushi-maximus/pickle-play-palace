@@ -40,6 +40,35 @@ export const EventCreationWizard = () => {
     return titles[step as keyof typeof titles] || "Event Creation";
   };
 
+  const getCurrentSelections = (): string => {
+    const { formData } = state;
+    const selections: string[] = [];
+
+    if (formData.eventFormat) {
+      const formatMap: Record<string, string> = {
+        'tennis': 'Tennis',
+        'pickleball': 'Pickleball',
+        'padel': 'Padel',
+        'racquetball': 'Racquetball',
+        'table_tennis': 'Table Tennis',
+        'squash': 'Squash',
+        'basketball': 'Basketball',
+        'soccer': 'Soccer',
+        'golf': 'Golf',
+        'other': 'Other'
+      };
+      selections.push(formatMap[formData.eventFormat] || formData.eventFormat);
+    }
+
+    if (formData.eventType === 'one-time') {
+      selections.push('One-Time Event');
+    } else if (formData.eventType === 'multi-week' && formData.seriesTitle) {
+      selections.push(`Multi-Week: ${formData.seriesTitle}`);
+    }
+
+    return selections.join(' • ');
+  };
+
   const handleNext = async () => {
     if (state.currentStep < 6) {
       // Add haptic feedback following mobile-first principles
@@ -69,6 +98,8 @@ export const EventCreationWizard = () => {
 
   const onEventSubmission = () => handleEventSubmission(state.formData, dispatch);
 
+  const currentSelections = getCurrentSelections();
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <WizardHeader 
@@ -76,6 +107,14 @@ export const EventCreationWizard = () => {
         totalSteps={6}
         title={getStepTitle(state.currentStep)}
       />
+      
+      {currentSelections && (
+        <div className="fixed top-[58px] left-0 right-0 z-40 bg-white border-b border-gray-100">
+          <div className="px-4 py-2">
+            <p className="text-sm text-gray-600 text-center">{currentSelections}</p>
+          </div>
+        </div>
+      )}
       
       <StepIndicator 
         currentStep={state.currentStep}

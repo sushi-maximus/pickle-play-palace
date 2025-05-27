@@ -8,7 +8,7 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
   const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
 
   return (
-    <div className="fixed top-[58px] left-0 right-0 z-50 bg-white border-b border-gray-200">
+    <div className="fixed top-[90px] left-0 right-0 z-50 bg-white border-b border-gray-200">
       <div className="px-4 py-3">
         {/* Circles container */}
         <div className="flex items-center justify-between relative mx-3 md:mx-4">
