@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
 import { WizardFooter } from "./WizardFooter";
 import { StepIndicator } from "./StepIndicator";
-import { EventFormatStep, EventTypeStep, EventDetailsStep, PlayerDetailsStep } from "./steps";
+import { EventFormatStep, EventTypeStep, EventDetailsStep, PlayerDetailsStep, RankingDetailsStep } from "./steps";
 import { wizardReducer, initialWizardState } from "./hooks/useWizardState";
 
 export const EventCreationWizard = () => {
@@ -134,6 +134,15 @@ export const EventCreationWizard = () => {
         }
       }
     }
+
+    if (state.currentStep === 5) {
+      if (!state.formData.rankingMethod) {
+        errors.rankingMethod = "Ranking method is required";
+      }
+      if (!state.formData.skillCategory) {
+        errors.skillCategory = "Skill category is required";
+      }
+    }
     
     return errors;
   };
@@ -190,6 +199,17 @@ export const EventCreationWizard = () => {
             onAllowReservesChange={(allowReserves) => handleFormDataUpdate({ allowReserves })}
             onPricingModelChange={(pricingModel) => handleFormDataUpdate({ pricingModel })}
             onFeeAmountChange={(feeAmount) => handleFormDataUpdate({ feeAmount })}
+            errors={getValidationErrors()}
+          />
+        );
+
+      case 5:
+        return (
+          <RankingDetailsStep
+            rankingMethod={state.formData.rankingMethod}
+            skillCategory={state.formData.skillCategory}
+            onRankingMethodChange={(rankingMethod) => handleFormDataUpdate({ rankingMethod })}
+            onSkillCategoryChange={(skillCategory) => handleFormDataUpdate({ skillCategory })}
             errors={getValidationErrors()}
           />
         );
