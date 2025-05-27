@@ -20,7 +20,7 @@ export const initialWizardState: WizardState = {
     allowReserves: false,
     pricingModel: "free",
     feeAmount: null,
-    rankingMethod: "",
+    rankingMethod: "random",
     skillCategory: "none"
   },
   validationErrors: {}

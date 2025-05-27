@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -88,10 +89,9 @@ export const RankingDetailsStep = ({
               <SelectValue placeholder="Select ranking method" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ladder">Ladder</SelectItem>
-              <SelectItem value="round-robin">Round Robin</SelectItem>
-              <SelectItem value="elimination">Single Elimination</SelectItem>
-              <SelectItem value="double-elimination">Double Elimination</SelectItem>
+              <SelectItem value="random">Random Pairing</SelectItem>
+              <SelectItem value="skill-based">Skill-Based Matching</SelectItem>
+              <SelectItem value="dupr">DUPR Rating Based</SelectItem>
             </SelectContent>
           </Select>
           {errors.rankingMethod && (
@@ -115,7 +115,6 @@ export const RankingDetailsStep = ({
               <SelectItem value="beginner">Beginner (2.5-3.0)</SelectItem>
               <SelectItem value="intermediate">Intermediate (3.0-3.5)</SelectItem>
               <SelectItem value="advanced">Advanced (3.5-4.0)</SelectItem>
-              <SelectItem value="expert">Expert (4.0+)</SelectItem>
             </SelectContent>
           </Select>
           {errors.skillCategory && (
