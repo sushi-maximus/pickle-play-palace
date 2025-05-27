@@ -57,27 +57,43 @@ export const WizardStepRenderer = ({
     case 3:
       return (
         <EventDetailsStep
-          formData={formData}
-          validationErrors={getValidationErrors()}
-          onFormDataUpdate={handleFormUpdate}
+          eventTitle={formData.eventTitle}
+          description={formData.description}
+          eventDate={formData.eventDate}
+          eventTime={formData.eventTime}
+          location={formData.location}
+          onEventTitleChange={(title) => handleFormUpdate({ eventTitle: title })}
+          onDescriptionChange={(description) => handleFormUpdate({ description })}
+          onEventDateChange={(date) => handleFormUpdate({ eventDate: date })}
+          onEventTimeChange={(time) => handleFormUpdate({ eventTime: time })}
+          onLocationChange={(location) => handleFormUpdate({ location })}
+          errors={getValidationErrors()}
         />
       );
 
     case 4:
       return (
         <PlayerDetailsStep
-          formData={formData}
-          validationErrors={getValidationErrors()}
-          onFormDataUpdate={handleFormUpdate}
+          maxPlayers={formData.maxPlayers}
+          allowReserves={formData.allowReserves}
+          pricingModel={formData.pricingModel}
+          feeAmount={formData.feeAmount}
+          onMaxPlayersChange={(maxPlayers) => handleFormUpdate({ maxPlayers })}
+          onAllowReservesChange={(allowReserves) => handleFormUpdate({ allowReserves })}
+          onPricingModelChange={(pricingModel) => handleFormUpdate({ pricingModel })}
+          onFeeAmountChange={(feeAmount) => handleFormUpdate({ feeAmount })}
+          errors={getValidationErrors()}
         />
       );
 
     case 5:
       return (
         <RankingDetailsStep
-          formData={formData}
-          validationErrors={getValidationErrors()}
-          onFormDataUpdate={handleFormUpdate}
+          rankingMethod={formData.rankingMethod}
+          skillCategory={formData.skillCategory}
+          onRankingMethodChange={(rankingMethod) => handleFormUpdate({ rankingMethod })}
+          onSkillCategoryChange={(skillCategory) => handleFormUpdate({ skillCategory })}
+          errors={getValidationErrors()}
         />
       );
 
@@ -85,7 +101,7 @@ export const WizardStepRenderer = ({
       return (
         <ReviewAndConfirmStep
           formData={formData}
-          onEventSubmission={onEventSubmission}
+          onSubmit={onEventSubmission}
           isLoading={isLoading}
         />
       );
