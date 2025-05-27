@@ -76,6 +76,119 @@ export type Database = {
           },
         ]
       }
+      event_series: {
+        Row: {
+          created_at: string
+          event_format: string
+          event_type: string
+          group_id: string
+          id: string
+          organizer_id: string
+          series_title: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_format: string
+          event_type: string
+          group_id: string
+          id?: string
+          organizer_id: string
+          series_title?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_format?: string
+          event_type?: string
+          group_id?: string
+          id?: string
+          organizer_id?: string
+          series_title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_series_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          allow_reserves: boolean
+          created_at: string
+          description: string
+          event_date: string
+          event_format: string
+          event_time: string
+          event_title: string
+          fee_amount: number | null
+          group_id: string
+          id: string
+          location: string
+          max_players: number
+          pricing_model: string
+          ranking_method: string
+          registration_open: boolean
+          series_id: string
+          skill_category: string
+        }
+        Insert: {
+          allow_reserves?: boolean
+          created_at?: string
+          description: string
+          event_date: string
+          event_format: string
+          event_time: string
+          event_title: string
+          fee_amount?: number | null
+          group_id: string
+          id?: string
+          location: string
+          max_players: number
+          pricing_model: string
+          ranking_method: string
+          registration_open?: boolean
+          series_id: string
+          skill_category: string
+        }
+        Update: {
+          allow_reserves?: boolean
+          created_at?: string
+          description?: string
+          event_date?: string
+          event_format?: string
+          event_time?: string
+          event_title?: string
+          fee_amount?: number | null
+          group_id?: string
+          id?: string
+          location?: string
+          max_players?: number
+          pricing_model?: string
+          ranking_method?: string
+          registration_open?: boolean
+          series_id?: string
+          skill_category?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "event_series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_members: {
         Row: {
           group_id: string
