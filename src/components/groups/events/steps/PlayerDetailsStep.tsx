@@ -109,12 +109,11 @@ export const PlayerDetailsStep = ({
             <SelectContent>
               <SelectItem value="free">Free</SelectItem>
               <SelectItem value="one-time">One-Time Fee</SelectItem>
-              <SelectItem value="per-event">Per-Event Fee</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {(pricingModel === "one-time" || pricingModel === "per-event") && (
+        {pricingModel === "one-time" && (
           <div className="space-y-2 animate-fade-in">
             <Label htmlFor="fee-amount" className="text-base font-medium text-gray-900">
               Fee Amount ($)

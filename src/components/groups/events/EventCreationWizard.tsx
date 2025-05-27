@@ -85,7 +85,7 @@ export const EventCreationWizard = () => {
       case 4:
         if (state.formData.maxPlayers < 8 || state.formData.maxPlayers > 64) return false;
         if (state.formData.maxPlayers % 4 !== 0) return false;
-        if ((state.formData.pricingModel === "one-time" || state.formData.pricingModel === "per-event")) {
+        if (state.formData.pricingModel === "one-time") {
           if (!state.formData.feeAmount || state.formData.feeAmount < 0 || state.formData.feeAmount > 100) return false;
         }
         return true;
@@ -128,7 +128,7 @@ export const EventCreationWizard = () => {
       if (state.formData.maxPlayers < 8 || state.formData.maxPlayers > 64 || state.formData.maxPlayers % 4 !== 0) {
         errors.maxPlayers = "Max players must be 8-64 and a multiple of 4";
       }
-      if ((state.formData.pricingModel === "one-time" || state.formData.pricingModel === "per-event")) {
+      if (state.formData.pricingModel === "one-time") {
         if (!state.formData.feeAmount || state.formData.feeAmount < 0 || state.formData.feeAmount > 100) {
           errors.feeAmount = "Fee must be $0-$100";
         }
