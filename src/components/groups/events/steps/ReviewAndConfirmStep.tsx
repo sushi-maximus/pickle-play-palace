@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin, Users, DollarSign, Target, Award } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, DollarSign, Target, Award, Zap, Grid3X3 } from "lucide-react";
 import type { EventFormData } from "../types";
 
 interface ReviewAndConfirmStepProps {
@@ -11,6 +11,13 @@ interface ReviewAndConfirmStepProps {
   onSubmit: () => void;
   isLoading: boolean;
 }
+
+const eventFormats = [
+  { id: "ladder", label: "Ladder", icon: Zap },
+  { id: "kings_court", label: "Kings Court", icon: Target },
+  { id: "round_robin", label: "Round Robin", icon: Grid3X3 },
+  { id: "single_court", label: "Single Court", icon: Users }
+];
 
 export const ReviewAndConfirmStep = ({
   formData,
@@ -56,6 +63,39 @@ export const ReviewAndConfirmStep = ({
     return methods[method] || method;
   };
 
+  const getFormatDisplay = () => {
+    if (!formData.eventFormat) return null;
+    const format = eventFormats.find(f => f.id === formData.eventFormat);
+    if (!format) return null;
+    
+    const Icon = format.icon;
+    return (
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+          <Icon className="h-3 w-3 text-white" />
+        </div>
+        <span className="text-sm font-medium text-gray-700">{format.label}</span>
+      </div>
+    );
+  };
+
+  const getEventTypeDisplay = () => {
+    if (!formData.eventType) return null;
+    
+    return (
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+          <span className="text-xs text-white font-medium">
+            {formData.eventType === "one-time" ? "1" : "M"}
+          </span>
+        </div>
+        <span className="text-sm font-medium text-gray-700">
+          {formData.eventType === "one-time" ? "One-Time Event" : "Multi-Week Event"}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="flex-1 px-4 py-6 space-y-6">
       <div className="text-center space-y-2">
@@ -63,6 +103,17 @@ export const ReviewAndConfirmStep = ({
         <p className="text-sm text-gray-600">
           Please review your event details before creating
         </p>
+        
+        {/* Selections Display */}
+        {(formData.eventFormat || formData.eventType) && (
+          <div className="flex items-center justify-center gap-4 mt-4">
+            {formData.eventFormat && getFormatDisplay()}
+            {formData.eventFormat && formData.eventType && (
+              <div className="w-1 h-1 rounded-full bg-gray-400"></div>
+            )}
+            {formData.eventType && getEventTypeDisplay()}
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">

@@ -2,6 +2,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Zap, Target, Grid3X3, Users } from "lucide-react";
 
 interface RankingDetailsStepProps {
   rankingMethod: string;
@@ -12,15 +13,59 @@ interface RankingDetailsStepProps {
     rankingMethod?: string;
     skillCategory?: string;
   };
+  eventFormat?: string;
+  eventType?: string;
 }
+
+const eventFormats = [
+  { id: "ladder", label: "Ladder", icon: Zap },
+  { id: "kings_court", label: "Kings Court", icon: Target },
+  { id: "round_robin", label: "Round Robin", icon: Grid3X3 },
+  { id: "single_court", label: "Single Court", icon: Users }
+];
 
 export const RankingDetailsStep = ({
   rankingMethod,
   skillCategory,
   onRankingMethodChange,
   onSkillCategoryChange,
-  errors = {}
+  errors = {},
+  eventFormat,
+  eventType
 }: RankingDetailsStepProps) => {
+  const getFormatDisplay = () => {
+    if (!eventFormat) return null;
+    const format = eventFormats.find(f => f.id === eventFormat);
+    if (!format) return null;
+    
+    const Icon = format.icon;
+    return (
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+          <Icon className="h-3 w-3 text-white" />
+        </div>
+        <span className="text-sm font-medium text-gray-700">{format.label}</span>
+      </div>
+    );
+  };
+
+  const getEventTypeDisplay = () => {
+    if (!eventType) return null;
+    
+    return (
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+          <span className="text-xs text-white font-medium">
+            {eventType === "one-time" ? "1" : "M"}
+          </span>
+        </div>
+        <span className="text-sm font-medium text-gray-700">
+          {eventType === "one-time" ? "One-Time Event" : "Multi-Week Event"}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="flex-1 px-4 py-6 space-y-6">
       <div className="text-center space-y-2">
@@ -28,6 +73,17 @@ export const RankingDetailsStep = ({
         <p className="text-sm text-gray-600">
           Configure how players will be ranked and matched
         </p>
+        
+        {/* Selections Display */}
+        {(eventFormat || eventType) && (
+          <div className="flex items-center justify-center gap-4 mt-4">
+            {eventFormat && getFormatDisplay()}
+            {eventFormat && eventType && (
+              <div className="w-1 h-1 rounded-full bg-gray-400"></div>
+            )}
+            {eventType && getEventTypeDisplay()}
+          </div>
+        )}
       </div>
 
       <div className="space-y-6">

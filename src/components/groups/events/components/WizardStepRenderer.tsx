@@ -68,6 +68,8 @@ export const WizardStepRenderer = ({
           onEventTimeChange={(time) => handleFormUpdate({ eventTime: time })}
           onLocationChange={(location) => handleFormUpdate({ location })}
           errors={getValidationErrors()}
+          eventFormat={formData.eventFormat}
+          eventType={formData.eventType}
         />
       );
 
@@ -83,6 +85,8 @@ export const WizardStepRenderer = ({
           onPricingModelChange={(pricingModel) => handleFormUpdate({ pricingModel })}
           onFeeAmountChange={(feeAmount) => handleFormUpdate({ feeAmount })}
           errors={getValidationErrors()}
+          eventFormat={formData.eventFormat}
+          eventType={formData.eventType}
         />
       );
 
@@ -94,6 +98,8 @@ export const WizardStepRenderer = ({
           onRankingMethodChange={(rankingMethod) => handleFormUpdate({ rankingMethod })}
           onSkillCategoryChange={(skillCategory) => handleFormUpdate({ skillCategory })}
           errors={getValidationErrors()}
+          eventFormat={formData.eventFormat}
+          eventType={formData.eventType}
         />
       );
 
