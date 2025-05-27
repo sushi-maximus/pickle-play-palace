@@ -78,9 +78,8 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
           })}
         </div>
         
-        {/* Step counter text */}
-        <div className="flex justify-between mt-2 text-xs text-gray-500">
-          <span>Step {currentStep}</span>
+        {/* Step counter text - only show right side */}
+        <div className="flex justify-end mt-2 text-xs text-gray-500">
           <span>{currentStep} of {totalSteps}</span>
         </div>
       </div>
