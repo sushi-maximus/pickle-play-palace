@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
 import { WizardFooter } from "./WizardFooter";
 import { StepIndicator } from "./StepIndicator";
-import { EventFormatStep, EventTypeStep, EventDetailsStep } from "./steps";
+import { EventFormatStep, EventTypeStep, EventDetailsStep, PlayerDetailsStep } from "./steps";
 import { wizardReducer, initialWizardState } from "./hooks/useWizardState";
 
 export const EventCreationWizard = () => {
@@ -83,7 +83,12 @@ export const EventCreationWizard = () => {
         
         return true;
       case 4:
-        return state.formData.maxPlayers > 0;
+        if (state.formData.maxPlayers < 8 || state.formData.maxPlayers > 64) return false;
+        if (state.formData.maxPlayers % 4 !== 0) return false;
+        if ((state.formData.pricingModel === "one-time" || state.formData.pricingModel === "per-event")) {
+          if (!state.formData.feeAmount || state.formData.feeAmount < 0 || state.formData.feeAmount > 100) return false;
+        }
+        return true;
       case 5:
         return !!(state.formData.rankingMethod && state.formData.skillCategory);
       case 6:
@@ -116,6 +121,17 @@ export const EventCreationWizard = () => {
       }
       if (!state.formData.location.trim()) {
         errors.location = "Location is required";
+      }
+    }
+
+    if (state.currentStep === 4) {
+      if (state.formData.maxPlayers < 8 || state.formData.maxPlayers > 64 || state.formData.maxPlayers % 4 !== 0) {
+        errors.maxPlayers = "Max players must be 8-64 and a multiple of 4";
+      }
+      if ((state.formData.pricingModel === "one-time" || state.formData.pricingModel === "per-event")) {
+        if (!state.formData.feeAmount || state.formData.feeAmount < 0 || state.formData.feeAmount > 100) {
+          errors.feeAmount = "Fee must be $0-$100";
+        }
       }
     }
     
@@ -159,6 +175,21 @@ export const EventCreationWizard = () => {
             onEventDateChange={(eventDate) => handleFormDataUpdate({ eventDate })}
             onEventTimeChange={(eventTime) => handleFormDataUpdate({ eventTime })}
             onLocationChange={(location) => handleFormDataUpdate({ location })}
+            errors={getValidationErrors()}
+          />
+        );
+      
+      case 4:
+        return (
+          <PlayerDetailsStep
+            maxPlayers={state.formData.maxPlayers}
+            allowReserves={state.formData.allowReserves}
+            pricingModel={state.formData.pricingModel}
+            feeAmount={state.formData.feeAmount}
+            onMaxPlayersChange={(maxPlayers) => handleFormDataUpdate({ maxPlayers })}
+            onAllowReservesChange={(allowReserves) => handleFormDataUpdate({ allowReserves })}
+            onPricingModelChange={(pricingModel) => handleFormDataUpdate({ pricingModel })}
+            onFeeAmountChange={(feeAmount) => handleFormDataUpdate({ feeAmount })}
             errors={getValidationErrors()}
           />
         );
