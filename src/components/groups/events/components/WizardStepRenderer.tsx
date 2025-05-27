@@ -53,16 +53,18 @@ export const WizardStepRenderer = ({
 
     case 2:
       return (
-        <EventTypeStep
-          eventType={formData.eventType}
-          seriesTitle={formData.seriesTitle}
-          events={formData.events}
-          eventFormat={formData.eventFormat}
-          onEventTypeChange={(value) => handleFormUpdate({ eventType: value })}
-          onSeriesTitleChange={(value) => handleFormUpdate({ seriesTitle: value })}
-          onEventsChange={(events) => handleFormUpdate({ events })}
-          error={validationErrors.eventType}
-        />
+        <StepWrapper>
+          <EventTypeStep
+            eventType={formData.eventType}
+            seriesTitle={formData.seriesTitle}
+            events={formData.events}
+            eventFormat={formData.eventFormat}
+            onEventTypeChange={(value) => handleFormUpdate({ eventType: value })}
+            onSeriesTitleChange={(value) => handleFormUpdate({ seriesTitle: value })}
+            onEventsChange={(events) => handleFormUpdate({ events })}
+            error={validationErrors.eventType}
+          />
+        </StepWrapper>
       );
 
     case 3:
