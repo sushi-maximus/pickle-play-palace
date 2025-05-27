@@ -39,6 +39,8 @@ export const WizardStepRenderer = ({
     </div>
   );
 
+  console.log("Current step:", currentStep);
+
   switch (currentStep) {
     case 1:
       return (
@@ -52,6 +54,7 @@ export const WizardStepRenderer = ({
       );
 
     case 2:
+      console.log("Rendering step 2 with StepWrapper");
       return (
         <StepWrapper>
           <EventTypeStep
