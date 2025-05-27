@@ -30,14 +30,25 @@ export const WizardStepRenderer = ({
     onFormDataUpdate(updates);
   };
 
+  // Wrapper for consistent spacing across all steps
+  const StepWrapper = ({ children }: { children: React.ReactNode }) => (
+    <div className="flex-1 overflow-auto">
+      <div className="px-4 py-12 space-y-6">
+        {children}
+      </div>
+    </div>
+  );
+
   switch (currentStep) {
     case 1:
       return (
-        <EventFormatStep
-          value={formData.eventFormat}
-          onChange={(value) => handleFormUpdate({ eventFormat: value })}
-          error={validationErrors.eventFormat}
-        />
+        <StepWrapper>
+          <EventFormatStep
+            value={formData.eventFormat}
+            onChange={(value) => handleFormUpdate({ eventFormat: value })}
+            error={validationErrors.eventFormat}
+          />
+        </StepWrapper>
       );
 
     case 2:
@@ -56,60 +67,68 @@ export const WizardStepRenderer = ({
 
     case 3:
       return (
-        <EventDetailsStep
-          eventTitle={formData.eventTitle}
-          description={formData.description}
-          eventDate={formData.eventDate}
-          eventTime={formData.eventTime}
-          location={formData.location}
-          onEventTitleChange={(title) => handleFormUpdate({ eventTitle: title })}
-          onDescriptionChange={(description) => handleFormUpdate({ description })}
-          onEventDateChange={(date) => handleFormUpdate({ eventDate: date })}
-          onEventTimeChange={(time) => handleFormUpdate({ eventTime: time })}
-          onLocationChange={(location) => handleFormUpdate({ location })}
-          errors={getValidationErrors()}
-          eventFormat={formData.eventFormat}
-          eventType={formData.eventType}
-        />
+        <StepWrapper>
+          <EventDetailsStep
+            eventTitle={formData.eventTitle}
+            description={formData.description}
+            eventDate={formData.eventDate}
+            eventTime={formData.eventTime}
+            location={formData.location}
+            onEventTitleChange={(title) => handleFormUpdate({ eventTitle: title })}
+            onDescriptionChange={(description) => handleFormUpdate({ description })}
+            onEventDateChange={(date) => handleFormUpdate({ eventDate: date })}
+            onEventTimeChange={(time) => handleFormUpdate({ eventTime: time })}
+            onLocationChange={(location) => handleFormUpdate({ location })}
+            errors={getValidationErrors()}
+            eventFormat={formData.eventFormat}
+            eventType={formData.eventType}
+          />
+        </StepWrapper>
       );
 
     case 4:
       return (
-        <PlayerDetailsStep
-          maxPlayers={formData.maxPlayers}
-          allowReserves={formData.allowReserves}
-          pricingModel={formData.pricingModel}
-          feeAmount={formData.feeAmount}
-          onMaxPlayersChange={(maxPlayers) => handleFormUpdate({ maxPlayers })}
-          onAllowReservesChange={(allowReserves) => handleFormUpdate({ allowReserves })}
-          onPricingModelChange={(pricingModel) => handleFormUpdate({ pricingModel })}
-          onFeeAmountChange={(feeAmount) => handleFormUpdate({ feeAmount })}
-          errors={getValidationErrors()}
-          eventFormat={formData.eventFormat}
-          eventType={formData.eventType}
-        />
+        <StepWrapper>
+          <PlayerDetailsStep
+            maxPlayers={formData.maxPlayers}
+            allowReserves={formData.allowReserves}
+            pricingModel={formData.pricingModel}
+            feeAmount={formData.feeAmount}
+            onMaxPlayersChange={(maxPlayers) => handleFormUpdate({ maxPlayers })}
+            onAllowReservesChange={(allowReserves) => handleFormUpdate({ allowReserves })}
+            onPricingModelChange={(pricingModel) => handleFormUpdate({ pricingModel })}
+            onFeeAmountChange={(feeAmount) => handleFormUpdate({ feeAmount })}
+            errors={getValidationErrors()}
+            eventFormat={formData.eventFormat}
+            eventType={formData.eventType}
+          />
+        </StepWrapper>
       );
 
     case 5:
       return (
-        <RankingDetailsStep
-          rankingMethod={formData.rankingMethod}
-          skillCategory={formData.skillCategory}
-          onRankingMethodChange={(rankingMethod) => handleFormUpdate({ rankingMethod })}
-          onSkillCategoryChange={(skillCategory) => handleFormUpdate({ skillCategory })}
-          errors={getValidationErrors()}
-          eventFormat={formData.eventFormat}
-          eventType={formData.eventType}
-        />
+        <StepWrapper>
+          <RankingDetailsStep
+            rankingMethod={formData.rankingMethod}
+            skillCategory={formData.skillCategory}
+            onRankingMethodChange={(rankingMethod) => handleFormUpdate({ rankingMethod })}
+            onSkillCategoryChange={(skillCategory) => handleFormUpdate({ skillCategory })}
+            errors={getValidationErrors()}
+            eventFormat={formData.eventFormat}
+            eventType={formData.eventType}
+          />
+        </StepWrapper>
       );
 
     case 6:
       return (
-        <ReviewAndConfirmStep
-          formData={formData}
-          onSubmit={onEventSubmission}
-          isLoading={isLoading}
-        />
+        <StepWrapper>
+          <ReviewAndConfirmStep
+            formData={formData}
+            onSubmit={onEventSubmission}
+            isLoading={isLoading}
+          />
+        </StepWrapper>
       );
 
     default:
