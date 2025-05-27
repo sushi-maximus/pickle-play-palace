@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { 
-  Tennis, 
+  Racquet, 
   Circle, 
   Zap, 
   Target, 
@@ -20,7 +19,7 @@ const eventFormats = [
   {
     id: "tennis",
     label: "Tennis",
-    icon: Tennis,
+    icon: Racquet,
     description: "Traditional tennis format"
   },
   {
