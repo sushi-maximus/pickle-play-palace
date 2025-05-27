@@ -1,10 +1,11 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Plus, Copy, Edit } from "lucide-react";
+import { Plus, Copy, Edit, Zap, Target, Grid3X3, Users } from "lucide-react";
 import { MultiWeekEventModal } from "./MultiWeekEventModal";
 import type { MultiWeekEvent } from "../types";
 
@@ -12,16 +13,25 @@ interface EventTypeStepProps {
   eventType: string;
   seriesTitle: string;
   events: MultiWeekEvent[];
+  eventFormat: string;
   onEventTypeChange: (eventType: string) => void;
   onSeriesTitleChange: (title: string) => void;
   onEventsChange: (events: MultiWeekEvent[]) => void;
   error?: string;
 }
 
+const eventFormats = [
+  { id: "ladder", label: "Ladder", icon: Zap },
+  { id: "kings_court", label: "Kings Court", icon: Target },
+  { id: "round_robin", label: "Round Robin", icon: Grid3X3 },
+  { id: "single_court", label: "Single Court", icon: Users }
+];
+
 export const EventTypeStep = ({
   eventType,
   seriesTitle,
   events,
+  eventFormat,
   onEventTypeChange,
   onSeriesTitleChange,
   onEventsChange,
@@ -67,6 +77,38 @@ export const EventTypeStep = ({
     onEventsChange(newEvents);
   };
 
+  const getFormatDisplay = () => {
+    const format = eventFormats.find(f => f.id === eventFormat);
+    if (!format) return null;
+    
+    const Icon = format.icon;
+    return (
+      <div className="flex items-center gap-2">
+        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+          <Icon className="h-3 w-3 text-white" />
+        </div>
+        <span className="text-sm font-medium text-gray-700">{format.label}</span>
+      </div>
+    );
+  };
+
+  const getEventTypeDisplay = () => {
+    if (!eventType) return null;
+    
+    return (
+      <div className="flex items-center gap-2">
+        <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+          <span className="text-xs text-white font-medium">
+            {eventType === "one-time" ? "1" : "M"}
+          </span>
+        </div>
+        <span className="text-sm font-medium text-gray-700">
+          {eventType === "one-time" ? "One-Time Event" : "Multi-Week Event"}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="flex-1 overflow-auto">
       <div className="px-4 py-12 space-y-6">
@@ -76,6 +118,17 @@ export const EventTypeStep = ({
             Select whether you want to create a single event or a series of events
           </p>
         </div>
+
+        {/* Selections Display Bar */}
+        {(eventFormat || eventType) && (
+          <div className="flex items-center justify-center gap-4 py-3 px-4 bg-gray-50 rounded-lg border">
+            {eventFormat && getFormatDisplay()}
+            {eventFormat && eventType && (
+              <div className="w-1 h-1 rounded-full bg-gray-400"></div>
+            )}
+            {eventType && getEventTypeDisplay()}
+          </div>
+        )}
 
         <div className="space-y-4">
           <Label className="text-base font-medium text-gray-900">Event Type</Label>
