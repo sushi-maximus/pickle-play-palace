@@ -1,7 +1,6 @@
+
 import { useState } from "react";
 import { 
-  Racquet, 
-  Circle, 
   Zap, 
   Target, 
   Grid3X3, 
@@ -17,64 +16,28 @@ interface EventFormatStepProps {
 
 const eventFormats = [
   {
-    id: "tennis",
-    label: "Tennis",
-    icon: Racquet,
-    description: "Traditional tennis format"
-  },
-  {
-    id: "pickleball", 
-    label: "Pickleball",
-    icon: Circle,
-    description: "Fast-paced paddle sport"
-  },
-  {
-    id: "padel",
-    label: "Padel", 
-    icon: Target,
-    description: "Enclosed court racquet sport"
-  },
-  {
-    id: "racquetball",
-    label: "Racquetball",
+    id: "ladder",
+    label: "Ladder",
     icon: Zap,
-    description: "Indoor racquet sport"
+    description: "Competitive ladder format"
   },
   {
-    id: "table_tennis",
-    label: "Table Tennis",
+    id: "kings_court", 
+    label: "Kings Court",
+    icon: Target,
+    description: "King of the court style"
+  },
+  {
+    id: "round_robin",
+    label: "Round Robin",
     icon: Grid3X3,
-    description: "Ping pong competition"
+    description: "Everyone plays everyone"
   },
   {
-    id: "squash",
-    label: "Squash",
-    icon: Target,
-    description: "High-intensity racquet sport"
-  },
-  {
-    id: "basketball",
-    label: "Basketball", 
-    icon: Circle,
-    description: "Court-based team sport"
-  },
-  {
-    id: "soccer",
-    label: "Soccer",
-    icon: Circle,
-    description: "Football competition"
-  },
-  {
-    id: "golf",
-    label: "Golf",
-    icon: Target,
-    description: "Precision club sport"
-  },
-  {
-    id: "other",
-    label: "Other",
+    id: "single_court",
+    label: "Single Court",
     icon: Users,
-    description: "Custom sport format"
+    description: "Single court matches"
   }
 ];
 
@@ -91,7 +54,7 @@ export const EventFormatStep = ({ value, onChange, error }: EventFormatStepProps
             Create an Event
           </h2>
           <p className="text-sm text-gray-600">
-            Select activity
+            Select event format
           </p>
         </div>
 
@@ -101,7 +64,7 @@ export const EventFormatStep = ({ value, onChange, error }: EventFormatStepProps
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           {eventFormats.map((format) => {
             const Icon = format.icon;
             const isSelected = value === format.id;
