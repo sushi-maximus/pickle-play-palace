@@ -3,7 +3,6 @@ import { Activity, Users, Calendar, Settings, MoreVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CreateEventButton } from "@/components/groups/events";
 import { useParams } from "react-router-dom";
 
 interface GroupHorizontalTabsProps {
@@ -31,13 +30,6 @@ export const GroupHorizontalTabs = ({
 
   return (
     <div className="border-b border-gray-200 bg-white">
-      {/* Create Event Button for admins - shown above tabs */}
-      {isAdmin && groupId && (
-        <div className="px-4 py-2 border-b border-gray-100">
-          <CreateEventButton groupId={groupId} isAdmin={isAdmin} />
-        </div>
-      )}
-      
       <div className="flex w-full">
         {baseTabs.map((tab) => {
           const IconComponent = tab.icon;

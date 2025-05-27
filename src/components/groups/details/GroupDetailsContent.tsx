@@ -1,5 +1,6 @@
 
 import { Activity2Tab } from "@/components/groups/mobile/Activity2Tab";
+import { GroupCalendarTab } from "@/components/groups/mobile/GroupCalendarTab";
 import { GroupMembersList } from "@/components/groups/members/GroupMembersList";
 import { GroupDetailsTabs } from "./GroupDetailsTabs";
 import { JoinRequestsManager } from "@/components/groups/JoinRequestsManager";
@@ -66,6 +67,15 @@ export const GroupDetailsContent = ({
             groupId={groupId}
             user={user}
             onPostCreated={onPostCreated}
+          />
+        );
+      
+      case "calendar":
+        return (
+          <GroupCalendarTab
+            groupId={groupId}
+            user={user}
+            isAdmin={membershipStatus.isAdmin}
           />
         );
       

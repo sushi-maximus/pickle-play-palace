@@ -4,6 +4,7 @@ export * from './MobileGroupHeader';
 export * from './MobileGroupsHeader';
 export * from './MobileHome2Tab';
 export * from './Activity2Tab';
+export * from './GroupCalendarTab';
 export * from './FacebookCreatePost';
 export * from './FacebookPostCard';
 export * from './FacebookPostsList';
