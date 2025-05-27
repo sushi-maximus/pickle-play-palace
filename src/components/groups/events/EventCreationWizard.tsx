@@ -80,7 +80,6 @@ export const EventCreationWizard = () => {
       <StepIndicator 
         currentStep={state.currentStep}
         totalSteps={6}
-        formData={state.formData}
       />
       
       <div className="flex-1 pt-24 pb-20">
