@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
 import { WizardFooter } from "./WizardFooter";
 import { StepIndicator } from "./StepIndicator";
-import { PreviousStepsSummary } from "./PreviousStepsSummary";
 import { WizardStepRenderer } from "./components/WizardStepRenderer";
 import { wizardReducer, initialWizardState } from "./hooks/useWizardState";
 import { useEventSubmission } from "./hooks/useEventSubmission";
@@ -81,11 +80,6 @@ export const EventCreationWizard = () => {
       <StepIndicator 
         currentStep={state.currentStep}
         totalSteps={6}
-      />
-      
-      <PreviousStepsSummary 
-        formData={state.formData}
-        currentStep={state.currentStep}
       />
       
       <div className="flex-1 pt-24 pb-20">
