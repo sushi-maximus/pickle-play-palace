@@ -45,7 +45,6 @@ export const GroupDetailsContent = ({
           <Activity2Tab
             groupId={groupId}
             user={user}
-            isAdmin={membershipStatus.isAdmin}
             onPostCreated={onPostCreated}
           />
         );
@@ -63,7 +62,6 @@ export const GroupDetailsContent = ({
             groupId={groupId}
             currentUserId={user?.id}
             isAdmin={membershipStatus.isAdmin}
-            hasPendingRequests={hasPendingRequests}
             onMemberUpdate={onMemberUpdate}
           />
         );
@@ -85,7 +83,6 @@ export const GroupDetailsContent = ({
           <Activity2Tab
             groupId={groupId}
             user={user}
-            isAdmin={membershipStatus.isAdmin}
             onPostCreated={onPostCreated}
           />
         );
