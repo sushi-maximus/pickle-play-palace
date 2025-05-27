@@ -13,11 +13,20 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
       <div className="px-4 py-3">
         {/* Circles container */}
         <div className="flex items-center justify-between relative mx-3 md:mx-4">
-          {/* Connecting line */}
-          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2 z-0" />
+          {/* Connecting line - positioned to connect between circles */}
           <div 
-            className="absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-300"
-            style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
+            className="absolute top-1/2 h-0.5 bg-gray-200 -translate-y-1/2 z-0"
+            style={{ 
+              left: '12px', // Half of mobile circle width (24px)
+              right: '12px' // Half of mobile circle width (24px)
+            }}
+          />
+          <div 
+            className="absolute top-1/2 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-300"
+            style={{ 
+              left: '12px', // Half of mobile circle width (24px)
+              width: `calc(${((currentStep - 1) / (totalSteps - 1)) * 100}% - 24px)` // Subtract full circle width
+            }}
           />
           
           {/* Step circles */}
