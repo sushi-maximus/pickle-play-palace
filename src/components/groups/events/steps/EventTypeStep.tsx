@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Plus, Copy, Edit, Zap, Target, Grid3X3, Users } from "lucide-react";
+import { Plus, Copy, Edit } from "lucide-react";
 import { MultiWeekEventModal } from "./MultiWeekEventModal";
 import type { MultiWeekEvent } from "../types";
 
@@ -19,13 +19,6 @@ interface EventTypeStepProps {
   onEventsChange: (events: MultiWeekEvent[]) => void;
   error?: string;
 }
-
-const eventFormats = [
-  { id: "ladder", label: "Ladder", icon: Zap },
-  { id: "kings_court", label: "Kings Court", icon: Target },
-  { id: "round_robin", label: "Round Robin", icon: Grid3X3 },
-  { id: "single_court", label: "Single Court", icon: Users }
-];
 
 export const EventTypeStep = ({
   eventType,
