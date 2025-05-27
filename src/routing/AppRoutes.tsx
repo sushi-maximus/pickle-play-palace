@@ -22,6 +22,9 @@ import {
   LazyNotFound
 } from "@/pages/lazy";
 
+// Import event creation wizard
+import { EventCreationWizard } from "@/components/groups/events";
+
 export const AppRoutes = () => {
   return (
     <Routes>
@@ -85,6 +88,13 @@ export const AppRoutes = () => {
         <ProtectedRoute>
           <RouteLoader routeName="Group Details">
             <LazyGroupDetails />
+          </RouteLoader>
+        </ProtectedRoute>
+      } />
+      <Route path="/groups/:id/create-event" element={
+        <ProtectedRoute>
+          <RouteLoader routeName="Create Event">
+            <EventCreationWizard />
           </RouteLoader>
         </ProtectedRoute>
       } />
