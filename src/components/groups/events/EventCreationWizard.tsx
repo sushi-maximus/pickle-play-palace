@@ -1,3 +1,4 @@
+
 import { useReducer } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
@@ -37,10 +38,6 @@ export const EventCreationWizard = () => {
       6: "Review and Confirm"
     };
     return titles[step as keyof typeof titles] || "Event Creation";
-  };
-
-  const handleStepClick = (step: number) => {
-    dispatch({ type: 'GO_TO_STEP', payload: step });
   };
 
   const handleNext = async () => {
@@ -83,7 +80,6 @@ export const EventCreationWizard = () => {
       <StepIndicator 
         currentStep={state.currentStep}
         totalSteps={6}
-        onStepClick={handleStepClick}
       />
       
       <div className="flex-1 pt-24 pb-20">
