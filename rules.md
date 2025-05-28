@@ -1,4 +1,3 @@
-
 # Change Only What's Requested Protocol
 
 **Make ONLY the specific change requested** - nothing more, nothing less
@@ -202,3 +201,169 @@ Always use the database types from `@/integrations/supabase/types` instead of de
 ### Preloading
 - Use `OptimizedNavLink` for navigation with preload capabilities
 - Hover/focus events automatically preload routes
+
+## Development Templates
+
+### Systematic Feature Development Template
+
+**Usage**: Reference this template when implementing complex features to ensure quality, maintainability, and proper testing.
+
+**AI Instructions**: When a user references this template or asks to "follow the systematic approach," break the work into these phases and explicitly ask for approval before proceeding to the next phase.
+
+#### Phase 1: Database Schema Design
+- [ ] Review existing schema compatibility
+- [ ] Design new tables and relationships with proper indexes
+- [ ] Plan migration strategy (what data needs to migrate)
+- [ ] Create SQL migration files with proper error handling
+- **AI Action**: Present SQL migration in `lov-sql` block, wait for user approval
+- **User Action**: Review and approve the database changes
+
+#### Phase 2: Type System Integration
+- [ ] Update TypeScript types to match new database schema
+- [ ] Ensure native database type usage from `@/integrations/supabase/types`
+- [ ] Remove any custom type definitions that duplicate database types
+- [ ] Validate type imports across all affected components
+- **AI Action**: Update all type definitions, ensure no `any` types used
+- **User Action**: Verify TypeScript compilation passes
+
+#### Phase 3: Backend Service Implementation
+- [ ] Create edge functions for complex logic (if needed)
+- [ ] Implement service layer functions with proper error handling
+- [ ] Add comprehensive logging for debugging
+- [ ] Set up cron jobs if needed (with proper SQL setup)
+- **AI Action**: Implement backend services, test error scenarios
+- **User Action**: Test API endpoints, verify edge function deployment
+
+#### Phase 4: Frontend Component Development
+- [ ] Create focused, small components (50 lines or less)
+- [ ] Implement hooks for data fetching and state management
+- [ ] Add proper loading and error states
+- [ ] Ensure mobile-first responsive design patterns
+- **AI Action**: Build UI components following design system
+- **User Action**: Test UI interactions, verify responsive behavior
+
+#### Phase 5: Validation and Testing
+- [ ] Create validation test components (like PromotionValidationTest)
+- [ ] Add comprehensive logging for debugging complex flows
+- [ ] Test all user flows and edge cases
+- [ ] Verify database integration and data consistency
+- **AI Action**: Build test components, add debug logging
+- **User Action**: Run validation tests, verify all scenarios work
+
+#### Phase 6: Integration and Polish
+- [ ] Integrate all components into main application flow
+- [ ] Add proper error boundaries and fallback states
+- [ ] Implement user feedback (toasts, notifications)
+- [ ] Final testing and performance optimization
+- **AI Action**: Complete integration, add polish features
+- **User Action**: Full end-to-end testing, user acceptance
+
+### Template Usage Examples
+
+**To start a feature systematically:**
+"Let's implement [feature] using the systematic development template. Start with Phase 1."
+
+**To continue to next phase:**
+"Phase X looks good. Proceed to Phase Y."
+
+**To validate current phase:**
+"Let's validate the current phase before moving forward."
+
+### Quick Feature Implementation Template
+
+**Usage**: For smaller features that don't need the full systematic approach.
+
+**AI Instructions**: Use this for simple features, UI changes, or bug fixes.
+
+#### Steps:
+1. **Identify Scope**: What exactly needs to change?
+2. **Preserve Existing**: List what must remain unchanged
+3. **Implement Changes**: Make only the requested modifications
+4. **Validate**: Ensure no existing functionality breaks
+
+### Database Migration Template
+
+**Usage**: When database changes are needed.
+
+**AI Instructions**: Always follow this pattern for database changes.
+
+#### Steps:
+1. **Review Impact**: What tables/functions will be affected?
+2. **Design Migration**: Plan the SQL changes carefully
+3. **Present Migration**: Use `lov-sql` block, wait for approval
+4. **Update Types**: Ensure TypeScript types match new schema
+5. **Update Components**: Modify affected components to use new schema
+
+### Component Creation Template
+
+**Usage**: When creating new UI components.
+
+**AI Instructions**: Follow this pattern to maintain consistency.
+
+#### Requirements:
+- **Size Limit**: 50 lines or less per file
+- **Single Responsibility**: One clear purpose per component
+- **Mobile-First**: Use responsive design patterns
+- **Type Safety**: Proper TypeScript with database types
+- **Error Handling**: Loading states and error boundaries
+
+#### File Structure:
+```
+ComponentName.tsx (main component)
+hooks/useComponentName.ts (if complex logic needed)
+types/componentTypes.ts (if custom types needed)
+```
+
+### Testing and Validation Template
+
+**Usage**: For ensuring features work correctly.
+
+**AI Instructions**: Create validation components for complex features.
+
+#### Components to Create:
+- **Validation Test Component**: Interactive testing interface
+- **Debug Logging**: Console logs for flow tracking
+- **Status Indicators**: Visual feedback for current state
+- **Error Simulation**: Test error conditions
+
+### Error Debugging Template
+
+**Usage**: When users report errors or bugs.
+
+**AI Instructions**: Follow this systematic debugging approach.
+
+#### Steps:
+1. **Reproduce Error**: Understand the exact issue
+2. **Isolate Files**: Identify which files might be causing it
+3. **Review Code**: Examine relevant code sections
+4. **Add Debug Logs**: Insert console.log statements for tracking
+5. **Test Fix**: Implement and verify the solution
+6. **Clean Up**: Remove debug logs after fixing
+
+### Performance Optimization Template
+
+**Usage**: When performance improvements are needed.
+
+**AI Instructions**: Use this for optimization requests.
+
+#### Areas to Check:
+- **Component Memoization**: React.memo(), useMemo(), useCallback()
+- **Query Optimization**: Reduce database calls, better caching
+- **Bundle Size**: Lazy loading, code splitting
+- **Rendering**: Minimize re-renders, optimize state updates
+
+---
+
+## Template Reference Quick Guide
+
+**For Complex Features**: Use Systematic Feature Development Template
+**For Simple Changes**: Use Quick Feature Implementation Template
+**For Database Work**: Use Database Migration Template
+**For New Components**: Use Component Creation Template
+**For Bug Fixes**: Use Error Debugging Template
+**For Performance**: Use Performance Optimization Template
+
+**How to Reference**: Simply mention the template name in your request:
+- "Let's use the systematic development template for batch confirmation"
+- "Follow the component creation template for this new feature"
+- "Use the debugging template to fix this error"
