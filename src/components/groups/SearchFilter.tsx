@@ -3,7 +3,6 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDebounce } from "@/hooks/useDebounce";
 
 interface SearchFilterProps {
   onSearch: (searchTerm: string) => void;
@@ -18,12 +17,25 @@ export const SearchFilter = ({
 }: SearchFilterProps) => {
   const [searchTerm, setSearchTerm] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const inputRef = useRef<HTMLInputElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Custom debounce effect
   useEffect(() => {
-    onSearch(debouncedSearchTerm);
-  }, [debouncedSearchTerm, onSearch]);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      onSearch(searchTerm);
+    }, 300);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [searchTerm, onSearch]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -89,8 +101,8 @@ export const SearchFilter = ({
         aria-atomic="true" 
         className="sr-only"
       >
-        {debouncedSearchTerm && (
-          `Search results will be updated for: ${debouncedSearchTerm}`
+        {searchTerm && (
+          `Search results will be updated for: ${searchTerm}`
         )}
       </div>
     </div>
