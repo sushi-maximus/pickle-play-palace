@@ -25,42 +25,52 @@ export const useUserRegisteredEvents = () => {
 
       console.log('Fetching registered events for user:', user.id);
 
-      const { data, error } = await supabase
+      // First get the player status records
+      const { data: playerStatusData, error: playerStatusError } = await supabase
         .from('player_status')
-        .select(`
-          status,
-          registration_timestamp,
-          ranking_order,
-          events (
-            id,
-            event_title,
-            event_date,
-            event_time,
-            location,
-            description,
-            group_id
-          )
-        `)
-        .eq('player_id', user.id)
-        .order('events.event_date', { ascending: true })
-        .order('events.event_time', { ascending: true });
+        .select('*')
+        .eq('player_id', user.id);
 
-      if (error) {
-        console.error('Error fetching registered events:', error);
-        throw error;
+      if (playerStatusError) {
+        console.error('Error fetching player status:', playerStatusError);
+        throw playerStatusError;
       }
 
-      console.log('Raw player_status data:', data);
+      console.log('Player status data:', playerStatusData);
 
-      // Transform the data to match our expected format
-      const registeredEvents: RegisteredEvent[] = (data || [])
-        .filter(item => item.events !== null)
-        .map(item => ({
-          ...(item.events as Event),
-          status: item.status,
-          registration_timestamp: item.registration_timestamp,
-          ranking_order: item.ranking_order,
-        }));
+      if (!playerStatusData || playerStatusData.length === 0) {
+        console.log('No player status records found');
+        return [];
+      }
+
+      // Get the event IDs from player status
+      const eventIds = playerStatusData.map(ps => ps.event_id);
+
+      // Now fetch the events
+      const { data: eventsData, error: eventsError } = await supabase
+        .from('events')
+        .select('*')
+        .in('id', eventIds)
+        .order('event_date', { ascending: true })
+        .order('event_time', { ascending: true });
+
+      if (eventsError) {
+        console.error('Error fetching events:', eventsError);
+        throw eventsError;
+      }
+
+      console.log('Events data:', eventsData);
+
+      // Combine the data
+      const registeredEvents: RegisteredEvent[] = (eventsData || []).map(event => {
+        const playerStatus = playerStatusData.find(ps => ps.event_id === event.id);
+        return {
+          ...event,
+          status: playerStatus?.status || 'confirmed',
+          registration_timestamp: playerStatus?.registration_timestamp || '',
+          ranking_order: playerStatus?.ranking_order || 0,
+        };
+      });
 
       console.log('Transformed registered events:', registeredEvents);
 
