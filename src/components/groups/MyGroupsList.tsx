@@ -25,7 +25,7 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
   
   const [currentPage, setCurrentPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const itemsPerPage = 6;
+  const itemsPerPage = 12; // Increased for better virtualization
 
   // Reset to first page when search term changes
   useEffect(() => {
@@ -60,7 +60,25 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
     return <GroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
   }
 
-  // Calculate pagination
+  // For large lists, use virtualization and show all groups without pagination
+  const shouldUseVirtualization = filteredGroups.length >= 50;
+  
+  if (shouldUseVirtualization) {
+    return (
+      <div className="space-y-6">
+        <div className="text-sm text-gray-600 mb-4">
+          Showing {filteredGroups.length} groups (virtualized for performance)
+        </div>
+        <UnifiedGroupsGrid 
+          groups={filteredGroups} 
+          virtualizationThreshold={50}
+          containerHeight={800}
+        />
+      </div>
+    );
+  }
+
+  // Calculate pagination for smaller lists
   const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
