@@ -23,14 +23,7 @@ export const useEventPlayers = ({ eventId, enabled = true }: UseEventPlayersProp
         .from('player_status')
         .select(`
           *,
-          profiles!player_status_player_id_fkey (
-            id,
-            first_name,
-            last_name,
-            dupr_rating,
-            skill_level,
-            avatar_url
-          )
+          profiles!player_status_player_id_fkey (*)
         `)
         .eq('event_id', eventId)
         .order('ranking_order', { ascending: true });
