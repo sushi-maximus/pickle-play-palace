@@ -3,6 +3,7 @@ export * from './CreateEventButton';
 export * from './EventCreationWizard';
 export * from './EventCard';
 export * from './EventsList';
+export * from './EventDetailsPage';
 export * from './StepIndicator';
 export * from './WizardFooter';
 export * from './WizardHeader';

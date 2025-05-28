@@ -290,6 +290,58 @@ export type Database = {
           },
         ]
       }
+      player_status: {
+        Row: {
+          created_at: string
+          event_id: string
+          player_id: string
+          ranking_order: number
+          registration_timestamp: string
+          status: string
+          substitute_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          player_id: string
+          ranking_order?: number
+          registration_timestamp?: string
+          status: string
+          substitute_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          player_id?: string
+          ranking_order?: number
+          registration_timestamp?: string
+          status?: string
+          substitute_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_status_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_status_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_status_substitute_id_fkey"
+            columns: ["substitute_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           content: string

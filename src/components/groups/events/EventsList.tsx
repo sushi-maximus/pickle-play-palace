@@ -3,6 +3,7 @@ import { EventCard } from "./EventCard";
 import { useGroupEvents } from "./hooks/useGroupEvents";
 import { Calendar } from "lucide-react";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface EventsListProps {
   groupId: string;
@@ -25,14 +26,14 @@ const EmptyState = ({ isAdmin }: { isAdmin: boolean }) => (
 );
 
 export const EventsList = ({ groupId, isAdmin }: EventsListProps) => {
+  const navigate = useNavigate();
   const { events, isLoading, error, refetch } = useGroupEvents({ 
     groupId, 
     enabled: !!groupId 
   });
 
   const handleEventClick = (eventId: string) => {
-    // Event details navigation - to be implemented in next steps
-    console.log('Navigate to event details:', eventId);
+    navigate(`/groups/${groupId}/events/${eventId}`);
   };
 
   if (error) {
