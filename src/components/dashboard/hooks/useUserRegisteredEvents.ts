@@ -23,6 +23,8 @@ export const useUserRegisteredEvents = () => {
         throw new Error('User not authenticated');
       }
 
+      console.log('Fetching registered events for user:', user.id);
+
       const { data, error } = await supabase
         .from('player_status')
         .select(`
@@ -40,7 +42,6 @@ export const useUserRegisteredEvents = () => {
           )
         `)
         .eq('player_id', user.id)
-        .gte('events.event_date', new Date().toISOString().split('T')[0])
         .order('events.event_date', { ascending: true })
         .order('events.event_time', { ascending: true });
 
@@ -48,6 +49,8 @@ export const useUserRegisteredEvents = () => {
         console.error('Error fetching registered events:', error);
         throw error;
       }
+
+      console.log('Raw player_status data:', data);
 
       // Transform the data to match our expected format
       const registeredEvents: RegisteredEvent[] = (data || [])
@@ -58,6 +61,8 @@ export const useUserRegisteredEvents = () => {
           registration_timestamp: item.registration_timestamp,
           ranking_order: item.ranking_order,
         }));
+
+      console.log('Transformed registered events:', registeredEvents);
 
       return registeredEvents;
     },

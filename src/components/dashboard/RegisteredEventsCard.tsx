@@ -13,6 +13,8 @@ export const RegisteredEventsCard = () => {
   const { data: events, isLoading, error } = useUserRegisteredEvents();
   const navigate = useNavigate();
 
+  console.log('RegisteredEventsCard - events:', events, 'isLoading:', isLoading, 'error:', error);
+
   // Find the next event (first event after current date/time)
   const nextEventId = useMemo(() => {
     if (!events || events.length === 0) return null;
@@ -56,11 +58,6 @@ export const RegisteredEventsCard = () => {
     }
   };
 
-  // Hide card when no events (as per user decision A11)
-  if (!isLoading && (!events || events.length === 0)) {
-    return null;
-  }
-
   if (isLoading) {
     return (
       <Card className="px-3 py-4 md:px-6 md:py-8">
@@ -85,6 +82,22 @@ export const RegisteredEventsCard = () => {
         <CardContent>
           <p className="text-red-500 text-center py-4">
             Error loading events. Please try again.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show empty state if no events instead of hiding card completely for debugging
+  if (!events || events.length === 0) {
+    return (
+      <Card className="px-3 py-4 md:px-6 md:py-8">
+        <CardHeader className="pb-3">
+          <CardTitle>My Registered Events</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-500 text-center py-4">
+            No registered events found. Register for events to see them here.
           </p>
         </CardContent>
       </Card>
