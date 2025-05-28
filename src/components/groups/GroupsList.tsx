@@ -23,32 +23,35 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
     userId: user?.id
   });
   
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Show 6 groups per page (2 rows of 3)
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const itemsPerPage = 6;
 
   useEffect(() => {
-    // Reset to first page when search term changes
     setCurrentPage(1);
   }, [searchTerm]);
 
-  const fetchGroups = async () => {
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
     try {
       await refreshData();
     } catch (error) {
       console.error("Error fetching groups:", error);
       toast.error("Failed to load groups");
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
-  if (loading) {
+  // Show consistent loading state during initial load or refresh
+  if (loading || isRefreshing) {
     console.log("Groups loading...");
-    return <GroupsLoadingState />;
+    return <GroupsLoadingState count={6} variant="grid" />;
   }
 
   if (filteredGroups.length === 0 && !searchTerm) {
     console.log("No groups found, showing empty state");
-    return <GroupsEmptyState type="no-groups" onRefresh={fetchGroups} />;
+    return <GroupsEmptyState type="no-groups" onRefresh={handleRefresh} />;
   }
 
   if (filteredGroups.length === 0 && searchTerm) {
@@ -65,7 +68,7 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
   console.log("Rendering UnifiedGroupsGrid with unified groups:", currentGroups);
 
   return (
-    <>
+    <div className="space-y-6">
       <UnifiedGroupsGrid groups={currentGroups} />
       {totalPages > 1 && (
         <GroupsPagination 
@@ -74,6 +77,6 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
           onPageChange={setCurrentPage}
         />
       )}
-    </>
+    </div>
   );
 };

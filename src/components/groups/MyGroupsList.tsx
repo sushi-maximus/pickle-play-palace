@@ -24,25 +24,34 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
   });
   
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Show 6 groups per page (2 rows of 3)
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const itemsPerPage = 6;
 
   // Reset to first page when search term changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  if (loading) {
-    return <GroupsLoadingState />;
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshData();
+      onRefresh();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // Show loading skeleton during initial load or refresh
+  if (loading || isRefreshing) {
+    return <GroupsLoadingState count={6} variant="grid" />;
   }
 
   if (filteredGroups.length === 0 && searchTerm === "") {
     return (
       <GroupsEmptyState 
         type="no-groups" 
-        onRefresh={async () => {
-          await refreshData();
-          onRefresh();
-        }} 
+        onRefresh={handleRefresh}
       />
     );
   }
@@ -58,7 +67,7 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
   const currentGroups = filteredGroups.slice(startIndex, endIndex);
 
   return (
-    <>
+    <div className="space-y-6">
       <UnifiedGroupsGrid groups={currentGroups} />
       {totalPages > 1 && (
         <GroupsPagination 
@@ -67,6 +76,6 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
           onPageChange={setCurrentPage}
         />
       )}
-    </>
+    </div>
   );
 };
