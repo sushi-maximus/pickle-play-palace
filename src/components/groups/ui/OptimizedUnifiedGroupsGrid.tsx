@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
 import { OptimizedGroupCardHybrid1 } from "./OptimizedGroupCardHybrid1";
 import { GroupsLoadingState } from "./GroupsLoadingState";
+import { GroupComponentErrorBoundary } from "../error-boundaries/GroupComponentErrorBoundary";
 
 interface UnifiedGroupsGridProps {
   groups: UnifiedGroup[];
@@ -71,26 +72,29 @@ const OptimizedUnifiedGroupsGrid = memo(({
     return <GroupsLoadingState count={6} />;
   }
 
-  if (groups.length === 0) {
+  // Defensive check for groups array
+  if (!groups || !Array.isArray(groups) || groups.length === 0) {
     return emptyStateContent;
   }
 
   return (
-    <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {groups.map((group, index) => (
-        <GroupGridItem
-          key={group.id}
-          group={group}
-          index={index}
-          variants={itemVariants}
-        />
-      ))}
-    </motion.div>
+    <GroupComponentErrorBoundary>
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {groups.map((group, index) => (
+          <GroupGridItem
+            key={group?.id || `group-${index}`}
+            group={group}
+            index={index}
+            variants={itemVariants}
+          />
+        ))}
+      </motion.div>
+    </GroupComponentErrorBoundary>
   );
 });
 
@@ -98,19 +102,35 @@ const GroupGridItem = memo(({ group, index, variants }: {
   group: UnifiedGroup;
   index: number;
   variants: any;
-}) => (
-  <motion.div 
-    variants={variants}
-    style={{
-      transitionDelay: `${index * 50}ms`
-    }}
-  >
-    <OptimizedGroupCardHybrid1 
-      group={group} 
-      isMember={group.isMember}
-    />
-  </motion.div>
-));
+}) => {
+  // Defensive check for group data
+  if (!group || !group.id) {
+    console.warn(`Invalid group data at index ${index}:`, group);
+    return null;
+  }
+
+  return (
+    <GroupComponentErrorBoundary
+      fallback={
+        <div className="h-80 bg-gray-100 rounded-lg flex items-center justify-center">
+          <p className="text-gray-500">Failed to load group</p>
+        </div>
+      }
+    >
+      <motion.div 
+        variants={variants}
+        style={{
+          transitionDelay: `${index * 50}ms`
+        }}
+      >
+        <OptimizedGroupCardHybrid1 
+          group={group} 
+          isMember={group.isMember}
+        />
+      </motion.div>
+    </GroupComponentErrorBoundary>
+  );
+});
 
 OptimizedUnifiedGroupsGrid.displayName = "OptimizedUnifiedGroupsGrid";
 GroupGridItem.displayName = "GroupGridItem";
