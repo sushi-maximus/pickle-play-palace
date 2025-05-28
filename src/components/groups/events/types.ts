@@ -1,4 +1,36 @@
 
+import type { Database } from "@/integrations/supabase/types";
+
+// Database types
+export type Event = Database['public']['Tables']['events']['Row'];
+export type Group = Database['public']['Tables']['groups']['Row'];
+export type Profile = Database['public']['Tables']['profiles']['Row'];
+
+// Component props types
+export interface EventCardProps {
+  event: Event;
+  onClick?: () => void;
+}
+
+export interface EventsListProps {
+  groupId: string;
+  isAdmin: boolean;
+}
+
+// Hook types
+export interface UseGroupEventsProps {
+  groupId: string;
+  enabled?: boolean;
+}
+
+export interface UseGroupEventsResult {
+  events: Event[];
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+}
+
+// Wizard types (existing)
 export interface WizardState {
   currentStep: number;
   isLoading: boolean;

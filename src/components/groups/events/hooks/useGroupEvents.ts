@@ -25,7 +25,7 @@ export const useGroupEvents = ({ groupId, enabled = true }: UseGroupEventsProps)
     error,
     refetch
   } = useQuery({
-    queryKey: ['events', 'group', groupId],
+    queryKey: queryKeys.events.group(groupId),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('events')
