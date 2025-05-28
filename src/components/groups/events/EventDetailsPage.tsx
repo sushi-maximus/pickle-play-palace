@@ -23,10 +23,14 @@ export const EventDetailsPage = () => {
     queryFn: async () => {
       console.log('Fetching event details for eventId:', eventId);
       
+      if (!eventId || eventId.trim() === '') {
+        throw new Error('Event ID is required');
+      }
+
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .eq('id', eventId!)
+        .eq('id', eventId.trim())
         .single();
 
       if (error) {
@@ -37,7 +41,7 @@ export const EventDetailsPage = () => {
       console.log('Event data:', data);
       return data as Event;
     },
-    enabled: !!eventId,
+    enabled: !!eventId && eventId.trim() !== '',
   });
 
   const handleBack = () => {
@@ -65,12 +69,23 @@ export const EventDetailsPage = () => {
         <div className="text-center">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Event not found</h2>
           <p className="text-sm text-gray-600">The event you're looking for doesn't exist.</p>
+          <Button 
+            onClick={handleBack}
+            variant="outline"
+            className="mt-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Go Back
+          </Button>
         </div>
       </div>
     );
   }
 
-  const effectiveGroupId = groupId || event.group_id;
+  // Safely get the group ID with null checks
+  const effectiveGroupId = groupId && groupId.trim() !== '' 
+    ? groupId.trim() 
+    : (event.group_id && typeof event.group_id === 'string' ? event.group_id : '');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -88,7 +103,7 @@ export const EventDetailsPage = () => {
         
         <div className="flex-1">
           <h1 className="font-semibold text-lg md:text-xl tracking-tight leading-tight truncate">
-            {event.event_title}
+            {event.event_title || 'Event Details'}
           </h1>
         </div>
       </header>

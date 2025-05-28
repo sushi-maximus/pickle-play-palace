@@ -76,7 +76,7 @@ export const AppRoutes = () => {
         path="/auth/callback" 
         element={
           <RouteErrorBoundary routeName="AuthCallback">
-            <RouteLoader>
+            <RouteLoader routeName="AuthCallback">
               <LazyAuthCallback />
             </RouteLoader>
           </RouteErrorBoundary>
@@ -89,7 +89,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="Dashboard">
-              <RouteLoader>
+              <RouteLoader routeName="Dashboard">
                 <LazyDashboard />
               </RouteLoader>
             </RouteErrorBoundary>
@@ -102,7 +102,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="Groups">
-              <RouteLoader>
+              <RouteLoader routeName="Groups">
                 <LazyGroups />
               </RouteLoader>
             </RouteErrorBoundary>
@@ -115,7 +115,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="GroupDetails">
-              <RouteLoader>
+              <RouteLoader routeName="GroupDetails">
                 <LazyGroupDetails />
               </RouteLoader>
             </RouteErrorBoundary>
@@ -128,7 +128,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="EventDetails">
-              <RouteLoader>
+              <RouteLoader routeName="EventDetails">
                 <LazyEventDetailsPage />
               </RouteLoader>
             </RouteErrorBoundary>
@@ -142,7 +142,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="EventDetails">
-              <RouteLoader>
+              <RouteLoader routeName="EventDetails">
                 <LazyEventDetailsPage />
               </RouteLoader>
             </RouteErrorBoundary>
@@ -155,7 +155,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="Profile">
-              <RouteLoader>
+              <RouteLoader routeName="Profile">
                 <LazyProfile />
               </RouteLoader>
             </RouteErrorBoundary>
@@ -168,7 +168,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="Admin">
-              <RouteLoader>
+              <RouteLoader routeName="Admin">
                 <LazyAdmin />
               </RouteLoader>
             </RouteErrorBoundary>
@@ -180,7 +180,7 @@ export const AppRoutes = () => {
         path="/contact" 
         element={
           <RouteErrorBoundary routeName="Contact">
-            <RouteLoader>
+            <RouteLoader routeName="Contact">
               <LazyContact />
             </RouteLoader>
           </RouteErrorBoundary>
@@ -191,7 +191,7 @@ export const AppRoutes = () => {
         path="/privacy" 
         element={
           <RouteErrorBoundary routeName="Privacy">
-            <RouteLoader>
+            <RouteLoader routeName="Privacy">
               <LazyPrivacy />
             </RouteLoader>
           </RouteErrorBoundary>
@@ -203,7 +203,7 @@ export const AppRoutes = () => {
         path="*" 
         element={
           <RouteErrorBoundary routeName="NotFound">
-            <RouteLoader>
+            <RouteLoader routeName="NotFound">
               <LazyNotFound />
             </RouteLoader>
           </RouteErrorBoundary>
