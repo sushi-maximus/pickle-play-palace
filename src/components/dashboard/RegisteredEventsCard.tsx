@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 export const RegisteredEventsCard = () => {
   const { data: events, isLoading, error } = useUserRegisteredEvents();
   const navigate = useNavigate();
-  const { handleTouch } = useTouchFeedback();
 
   // Find the next event (first event after current date/time)
   const nextEventId = useMemo(() => {
@@ -32,9 +31,7 @@ export const RegisteredEventsCard = () => {
   }, [events]);
 
   const handleEventClick = (eventId: string) => {
-    handleTouch(() => {
-      navigate(`/events/${eventId}`);
-    });
+    navigate(`/events/${eventId}`);
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -100,53 +97,59 @@ export const RegisteredEventsCard = () => {
         <CardTitle>My Registered Events</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 md:space-y-4">
-        {events?.map((event) => (
-          <div
-            key={event.id}
-            onClick={() => handleEventClick(event.id)}
-            className={cn(
-              "border border-gray-300 rounded-lg p-4 cursor-pointer transition-colors hover:bg-gray-50",
-              "min-h-[48px] flex flex-col justify-center space-y-2",
-              "touch-manipulation"
-            )}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-medium text-base truncate">
-                    {event.event_title}
-                  </h3>
-                  {event.id === nextEventId && (
-                    <Badge 
-                      variant="default" 
-                      className="bg-green-500 text-white hover:bg-green-600 text-xs"
-                    >
-                      Next Event
-                    </Badge>
-                  )}
-                </div>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <div>
-                    {format(new Date(event.event_date), 'MMM d, yyyy')} at{' '}
-                    {event.event_time}
+        {events?.map((event) => {
+          const { isPressed, touchProps } = useTouchFeedback();
+          
+          return (
+            <div
+              key={event.id}
+              onClick={() => handleEventClick(event.id)}
+              className={cn(
+                "border border-gray-300 rounded-lg p-4 cursor-pointer transition-colors hover:bg-gray-50",
+                "min-h-[48px] flex flex-col justify-center space-y-2",
+                "touch-manipulation",
+                isPressed && "bg-gray-100"
+              )}
+              {...touchProps}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-medium text-base truncate">
+                      {event.event_title}
+                    </h3>
+                    {event.id === nextEventId && (
+                      <Badge 
+                        variant="default" 
+                        className="bg-green-500 text-white hover:bg-green-600 text-xs"
+                      >
+                        Next Event
+                      </Badge>
+                    )}
                   </div>
-                  <div>{event.location}</div>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <div>
+                      {format(new Date(event.event_date), 'MMM d, yyyy')} at{' '}
+                      {event.event_time}
+                    </div>
+                    <div>{event.location}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex-shrink-0 ml-3">
-                <Badge
-                  variant={getStatusBadgeVariant(event.status)}
-                  className={cn(
-                    getStatusBadgeClass(event.status),
-                    "capitalize"
-                  )}
-                >
-                  {event.status}
-                </Badge>
+                <div className="flex-shrink-0 ml-3">
+                  <Badge
+                    variant={getStatusBadgeVariant(event.status)}
+                    className={cn(
+                      getStatusBadgeClass(event.status),
+                      "capitalize"
+                    )}
+                  >
+                    {event.status}
+                  </Badge>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </CardContent>
     </Card>
   );
