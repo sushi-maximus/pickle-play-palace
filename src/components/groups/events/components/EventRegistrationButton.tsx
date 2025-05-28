@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { UserCheck, UserMinus, Clock, Users } from "lucide-react";
 import { useEventRegistration } from "../hooks/useEventRegistration";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { queryKeys } from "@/lib/queryKeys";
+import { checkGroupMembership } from "@/components/groups/utils/membershipUtils";
 
 interface EventRegistrationButtonProps {
   eventId: string;
@@ -30,26 +30,13 @@ export const EventRegistrationButton = ({
     registrationStatus
   } = useEventRegistration({ eventId, playerId });
 
-  // Check if user is a group member
+  // Check if user is a group member using the existing utility
   const { data: groupMembership, isLoading: isLoadingMembership } = useQuery({
     queryKey: queryKeys.groups.member(groupId, playerId || ''),
     queryFn: async () => {
       if (!playerId) return null;
       
-      const { data, error } = await supabase
-        .from('group_members')
-        .select('*')
-        .eq('group_id', groupId)
-        .eq('user_id', playerId)
-        .eq('status', 'active')
-        .eq('role', 'member')
-        .single();
-      
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-      
-      return data;
+      return await checkGroupMembership(playerId, groupId);
     },
     enabled: !!playerId && !!groupId
   });
