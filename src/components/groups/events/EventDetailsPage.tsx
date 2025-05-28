@@ -13,7 +13,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
 
-const EventDetailsHeader = ({ event }: { event: Event }) => {
+const EventDetailsHeader = ({ event, groupId }: { event: Event; groupId: string }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   
@@ -71,6 +71,7 @@ const EventDetailsHeader = ({ event }: { event: Event }) => {
         <EventRegistrationButton
           eventId={event.id}
           playerId={user?.id || null}
+          groupId={groupId}
           isRegistrationOpen={event.registration_open}
           className="w-full"
         />
@@ -186,7 +187,7 @@ export const EventDetailsPage = () => {
     );
   }
 
-  if (error || !event) {
+  if (error || !event || !groupId) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
@@ -199,7 +200,7 @@ export const EventDetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <EventDetailsHeader event={event} />
+      <EventDetailsHeader event={event} groupId={groupId} />
       
       <div className="max-w-2xl mx-auto">
         <Tabs defaultValue="details" className="bg-white">

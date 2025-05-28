@@ -5,18 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 import { queryKeys } from "@/lib/queryKeys";
+import { playerRegistrationService } from "../services/playerRegistrationService";
 
 type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
 
 interface UseEventRegistrationProps {
   eventId: string;
   playerId: string | null;
-}
-
-interface RegistrationResult {
-  success: boolean;
-  message: string;
-  status?: string;
 }
 
 export const useEventRegistration = ({ eventId, playerId }: UseEventRegistrationProps) => {
@@ -46,100 +41,64 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
     staleTime: 30 * 1000, // 30 seconds
   });
 
-  // Register mutation
+  // Register mutation using the service
   const registerMutation = useMutation({
-    mutationFn: async (): Promise<RegistrationResult> => {
+    mutationFn: async () => {
       if (!playerId) throw new Error('Player ID is required');
       
-      // For now, simple registration - more complex logic will be added in later steps
-      const { data, error } = await supabase
-        .from('player_status')
-        .insert({
-          event_id: eventId,
-          player_id: playerId,
-          status: 'waitlist', // Default to waitlist, confirmation logic in later steps
-          registration_timestamp: new Date().toISOString(),
-          ranking_order: 0
-        })
-        .select()
-        .single();
-
-      if (error) {
-        return {
-          success: false,
-          message: error.message || 'Failed to register for event'
-        };
+      const result = await playerRegistrationService.registerForEvent(eventId, playerId);
+      
+      if (!result.success) {
+        throw new Error(result.message);
       }
-
-      return {
-        success: true,
-        message: 'Successfully registered for event!',
-        status: data.status
-      };
+      
+      return result;
     },
     onMutate: () => {
       setIsRegistering(true);
     },
-    onSuccess: (result: RegistrationResult) => {
-      if (result.success) {
-        toast.success(result.message);
-        // Invalidate related queries
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
-      } else {
-        toast.error(result.message);
-      }
+    onSuccess: (result) => {
+      toast.success(result.message);
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Registration error:', error);
-      toast.error('Failed to register for event');
+      toast.error(error.message || 'Failed to register for event');
     },
     onSettled: () => {
       setIsRegistering(false);
     }
   });
 
-  // Cancel registration mutation
+  // Cancel registration mutation using the service
   const cancelMutation = useMutation({
-    mutationFn: async (): Promise<RegistrationResult> => {
+    mutationFn: async () => {
       if (!playerId) throw new Error('Player ID is required');
       
-      const { error } = await supabase
-        .from('player_status')
-        .delete()
-        .eq('event_id', eventId)
-        .eq('player_id', playerId);
-
-      if (error) {
-        return {
-          success: false,
-          message: error.message || 'Failed to cancel registration'
-        };
+      const result = await playerRegistrationService.cancelRegistration(eventId, playerId);
+      
+      if (!result.success) {
+        throw new Error(result.message);
       }
-
-      return {
-        success: true,
-        message: 'Registration cancelled successfully!'
-      };
+      
+      return result;
     },
     onMutate: () => {
       setIsRegistering(true);
     },
-    onSuccess: (result: RegistrationResult) => {
-      if (result.success) {
-        toast.success(result.message);
-        // Invalidate related queries
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
-      } else {
-        toast.error(result.message);
-      }
+    onSuccess: (result) => {
+      toast.success(result.message);
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Cancellation error:', error);
-      toast.error('Failed to cancel registration');
+      toast.error(error.message || 'Failed to cancel registration');
     },
     onSettled: () => {
       setIsRegistering(false);
