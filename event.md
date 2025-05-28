@@ -243,3 +243,33 @@ Based on the requirements above, here's the breakdown into smaller, manageable s
 - Mobile-first approach ensures compatibility across devices
 
 **Ready for implementation. Please specify which step you'd like to start with.**
+
+## Context for AI Assistant
+
+### Current Project State
+This is a React application built with Vite, TypeScript, Tailwind CSS, and Supabase integration. The project already has:
+
+1. **Authentication System**: Fully implemented with Supabase Auth
+2. **Group Management**: Users can create/join groups, with role-based permissions
+3. **Event Creation Wizard**: Multi-step wizard for creating events within groups
+4. **Database Schema**: All required tables exist (groups, group_members, events, profiles, etc.)
+5. **Mobile-First Design**: Responsive layout with bottom navigation and mobile optimization
+
+### Key Components Already Implemented
+- `GroupCalendarTab`: Currently shows placeholder "No events scheduled"
+- `EventCreationWizard`: Full wizard for creating events
+- Group membership and role management
+- Mobile navigation and responsive design
+- Database integration with proper TypeScript types
+
+### What's Needed
+The Calendar Page functionality to display existing events in a mobile-optimized list view. The event creation is working, but viewing created events is not yet implemented.
+
+### Architecture Guidelines
+- Use existing patterns (React Query, TypeScript, mobile-first design)
+- Follow established file structure under `src/components/groups/`
+- Maintain consistency with existing UI components
+- Use database types from `src/integrations/supabase/types.ts`
+- Keep components small and focused (50 lines or less when possible)
+
+This context should help you understand the current state and make informed decisions about implementation without breaking existing functionality.
