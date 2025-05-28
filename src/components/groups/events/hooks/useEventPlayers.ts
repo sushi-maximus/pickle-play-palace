@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { queryKeys } from "@/lib/queryKeys";
 
 type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -17,7 +18,7 @@ interface UseEventPlayersProps {
 
 export const useEventPlayers = ({ eventId, enabled = true }: UseEventPlayersProps) => {
   const { data: players = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['events', 'players', eventId],
+    queryKey: queryKeys.events.players(eventId),
     queryFn: async (): Promise<EventPlayer[]> => {
       const { data, error } = await supabase
         .from('player_status')

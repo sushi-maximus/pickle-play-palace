@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import { queryKeys } from "@/lib/queryKeys";
 
 type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
 
@@ -24,7 +25,7 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
 
   // Get current registration status
   const { data: registration, isLoading: isLoadingRegistration } = useQuery({
-    queryKey: ['player-registration', eventId, playerId],
+    queryKey: queryKeys.events.registration(eventId, playerId || undefined),
     queryFn: async (): Promise<PlayerStatus | null> => {
       if (!playerId) return null;
       
@@ -83,8 +84,9 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
       if (result.success) {
         toast.success(result.message);
         // Invalidate related queries
-        queryClient.invalidateQueries({ queryKey: ['player-registration', eventId] });
-        queryClient.invalidateQueries({ queryKey: ['events', 'detail', eventId] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
       } else {
         toast.error(result.message);
       }
@@ -128,8 +130,9 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
       if (result.success) {
         toast.success(result.message);
         // Invalidate related queries
-        queryClient.invalidateQueries({ queryKey: ['player-registration', eventId] });
-        queryClient.invalidateQueries({ queryKey: ['events', 'detail', eventId] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
       } else {
         toast.error(result.message);
       }

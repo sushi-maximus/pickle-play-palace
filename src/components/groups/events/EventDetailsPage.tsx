@@ -7,6 +7,7 @@ import { useGroupEvents } from "./hooks/useGroupEvents";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
 import { EventRegistrationButton } from "./components/EventRegistrationButton";
 import { EventRegistrationStatus } from "./components/EventRegistrationStatus";
+import { PlayersList } from "./components/PlayersList";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -165,36 +166,9 @@ const EventDetailsTab = ({ event }: { event: Event }) => {
   );
 };
 
-const ConfirmedPlayersTab = () => {
-  return (
-    <div className="p-4">
-      <div className="text-center py-8">
-        <Users className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No confirmed players yet</h3>
-        <p className="text-sm text-gray-600">
-          Players will appear here once they register and are confirmed.
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const WaitlistTab = () => {
-  return (
-    <div className="p-4">
-      <div className="text-center py-8">
-        <Clock className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No waitlisted players</h3>
-        <p className="text-sm text-gray-600">
-          Players on the waitlist will appear here.
-        </p>
-      </div>
-    </div>
-  );
-};
-
 export const EventDetailsPage = () => {
   const { groupId, eventId } = useParams<{ groupId: string; eventId: string }>();
+  const { user } = useAuth();
   const { events, isLoading, error } = useGroupEvents({ 
     groupId: groupId || '', 
     enabled: !!groupId 
@@ -255,11 +229,19 @@ export const EventDetailsPage = () => {
           </TabsContent>
 
           <TabsContent value="confirmed" className="mt-0">
-            <ConfirmedPlayersTab />
+            <PlayersList 
+              eventId={event.id} 
+              type="confirmed" 
+              currentUserId={user?.id}
+            />
           </TabsContent>
 
           <TabsContent value="waitlist" className="mt-0">
-            <WaitlistTab />
+            <PlayersList 
+              eventId={event.id} 
+              type="waitlist" 
+              currentUserId={user?.id}
+            />
           </TabsContent>
         </Tabs>
       </div>

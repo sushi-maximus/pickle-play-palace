@@ -18,3 +18,4 @@ export * from './components/EventRegistrationButton';
 export * from './components/EventRegistrationStatus';
 export * from './hooks/useEventRegistration';
 export * from './hooks/useEventPlayers';
+export * from './components/PlayersList';
