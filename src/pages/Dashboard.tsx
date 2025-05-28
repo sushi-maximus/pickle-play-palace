@@ -10,15 +10,6 @@ import { useDashboardPullToRefresh } from "@/components/dashboard/hooks/useDashb
 
 const Dashboard = () => {
   const { isLoading, user } = useAuth();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
-
-  // Bind pull-to-refresh to the scroll container
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      bindToElement(scrollContainerRef.current);
-    }
-  }, [bindToElement]);
 
   // Wait for authentication to be resolved before rendering content
   if (isLoading || !user) {
@@ -30,6 +21,20 @@ const Dashboard = () => {
       </RouteErrorBoundary>
     );
   }
+
+  return <DashboardContent />;
+};
+
+const DashboardContent = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
+
+  // Bind pull-to-refresh to the scroll container
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      bindToElement(scrollContainerRef.current);
+    }
+  }, [bindToElement]);
 
   return (
     <RouteErrorBoundary routeName="Dashboard">
