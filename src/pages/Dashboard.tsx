@@ -12,17 +12,18 @@ const Dashboard = () => {
   const { isLoading, user } = useAuth();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // Always call hooks at the top level
-  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
+  // Always call hooks at the top level - no conditional hook calls
+  const pullToRefreshHook = useDashboardPullToRefresh();
+  const { pullDistance, isRefreshing, isPulling, bindToElement } = pullToRefreshHook;
 
   // Bind pull-to-refresh to the scroll container
   useEffect(() => {
-    if (scrollContainerRef.current) {
+    if (scrollContainerRef.current && bindToElement) {
       bindToElement(scrollContainerRef.current);
     }
   }, [bindToElement]);
 
-  // Render loading state if needed
+  // Early return for loading/auth states - but hooks are already called above
   if (isLoading || !user) {
     return (
       <RouteErrorBoundary routeName="Dashboard">
