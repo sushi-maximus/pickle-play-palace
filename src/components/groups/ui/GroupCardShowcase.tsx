@@ -26,10 +26,7 @@ export const GroupCardShowcase = ({ group }: GroupCardShowcaseProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <GroupCardHybrid1 
           group={group}
-          onJoin={() => {}}
-          onLeave={() => {}}
-          isJoining={false}
-          isLeaving={false}
+          isAdmin={group.membershipRole === 'admin'}
         />
       </div>
     </div>
