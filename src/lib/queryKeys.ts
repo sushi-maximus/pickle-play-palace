@@ -17,6 +17,14 @@ export const queryKeys = {
     members: (groupId: string) => [...queryKeys.groups.detail(groupId), 'members'] as const,
     member: (groupId: string, userId: string) => [...queryKeys.groups.members(groupId), userId] as const,
     myGroups: (userId: string) => [...queryKeys.groups.all, 'my-groups', userId] as const,
+    // Enhanced query keys for better caching
+    allGroups: () => [...queryKeys.groups.all, 'all-groups'] as const,
+    userMemberships: (userId: string) => [...queryKeys.groups.all, 'user-memberships', userId] as const,
+    searchResults: (searchTerm: string, mode: string, userId?: string) => [
+      ...queryKeys.groups.all, 
+      'search', 
+      { searchTerm, mode, userId }
+    ] as const,
   },
   events: {
     all: ['events'] as const,

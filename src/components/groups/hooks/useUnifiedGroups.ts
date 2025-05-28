@@ -1,5 +1,6 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchAllGroupsOptimized, fetchUserMembershipsOptimized } from "../utils/groupDataUtils";
 import { 
   UnifiedGroup, 
@@ -8,57 +9,76 @@ import {
   UnifiedMembership 
 } from "./types/unifiedGroupTypes";
 import { Database } from "@/integrations/supabase/types";
+import { queryKeys } from "@/lib/queryKeys";
+import { toast } from "sonner";
 
 type Group = Database['public']['Tables']['groups']['Row'];
 
 export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsOptions): UseUnifiedGroupsReturn => {
-  const [allGroups, setAllGroups] = useState<Group[]>([]);
-  const [userMemberships, setUserMemberships] = useState<any[]>([]);
-  const [unifiedGroups, setUnifiedGroups] = useState<UnifiedGroup[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<UnifiedGroup[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
 
-  // Fetch all groups and user memberships
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      console.log("useUnifiedGroups: Fetching data for mode:", mode, "userId:", userId);
-      
-      // Always fetch all groups
+  console.log("useUnifiedGroups: Hook called with", { mode, searchTerm, userId });
+
+  // Enhanced React Query for groups data with retry and caching
+  const {
+    data: allGroups = [],
+    isLoading: groupsLoading,
+    error: groupsError,
+    refetch: refetchGroups
+  } = useQuery({
+    queryKey: queryKeys.groups.list({ mode: 'all', searchTerm: '', userId }),
+    queryFn: async () => {
+      console.log("useUnifiedGroups: Fetching all groups");
       const groupsData = await fetchAllGroupsOptimized();
-      setAllGroups(groupsData);
-      
-      // Fetch user memberships if userId is provided
-      let membershipsData = [];
-      if (userId) {
-        membershipsData = await fetchUserMembershipsOptimized(userId);
-        setUserMemberships(membershipsData);
-      }
-      
-      // Combine groups with membership data
-      const unified: UnifiedGroup[] = groupsData.map(group => {
-        const membership = membershipsData.find(m => m.group?.id === group.id);
-        return {
-          ...group,
-          isMember: !!membership,
-          membershipRole: membership?.role,
-          membershipId: membership?.id
-        };
-      });
-      
-      setUnifiedGroups(unified);
-      console.log("useUnifiedGroups: Unified groups created:", unified.length);
-    } catch (err) {
-      console.error("Error fetching unified groups data:", err);
-      setError(err instanceof Error ? err : new Error('Failed to fetch groups'));
-    } finally {
-      setLoading(false);
-    }
-  };
+      console.log("useUnifiedGroups: Fetched", groupsData.length, "groups");
+      return groupsData;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnWindowFocus: true,
+    refetchOnMount: true
+  });
 
-  // Filter groups based on mode and search term
+  // Enhanced React Query for user memberships
+  const {
+    data: userMemberships = [],
+    isLoading: membershipsLoading,
+    error: membershipsError,
+    refetch: refetchMemberships
+  } = useQuery({
+    queryKey: queryKeys.groups.myGroups(userId || 'anonymous'),
+    queryFn: async () => {
+      if (!userId) {
+        console.log("useUnifiedGroups: No userId, returning empty memberships");
+        return [];
+      }
+      console.log("useUnifiedGroups: Fetching user memberships for", userId);
+      const membershipsData = await fetchUserMembershipsOptimized(userId);
+      console.log("useUnifiedGroups: Fetched", membershipsData.length, "memberships");
+      return membershipsData;
+    },
+    enabled: Boolean(userId),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+  });
+
+  // Combine groups with membership data efficiently
+  const unifiedGroups: UnifiedGroup[] = allGroups.map(group => {
+    const membership = userMemberships.find(m => m.group?.id === group.id);
+    return {
+      ...group,
+      isMember: !!membership,
+      membershipRole: membership?.role,
+      membershipId: membership?.id
+    };
+  });
+
+  // Optimized filtering with memoization-like effect
   useEffect(() => {
     let filtered = unifiedGroups;
     
@@ -68,8 +88,8 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
     }
     
     // Filter by search term
-    if (searchTerm) {
-      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    if (searchTerm && searchTerm.trim()) {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(group => 
         group.name.toLowerCase().includes(lowerCaseSearchTerm) ||
         (group.description && group.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
@@ -81,18 +101,53 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
     console.log("useUnifiedGroups: Filtered groups:", filtered.length, "mode:", mode, "searchTerm:", searchTerm);
   }, [unifiedGroups, mode, searchTerm]);
 
-  // Fetch data when userId changes
-  useEffect(() => {
-    fetchData();
-  }, [userId]);
+  // Optimistic refresh mutation
+  const refreshMutation = useMutation({
+    mutationFn: async () => {
+      console.log("useUnifiedGroups: Starting optimistic refresh");
+      
+      // Invalidate and refetch both queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.groups.all }),
+        userId ? queryClient.invalidateQueries({ queryKey: queryKeys.groups.myGroups(userId) }) : Promise.resolve()
+      ]);
+      
+      // Trigger refetch
+      const results = await Promise.all([
+        refetchGroups(),
+        userId ? refetchMemberships() : Promise.resolve()
+      ]);
+      
+      return results;
+    },
+    onSuccess: () => {
+      console.log("useUnifiedGroups: Refresh completed successfully");
+      toast.success("Groups updated successfully");
+    },
+    onError: (error) => {
+      console.error("useUnifiedGroups: Refresh failed:", error);
+      toast.error("Failed to refresh groups. Please try again.");
+    }
+  });
 
-  const refreshData = async () => {
-    await fetchData();
-  };
+  // Enhanced refresh function with optimistic updates
+  const refreshData = useCallback(async () => {
+    console.log("useUnifiedGroups: Manual refresh triggered");
+    await refreshMutation.mutateAsync();
+  }, [refreshMutation]);
 
-  const refetch = () => {
-    fetchData();
-  };
+  // Legacy refetch function for backward compatibility
+  const refetch = useCallback(() => {
+    console.log("useUnifiedGroups: Legacy refetch called");
+    refreshData();
+  }, [refreshData]);
+
+  // Calculate loading state
+  const loading = groupsLoading || membershipsLoading || refreshMutation.isPending;
+  
+  // Calculate error state
+  const error = groupsError || membershipsError || refreshMutation.error;
+  const errorMessage = error instanceof Error ? error.message : null;
 
   // Create legacy-compatible membership objects for my-groups mode
   const memberships: UnifiedMembership[] = mode === 'my-groups' 
@@ -117,16 +172,23 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
       }))
     : [];
 
+  console.log("useUnifiedGroups: Returning state", {
+    allGroupsCount: unifiedGroups.length,
+    filteredGroupsCount: filteredGroups.length,
+    loading,
+    error: errorMessage,
+    mode
+  });
+
   return {
     allGroups: unifiedGroups,
     filteredGroups,
     loading,
-    error,
+    error: errorMessage,
     refreshData,
     refetch,
-    // Legacy compatibility - for groups without membership info
+    // Legacy compatibility
     groups: mode === 'all' ? filteredGroups : [],
-    // Legacy compatibility - for membership-specific data
     memberships
   };
 };
