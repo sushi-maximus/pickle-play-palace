@@ -1,13 +1,21 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { playerRegistrationService, type RegistrationResult } from "../services/playerRegistrationService";
-import { queryKeys } from "@/lib/queryKeys";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
+
+type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
 
 interface UseEventRegistrationProps {
   eventId: string;
   playerId: string | null;
+}
+
+interface RegistrationResult {
+  success: boolean;
+  message: string;
+  status?: string;
 }
 
 export const useEventRegistration = ({ eventId, playerId }: UseEventRegistrationProps) => {
@@ -17,16 +25,56 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
   // Get current registration status
   const { data: registration, isLoading: isLoadingRegistration } = useQuery({
     queryKey: ['player-registration', eventId, playerId],
-    queryFn: () => playerId ? playerRegistrationService.getPlayerRegistration(eventId, playerId) : null,
+    queryFn: async (): Promise<PlayerStatus | null> => {
+      if (!playerId) return null;
+      
+      const { data, error } = await supabase
+        .from('player_status')
+        .select('*')
+        .eq('event_id', eventId)
+        .eq('player_id', playerId)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+      
+      return data;
+    },
     enabled: !!eventId && !!playerId,
     staleTime: 30 * 1000, // 30 seconds
   });
 
   // Register mutation
   const registerMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async (): Promise<RegistrationResult> => {
       if (!playerId) throw new Error('Player ID is required');
-      return playerRegistrationService.registerForEvent(eventId, playerId);
+      
+      // For now, simple registration - more complex logic will be added in later steps
+      const { data, error } = await supabase
+        .from('player_status')
+        .insert({
+          event_id: eventId,
+          player_id: playerId,
+          status: 'waitlist', // Default to waitlist, confirmation logic in later steps
+          registration_timestamp: new Date().toISOString(),
+          ranking_order: 0
+        })
+        .select()
+        .single();
+
+      if (error) {
+        return {
+          success: false,
+          message: error.message || 'Failed to register for event'
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Successfully registered for event!',
+        status: data.status
+      };
     },
     onMutate: () => {
       setIsRegistering(true);
@@ -36,7 +84,7 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
         toast.success(result.message);
         // Invalidate related queries
         queryClient.invalidateQueries({ queryKey: ['player-registration', eventId] });
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
+        queryClient.invalidateQueries({ queryKey: ['events', 'detail', eventId] });
       } else {
         toast.error(result.message);
       }
@@ -52,9 +100,26 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
 
   // Cancel registration mutation
   const cancelMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async (): Promise<RegistrationResult> => {
       if (!playerId) throw new Error('Player ID is required');
-      return playerRegistrationService.cancelRegistration(eventId, playerId);
+      
+      const { error } = await supabase
+        .from('player_status')
+        .delete()
+        .eq('event_id', eventId)
+        .eq('player_id', playerId);
+
+      if (error) {
+        return {
+          success: false,
+          message: error.message || 'Failed to cancel registration'
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Registration cancelled successfully!'
+      };
     },
     onMutate: () => {
       setIsRegistering(true);
@@ -64,7 +129,7 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
         toast.success(result.message);
         // Invalidate related queries
         queryClient.invalidateQueries({ queryKey: ['player-registration', eventId] });
-        queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
+        queryClient.invalidateQueries({ queryKey: ['events', 'detail', eventId] });
       } else {
         toast.error(result.message);
       }

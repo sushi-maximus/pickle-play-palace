@@ -16,3 +16,5 @@ export * from './types';
 export * from './services/playerRegistrationService';
 export * from './components/EventRegistrationButton';
 export * from './components/EventRegistrationStatus';
+export * from './hooks/useEventRegistration';
+export * from './hooks/useEventPlayers';
