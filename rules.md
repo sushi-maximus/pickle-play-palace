@@ -1,3 +1,4 @@
+
 # Change Only What's Requested Protocol
 
 **Make ONLY the specific change requested** - nothing more, nothing less
@@ -443,3 +444,69 @@ At the end of each step in a multi-step process, provide an action button using 
 - Provide action button for easy continuation
 
 This ensures users can easily track progress through complex implementations and continue work seamlessly by clicking the action button with all necessary context included.
+
+## Error Debugging Action Button System
+
+### When Errors Occur
+When the AI encounters or the user reports errors, the AI MUST provide action buttons that reference the appropriate debugging approach from rules.md.
+
+### Error Action Button Categories
+
+**TypeScript/Compilation Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Fix TypeScript compilation error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: TypeScript types and compilation issues.">Fix TypeScript Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Component/React Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Debug React component error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Component lifecycle, hooks, and JSX issues.">Fix Component Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Build/Import Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Resolve build/import error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Module resolution and dependency issues.">Fix Build Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Runtime/Logic Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Debug runtime error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Application logic and runtime behavior.">Fix Runtime Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Database/API Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Fix database/API error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Database queries, API calls, and data handling.">Fix Database Error</lov-message-prompt>
+</lov-actions>
+```
+
+### Error Action Button Requirements
+
+1. **Always include template reference**: "Template reference: rules.md Error Debugging Template"
+2. **Provide error context**: Brief description of the specific error
+3. **Specify focus area**: What type of debugging approach is needed
+4. **Use descriptive button text**: Clear indication of what the button will do
+
+### Integration with Error Debugging Template
+
+When error action buttons are clicked, the AI will automatically:
+1. Reference the Error Debugging Template from rules.md
+2. Follow the systematic debugging steps:
+   - Reproduce Error
+   - Isolate Files
+   - Review Code
+   - Add Debug Logs
+   - Test Fix
+   - Clean Up
+3. Apply the Change Only What's Requested Protocol
+4. Preserve all existing functionality while fixing the specific error
+
+This system ensures consistent, structured error resolution while maintaining code quality and user workflow continuity.
+
