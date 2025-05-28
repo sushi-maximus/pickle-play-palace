@@ -31,16 +31,15 @@ const PlayerCard = ({ player, isCurrentUser, showRanking }: PlayerCardProps) => 
   
   // Create a player status object for the promotion indicator
   const playerStatus: PlayerStatus = {
-    id: '', // Not needed for display
-    event_id: '', // Not needed for display
+    created_at: new Date().toISOString(),
+    event_id: '',
     player_id: player.player_id,
-    status: 'confirmed', // We know confirmed players in this context
+    status: 'confirmed',
     ranking_order: player.ranking_order || 0,
-    registration_timestamp: '', // Not needed for display
-    created_at: '', // Not needed for display
+    registration_timestamp: new Date().toISOString(),
     substitute_id: null,
-    promoted_at: player.promoted_at,
-    promotion_reason: player.promotion_reason
+    promoted_at: player.promoted_at || null,
+    promotion_reason: player.promotion_reason || null
   };
   
   return (
