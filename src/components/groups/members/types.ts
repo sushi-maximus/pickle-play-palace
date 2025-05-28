@@ -1,52 +1,70 @@
 
-export type GroupMember = {
-  id: string;
-  role: "admin" | "member";
-  joined_at: string;
-  user_id: string;
-  profiles: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    avatar_url: string | null;
-    skill_level?: string;
-    dupr_rating?: number | null;
-    birthday?: string | null;
-  };
-};
+import type { GroupMember, Profile, Group } from "../types/GroupTypes";
 
-export type GroupMembersListProps = {
-  members: GroupMember[];
+// Re-export main types for backward compatibility
+export type { GroupMember, Profile, Group } from "../types/GroupTypes";
+
+// Component-specific interfaces
+export interface GroupMemberCardProps {
+  member: GroupMember;
+  currentUserRole?: 'admin' | 'member';
+  onRemove?: (memberId: string) => void;
+  onRoleChange?: (memberId: string, newRole: 'admin' | 'member') => void;
   className?: string;
-  isAdmin: boolean;
-  currentUserId: string;
-  groupId: string;
-  onMemberUpdate?: () => void;
-};
+}
 
-export type MemberHoverCardProps = {
+export interface GroupMembersListProps {
+  groupId: string;
+  members: GroupMember[];
+  currentUserRole?: 'admin' | 'member';
+  loading?: boolean;
+  onMemberUpdate?: () => void;
+  className?: string;
+}
+
+export interface MemberHoverCardProps {
   member: GroupMember;
-  isAdmin: boolean;
-  currentUserId: string;
-  groupId: string;
-  onMemberUpdate?: () => void;
-  onClose: () => void;
-};
+  trigger: React.ReactNode;
+}
 
-export type RemoveMemberDialogProps = {
+export interface RemoveMemberDialogProps {
+  member: GroupMember;
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  member: GroupMember | null;
-  groupId: string;
-  onMemberUpdate?: () => void;
-};
+  onClose: () => void;
+  onConfirm: () => void;
+}
 
-export type GroupMemberCardProps = {
-  member: GroupMember;
-  isAdmin: boolean;
-  currentUserId: string;
+// Hook interfaces
+export interface UseGroupMembersOptions {
   groupId: string;
-  onMemberUpdate?: () => void;
-  onOpenChange: (id: string | null) => void;
-  isOpen: boolean;
-};
+  includeProfiles?: boolean;
+}
+
+export interface UseGroupMembersReturn {
+  members: GroupMember[];
+  loading: boolean;
+  error: Error | null;
+  refetch: () => void;
+  addMember: (userId: string, role?: 'admin' | 'member') => Promise<void>;
+  removeMember: (memberId: string) => Promise<void>;
+  updateMemberRole: (memberId: string, role: 'admin' | 'member') => Promise<void>;
+}
+
+// Utility types for member operations
+export interface MemberInvitation {
+  email: string;
+  role: 'admin' | 'member';
+  message?: string;
+}
+
+export interface MembershipRequest {
+  userId: string;
+  groupId: string;
+  message?: string;
+}
+
+export interface MembershipAction {
+  type: 'approve' | 'reject' | 'remove' | 'promote' | 'demote';
+  memberId: string;
+  reason?: string;
+}
