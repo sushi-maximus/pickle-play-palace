@@ -1,1 +1,5 @@
+
 project_id = "tkqiklfpleoiupgfvsxp"
+
+[functions.promote-waitlist-players]
+verify_jwt = false
