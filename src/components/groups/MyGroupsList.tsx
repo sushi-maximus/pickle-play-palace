@@ -24,34 +24,25 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
   });
   
   const [currentPage, setCurrentPage] = useState(1);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const itemsPerPage = 12; // Increased for better virtualization
+  const itemsPerPage = 6; // Show 6 groups per page (2 rows of 3)
 
   // Reset to first page when search term changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    try {
-      await refreshData();
-      onRefresh();
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
-  // Show loading skeleton during initial load or refresh
-  if (loading || isRefreshing) {
-    return <GroupsLoadingState count={6} variant="grid" />;
+  if (loading) {
+    return <GroupsLoadingState />;
   }
 
   if (filteredGroups.length === 0 && searchTerm === "") {
     return (
       <GroupsEmptyState 
         type="no-groups" 
-        onRefresh={handleRefresh}
+        onRefresh={async () => {
+          await refreshData();
+          onRefresh();
+        }} 
       />
     );
   }
@@ -60,32 +51,14 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
     return <GroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
   }
 
-  // For large lists, use virtualization and show all groups without pagination
-  const shouldUseVirtualization = filteredGroups.length >= 50;
-  
-  if (shouldUseVirtualization) {
-    return (
-      <div className="space-y-6">
-        <div className="text-sm text-gray-600 mb-4">
-          Showing {filteredGroups.length} groups (virtualized for performance)
-        </div>
-        <UnifiedGroupsGrid 
-          groups={filteredGroups} 
-          virtualizationThreshold={50}
-          containerHeight={800}
-        />
-      </div>
-    );
-  }
-
-  // Calculate pagination for smaller lists
+  // Calculate pagination
   const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentGroups = filteredGroups.slice(startIndex, endIndex);
 
   return (
-    <div className="space-y-6">
+    <>
       <UnifiedGroupsGrid groups={currentGroups} />
       {totalPages > 1 && (
         <GroupsPagination 
@@ -94,6 +67,6 @@ export const MyGroupsList = ({ user, onRefresh, searchTerm = "" }: MyGroupsListP
           onPageChange={setCurrentPage}
         />
       )}
-    </div>
+    </>
   );
 };

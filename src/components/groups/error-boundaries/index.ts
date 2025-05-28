@@ -1,2 +1,0 @@
-
-export { GroupComponentErrorBoundary } from './GroupComponentErrorBoundary';

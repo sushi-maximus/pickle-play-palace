@@ -3,47 +3,28 @@ import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, MapPin, AlertTriangle } from "lucide-react";
+import { Users, Calendar, MapPin } from "lucide-react";
 import { OptimizedNavLink } from "@/components/navigation/OptimizedNavLink";
-import type { GroupCardProps } from "./types/GroupCardTypes";
+import type { Database } from "@/integrations/supabase/types";
+import type { GroupMember } from "../members/types";
+
+type Group = Database['public']['Tables']['groups']['Row'] & {
+  members?: GroupMember[];
+  member_count: number;
+};
+
+interface GroupCardHybrid1Props {
+  group: Group;
+  isAdmin?: boolean;
+  className?: string;
+}
 
 const GroupCardHybrid1Component = ({ 
   group, 
   isAdmin = false, 
   className = "" 
-}: GroupCardProps) => {
-  console.log("GroupCardHybrid1: Rendering group card for group:", group?.id, group?.name);
-
-  // Defensive checks for group data
-  if (!group) {
-    console.error("GroupCardHybrid1: No group data provided");
-    return (
-      <Card className={`group relative overflow-hidden border border-red-200 bg-red-50 ${className}`}>
-        <CardContent className="p-6 text-center">
-          <AlertTriangle className="h-8 w-8 text-red-500 mx-auto mb-2" />
-          <p className="text-red-700 text-sm">Group data missing</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!group.id || !group.name) {
-    console.error("GroupCardHybrid1: Invalid group data - missing required fields:", { id: group.id, name: group.name });
-    return (
-      <Card className={`group relative overflow-hidden border border-yellow-200 bg-yellow-50 ${className}`}>
-        <CardContent className="p-6 text-center">
-          <AlertTriangle className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-          <p className="text-yellow-700 text-sm">Invalid group data</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Safe fallbacks for optional data
-  const memberCount = group.member_count ?? 0;
-  const groupName = group.name || "Unnamed Group";
-  const location = group.location || "Location not specified";
-  const avatarInitials = groupName.substring(0, 2).toUpperCase();
+}: GroupCardHybrid1Props) => {
+  console.log("GroupCardHybrid1: Rendering group card for group:", group.id, group.name);
 
   return (
     <Card className={`group relative overflow-hidden border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${className}`}>
@@ -78,7 +59,7 @@ const GroupCardHybrid1Component = ({
           {/* User avatar placeholder */}
           <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
             <span className="text-sm font-semibold">
-              {avatarInitials}
+              {group.name?.substring(0, 2).toUpperCase()}
             </span>
           </div>
         </div>
@@ -86,7 +67,7 @@ const GroupCardHybrid1Component = ({
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="text-center">
-            <div className="text-2xl font-bold">{memberCount}</div>
+            <div className="text-2xl font-bold">{group.member_count || 0}</div>
             <div className="text-sm text-white/80">Members</div>
           </div>
           <div className="text-center">
@@ -101,12 +82,14 @@ const GroupCardHybrid1Component = ({
 
         {/* Group Info */}
         <div className="space-y-2 mb-6">
-          <h3 className="text-xl font-bold leading-tight">{groupName}</h3>
+          <h3 className="text-xl font-bold leading-tight">{group.name}</h3>
           
-          <div className="flex items-center text-sm text-white/90">
-            <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-            <span className="truncate">{location}</span>
-          </div>
+          {group.location && (
+            <div className="flex items-center text-sm text-white/90">
+              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+              <span className="truncate">{group.location}</span>
+            </div>
+          )}
         </div>
 
         {/* Action Button */}

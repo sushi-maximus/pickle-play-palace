@@ -23,35 +23,32 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
     userId: user?.id
   });
   
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const itemsPerPage = 12; // Increased for better virtualization
+  const itemsPerPage = 6; // Show 6 groups per page (2 rows of 3)
 
   useEffect(() => {
+    // Reset to first page when search term changes
     setCurrentPage(1);
   }, [searchTerm]);
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
+  const fetchGroups = async () => {
     try {
       await refreshData();
     } catch (error) {
       console.error("Error fetching groups:", error);
       toast.error("Failed to load groups");
-    } finally {
-      setIsRefreshing(false);
     }
   };
 
-  // Show consistent loading state during initial load or refresh
-  if (loading || isRefreshing) {
+  if (loading) {
     console.log("Groups loading...");
-    return <GroupsLoadingState count={6} variant="grid" />;
+    return <GroupsLoadingState />;
   }
 
   if (filteredGroups.length === 0 && !searchTerm) {
     console.log("No groups found, showing empty state");
-    return <GroupsEmptyState type="no-groups" onRefresh={handleRefresh} />;
+    return <GroupsEmptyState type="no-groups" onRefresh={fetchGroups} />;
   }
 
   if (filteredGroups.length === 0 && searchTerm) {
@@ -59,36 +56,16 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
     return <GroupsEmptyState type="no-search-results" searchTerm={searchTerm} />;
   }
 
-  // For large lists, use virtualization and show all groups without pagination
-  const shouldUseVirtualization = filteredGroups.length >= 50;
-  
-  console.log("Rendering groups with virtualization:", shouldUseVirtualization, "count:", filteredGroups.length);
-
-  if (shouldUseVirtualization) {
-    return (
-      <div className="space-y-6">
-        <div className="text-sm text-gray-600 mb-4">
-          Showing {filteredGroups.length} groups (virtualized for performance)
-        </div>
-        <UnifiedGroupsGrid 
-          groups={filteredGroups} 
-          virtualizationThreshold={50}
-          containerHeight={800}
-        />
-      </div>
-    );
-  }
-
-  // Calculate pagination for smaller lists
+  // Calculate pagination
   const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentGroups = filteredGroups.slice(startIndex, endIndex);
 
-  console.log("Rendering UnifiedGroupsGrid with groups:", currentGroups);
+  console.log("Rendering UnifiedGroupsGrid with unified groups:", currentGroups);
 
   return (
-    <div className="space-y-6">
+    <>
       <UnifiedGroupsGrid groups={currentGroups} />
       {totalPages > 1 && (
         <GroupsPagination 
@@ -97,6 +74,6 @@ export const GroupsList = ({ user, searchTerm = "" }: GroupsListProps) => {
           onPageChange={setCurrentPage}
         />
       )}
-    </div>
+    </>
   );
 };

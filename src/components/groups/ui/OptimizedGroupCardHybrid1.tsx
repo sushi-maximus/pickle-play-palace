@@ -2,147 +2,166 @@
 import React, { memo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Lock, Users, MessageCircle, Calendar, Globe, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Users, MapPin, Calendar, Lock, Globe } from "lucide-react";
-import { OptimizedNavLink } from "@/components/navigation/OptimizedNavLink";
-import type { GroupCardProps } from "./types/GroupCardTypes";
+import { useNavigate } from "react-router-dom";
+import { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
 
-const OptimizedGroupCardHybrid1Component = ({ 
-  group, 
-  isMember = false, 
-  isAdmin = false, 
-  className = "" 
-}: GroupCardProps) => {
-  const memberCount = group.member_count || 0;
-  const privacyIcon = group.is_private ? Lock : Globe;
-  const privacyLabel = group.is_private ? 'Private group' : 'Public group';
+interface GroupCardHybrid1Props {
+  group?: UnifiedGroup;
+  isMember?: boolean;
+}
+
+const OptimizedGroupCardHybrid1 = memo(({ group, isMember = false }: GroupCardHybrid1Props) => {
+  const navigate = useNavigate();
   
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      // The OptimizedNavLink will handle the navigation
-      const linkElement = event.currentTarget.querySelector('a');
-      if (linkElement) {
-        linkElement.click();
-      }
-    }
+  // Memoize the card data to prevent unnecessary recalculations
+  const cardData = React.useMemo(() => group || {
+    id: "demo",
+    name: "Tennis Club Downtown",
+    description: "A community for tennis enthusiasts",
+    location: "New York, NY",
+    is_private: true,
+    member_count: 89,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    created_by: "demo-user",
+    avatar_url: null,
+    skill_level_min: null,
+    skill_level_max: null,
+    max_members: null,
+    isMember: false,
+    membershipRole: undefined,
+    membershipId: undefined
+  }, [group]);
+
+  // Memoize computed values
+  const isUserMember = React.useMemo(() => group ? group.isMember : isMember, [group, isMember]);
+  const membershipRole = React.useMemo(() => group?.membershipRole, [group?.membershipRole]);
+  
+  const memberCount = React.useMemo(() => cardData.member_count || 89, [cardData.member_count]);
+  const postCount = React.useMemo(() => Math.floor(memberCount * 0.27) || 24, [memberCount]);
+  const eventCount = React.useMemo(() => Math.floor(memberCount * 0.13) || 12, [memberCount]);
+  
+  const initials = React.useMemo(() => 
+    cardData.name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  , [cardData.name]);
+
+  const defaultBackgroundImage = React.useMemo(() => 
+    "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&v=2"
+  , []);
+
+  // Memoize event handlers
+  const handleCardClick = useCallback(() => {
+    navigate(`/groups/${cardData.id}`);
+  }, [navigate, cardData.id]);
+
+  const handleJoinClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Join button clicked for group:", cardData.id);
+  }, [cardData.id]);
+
+  const handleButtonClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
   }, []);
 
   return (
     <Card 
-      className={`group overflow-hidden border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${className}`}
-      role="article"
-      aria-labelledby={`group-name-${group.id}`}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
+      className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0"
+      onClick={handleCardClick}
     >
-      {/* Background Image with accessibility improvements */}
+      {/* Background Image */}
       <div 
-        className="relative h-48 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: group.avatar_url 
-            ? `url(${group.avatar_url})` 
-            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          backgroundImage: `url(${defaultBackgroundImage})`
         }}
-        role="img"
-        aria-label={`${group.name} group cover image`}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        
-        {/* Privacy and membership badges with improved accessibility */}
-        <div className="absolute top-4 left-4 flex gap-2">
-          <Badge 
-            variant="secondary" 
-            className="bg-white/20 text-white border-white/30 backdrop-blur-sm"
-            aria-label={privacyLabel}
-          >
-            {React.createElement(privacyIcon, { 
-              className: "w-3 h-3 mr-1", 
-              'aria-hidden': true 
-            })}
-            {group.is_private ? 'Private' : 'Public'}
-          </Badge>
-          {isMember && (
-            <Badge 
-              variant="secondary" 
-              className="bg-green-500/80 text-white border-green-400/50 backdrop-blur-sm"
-              aria-label="You are a member of this group"
-            >
-              Member
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
+      </div>
+      
+      {/* Content Overlay */}
+      <div className="relative z-10 h-full flex flex-col justify-between p-6">
+        {/* Top Section */}
+        <div className="flex justify-between items-start">
+          <div className="flex gap-2">
+            <Badge variant="outline" className="bg-white/20 border-white/30 text-white">
+              {cardData.is_private ? (
+                <>
+                  <Lock className="h-3 w-3 mr-1" />
+                  Private
+                </>
+              ) : (
+                <>
+                  <Globe className="h-3 w-3 mr-1" />
+                  Public
+                </>
+              )}
             </Badge>
-          )}
-          {isAdmin && (
-            <Badge 
-              variant="secondary" 
-              className="bg-blue-500/80 text-white border-blue-400/50 backdrop-blur-sm"
-              aria-label="You are an admin of this group"
-            >
-              Admin
-            </Badge>
-          )}
+            {isUserMember && (
+              <Badge variant="outline" className="bg-green-500/90 border-green-400/30 text-white">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                {membershipRole === 'admin' ? 'Admin' : 'Member'}
+              </Badge>
+            )}
+          </div>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+            {initials}
+          </div>
         </div>
         
-        {/* Stats Grid with accessibility */}
-        <div 
-          className="absolute bottom-4 left-4 right-4 grid grid-cols-3 gap-3 p-3 rounded-lg bg-black/40 backdrop-blur-sm"
-          role="region"
-          aria-label="Group statistics"
-        >
+        {/* Stats Section */}
+        <div className="grid grid-cols-3 gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
           <div className="text-center">
-            <div className="text-lg font-bold text-white" aria-label={`${memberCount} members`}>
-              {memberCount}
+            <div className="text-xl font-bold text-white">{memberCount}</div>
+            <div className="text-xs text-white/80">Members</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-bold text-white">{postCount}</div>
+            <div className="text-xs text-white/80">Posts</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-bold text-white">{eventCount}</div>
+            <div className="text-xs text-white/80">Events</div>
+          </div>
+        </div>
+        
+        {/* Bottom Section */}
+        <div className="space-y-3">
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-2">{cardData.name}</h3>
+            <div className="flex items-center gap-1 text-white/80 text-sm">
+              <Users className="h-4 w-4" />
+              <span>{cardData.location || "Location not specified"}</span>
             </div>
-            <div className="text-xs text-white/80" aria-hidden="true">Members</div>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-white" aria-label="12 posts">12</div>
-            <div className="text-xs text-white/80" aria-hidden="true">Posts</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-white" aria-label="5 events">5</div>
-            <div className="text-xs text-white/80" aria-hidden="true">Events</div>
-          </div>
+          
+          {isUserMember ? (
+            <Button 
+              className="w-full bg-green-500/20 text-white border border-green-400/30 hover:bg-green-500/30"
+              onClick={handleButtonClick}
+            >
+              View Group
+            </Button>
+          ) : (
+            <Button 
+              className="w-full bg-white text-black hover:bg-white/90"
+              onClick={handleJoinClick}
+            >
+              {cardData.is_private ? "Request to Join" : "Join Group"}
+            </Button>
+          )}
         </div>
       </div>
-
-      <CardContent className="p-6">
-        {/* Group Info with semantic markup */}
-        <div className="mb-4">
-          <h3 
-            id={`group-name-${group.id}`}
-            className="text-xl font-bold mb-2"
-          >
-            {group.name}
-          </h3>
-          {group.description && (
-            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-              {group.description}
-            </p>
-          )}
-          {group.location && (
-            <div className="flex items-center text-sm text-gray-600">
-              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" aria-hidden="true" />
-              <span>{group.location}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Action Button with accessibility */}
-        <OptimizedNavLink 
-          to={`/groups/${group.id}`}
-          className="block w-full"
-          aria-label={`View details for ${group.name} group`}
-        >
-          <Button 
-            className="w-full"
-            aria-describedby={`group-name-${group.id}`}
-          >
-            View Group
-          </Button>
-        </OptimizedNavLink>
-      </CardContent>
     </Card>
   );
-};
+});
 
-export const OptimizedGroupCardHybrid1 = memo(OptimizedGroupCardHybrid1Component);
+OptimizedGroupCardHybrid1.displayName = "OptimizedGroupCardHybrid1";
+
+export { OptimizedGroupCardHybrid1 };

@@ -42,8 +42,8 @@ export const GroupMemberCard = ({
           <div className="flex items-center space-x-3 sm:space-x-4">
             <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0 ring-2 ring-gray-100 transition-all duration-200 hover:ring-gray-200">
               <AvatarImage 
-                src={member.profile?.avatar_url || ""} 
-                alt={`${member.profile?.first_name} ${member.profile?.last_name}`}
+                src={member.profiles.avatar_url || ""} 
+                alt={`${member.profiles.first_name} ${member.profiles.last_name}`}
                 className="object-cover"
               />
               <AvatarFallback className="bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-600 font-medium">
@@ -54,7 +54,7 @@ export const GroupMemberCard = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-semibold text-sm sm:text-base text-gray-900 truncate tracking-tight">
-                  {member.profile?.first_name} {member.profile?.last_name}
+                  {member.profiles.first_name} {member.profiles.last_name}
                 </span>
                 {member.role === "admin" && (
                   <Badge className="text-xs font-medium flex-shrink-0 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm">

@@ -1,28 +1,18 @@
 
-// Phase 1 Step 1.3: Simplified exports with clear hierarchy
+// Phase 2.4: Finalized unified exports - primary components for new development
+export * from './UnifiedGroupsGrid';
+export * from './GroupCardHybrid1';
 
-// PRIMARY COMPONENTS - Use these for new development
-export { GroupCardHybrid1 } from './GroupCardHybrid1';
-export { OptimizedGroupCardHybrid1 } from './OptimizedGroupCardHybrid1';
-export { UnifiedGroupsGrid } from './UnifiedGroupsGrid';
+// Phase 2.4: Core UI components in active use
+export * from './GroupsEmptyState';
+export * from './GroupsLoadingState';
+export * from './GroupsPagination';
 
-// CORE UI COMPONENTS - Essential utilities
-export { GroupsEmptyState } from './GroupsEmptyState';
-export { GroupsLoadingState } from './GroupsLoadingState';
-export { GroupsPagination } from './GroupsPagination';
-
-// SECONDARY COMPONENTS - Available but not primary choice
-export { GroupCardHybrid2 } from './GroupCardHybrid2';
-export { GroupCardHybrid3 } from './GroupCardHybrid3';
-
-// LEGACY COMPONENTS - Maintained for backward compatibility only
-export { GroupCardDesign1 } from './GroupCardDesign1';
-export { GroupCardDesign2 } from './GroupCardDesign2';
-export { GroupCardDesign3 } from './GroupCardDesign3';
-export { GroupsGrid } from './GroupsGrid';
-
-// SHOWCASE COMPONENT - For development/testing only
-export { GroupCardShowcase } from './GroupCardShowcase';
-
-// TYPE EXPORTS - Make types available for external use
-export type { Group, GroupCardProps, GroupCardHybridProps } from './types/GroupCardTypes';
+// Legacy exports for backward compatibility - marked for future deprecation
+export * from './GroupCardDesign1';
+export * from './GroupCardDesign2';
+export * from './GroupCardDesign3';
+export * from './GroupCardHybrid2';
+export * from './GroupCardHybrid3';
+export * from './GroupCardShowcase';
+export * from './GroupsGrid';

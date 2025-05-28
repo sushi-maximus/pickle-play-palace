@@ -63,70 +63,45 @@ export const GroupsPagination = ({ currentPage, totalPages, onPageChange }: Grou
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent, action: () => void) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      action();
-    }
-  };
-
   return (
-    <nav 
-      className="mt-6" 
-      role="navigation" 
-      aria-label="Groups pagination"
-    >
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious 
-              onClick={handlePrevious} 
-              onKeyDown={(e) => handleKeyDown(e, handlePrevious)}
-              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              aria-disabled={currentPage === 1}
-              aria-label={`Go to previous page, page ${currentPage - 1}`}
-              tabIndex={currentPage === 1 ? -1 : 0}
-            />
-          </PaginationItem>
-          
-          {getPageNumbers().map((page, index) => {
-            if (page === 'ellipsis-start' || page === 'ellipsis-end') {
-              return (
-                <PaginationItem key={`ellipsis-${index}`}>
-                  <PaginationEllipsis aria-label="More pages" />
-                </PaginationItem>
-              );
-            }
-            
+    <Pagination className="mt-6">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious 
+            onClick={handlePrevious} 
+            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+          />
+        </PaginationItem>
+        
+        {getPageNumbers().map((page, index) => {
+          if (page === 'ellipsis-start' || page === 'ellipsis-end') {
             return (
-              <PaginationItem key={`page-${page}`}>
-                <PaginationLink
-                  isActive={currentPage === page}
-                  onClick={() => onPageChange(page as number)}
-                  onKeyDown={(e) => handleKeyDown(e, () => onPageChange(page as number))}
-                  className="cursor-pointer"
-                  aria-label={`Go to page ${page}`}
-                  aria-current={currentPage === page ? "page" : undefined}
-                  tabIndex={0}
-                >
-                  {page}
-                </PaginationLink>
+              <PaginationItem key={`ellipsis-${index}`}>
+                <PaginationEllipsis />
               </PaginationItem>
             );
-          })}
+          }
           
-          <PaginationItem>
-            <PaginationNext 
-              onClick={handleNext}
-              onKeyDown={(e) => handleKeyDown(e, handleNext)}
-              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              aria-disabled={currentPage === totalPages}
-              aria-label={`Go to next page, page ${currentPage + 1}`}
-              tabIndex={currentPage === totalPages ? -1 : 0}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-    </nav>
+          return (
+            <PaginationItem key={`page-${page}`}>
+              <PaginationLink
+                isActive={currentPage === page}
+                onClick={() => onPageChange(page as number)}
+                className="cursor-pointer"
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        })}
+        
+        <PaginationItem>
+          <PaginationNext 
+            onClick={handleNext}
+            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 };

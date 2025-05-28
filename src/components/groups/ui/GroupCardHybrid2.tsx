@@ -1,87 +1,63 @@
 
-import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Users, MessageCircle, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Users, MapPin, Clock } from "lucide-react";
-import { OptimizedNavLink } from "@/components/navigation/OptimizedNavLink";
-import type { GroupCardProps } from "./types/GroupCardTypes";
 
-const GroupCardHybrid2Component = ({ 
-  group, 
-  isAdmin = false, 
-  className = "" 
-}: GroupCardProps) => {
+export const GroupCardHybrid2 = () => {
   return (
-    <Card className={`group overflow-hidden border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${className}`}>
-      <div className="grid grid-cols-2 h-64">
-        {/* Left side - Image */}
-        <div 
-          className="relative bg-cover bg-center"
-          style={{
-            backgroundImage: group.avatar_url 
-              ? `url(${group.avatar_url})` 
-              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-          }}
-        >
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute top-4 left-4">
-            <Badge variant="secondary" className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-              {group.is_private ? 'Private' : 'Public'}
+    <Card className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0">
+      {/* Background Image with Split Layout */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url(https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=300&fit=crop)`
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent" />
+      </div>
+      
+      {/* Content Overlay */}
+      <div className="relative z-10 h-full flex">
+        {/* Left Content */}
+        <div className="w-2/3 p-6 flex flex-col justify-between">
+          <div>
+            <Badge variant="outline" className="bg-green-500/20 border-green-400/50 text-green-100 mb-4">
+              Public
             </Badge>
+            <h3 className="text-xl font-bold text-white mb-2">Book Club Enthusiasts</h3>
+            <p className="text-white/80 text-sm mb-3">
+              A community for avid readers to discuss books
+            </p>
+            <div className="flex items-center gap-1 text-white/70 text-xs">
+              <MapPin className="h-3 w-3" />
+              <span>San Francisco</span>
+            </div>
+          </div>
+          
+          <Button className="w-full bg-green-500 text-white hover:bg-green-600">
+            Join Group
+          </Button>
+        </div>
+        
+        {/* Right Stats Panel */}
+        <div className="w-1/3 bg-white/95 backdrop-blur-sm p-4 flex flex-col justify-center">
+          <div className="space-y-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">156</div>
+              <div className="text-xs text-gray-600">Members</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">43</div>
+              <div className="text-xs text-gray-600">Posts</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">8</div>
+              <div className="text-xs text-gray-600">Events</div>
+            </div>
           </div>
         </div>
-
-        {/* Right side - Content */}
-        <CardContent className="p-6 flex flex-col justify-between">
-          {/* Header */}
-          <div>
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-lg font-bold leading-tight">{group.name}</h3>
-              {isAdmin && (
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  Admin
-                </Badge>
-              )}
-            </div>
-            
-            {group.location && (
-              <div className="flex items-center text-sm text-gray-600 mb-4">
-                <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                <span className="truncate">{group.location}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="text-center">
-              <div className="text-lg font-bold text-gray-900">{group.member_count || 0}</div>
-              <div className="text-xs text-gray-500">Members</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-gray-900">18</div>
-              <div className="text-xs text-gray-500">Posts</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-gray-900">8</div>
-              <div className="text-xs text-gray-500">Events</div>
-            </div>
-          </div>
-
-          {/* Action */}
-          <OptimizedNavLink 
-            to={`/groups/${group.id}`}
-            className="block w-full"
-          >
-            <Button className="w-full" size="sm">
-              View Group
-            </Button>
-          </OptimizedNavLink>
-        </CardContent>
       </div>
     </Card>
   );
 };
-
-export const GroupCardHybrid2 = memo(GroupCardHybrid2Component);
