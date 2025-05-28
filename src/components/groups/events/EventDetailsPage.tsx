@@ -1,15 +1,20 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Calendar, Clock, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGroupEvents } from "./hooks/useGroupEvents";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
+import { EventRegistrationButton } from "./components/EventRegistrationButton";
+import { EventRegistrationStatus } from "./components/EventRegistrationStatus";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
 
 const EventDetailsHeader = ({ event }: { event: Event }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -50,11 +55,24 @@ const EventDetailsHeader = ({ event }: { event: Event }) => {
             </p>
           </div>
         </div>
-        {event.registration_open && (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-            Open
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          <EventRegistrationStatus eventId={event.id} playerId={user?.id || null} />
+          {event.registration_open && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+              Open
+            </span>
+          )}
+        </div>
+      </div>
+      
+      {/* Registration Button */}
+      <div className="px-4 pb-3">
+        <EventRegistrationButton
+          eventId={event.id}
+          playerId={user?.id || null}
+          isRegistrationOpen={event.registration_open}
+          className="w-full"
+        />
       </div>
     </div>
   );

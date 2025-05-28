@@ -1,4 +1,3 @@
-
 export * from './CreateEventButton';
 export * from './EventCreationWizard';
 export * from './EventCard';
@@ -14,3 +13,6 @@ export * from './hooks/useStepValidation';
 export * from './hooks/useGroupEvents';
 export * from './steps';
 export * from './types';
+export * from './services/playerRegistrationService';
+export * from './components/EventRegistrationButton';
+export * from './components/EventRegistrationStatus';
