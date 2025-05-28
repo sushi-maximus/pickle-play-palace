@@ -29,4 +29,3 @@ export const PromotionIndicator = ({ registration, size = 'md' }: PromotionIndic
     </Badge>
   );
 };
-</PromotionIndicator>
