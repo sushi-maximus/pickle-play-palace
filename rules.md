@@ -367,3 +367,40 @@ types/componentTypes.ts (if custom types needed)
 - "Let's use the systematic development template for batch confirmation"
 - "Follow the component creation template for this new feature"
 - "Use the debugging template to fix this error"
+
+## Template Trigger System
+
+### Auto-Template Selection
+
+When the user says "template" or "use template", the AI should automatically determine which template to use based on the context and nature of the request:
+
+**Context Analysis for Template Selection:**
+- **Complex new features** (multiple components, database changes, etc.) → Use **Systematic Feature Development Template**
+- **Simple UI changes, styling, single component changes** → Use **Quick Feature Implementation Template**
+- **Database schema changes, migrations, new tables** → Use **Database Migration Template**
+- **Creating new UI components** → Use **Component Creation Template**
+- **Bugs, errors, issues reported** → Use **Error Debugging Template**
+- **Performance complaints, optimization requests** → Use **Performance Optimization Template**
+- **Testing, validation requests** → Use **Testing and Validation Template**
+
+**Decision Process:**
+1. Analyze the user's request context
+2. Determine complexity and scope
+3. Select the most appropriate template
+4. Explicitly state which template is being used
+5. Follow the template methodology
+
+**Template Usage Format:**
+When a template is triggered, the AI should:
+1. State: "Using [Template Name] for this request"
+2. Follow the template's step-by-step process
+3. Ask for approval between phases when needed (for systematic template)
+4. Maintain the template's quality standards
+
+**Examples:**
+- "Add batch confirmation logic" + "template" → Systematic Feature Development Template
+- "Fix this button color" + "template" → Quick Feature Implementation Template
+- "This component is broken" + "template" → Error Debugging Template
+- "Create a new notification component" + "template" → Component Creation Template
+
+This system allows the user to simply say "template" and trust that the appropriate structured approach will be applied based on the work context.
