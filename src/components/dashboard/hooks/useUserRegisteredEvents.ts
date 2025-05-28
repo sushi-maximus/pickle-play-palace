@@ -25,7 +25,7 @@ export const useUserRegisteredEvents = () => {
       const { data: playerStatusData, error: playerStatusError } = await supabase
         .from('player_status')
         .select('*')
-        .eq('player_id', user!.id);
+        .eq('player_id', user?.id!);
 
       if (playerStatusError) {
         console.error('Error fetching player status:', playerStatusError);
