@@ -1,9 +1,18 @@
 
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, XCircle, ArrowUp } from "lucide-react";
+import { CheckCircle, Clock, XCircle } from "lucide-react";
 import { useEventRegistration } from "../hooks/useEventRegistration";
 import { usePromotionStatus } from "../hooks/usePromotionStatus";
 import { PromotionIndicator } from "./PromotionIndicator";
+import type { Database } from "@/integrations/supabase/types";
+
+type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
+
+// Extended type to include promotion fields
+type ExtendedPlayerStatus = PlayerStatus & {
+  promoted_at?: string | null;
+  promotion_reason?: string | null;
+};
 
 interface EventRegistrationStatusProps {
   eventId: string;
@@ -58,6 +67,13 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
   const config = getStatusConfig(registration.status);
   const Icon = config.icon;
 
+  // Create extended registration object for promotion indicator
+  const extendedRegistration: ExtendedPlayerStatus = {
+    ...registration,
+    promoted_at: null, // Will be populated by usePromotionStatus if available
+    promotion_reason: null
+  };
+
   return (
     <div className="flex items-center gap-2">
       <Badge variant={config.variant} className={`${config.color} flex items-center gap-1`}>
@@ -70,7 +86,7 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
       
       {/* Show promotion indicator for recently promoted players */}
       {wasPromoted && isRecentPromotion && registration.status === 'confirmed' && (
-        <PromotionIndicator registration={registration} size="sm" />
+        <PromotionIndicator registration={extendedRegistration} size="sm" />
       )}
     </div>
   );

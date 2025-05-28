@@ -1,4 +1,3 @@
-
 import { Users, Clock } from "lucide-react";
 import { useEventPlayers } from "../hooks/useEventPlayers";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
@@ -7,6 +6,12 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
+
+// Extended type to include promotion fields
+type ExtendedPlayerStatus = PlayerStatus & {
+  promoted_at?: string | null;
+  promotion_reason?: string | null;
+};
 
 interface PlayersListProps {
   eventId: string;
@@ -29,8 +34,8 @@ interface PlayerCardProps {
 const PlayerCard = ({ player, isCurrentUser, showRanking }: PlayerCardProps) => {
   const { profiles } = player;
   
-  // Create a player status object for the promotion indicator
-  const playerStatus: PlayerStatus = {
+  // Create an extended player status object for the promotion indicator
+  const playerStatus: ExtendedPlayerStatus = {
     created_at: new Date().toISOString(),
     event_id: '',
     player_id: player.player_id,

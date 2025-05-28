@@ -1,13 +1,19 @@
 
-import { CheckCircle, Clock, ArrowUp } from "lucide-react";
+import { CheckCircle, ArrowUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
 
 type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
 
+// Extended type to include promotion fields
+type ExtendedPlayerStatus = PlayerStatus & {
+  promoted_at?: string | null;
+  promotion_reason?: string | null;
+};
+
 interface PromotionBannerProps {
-  registration: PlayerStatus;
+  registration: ExtendedPlayerStatus;
   className?: string;
 }
 

@@ -6,6 +6,12 @@ import type { Database } from "@/integrations/supabase/types";
 
 type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
 
+// Extended type to include promotion fields
+type ExtendedPlayerStatus = PlayerStatus & {
+  promoted_at?: string | null;
+  promotion_reason?: string | null;
+};
+
 interface UsePromotionStatusProps {
   eventId: string;
   playerId?: string;
@@ -14,7 +20,7 @@ interface UsePromotionStatusProps {
 export const usePromotionStatus = ({ eventId, playerId }: UsePromotionStatusProps) => {
   const { data: promotionStatus, isLoading } = useQuery({
     queryKey: [...queryKeys.events.registration(eventId, playerId), 'promotion'],
-    queryFn: async (): Promise<PlayerStatus | null> => {
+    queryFn: async (): Promise<ExtendedPlayerStatus | null> => {
       if (!playerId) return null;
       
       const { data, error } = await supabase
@@ -28,7 +34,7 @@ export const usePromotionStatus = ({ eventId, playerId }: UsePromotionStatusProp
         throw error;
       }
       
-      return data;
+      return data as ExtendedPlayerStatus;
     },
     enabled: !!eventId && !!playerId,
     staleTime: 30 * 1000, // 30 seconds
