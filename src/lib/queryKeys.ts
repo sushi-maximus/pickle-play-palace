@@ -12,6 +12,14 @@ export const queryKeys = {
     myGroups: (userId: string) => [...queryKeys.groups.all, 'my', userId] as const,
   },
   
+  // Events
+  events: {
+    all: ['events'] as const,
+    lists: () => [...queryKeys.events.all, 'list'] as const,
+    group: (groupId: string) => [...queryKeys.events.all, 'group', groupId] as const,
+    detail: (id: string) => [...queryKeys.events.all, 'detail', id] as const,
+  },
+  
   // Posts - CRITICAL: Include userId in query key for user-specific data
   posts: {
     all: ['posts'] as const,
