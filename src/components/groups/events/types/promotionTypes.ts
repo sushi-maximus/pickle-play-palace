@@ -1,10 +1,13 @@
 
 import type { Database } from "@/integrations/supabase/types";
 
-// Native database types
-export type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
+// Temporarily extend PlayerStatus until Supabase types are regenerated
+export type PlayerStatus = Database['public']['Tables']['player_status']['Row'] & {
+  promoted_at?: string | null;
+  promotion_reason?: string | null;
+};
 
-// Component props using native types
+// Component props using extended types
 export interface PromotionIndicatorProps {
   registration: PlayerStatus;
   size?: 'sm' | 'md';
