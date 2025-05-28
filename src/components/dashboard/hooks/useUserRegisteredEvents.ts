@@ -19,13 +19,17 @@ export const useUserRegisteredEvents = () => {
   return useQuery({
     queryKey: ['userRegisteredEvents', user?.id],
     queryFn: async () => {
-      console.log('Fetching registered events for user:', user?.id);
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      console.log('Fetching registered events for user:', user.id);
 
       // First get the player status records
       const { data: playerStatusData, error: playerStatusError } = await supabase
         .from('player_status')
         .select('*')
-        .eq('player_id', user?.id!);
+        .eq('player_id', user.id);
 
       if (playerStatusError) {
         console.error('Error fetching player status:', playerStatusError);
