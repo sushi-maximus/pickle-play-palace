@@ -2,6 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EventDetailsTab } from "./EventDetailsTab";
 import { PlayersList } from "./PlayersList";
+import { PromotionValidationTest } from "./PromotionValidationTest";
 import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
@@ -14,32 +15,18 @@ interface EventDetailsTabsProps {
 export const EventDetailsTabs = ({ event, currentUserId }: EventDetailsTabsProps) => {
   return (
     <div className="max-w-2xl mx-auto">
-      <Tabs defaultValue="details" className="bg-white">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-50 p-1 rounded-none border-b">
-          <TabsTrigger 
-            value="details" 
-            className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary"
-          >
-            Details
-          </TabsTrigger>
-          <TabsTrigger 
-            value="confirmed" 
-            className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary"
-          >
-            Confirmed
-          </TabsTrigger>
-          <TabsTrigger 
-            value="waitlist" 
-            className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary"
-          >
-            Waitlist
-          </TabsTrigger>
+      <Tabs defaultValue="details" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
+          <TabsTrigger value="waitlist">Waitlist</TabsTrigger>
+          <TabsTrigger value="validation">Validation</TabsTrigger>
         </TabsList>
-
+        
         <TabsContent value="details" className="mt-0">
           <EventDetailsTab event={event} />
         </TabsContent>
-
+        
         <TabsContent value="confirmed" className="mt-0">
           <PlayersList 
             eventId={event.id} 
@@ -47,13 +34,27 @@ export const EventDetailsTabs = ({ event, currentUserId }: EventDetailsTabsProps
             currentUserId={currentUserId}
           />
         </TabsContent>
-
+        
         <TabsContent value="waitlist" className="mt-0">
           <PlayersList 
             eventId={event.id} 
             type="waitlist" 
             currentUserId={currentUserId}
           />
+        </TabsContent>
+
+        <TabsContent value="validation" className="mt-0">
+          {currentUserId && (
+            <PromotionValidationTest 
+              eventId={event.id} 
+              playerId={currentUserId}
+            />
+          )}
+          {!currentUserId && (
+            <div className="p-4 text-center text-gray-600">
+              Login required to run validation tests
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

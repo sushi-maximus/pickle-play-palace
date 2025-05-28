@@ -22,6 +22,8 @@ export interface PromotionResult {
 export const playerRegistrationService = {
   async registerForEvent(eventId: string, playerId: string): Promise<RegistrationResult> {
     try {
+      console.log('[Registration Validation] Starting registration:', { eventId, playerId });
+      
       // Check if user is already registered
       const { data: existingRegistration } = await supabase
         .from('player_status')
@@ -31,6 +33,7 @@ export const playerRegistrationService = {
         .single();
 
       if (existingRegistration) {
+        console.log('[Registration Validation] User already registered:', existingRegistration);
         return {
           success: false,
           status: existingRegistration.status,
@@ -46,6 +49,7 @@ export const playerRegistrationService = {
         .single();
 
       if (eventError || !event) {
+        console.error('[Registration Validation] Event error:', eventError);
         return {
           success: false,
           status: 'error',
@@ -63,6 +67,13 @@ export const playerRegistrationService = {
       // Determine registration status
       const isEventFull = (confirmedCount || 0) >= event.max_players;
       const registrationStatus = isEventFull && event.allow_reserves ? 'waitlist' : 'confirmed';
+
+      console.log('[Registration Validation] Registration status determined:', {
+        confirmedCount,
+        maxPlayers: event.max_players,
+        isEventFull,
+        registrationStatus
+      });
 
       // Calculate ranking order
       let rankingOrder = 1;
@@ -91,6 +102,8 @@ export const playerRegistrationService = {
         registration_timestamp: new Date().toISOString()
       };
 
+      console.log('[Registration Validation] Inserting registration:', registrationData);
+
       const { data: newRegistration, error: insertError } = await supabase
         .from('player_status')
         .insert(registrationData)
@@ -98,13 +111,15 @@ export const playerRegistrationService = {
         .single();
 
       if (insertError) {
-        console.error('Registration error:', insertError);
+        console.error('[Registration Validation] Insert error:', insertError);
         return {
           success: false,
           status: 'error',
           message: 'Failed to register for event'
         };
       }
+
+      console.log('[Registration Validation] Registration successful:', newRegistration);
 
       return {
         success: true,
@@ -116,7 +131,7 @@ export const playerRegistrationService = {
       };
 
     } catch (error) {
-      console.error('Registration service error:', error);
+      console.error('[Registration Validation] Service error:', error);
       return {
         success: false,
         status: 'error',
@@ -127,6 +142,8 @@ export const playerRegistrationService = {
 
   async cancelRegistration(eventId: string, playerId: string): Promise<RegistrationResult> {
     try {
+      console.log('[Cancellation Validation] Starting cancellation:', { eventId, playerId });
+      
       // Get the player's current registration to check their status
       const { data: currentRegistration } = await supabase
         .from('player_status')
@@ -136,12 +153,15 @@ export const playerRegistrationService = {
         .single();
 
       if (!currentRegistration) {
+        console.log('[Cancellation Validation] No registration found');
         return {
           success: false,
           status: 'error',
           message: 'Registration not found'
         };
       }
+
+      console.log('[Cancellation Validation] Current registration:', currentRegistration);
 
       // Delete the registration
       const { error } = await supabase
@@ -151,7 +171,7 @@ export const playerRegistrationService = {
         .eq('player_id', playerId);
 
       if (error) {
-        console.error('Cancellation error:', error);
+        console.error('[Cancellation Validation] Delete error:', error);
         return {
           success: false,
           status: 'error',
@@ -161,9 +181,11 @@ export const playerRegistrationService = {
 
       // If a confirmed player cancelled, promote waitlist players
       if (currentRegistration.status === 'confirmed') {
-        console.log('Confirmed player cancelled, attempting to promote waitlist players...');
+        console.log('[Cancellation Validation] Confirmed player cancelled, promoting waitlist...');
         await this.promoteWaitlistPlayers(eventId, 1);
       }
+
+      console.log('[Cancellation Validation] Cancellation successful');
 
       return {
         success: true,
@@ -172,7 +194,7 @@ export const playerRegistrationService = {
       };
 
     } catch (error) {
-      console.error('Cancellation service error:', error);
+      console.error('[Cancellation Validation] Service error:', error);
       return {
         success: false,
         status: 'error',
@@ -183,7 +205,7 @@ export const playerRegistrationService = {
 
   async promoteWaitlistPlayers(eventId: string, slotsAvailable: number): Promise<PromotionResult[]> {
     try {
-      console.log(`Attempting to promote ${slotsAvailable} waitlist players for event ${eventId}`);
+      console.log('[Promotion Validation] Starting promotion:', { eventId, slotsAvailable });
       
       // Get waitlisted players ordered by registration timestamp (first come, first served)
       const { data: waitlistPlayers, error: waitlistError } = await supabase
@@ -195,19 +217,23 @@ export const playerRegistrationService = {
         .limit(slotsAvailable);
 
       if (waitlistError) {
-        console.error('Error fetching waitlist players:', waitlistError);
+        console.error('[Promotion Validation] Waitlist fetch error:', waitlistError);
         return [];
       }
 
       if (!waitlistPlayers || waitlistPlayers.length === 0) {
-        console.log('No waitlist players to promote');
+        console.log('[Promotion Validation] No waitlist players to promote');
         return [];
       }
+
+      console.log('[Promotion Validation] Found waitlist players:', waitlistPlayers);
 
       const promotionResults: PromotionResult[] = [];
 
       // Promote each waitlisted player
       for (const player of waitlistPlayers) {
+        console.log('[Promotion Validation] Promoting player:', player.player_id);
+        
         const promoted = await this.updatePlayerStatus(
           player.player_id, 
           eventId, 
@@ -223,14 +249,16 @@ export const playerRegistrationService = {
         });
 
         if (promoted) {
-          console.log(`Successfully promoted player ${player.player_id} from waitlist to confirmed`);
+          console.log('[Promotion Validation] Successfully promoted player:', player.player_id);
         }
       }
 
+      console.log('[Promotion Validation] Promotion completed:', promotionResults);
+      
       return promotionResults;
 
     } catch (error) {
-      console.error('Error in promoteWaitlistPlayers:', error);
+      console.error('[Promotion Validation] Promotion error:', error);
       return [];
     }
   },
@@ -242,6 +270,13 @@ export const playerRegistrationService = {
     promotionReason?: string
   ): Promise<boolean> {
     try {
+      console.log('[Status Update Validation] Updating player status:', {
+        playerId,
+        eventId,
+        newStatus,
+        promotionReason
+      });
+      
       const updateData: any = {
         status: newStatus
       };
@@ -250,6 +285,11 @@ export const playerRegistrationService = {
       if (newStatus === 'confirmed' && promotionReason) {
         updateData.promoted_at = new Date().toISOString();
         updateData.promotion_reason = promotionReason;
+        
+        console.log('[Status Update Validation] Adding promotion fields:', {
+          promoted_at: updateData.promoted_at,
+          promotion_reason: updateData.promotion_reason
+        });
       }
 
       const { error } = await supabase
@@ -259,20 +299,23 @@ export const playerRegistrationService = {
         .eq('event_id', eventId);
 
       if (error) {
-        console.error('Error updating player status:', error);
+        console.error('[Status Update Validation] Update error:', error);
         return false;
       }
 
+      console.log('[Status Update Validation] Status updated successfully');
       return true;
 
     } catch (error) {
-      console.error('Error in updatePlayerStatus:', error);
+      console.error('[Status Update Validation] Update service error:', error);
       return false;
     }
   },
 
   async getPlayerRegistration(eventId: string, playerId: string): Promise<PlayerStatus | null> {
     try {
+      console.log('[Get Registration Validation] Fetching registration:', { eventId, playerId });
+      
       const { data, error } = await supabase
         .from('player_status')
         .select('*')
@@ -281,13 +324,15 @@ export const playerRegistrationService = {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching player registration:', error);
+        console.error('[Get Registration Validation] Fetch error:', error);
         return null;
       }
 
+      console.log('[Get Registration Validation] Registration data:', data);
+      
       return data || null;
     } catch (error) {
-      console.error('Service error:', error);
+      console.error('[Get Registration Validation] Service error:', error);
       return null;
     }
   }

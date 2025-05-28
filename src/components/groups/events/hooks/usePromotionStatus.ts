@@ -15,6 +15,8 @@ export const usePromotionStatus = ({ eventId, playerId }: UsePromotionStatusProp
     queryFn: async (): Promise<PlayerStatus | null> => {
       if (!playerId) return null;
       
+      console.log('[Promotion Validation] Fetching promotion status for:', { eventId, playerId });
+      
       const { data, error } = await supabase
         .from('player_status')
         .select('*')
@@ -23,8 +25,15 @@ export const usePromotionStatus = ({ eventId, playerId }: UsePromotionStatusProp
         .single();
       
       if (error && error.code !== 'PGRST116') {
+        console.error('[Promotion Validation] Error fetching promotion status:', error);
         throw error;
       }
+      
+      console.log('[Promotion Validation] Promotion status data:', data);
+      console.log('[Promotion Validation] Has promotion fields:', {
+        promoted_at: data?.promoted_at,
+        promotion_reason: data?.promotion_reason
+      });
       
       return data;
     },
@@ -35,6 +44,13 @@ export const usePromotionStatus = ({ eventId, playerId }: UsePromotionStatusProp
   const wasPromoted = Boolean(promotionStatus?.promoted_at);
   const isRecentPromotion = promotionStatus?.promoted_at && 
     (Date.now() - new Date(promotionStatus.promoted_at).getTime()) < 24 * 60 * 60 * 1000; // 24 hours
+
+  console.log('[Promotion Validation] Promotion status computed:', {
+    wasPromoted,
+    isRecentPromotion,
+    promoted_at: promotionStatus?.promoted_at,
+    promotion_reason: promotionStatus?.promotion_reason
+  });
 
   return {
     promotionStatus,
