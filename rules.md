@@ -510,3 +510,25 @@ When error action buttons are clicked, the AI will automatically:
 
 This system ensures consistent, structured error resolution while maintaining code quality and user workflow continuity.
 
+## MANDATORY TRANSPARENCY RULE
+
+**AT THE END OF EVERY MESSAGE**, you MUST include a transparency statement that clearly indicates:
+
+1. **What was specifically requested by the user**
+2. **What changes you made that were explicitly requested**
+3. **Any additional changes you made that were NOT explicitly requested** (if any)
+4. **Confirmation that you made NO unrequested changes** (if true)
+
+**Format for transparency statement:**
+```
+---
+**TRANSPARENCY REPORT:**
+- **User requested:** [exact description of what user asked for]
+- **Changes made as requested:** [list of specific changes that matched the request]
+- **Additional unrequested changes:** [list any changes you made beyond the request, OR state "NONE"]
+- **Unrequested changes confirmation:** [YES - I made changes beyond the request / NO - I only made requested changes]
+---
+```
+
+**This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
+
