@@ -1,115 +1,214 @@
 
 import { Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/components/routing/ProtectedRoute";
+import { PublicRoute } from "@/components/routing/PublicRoute";
 import { RouteLoader } from "@/components/routing/RouteLoader";
-import { RouteErrorBoundary } from "@/components/error-boundaries/RouteErrorBoundary";
-import {
-  LazyIndex,
-  LazyLogin,
-  LazySignup,
+import { RouteErrorBoundary } from "@/components/error-boundaries";
+
+// Lazy load components
+import { 
   LazyDashboard,
-  LazyProfile,
   LazyGroups,
   LazyGroupDetails,
+  LazyProfile,
   LazyAdmin,
   LazyContact,
   LazyPrivacy,
-  LazyForgotPassword,
-  LazyAuthCallback,
   LazyNotFound,
+  LazyAuthCallback,
   LazyEventDetailsPage
 } from "@/pages/lazy";
-import { ProtectedRoute } from "@/components/routing/ProtectedRoute";
-import { PublicRoute } from "@/components/routing/PublicRoute";
+
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
+import ForgotPassword from "@/pages/ForgotPassword";
+import Index from "@/pages/Index";
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<LazyIndex />} />
-      <Route path="/contact" element={<LazyContact />} />
-      <Route path="/privacy" element={<LazyPrivacy />} />
+      {/* Public routes */}
+      <Route 
+        path="/" 
+        element={
+          <PublicRoute>
+            <RouteErrorBoundary routeName="Index">
+              <Index />
+            </RouteErrorBoundary>
+          </PublicRoute>
+        } 
+      />
       
-      {/* Auth Routes - only accessible when not logged in */}
-      <Route path="/login" element={
-        <PublicRoute>
-          <LazyLogin />
-        </PublicRoute>
-      } />
-      <Route path="/signup" element={
-        <PublicRoute>
-          <LazySignup />
-        </PublicRoute>
-      } />
-      <Route path="/forgot-password" element={
-        <PublicRoute>
-          <LazyForgotPassword />
-        </PublicRoute>
-      } />
-      <Route path="/auth/callback" element={<LazyAuthCallback />} />
-
-      {/* Protected Routes - require authentication */}
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <RouteLoader routeName="dashboard">
-            <RouteErrorBoundary>
-              <LazyDashboard />
+      <Route 
+        path="/login" 
+        element={
+          <PublicRoute>
+            <RouteErrorBoundary routeName="Login">
+              <Login />
             </RouteErrorBoundary>
-          </RouteLoader>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/profile" element={
-        <ProtectedRoute>
-          <RouteLoader routeName="profile">
-            <RouteErrorBoundary>
-              <LazyProfile />
+          </PublicRoute>
+        } 
+      />
+      
+      <Route 
+        path="/signup" 
+        element={
+          <PublicRoute>
+            <RouteErrorBoundary routeName="Signup">
+              <Signup />
             </RouteErrorBoundary>
-          </RouteLoader>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/groups" element={
-        <ProtectedRoute>
-          <RouteLoader routeName="groups">
-            <RouteErrorBoundary>
-              <LazyGroups />
+          </PublicRoute>
+        } 
+      />
+      
+      <Route 
+        path="/forgot-password" 
+        element={
+          <PublicRoute>
+            <RouteErrorBoundary routeName="ForgotPassword">
+              <ForgotPassword />
             </RouteErrorBoundary>
-          </RouteLoader>
-        </ProtectedRoute>
-      } />
+          </PublicRoute>
+        } 
+      />
+      
+      <Route 
+        path="/auth/callback" 
+        element={
+          <RouteErrorBoundary routeName="AuthCallback">
+            <RouteLoader>
+              <LazyAuthCallback />
+            </RouteLoader>
+          </RouteErrorBoundary>
+        } 
+      />
 
-      <Route path="/groups/:id" element={
-        <ProtectedRoute>
-          <RouteLoader routeName="group-details">
-            <RouteErrorBoundary>
-              <LazyGroupDetails />
+      {/* Protected routes */}
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <RouteErrorBoundary routeName="Dashboard">
+              <RouteLoader>
+                <LazyDashboard />
+              </RouteLoader>
             </RouteErrorBoundary>
-          </RouteLoader>
-        </ProtectedRoute>
-      } />
+          </ProtectedRoute>
+        } 
+      />
 
-      <Route path="/groups/:groupId/events/:eventId" element={
-        <ProtectedRoute>
-          <RouteLoader routeName="event-details">
-            <RouteErrorBoundary>
-              <LazyEventDetailsPage />
+      <Route 
+        path="/groups" 
+        element={
+          <ProtectedRoute>
+            <RouteErrorBoundary routeName="Groups">
+              <RouteLoader>
+                <LazyGroups />
+              </RouteLoader>
             </RouteErrorBoundary>
-          </RouteLoader>
-        </ProtectedRoute>
-      } />
+          </ProtectedRoute>
+        } 
+      />
 
-      <Route path="/admin" element={
-        <ProtectedRoute>
-          <RouteLoader routeName="admin">
-            <RouteErrorBoundary>
-              <LazyAdmin />
+      <Route 
+        path="/groups/:groupId" 
+        element={
+          <ProtectedRoute>
+            <RouteErrorBoundary routeName="GroupDetails">
+              <RouteLoader>
+                <LazyGroupDetails />
+              </RouteLoader>
             </RouteErrorBoundary>
-          </RouteLoader>
-        </ProtectedRoute>
-      } />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/groups/:groupId/events/:eventId" 
+        element={
+          <ProtectedRoute>
+            <RouteErrorBoundary routeName="EventDetails">
+              <RouteLoader>
+                <LazyEventDetailsPage />
+              </RouteLoader>
+            </RouteErrorBoundary>
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Add direct event route */}
+      <Route 
+        path="/events/:eventId" 
+        element={
+          <ProtectedRoute>
+            <RouteErrorBoundary routeName="EventDetails">
+              <RouteLoader>
+                <LazyEventDetailsPage />
+              </RouteLoader>
+            </RouteErrorBoundary>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <RouteErrorBoundary routeName="Profile">
+              <RouteLoader>
+                <LazyProfile />
+              </RouteLoader>
+            </RouteErrorBoundary>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedRoute>
+            <RouteErrorBoundary routeName="Admin">
+              <RouteLoader>
+                <LazyAdmin />
+              </RouteLoader>
+            </RouteErrorBoundary>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/contact" 
+        element={
+          <RouteErrorBoundary routeName="Contact">
+            <RouteLoader>
+              <LazyContact />
+            </RouteLoader>
+          </RouteErrorBoundary>
+        } 
+      />
+
+      <Route 
+        path="/privacy" 
+        element={
+          <RouteErrorBoundary routeName="Privacy">
+            <RouteLoader>
+              <LazyPrivacy />
+            </RouteLoader>
+          </RouteErrorBoundary>
+        } 
+      />
 
       {/* Catch all route */}
-      <Route path="*" element={<LazyNotFound />} />
+      <Route 
+        path="*" 
+        element={
+          <RouteErrorBoundary routeName="NotFound">
+            <RouteLoader>
+              <LazyNotFound />
+            </RouteLoader>
+          </RouteErrorBoundary>
+        } 
+      />
     </Routes>
   );
 };

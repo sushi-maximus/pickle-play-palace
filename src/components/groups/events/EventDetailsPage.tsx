@@ -1,30 +1,49 @@
 
 import { useParams, useNavigate } from "react-router-dom";
-import { useGroupEvents } from "./hooks/useGroupEvents";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
 import { EventDetailsHeader } from "./components/EventDetailsHeader";
 import { EventDetailsTabs } from "./components/EventDetailsTabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import type { Database } from "@/integrations/supabase/types";
+
+type Event = Database['public']['Tables']['events']['Row'];
 
 export const EventDetailsPage = () => {
-  const { groupId, eventId } = useParams<{ groupId: string; eventId: string }>();
+  const { groupId, eventId } = useParams<{ groupId?: string; eventId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { events, isLoading, error } = useGroupEvents({ 
-    groupId: groupId || '', 
-    enabled: !!groupId 
+
+  // Fetch event details directly if we don't have groupId
+  const { data: event, isLoading, error } = useQuery({
+    queryKey: ['event', eventId],
+    queryFn: async () => {
+      console.log('Fetching event details for eventId:', eventId);
+      
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', eventId!)
+        .single();
+
+      if (error) {
+        console.error('Error fetching event:', error);
+        throw error;
+      }
+
+      console.log('Event data:', data);
+      return data as Event;
+    },
+    enabled: !!eventId,
   });
 
-  const event = events.find(e => e.id === eventId);
-
   const handleBack = () => {
-    // Navigate back to the previous page or group details if coming from dashboard
+    // Navigate back to the previous page or dashboard
     if (window.history.length > 1) {
       navigate(-1);
-    } else if (groupId) {
-      navigate(`/groups/${groupId}`);
     } else {
       navigate('/dashboard');
     }
@@ -40,7 +59,7 @@ export const EventDetailsPage = () => {
     );
   }
 
-  if (error || !event || !groupId) {
+  if (error || !event) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
@@ -50,6 +69,8 @@ export const EventDetailsPage = () => {
       </div>
     );
   }
+
+  const effectiveGroupId = groupId || event.group_id;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -76,7 +97,7 @@ export const EventDetailsPage = () => {
       <div className="pt-[60px]">
         <EventDetailsHeader 
           event={event} 
-          groupId={groupId} 
+          groupId={effectiveGroupId} 
           userId={user?.id}
         />
         <EventDetailsTabs 
