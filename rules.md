@@ -203,6 +203,78 @@ Always use the database types from `@/integrations/supabase/types` instead of de
 - Use `OptimizedNavLink` for navigation with preload capabilities
 - Hover/focus events automatically preload routes
 
+## CRITICAL: File Protection Protocol
+
+**BEFORE MODIFYING ANY FILE**, you MUST:
+
+1. **Check the locked files list below** - if a file is locked, you CANNOT modify it under any circumstances
+2. **Request explicit permission** if you need to modify a locked file
+3. **Analyze file impact** - determine if your change might affect locked files
+4. **Prevent rollback scenarios** - avoid changes that could force the user to lose work
+
+### LOCKED FILES LIST
+
+**CORE PAGES (LOCKED):**
+- `src/pages/Dashboard.tsx`
+- `src/pages/Groups.tsx`
+- `src/pages/Index.tsx`
+- `src/pages/Login.tsx`
+- `src/pages/Signup.tsx`
+- `src/pages/Profile.tsx`
+- `src/pages/Admin.tsx`
+- `src/pages/Contact.tsx`
+- `src/pages/Privacy.tsx`
+- `src/pages/NotFound.tsx`
+- `src/pages/ForgotPassword.tsx`
+- `src/pages/AuthCallback.tsx`
+- `src/pages/EventDetailsPage.tsx`
+- `src/pages/GroupDetails.tsx`
+
+**CRITICAL COMPONENTS (LOCKED):**
+- All files in `src/components/groups/ui/`
+- All files in `src/components/groups/mobile/`
+- All files in `src/components/groups/posts/`
+- All files in `src/components/groups/events/`
+- All files in `src/components/groups/details/`
+- All files in `src/components/navigation/`
+- All files in `src/components/layout/`
+- `src/components/groups/SearchFilter.tsx`
+
+**HOOKS AND UTILITIES (LOCKED):**
+- All files in `src/components/groups/hooks/`
+- All files in `src/components/groups/utils/`
+- All files in `src/components/groups/services/`
+- All files in `src/hooks/`
+
+**TYPE DEFINITIONS (LOCKED):**
+- All files ending in `/types.ts` or `/types/`
+- All files ending in `/index.ts`
+
+### FILE PROTECTION RULES:
+
+1. **ABSOLUTE PROHIBITION**: Never modify locked files without explicit user permission
+2. **IMPACT ANALYSIS**: Before ANY change, verify it won't affect locked files
+3. **PERMISSION REQUEST**: If locked file modification is needed, ask user to unlock specific files first
+4. **ROLLBACK PREVENTION**: Avoid changes that could cascade into locked file dependencies
+
+### UNLOCKING PROCESS:
+
+When user wants to work on a locked file:
+1. User must explicitly say: "Unlock [filename] for editing"
+2. AI confirms which file is being unlocked
+3. AI removes the file from the locked list
+4. Work proceeds with normal change protocols
+5. When work is complete, AI asks if file should be locked again
+
+### VIOLATION CONSEQUENCES:
+
+If you modify a locked file without permission:
+- User loses work and must rollback
+- Trust is broken
+- Development velocity is severely impacted
+
+**REMEMBER: The locked files list is your safety net to prevent rollbacks and lost work.**
+
 ## Development Templates
 
 ### Systematic Feature Development Template
@@ -389,7 +461,7 @@ When the user says "template" or "use template", the AI should automatically det
 2. Determine complexity and scope
 3. Select the most appropriate template
 4. Explicitly state which template is being used
-5. Follow the template methodology
+5. Follow the template's methodology
 
 **Template Usage Format:**
 When a template is triggered, the AI should:
@@ -532,3 +604,4 @@ This system ensures consistent, structured error resolution while maintaining co
 
 **This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
 
+IMPORTANT: rules.md is 725 lines long. If you make any modifications to it, let the user know that it's getting too long and that they should consider asking you to refactor it after you're done with the lov-code block.
