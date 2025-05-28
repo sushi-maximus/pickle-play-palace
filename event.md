@@ -1,4 +1,3 @@
-
 Important Instruction for Lovable.dev
 AI, you are breaking my site when you are making changes I didn't ask for. Please read this file and follow it.
 
@@ -582,3 +581,273 @@ ORDER BY ps.registration_timestamp;
 - List waitlisted players as cards with Name, DUPR Rating, and Skill Level, ordered by registration_timestamp.
 
 **Onboarding:** Tooltip on first load: "Confirmed players will be assigned courts after registration closes. Waitlisted players will be confirmed as more players register." (dismissible).
+
+## AI Implementation Context for Pickle Ninja Step 2 (Player Registration)
+
+### Current Codebase Status
+
+**Existing Database Tables (Already Implemented):**
+- `groups` - Group containers with member_count tracking
+- `group_members` - Membership tracking with roles (member, organizer, admin) and status (active, pending, invited)
+- `profiles` - User profiles extending auth.users
+- `events` - Event details within groups
+- `event_series` - Event series management
+- Custom enums: `group_member_role`, `group_member_status`, `gender`
+
+**Missing Database Tables (To Be Created in Step 2A):**
+- `player_status` - Player registration status for events
+
+**Existing UI Components (Working):**
+- Calendar Page: `GroupCalendarTab` with `EventsList` and `EventCard`
+- Event Creation: Full wizard implementation
+- Group Management: Complete CRUD operations
+- Navigation: `BottomNavigation`, `MobilePageHeader`
+
+**Missing UI Components (To Be Created):**
+- Event Details Page (Step 2B)
+- Registration UI Components (Step 2E)
+- Registration Data Hooks (Step 2D)
+
+### Component Patterns to Follow
+
+**File Structure Pattern:**
+```
+src/components/groups/events/
+├── EventDetailsPage.tsx (new - Step 2B)
+├── registration/
+│   ├── RegistrationButton.tsx (new - Step 2E)
+│   ├── PlayersList.tsx (new - Step 2E)
+│   └── hooks/
+│       ├── useEventRegistration.ts (new - Step 2D)
+│       └── useEventPlayers.ts (new - Step 2D)
+```
+
+**TypeScript Patterns:**
+```typescript
+// Standard imports
+import type { Database } from "@/integrations/supabase/types";
+
+// Standard types
+type Event = Database['public']['Tables']['events']['Row'];
+type Profile = Database['public']['Tables']['profiles']['Row'];
+type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
+```
+
+**Query Keys Pattern:**
+```typescript
+// Add to src/lib/queryKeys.ts
+events: {
+  // ... existing
+  players: (eventId: string) => [...queryKeys.events.detail(eventId), 'players'] as const,
+  registration: (eventId: string, userId?: string) => [...queryKeys.events.detail(eventId), 'registration', { userId }] as const,
+}
+```
+
+**Mobile-First CSS Patterns:**
+```css
+/* Standard padding */
+.container { @apply px-3 py-4 md:px-6 md:py-8; }
+
+/* Standard spacing */
+.content { @apply space-y-3 md:space-y-4; }
+
+/* Touch targets */
+.button { @apply h-12 w-12 min-h-[48px] min-w-[48px]; }
+
+/* Card pattern */
+.card { @apply bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md; }
+```
+
+### Database Schema Requirements
+
+**player_status Table (Step 2A):**
+```sql
+CREATE TABLE public.player_status (
+  player_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  event_id UUID NOT NULL REFERENCES public.events(id) ON DELETE CASCADE,
+  status TEXT NOT NULL CHECK (status IN ('confirmed', 'waitlist', 'absent', 'substituted')),
+  substitute_id UUID REFERENCES public.profiles(id),
+  registration_timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ranking_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (player_id, event_id)
+);
+```
+
+**Required Indexes (Step 2A):**
+```sql
+CREATE INDEX idx_player_status_event_id ON public.player_status(event_id);
+CREATE INDEX idx_player_status_status ON public.player_status(status);
+CREATE INDEX idx_player_status_registration_timestamp ON public.player_status(registration_timestamp);
+CREATE INDEX idx_player_status_ranking_order ON public.player_status(ranking_order);
+```
+
+### Navigation Integration Points
+
+**Current EventCard Component (src/components/groups/events/EventCard.tsx):**
+- Has onClick prop that needs to navigate to Event Details Page (Step 2C)
+- Currently renders basic event info: title, date, time, location, registration status
+
+**Navigation Pattern to Follow:**
+```typescript
+// In GroupCalendarTab.tsx (Step 2C)
+const handleEventClick = (eventId: string) => {
+  navigate(`/groups/${groupId}/events/${eventId}`);
+};
+```
+
+### Routing Requirements (Step 2C)
+
+**New Route to Add:**
+```typescript
+// In src/routing/AppRoutes.tsx
+<Route 
+  path="/groups/:groupId/events/:eventId" 
+  element={
+    <RouteLoader>
+      <RouteErrorBoundary>
+        <LazyEventDetailsPage />
+      </RouteErrorBoundary>
+    </RouteLoader>
+  } 
+/>
+```
+
+**Lazy Loading (Step 2C):**
+```typescript
+// Add to src/pages/lazy/index.ts
+export const LazyEventDetailsPage = createLazyComponent(() => 
+  import('../EventDetailsPage').then(m => ({ default: m.EventDetailsPage }))
+);
+```
+
+### Data Fetching Patterns
+
+**Event Players Hook (Step 2D):**
+```typescript
+export const useEventPlayers = (eventId: string) => {
+  return useQuery({
+    queryKey: queryKeys.events.players(eventId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('player_status')
+        .select(`
+          *,
+          profiles:player_id (
+            id,
+            first_name,
+            last_name,
+            dupr_rating,
+            skill_level,
+            avatar_url
+          )
+        `)
+        .eq('event_id', eventId)
+        .order('ranking_order', { ascending: true });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!eventId
+  });
+};
+```
+
+### UI Component Architecture
+
+**Event Details Page Structure (Step 2B):**
+```
+EventDetailsPage
+├── EventDetailsHeader (sticky)
+├── EventDetailsTabs
+│   ├── DetailsTab
+│   ├── ConfirmedPlayersTab
+│   └── WaitlistTab
+└── EventDetailsFooter (sticky with Register button)
+```
+
+**Registration Button Logic (Step 2E):**
+- Check if user is group member
+- Check if registration is open
+- Check if user is already registered
+- Show appropriate state: Register, Registered, Waitlisted, Full
+
+### Implementation Steps Breakdown
+
+**Step 2A: Database Foundation**
+- Create player_status table
+- Add indexes
+- Test with sample data
+- No UI changes
+
+**Step 2B: Event Details Page Structure**
+- Create EventDetailsPage component
+- Create tab structure
+- Add basic event info display
+- No registration functionality yet
+
+**Step 2C: Navigation Integration**
+- Add route to AppRoutes.tsx
+- Update EventCard onClick
+- Test navigation flow
+- Minimal changes to existing components
+
+**Step 2D: Registration Data Hooks**
+- Create useEventPlayers hook
+- Create useEventRegistration hook
+- Add query keys
+- Test data fetching
+
+**Step 2E: Registration UI Components**
+- Create RegistrationButton component
+- Create PlayersList component
+- Add registration UI to Event Details Page
+- No backend integration yet
+
+**Step 2F: Registration Logic Integration**
+- Create registration mutation
+- Wire up registration flow
+- Add error handling
+- Test full registration process
+
+### Error Prevention Guidelines
+
+**Breaking Changes to Avoid:**
+- Never modify existing EventCard props structure
+- Never change existing route paths
+- Never modify queryKeys structure without updating all consumers
+- Never change database table names that are already referenced
+
+**Safe Change Patterns:**
+- Add new optional props to existing components
+- Add new routes without modifying existing ones
+- Extend queryKeys object without modifying existing keys
+- Add new database tables without modifying existing ones
+
+**Testing Checkpoints:**
+- After Step 2A: Database queries work
+- After Step 2B: Event Details Page renders
+- After Step 2C: Navigation works from calendar
+- After Step 2D: Data hooks return correct data
+- After Step 2E: Registration UI displays correctly
+- After Step 2F: Full registration flow works
+
+### Current File Dependencies
+
+**Files That Import EventCard:**
+- `src/components/groups/events/EventsList.tsx`
+- `src/components/groups/mobile/GroupCalendarTab.tsx`
+
+**Files That Use Event Types:**
+- `src/components/groups/events/hooks/useGroupEvents.ts`
+- `src/components/groups/events/types.ts`
+
+**Files That Define Query Keys:**
+- `src/lib/queryKeys.ts`
+
+**Authentication Context:**
+- Available via `useAuth()` hook
+- Profile available as `profile` from context
+- User ID available as `user?.id`
+
+This context provides everything needed to implement Steps 2A through 2F safely without breaking existing functionality.
