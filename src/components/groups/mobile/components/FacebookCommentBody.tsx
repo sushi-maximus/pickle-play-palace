@@ -62,6 +62,13 @@ const FacebookCommentBodyComponent = ({
   onThumbsUpClick,
   onThumbsDownClick
 }: FacebookCommentBodyProps) => {
+  // Debug log to verify comment structure
+  console.log('FacebookCommentBody comment structure:', {
+    id: comment.id,
+    user_id: comment.user_id,
+    hasUserId: 'user_id' in comment
+  });
+
   return (
     <div className="flex-1 min-w-0 ml-10">
       {isEditing ? (

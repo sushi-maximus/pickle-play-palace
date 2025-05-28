@@ -1,4 +1,3 @@
-
 import { memo, useState } from "react";
 import { useEditComment2 } from "../posts/hooks/useEditComment2";
 import { useDeleteComment2 } from "../posts/hooks/useDeleteComment2";
@@ -39,6 +38,14 @@ const FacebookCommentCardComponent = ({
   onCommentUpdated 
 }: FacebookCommentCardProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  
+  // Debug log to verify user_id access
+  console.log('FacebookCommentCard isOwner check:', {
+    userId: user?.id,
+    commentUserId: comment.user_id,
+    isOwner: user?.id === comment.user_id
+  });
+  
   const isOwner = user?.id === comment.user_id;
 
   const {
