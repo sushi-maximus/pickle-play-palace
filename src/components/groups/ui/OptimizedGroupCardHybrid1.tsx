@@ -2,69 +2,41 @@
 import React, { memo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Users, MessageCircle, Calendar, Globe, CheckCircle } from "lucide-react";
+import { Lock, Users, Globe, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
+import type { GroupCardHybridProps } from "./types/GroupCardTypes";
 
-interface GroupCardHybrid1Props {
-  group?: UnifiedGroup;
-  isMember?: boolean;
-}
-
-const OptimizedGroupCardHybrid1 = memo(({ group, isMember = false }: GroupCardHybrid1Props) => {
+const OptimizedGroupCardHybrid1 = memo(({ group, isMember = false, isAdmin = false }: GroupCardHybridProps) => {
   const navigate = useNavigate();
   
-  // Memoize the card data to prevent unnecessary recalculations
-  const cardData = React.useMemo(() => group || {
-    id: "demo",
-    name: "Tennis Club Downtown",
-    description: "A community for tennis enthusiasts",
-    location: "New York, NY",
-    is_private: true,
-    member_count: 89,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    created_by: "demo-user",
-    avatar_url: null,
-    skill_level_min: null,
-    skill_level_max: null,
-    max_members: null,
-    isMember: false,
-    membershipRole: undefined,
-    membershipId: undefined
-  }, [group]);
-
   // Memoize computed values
-  const isUserMember = React.useMemo(() => group ? group.isMember : isMember, [group, isMember]);
-  const membershipRole = React.useMemo(() => group?.membershipRole, [group?.membershipRole]);
-  
-  const memberCount = React.useMemo(() => cardData.member_count || 89, [cardData.member_count]);
+  const memberCount = React.useMemo(() => group.member_count || 0, [group.member_count]);
   const postCount = React.useMemo(() => Math.floor(memberCount * 0.27) || 24, [memberCount]);
   const eventCount = React.useMemo(() => Math.floor(memberCount * 0.13) || 12, [memberCount]);
   
   const initials = React.useMemo(() => 
-    cardData.name
+    group.name
       .split(' ')
       .map(word => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2)
-  , [cardData.name]);
+  , [group.name]);
 
   const defaultBackgroundImage = React.useMemo(() => 
-    "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&v=2"
-  , []);
+    group.avatar_url || "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&v=2"
+  , [group.avatar_url]);
 
   // Memoize event handlers
   const handleCardClick = useCallback(() => {
-    navigate(`/groups/${cardData.id}`);
-  }, [navigate, cardData.id]);
+    navigate(`/groups/${group.id}`);
+  }, [navigate, group.id]);
 
   const handleJoinClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log("Join button clicked for group:", cardData.id);
-  }, [cardData.id]);
+    console.log("Join button clicked for group:", group.id);
+  }, [group.id]);
 
   const handleButtonClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -91,7 +63,7 @@ const OptimizedGroupCardHybrid1 = memo(({ group, isMember = false }: GroupCardHy
         <div className="flex justify-between items-start">
           <div className="flex gap-2">
             <Badge variant="outline" className="bg-white/20 border-white/30 text-white">
-              {cardData.is_private ? (
+              {group.is_private ? (
                 <>
                   <Lock className="h-3 w-3 mr-1" />
                   Private
@@ -103,10 +75,10 @@ const OptimizedGroupCardHybrid1 = memo(({ group, isMember = false }: GroupCardHy
                 </>
               )}
             </Badge>
-            {isUserMember && (
+            {isMember && (
               <Badge variant="outline" className="bg-green-500/90 border-green-400/30 text-white">
                 <CheckCircle className="h-3 w-3 mr-1" />
-                {membershipRole === 'admin' ? 'Admin' : 'Member'}
+                {isAdmin ? 'Admin' : 'Member'}
               </Badge>
             )}
           </div>
@@ -134,14 +106,14 @@ const OptimizedGroupCardHybrid1 = memo(({ group, isMember = false }: GroupCardHy
         {/* Bottom Section */}
         <div className="space-y-3">
           <div>
-            <h3 className="text-2xl font-bold text-white mb-2">{cardData.name}</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">{group.name}</h3>
             <div className="flex items-center gap-1 text-white/80 text-sm">
               <Users className="h-4 w-4" />
-              <span>{cardData.location || "Location not specified"}</span>
+              <span>{group.location || "Location not specified"}</span>
             </div>
           </div>
           
-          {isUserMember ? (
+          {isMember ? (
             <Button 
               className="w-full bg-green-500/20 text-white border border-green-400/30 hover:bg-green-500/30"
               onClick={handleButtonClick}
@@ -153,7 +125,7 @@ const OptimizedGroupCardHybrid1 = memo(({ group, isMember = false }: GroupCardHy
               className="w-full bg-white text-black hover:bg-white/90"
               onClick={handleJoinClick}
             >
-              {cardData.is_private ? "Request to Join" : "Join Group"}
+              {group.is_private ? "Request to Join" : "Join Group"}
             </Button>
           )}
         </div>

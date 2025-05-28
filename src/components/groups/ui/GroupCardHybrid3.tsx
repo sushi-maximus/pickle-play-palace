@@ -1,75 +1,78 @@
 
+import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Users, MessageCircle, TrendingUp, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Users, MapPin, TrendingUp } from "lucide-react";
+import { OptimizedNavLink } from "@/components/navigation/OptimizedNavLink";
+import type { GroupCardProps } from "./types/GroupCardTypes";
 
-export const GroupCardHybrid3 = () => {
+const GroupCardHybrid3Component = ({ 
+  group, 
+  isAdmin = false, 
+  className = "" 
+}: GroupCardProps) => {
   return (
-    <Card className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0">
-      {/* Background Image */}
+    <Card className={`group overflow-hidden border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${className}`}>
+      {/* Header Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center"
+        className="relative h-32 bg-cover bg-center"
         style={{
-          backgroundImage: `url(https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop)`
+          backgroundImage: group.avatar_url 
+            ? `url(${group.avatar_url})` 
+            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/95 via-blue-900/60 to-blue-800/30" />
-      </div>
-      
-      {/* Content Overlay */}
-      <div className="relative z-10 h-full flex flex-col p-6">
-        {/* Top Section */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-white" />
-            </div>
-            <Badge variant="outline" className="bg-blue-500/20 border-blue-400/50 text-blue-100">
-              <Lock className="h-3 w-3 mr-1" />
-              Private
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute top-4 left-4 flex gap-2">
+          <Badge variant="secondary" className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+            <Users className="w-3 h-3 mr-1" />
+            {group.is_private ? 'Private' : 'Public'}
+          </Badge>
+          {isAdmin && (
+            <Badge variant="secondary" className="bg-green-500/80 text-white border-green-400/50 backdrop-blur-sm">
+              Admin
             </Badge>
-          </div>
-        </div>
-        
-        {/* Title */}
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-white mb-1">Tech Startup Network</h3>
-          <p className="text-blue-100/80 text-sm">Connect with entrepreneurs and innovators</p>
-        </div>
-        
-        {/* Stats Grid - Horizontal Layout */}
-        <div className="flex justify-between bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 mb-6">
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">89</div>
-            <div className="text-xs text-white/80 flex items-center justify-center gap-1">
-              <Users className="h-3 w-3" />
-              Members
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">24</div>
-            <div className="text-xs text-white/80 flex items-center justify-center gap-1">
-              <MessageCircle className="h-3 w-3" />
-              Posts
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">12</div>
-            <div className="text-xs text-white/80 flex items-center justify-center gap-1">
-              <Calendar className="h-3 w-3" />
-              Events
-            </div>
-          </div>
-        </div>
-        
-        {/* Bottom Button */}
-        <div className="mt-auto">
-          <Button className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white">
-            Request to Join
-          </Button>
+          )}
         </div>
       </div>
+
+      <CardContent className="p-6">
+        {/* Group Info */}
+        <div className="mb-4">
+          <h3 className="text-xl font-bold mb-2">{group.name}</h3>
+          {group.location && (
+            <div className="flex items-center text-sm text-gray-600">
+              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+              <span className="truncate">{group.location}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Horizontal Stats */}
+        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg mb-4">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium">{group.member_count || 0} Members</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-green-600" />
+            <span className="text-sm font-medium">16 Posts</span>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <OptimizedNavLink 
+          to={`/groups/${group.id}`}
+          className="block w-full"
+        >
+          <Button className="w-full">
+            View Group
+          </Button>
+        </OptimizedNavLink>
+      </CardContent>
     </Card>
   );
 };
+
+export const GroupCardHybrid3 = memo(GroupCardHybrid3Component);

@@ -5,15 +5,9 @@ import { GroupCardDesign3 } from "./GroupCardDesign3";
 import { GroupCardHybrid1 } from "./GroupCardHybrid1";
 import { GroupCardHybrid2 } from "./GroupCardHybrid2";
 import { GroupCardHybrid3 } from "./GroupCardHybrid3";
-import type { Database } from "@/integrations/supabase/types";
-import type { GroupMember } from "../members/types";
+import type { Group } from "./types/GroupCardTypes";
 
 // Mock data for showcase components
-type Group = Database['public']['Tables']['groups']['Row'] & {
-  members?: GroupMember[];
-  member_count: number;
-};
-
 const mockGroups: Group[] = [
   {
     id: "mock-1",

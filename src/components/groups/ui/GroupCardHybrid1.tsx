@@ -3,27 +3,15 @@ import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, Calendar, MapPin } from "lucide-react";
+import { Users, MapPin } from "lucide-react";
 import { OptimizedNavLink } from "@/components/navigation/OptimizedNavLink";
-import type { Database } from "@/integrations/supabase/types";
-import type { GroupMember } from "../members/types";
-
-type Group = Database['public']['Tables']['groups']['Row'] & {
-  members?: GroupMember[];
-  member_count: number;
-};
-
-interface GroupCardHybrid1Props {
-  group: Group;
-  isAdmin?: boolean;
-  className?: string;
-}
+import type { GroupCardProps } from "./types/GroupCardTypes";
 
 const GroupCardHybrid1Component = ({ 
   group, 
   isAdmin = false, 
   className = "" 
-}: GroupCardHybrid1Props) => {
+}: GroupCardProps) => {
   console.log("GroupCardHybrid1: Rendering group card for group:", group.id, group.name);
 
   return (
