@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     session, 
     user, 
     profile,
+    loading: isLoading,
     isLoading, 
     signOut, 
     signUp, 
