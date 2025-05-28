@@ -2,9 +2,11 @@
 import { Users, Clock } from "lucide-react";
 import { useEventPlayers } from "../hooks/useEventPlayers";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
+import { PromotionIndicator } from "./PromotionIndicator";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
+type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
 
 interface PlayersListProps {
   eventId: string;
@@ -17,6 +19,8 @@ interface PlayerCardProps {
     player_id: string;
     profiles: Profile;
     ranking_order?: number;
+    promoted_at?: string | null;
+    promotion_reason?: string | null;
   };
   isCurrentUser: boolean;
   showRanking?: boolean;
@@ -24,6 +28,20 @@ interface PlayerCardProps {
 
 const PlayerCard = ({ player, isCurrentUser, showRanking }: PlayerCardProps) => {
   const { profiles } = player;
+  
+  // Create a player status object for the promotion indicator
+  const playerStatus: PlayerStatus = {
+    id: '', // Not needed for display
+    event_id: '', // Not needed for display
+    player_id: player.player_id,
+    status: 'confirmed', // We know confirmed players in this context
+    ranking_order: player.ranking_order || 0,
+    registration_timestamp: '', // Not needed for display
+    created_at: '', // Not needed for display
+    substitute_id: null,
+    promoted_at: player.promoted_at,
+    promotion_reason: player.promotion_reason
+  };
   
   return (
     <div className={`bg-white rounded-lg border border-gray-200 p-4 shadow-sm ${
@@ -45,12 +63,18 @@ const PlayerCard = ({ player, isCurrentUser, showRanking }: PlayerCardProps) => 
             </div>
           )}
           <div>
-            <p className="font-medium text-gray-900">
-              {profiles.first_name} {profiles.last_name}
-              {isCurrentUser && (
-                <span className="ml-2 text-xs text-green-600 font-medium">(You)</span>
+            <div className="flex items-center gap-2">
+              <p className="font-medium text-gray-900">
+                {profiles.first_name} {profiles.last_name}
+                {isCurrentUser && (
+                  <span className="ml-2 text-xs text-green-600 font-medium">(You)</span>
+                )}
+              </p>
+              {/* Show promotion indicator for promoted players */}
+              {player.promoted_at && (
+                <PromotionIndicator registration={playerStatus} size="sm" />
               )}
-            </p>
+            </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               {profiles.dupr_rating && (
                 <span>DUPR: {profiles.dupr_rating}</span>

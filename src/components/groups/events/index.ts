@@ -22,3 +22,6 @@ export * from './components/PlayersList';
 export * from './components/EventDetailsHeader';
 export * from './components/EventDetailsTab';
 export * from './components/EventDetailsTabs';
+export * from './components/PromotionBanner';
+export * from './components/PromotionIndicator';
+export * from './hooks/usePromotionStatus';

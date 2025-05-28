@@ -1,9 +1,10 @@
 
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Clock, Users } from "lucide-react";
 import { EventRegistrationButton } from "./EventRegistrationButton";
 import { EventRegistrationStatus } from "./EventRegistrationStatus";
+import { PromotionBanner } from "./PromotionBanner";
+import { useEventRegistration } from "../hooks/useEventRegistration";
+import { usePromotionStatus } from "../hooks/usePromotionStatus";
 import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
@@ -15,13 +16,17 @@ interface EventDetailsHeaderProps {
 }
 
 export const EventDetailsHeader = ({ event, groupId, userId }: EventDetailsHeaderProps) => {
-  const navigate = useNavigate();
-  
+  const { registration } = useEventRegistration({ eventId: event.id, playerId: userId });
+  const { promotionStatus, wasPromoted, isRecentPromotion } = usePromotionStatus({ 
+    eventId: event.id, 
+    playerId: userId 
+  });
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { 
-      weekday: 'long',
-      year: 'numeric',
+      weekday: 'long', 
+      year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
     });
@@ -35,46 +40,67 @@ export const EventDetailsHeader = ({ event, groupId, userId }: EventDetailsHeade
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
+  const showPromotionBanner = wasPromoted && 
+    isRecentPromotion && 
+    promotionStatus && 
+    registration?.status === 'confirmed';
+
   return (
-    <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate(-1)}
-            className="h-10 w-10 p-0"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+    <div className="bg-white border-b border-gray-200">
+      <div className="max-w-2xl mx-auto p-4">
+        {/* Show promotion banner for recently promoted users */}
+        {showPromotionBanner && promotionStatus && (
+          <PromotionBanner registration={promotionStatus} className="mb-4" />
+        )}
+
+        <div className="space-y-4">
           <div>
-            <h1 className="text-lg font-semibold text-gray-900 leading-tight">
-              {event.event_title}
-            </h1>
-            <p className="text-sm text-gray-600">
-              {formatDate(event.event_date)} at {formatTime(event.event_time)}
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">{event.event_title}</h1>
+            {event.description && (
+              <p className="text-gray-600 mt-2">{event.description}</p>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 text-gray-700">
+              <Calendar className="h-5 w-5 text-gray-400" />
+              <span className="font-medium">{formatDate(event.event_date)}</span>
+            </div>
+            
+            <div className="flex items-center gap-3 text-gray-700">
+              <Clock className="h-5 w-5 text-gray-400" />
+              <span>{formatTime(event.event_time)}</span>
+            </div>
+            
+            <div className="flex items-center gap-3 text-gray-700">
+              <MapPin className="h-5 w-5 text-gray-400" />
+              <span>{event.location}</span>
+            </div>
+            
+            <div className="flex items-center gap-3 text-gray-700">
+              <Users className="h-5 w-5 text-gray-400" />
+              <span>Max {event.max_players} players</span>
+              {event.allow_reserves && (
+                <span className="text-sm text-gray-500">• Waitlist available</span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-4">
+            <EventRegistrationStatus 
+              eventId={event.id} 
+              playerId={userId || null}
+            />
+            
+            <EventRegistrationButton
+              eventId={event.id}
+              playerId={userId || null}
+              groupId={groupId}
+              isRegistrationOpen={event.registration_open}
+              className="px-6 py-2"
+            />
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <EventRegistrationStatus eventId={event.id} playerId={userId || null} />
-          {event.registration_open && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-              Open
-            </span>
-          )}
-        </div>
-      </div>
-      
-      {/* Registration Button */}
-      <div className="px-4 pb-3">
-        <EventRegistrationButton
-          eventId={event.id}
-          playerId={userId || null}
-          groupId={groupId}
-          isRegistrationOpen={event.registration_open}
-          className="w-full"
-        />
       </div>
     </div>
   );

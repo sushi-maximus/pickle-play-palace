@@ -1,7 +1,9 @@
 
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, XCircle } from "lucide-react";
+import { CheckCircle, Clock, XCircle, ArrowUp } from "lucide-react";
 import { useEventRegistration } from "../hooks/useEventRegistration";
+import { usePromotionStatus } from "../hooks/usePromotionStatus";
+import { PromotionIndicator } from "./PromotionIndicator";
 
 interface EventRegistrationStatusProps {
   eventId: string;
@@ -10,6 +12,7 @@ interface EventRegistrationStatusProps {
 
 export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistrationStatusProps) => {
   const { registration, isLoadingRegistration } = useEventRegistration({ eventId, playerId });
+  const { wasPromoted, isRecentPromotion } = usePromotionStatus({ eventId, playerId });
 
   if (!playerId || isLoadingRegistration) {
     return null;
@@ -64,6 +67,11 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
           <span className="ml-1">#{registration.ranking_order}</span>
         )}
       </Badge>
+      
+      {/* Show promotion indicator for recently promoted players */}
+      {wasPromoted && isRecentPromotion && registration.status === 'confirmed' && (
+        <PromotionIndicator registration={registration} size="sm" />
+      )}
     </div>
   );
 };
