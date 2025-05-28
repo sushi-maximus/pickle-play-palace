@@ -9,9 +9,13 @@ This is Step 3 of the Pickle Ninja player registration system, building upon the
 - Step 2: Basic Registration (completed)
 - Database tables: `player_status`, `events`, `groups`, `group_members`, `profiles` (existing)
 
-## Step 3A: Waitlist Promotion Logic
+## Step 3A: Automatic Waitlist Promotion (Split into Sub-Steps)
 
-### Database Requirements
+### Step 3A-1: Database Schema Updates for Promotion Tracking
+
+**Purpose**: Add necessary database fields to track promotion history and batch information.
+
+**Database Requirements**:
 ```sql
 -- Add batch tracking to player_status table
 ALTER TABLE public.player_status 
@@ -19,6 +23,155 @@ ADD COLUMN batch_id UUID DEFAULT NULL,
 ADD COLUMN promoted_at TIMESTAMPTZ DEFAULT NULL,
 ADD COLUMN promotion_reason TEXT DEFAULT NULL;
 
+-- Create indexes for performance
+CREATE INDEX idx_player_status_batch_id ON public.player_status(batch_id);
+CREATE INDEX idx_player_status_promoted_at ON public.player_status(promoted_at);
+CREATE INDEX idx_player_status_event_status ON public.player_status(event_id, status);
+```
+
+**Implementation Focus**:
+- Only add database fields needed for promotion tracking
+- No business logic changes in this step
+- Focus on data structure preparation
+
+**Testing**:
+- Verify new columns added successfully
+- Check that existing registrations still work
+- Confirm indexes improve query performance
+
+---
+
+### Step 3A-2: Basic Promotion Logic in Registration Service
+
+**Purpose**: Extend existing `playerRegistrationService.ts` with basic promotion logic when players cancel.
+
+**Implementation Details**:
+- Modify the `cancelRegistration` method to include promotion logic
+- Add a new `promoteWaitlistPlayers` method
+- Keep changes minimal and focused on core promotion functionality
+
+**Key Functions to Add**:
+```typescript
+// In playerRegistrationService.ts
+async promoteWaitlistPlayers(eventId: string, slotsAvailable: number): Promise<PromotionResult[]>
+async updatePlayerStatus(playerId: string, eventId: string, newStatus: string, promotionReason?: string): Promise<boolean>
+```
+
+**Testing Scenarios**:
+1. Cancel confirmed player → verify first waitlist player promoted
+2. Cancel multiple players → verify correct number promoted in order
+3. Empty waitlist → verify no errors when promoting
+
+---
+
+### Step 3A-3: Advanced Promotion Edge Function
+
+**Purpose**: Create dedicated Supabase Edge Function for complex promotion scenarios and batch operations.
+
+**Edge Function**: `promote-waitlist-players`
+**Location**: `supabase/functions/promote-waitlist-players/index.ts`
+
+**Functionality**:
+- Handle bulk promotions
+- Manage promotion notifications
+- Process complex ranking updates
+- Handle edge cases (simultaneous cancellations, etc.)
+
+**Triggers**:
+- Called by `playerRegistrationService` when cancellations occur
+- Can be called manually by organizers
+- Handles batch promotions when multiple slots open
+
+**Implementation Focus**:
+- Complex promotion algorithms
+- Batch processing capabilities
+- Error handling for edge cases
+- Logging for debugging
+
+---
+
+### Step 3A-4: Frontend Promotion Indicators
+
+**Purpose**: Add UI components to show promotion status and history.
+
+**Components to Create**:
+- `PromotionBadge.tsx` - Shows "Recently Promoted" status
+- `PromotionHistory.tsx` - Displays promotion timeline
+- Update `PlayersList.tsx` to show promotion indicators
+- Update `EventRegistrationStatus.tsx` for promotion states
+
+**UI Features**:
+- Visual indicators for recently promoted players
+- Promotion timestamps in player lists
+- Promotion reason display
+- Smooth transitions for status changes
+
+**Implementation Focus**:
+- Only UI changes, no business logic
+- Use existing components where possible
+- Mobile-first responsive design
+- Consistent with existing design system
+
+---
+
+### Step 3A-5: Integration Testing and Refinement
+
+**Purpose**: Comprehensive testing of the complete promotion system.
+
+**Testing Matrix**:
+```
+Scenario 1: Single player cancellation
+- Setup: Event with 4 confirmed, 3 waitlisted
+- Action: 1 confirmed player cancels
+- Expected: 1st waitlisted player promoted
+- Verify: UI updates, notifications sent, database correct
+
+Scenario 2: Multiple simultaneous cancellations
+- Setup: Event with 8 confirmed, 5 waitlisted  
+- Action: 3 confirmed players cancel within 1 minute
+- Expected: 3 waitlisted players promoted in order
+- Verify: Correct ranking order maintained
+
+Scenario 3: Edge cases
+- Empty waitlist cancellation
+- Promotion during registration deadline
+- Simultaneous registration and cancellation
+```
+
+**Performance Testing**:
+- Load testing with 100+ players
+- Concurrent cancellation handling
+- Database query optimization verification
+
+**Error Handling**:
+- Failed promotion rollback
+- Notification delivery failures
+- Database constraint violations
+
+---
+
+## Implementation Order for Step 3A
+
+1. **Start with Step 3A-1**: Database schema (safe, isolated change)
+2. **Step 3A-2**: Basic service logic (core functionality)
+3. **Step 3A-4**: Frontend indicators (visible progress)
+4. **Step 3A-3**: Advanced Edge Function (complex scenarios)
+5. **Step 3A-5**: Integration testing (validation)
+
+## Benefits of This Approach
+
+**Error Isolation**: Each step can be tested independently
+**Incremental Progress**: Users see improvements at each step
+**Easier Rollbacks**: Smaller changes are easier to revert
+**Code Review**: Smaller changes are easier to review
+**Debugging**: Issues are easier to isolate and fix
+
+---
+
+## Step 3B: Batch Confirmation Logic
+
+### Database Requirements
+```sql
 -- Create batch_confirmations table
 CREATE TABLE public.batch_confirmations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -30,43 +183,7 @@ CREATE TABLE public.batch_confirmations (
   UNIQUE(event_id, batch_number)
 );
 
--- Create indexes
-CREATE INDEX idx_player_status_batch_id ON public.player_status(batch_id);
-CREATE INDEX idx_batch_confirmations_event_id ON public.batch_confirmations(event_id);
-```
-
-### Implementation Details
-
-#### Supabase Edge Function: `promote-waitlist-players`
-```typescript
-// Location: supabase/functions/promote-waitlist-players/index.ts
-// Triggers: When a confirmed player cancels registration
-// Logic: 
-//   1. Find next waitlisted players by registration_timestamp
-//   2. Promote them to confirmed status
-//   3. Update ranking_order for newly confirmed players
-//   4. Send notification emails
-//   5. Check if enough players for new batch confirmation
-```
-
-#### Frontend Components
-- Update `EventRegistrationButton` to handle promotion states
-- Add "Recently Promoted" badge for newly confirmed players
-- Update `PlayersList` to show promotion timestamps
-- Add promotion history in event details
-
-#### Testing Scenarios
-1. **Basic Promotion**: Cancel confirmed player → verify waitlist player promoted
-2. **Multiple Cancellations**: Cancel 2 players → verify 2 waitlist players promoted in order
-3. **Empty Waitlist**: Cancel when no waitlist → verify no errors
-4. **Ranking Order**: Verify promoted players get correct ranking_order
-5. **Notifications**: Verify promotion emails sent to affected players
-
-## Step 3B: Batch Confirmation Logic
-
-### Database Requirements
-```sql
--- Add batch status tracking
+-- Add batch status tracking to events
 ALTER TABLE public.events 
 ADD COLUMN current_batch_number INTEGER DEFAULT 0,
 ADD COLUMN last_batch_confirmed_at TIMESTAMPTZ DEFAULT NULL,
@@ -82,6 +199,9 @@ CREATE TABLE public.batch_rules (
   confirmation_delay_minutes INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create indexes
+CREATE INDEX idx_batch_confirmations_event_id ON public.batch_confirmations(event_id);
 ```
 
 ### Implementation Details
@@ -124,6 +244,8 @@ CREATE TABLE public.batch_rules (
 3. **Batch Size Variations**: Test with different batch sizes (2, 4, 6, 8 players)
 4. **Multiple Batches**: Register 12 players → verify 3 batches of 4 created
 5. **Partial Batches**: Handle events with non-multiple-of-4 registrations
+
+---
 
 ## Step 3C: Court Assignment System
 
@@ -184,21 +306,6 @@ CREATE INDEX idx_court_assignments_court_id ON public.court_assignments(court_id
 - **Manual Reassignment**: Drag-and-drop interface for manual court changes
 - **Court Status Dashboard**: Real-time view of all court assignments
 
-#### UI Components
-```typescript
-// src/components/groups/events/courts/CourtSetup.tsx
-// Interface for organizers to define courts
-
-// src/components/groups/events/courts/CourtAssignments.tsx
-// Visual display of current court assignments
-
-// src/components/groups/events/courts/CourtGrid.tsx
-// Grid layout showing all courts and assigned players
-
-// src/components/groups/events/courts/AssignmentControls.tsx
-// Manual assignment and reassignment tools
-```
-
 #### Assignment Algorithms
 1. **Skill-Based**: Group players by similar skill levels
 2. **Random**: Random assignment within confirmed batches
@@ -212,7 +319,9 @@ CREATE INDEX idx_court_assignments_court_id ON public.court_assignments(court_id
 4. **Manual Reassignment**: Drag player to different court → verify update
 5. **Court Unavailability**: Mark court unavailable → verify reassignment
 
-## Step 3D: Email Notifications for Registration Events
+---
+
+## Step 3D: Full Email Notification System
 
 ### Database Requirements
 ```sql
@@ -282,18 +391,6 @@ INSERT INTO public.notification_templates (template_name, subject_template, body
 - **Template Management**: Organizers can customize email templates
 - **Delivery Status**: Real-time delivery status for organizers
 
-#### UI Components
-```typescript
-// src/components/groups/events/notifications/NotificationSettings.tsx
-// Player notification preferences
-
-// src/components/groups/events/notifications/NotificationHistory.tsx
-// History of sent notifications
-
-// src/components/groups/events/notifications/TemplateManager.tsx
-// Admin template customization interface
-```
-
 #### Testing Scenarios
 1. **Registration Flow**: Register → verify confirmation email received
 2. **Waitlist Flow**: Join waitlist → verify waitlist email → get promoted → verify promotion email
@@ -301,6 +398,8 @@ INSERT INTO public.notification_templates (template_name, subject_template, body
 4. **Court Assignment**: Courts assigned → verify court assignment emails
 5. **Email Delivery**: Test with invalid email → verify error logging
 6. **Template Variables**: Verify all {{variables}} replaced correctly
+
+---
 
 ## Step 3E: Registration Deadline Management
 
@@ -365,18 +464,6 @@ SELECT cron.schedule(
 - **Deadline Management**: Organizer tools to set and modify deadlines
 - **Registration Status**: Clear indicators when registration is closed
 
-#### UI Components
-```typescript
-// src/components/groups/events/deadlines/DeadlineCountdown.tsx
-// Real-time countdown to registration deadline
-
-// src/components/groups/events/deadlines/LateRegistration.tsx
-// Interface for late registration with fees
-
-// src/components/groups/events/deadlines/DeadlineSettings.tsx
-// Organizer deadline management tools
-```
-
 #### Deadline Types
 1. **Early Bird**: Discounted registration period
 2. **Regular**: Standard registration period
@@ -391,9 +478,14 @@ SELECT cron.schedule(
 5. **No Late Registration**: Verify hard deadline enforcement
 6. **Multiple Periods**: Test early bird → regular → late transitions
 
+---
+
 ## Implementation Order Recommendation
 
 1. **Step 3A (Waitlist Promotion)**: Foundation for advanced features
+   - Start with 3A-1 (Database schema)
+   - Then 3A-2 (Basic service logic)
+   - Continue with remaining sub-steps
 2. **Step 3B (Batch Confirmation)**: Builds on promotion logic
 3. **Step 3D (Email Notifications)**: Essential for user communication
 4. **Step 3C (Court Assignment)**: Complex feature, implement after others stable
