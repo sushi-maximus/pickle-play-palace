@@ -12,6 +12,13 @@ export interface RegistrationResult {
   registrationData?: PlayerStatus;
 }
 
+export interface PromotionResult {
+  playerId: string;
+  promoted: boolean;
+  newStatus: string;
+  promotionReason: string;
+}
+
 export const playerRegistrationService = {
   async registerForEvent(eventId: string, playerId: string): Promise<RegistrationResult> {
     try {
@@ -120,6 +127,23 @@ export const playerRegistrationService = {
 
   async cancelRegistration(eventId: string, playerId: string): Promise<RegistrationResult> {
     try {
+      // Get the player's current registration to check their status
+      const { data: currentRegistration } = await supabase
+        .from('player_status')
+        .select('status')
+        .eq('event_id', eventId)
+        .eq('player_id', playerId)
+        .single();
+
+      if (!currentRegistration) {
+        return {
+          success: false,
+          status: 'error',
+          message: 'Registration not found'
+        };
+      }
+
+      // Delete the registration
       const { error } = await supabase
         .from('player_status')
         .delete()
@@ -135,8 +159,11 @@ export const playerRegistrationService = {
         };
       }
 
-      // TODO: Implement waitlist promotion logic here
-      // When a confirmed player cancels, promote first waitlist player
+      // If a confirmed player cancelled, promote waitlist players
+      if (currentRegistration.status === 'confirmed') {
+        console.log('Confirmed player cancelled, attempting to promote waitlist players...');
+        await this.promoteWaitlistPlayers(eventId, 1);
+      }
 
       return {
         success: true,
@@ -151,6 +178,96 @@ export const playerRegistrationService = {
         status: 'error',
         message: 'An unexpected error occurred'
       };
+    }
+  },
+
+  async promoteWaitlistPlayers(eventId: string, slotsAvailable: number): Promise<PromotionResult[]> {
+    try {
+      console.log(`Attempting to promote ${slotsAvailable} waitlist players for event ${eventId}`);
+      
+      // Get waitlisted players ordered by registration timestamp (first come, first served)
+      const { data: waitlistPlayers, error: waitlistError } = await supabase
+        .from('player_status')
+        .select('player_id, ranking_order')
+        .eq('event_id', eventId)
+        .eq('status', 'waitlist')
+        .order('registration_timestamp', { ascending: true })
+        .limit(slotsAvailable);
+
+      if (waitlistError) {
+        console.error('Error fetching waitlist players:', waitlistError);
+        return [];
+      }
+
+      if (!waitlistPlayers || waitlistPlayers.length === 0) {
+        console.log('No waitlist players to promote');
+        return [];
+      }
+
+      const promotionResults: PromotionResult[] = [];
+
+      // Promote each waitlisted player
+      for (const player of waitlistPlayers) {
+        const promoted = await this.updatePlayerStatus(
+          player.player_id, 
+          eventId, 
+          'confirmed', 
+          'player_cancelled'
+        );
+
+        promotionResults.push({
+          playerId: player.player_id,
+          promoted,
+          newStatus: promoted ? 'confirmed' : 'waitlist',
+          promotionReason: 'player_cancelled'
+        });
+
+        if (promoted) {
+          console.log(`Successfully promoted player ${player.player_id} from waitlist to confirmed`);
+        }
+      }
+
+      return promotionResults;
+
+    } catch (error) {
+      console.error('Error in promoteWaitlistPlayers:', error);
+      return [];
+    }
+  },
+
+  async updatePlayerStatus(
+    playerId: string, 
+    eventId: string, 
+    newStatus: string, 
+    promotionReason?: string
+  ): Promise<boolean> {
+    try {
+      const updateData: any = {
+        status: newStatus
+      };
+
+      // If promoting from waitlist, add promotion tracking fields
+      if (newStatus === 'confirmed' && promotionReason) {
+        updateData.promoted_at = new Date().toISOString();
+        updateData.promotion_reason = promotionReason;
+      }
+
+      const { error } = await supabase
+        .from('player_status')
+        .update(updateData)
+        .eq('player_id', playerId)
+        .eq('event_id', eventId);
+
+      if (error) {
+        console.error('Error updating player status:', error);
+        return false;
+      }
+
+      return true;
+
+    } catch (error) {
+      console.error('Error in updatePlayerStatus:', error);
+      return false;
     }
   },
 
