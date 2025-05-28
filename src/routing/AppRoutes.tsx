@@ -111,7 +111,7 @@ export const AppRoutes = () => {
       />
 
       <Route 
-        path="/groups/:groupId" 
+        path="/groups/:id" 
         element={
           <ProtectedRoute>
             <RouteErrorBoundary routeName="GroupDetails">
