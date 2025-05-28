@@ -1,8 +1,8 @@
 
-import type { Group, UnifiedGroup, GroupMembership, Profile } from "../../types/GroupTypes";
+import type { Group, UnifiedGroup, GroupMembership, Profile, UnifiedMembership } from "../../types/GroupTypes";
 
 // Re-export main types
-export type { Group, UnifiedGroup, GroupMembership, Profile } from "../../types/GroupTypes";
+export type { Group, UnifiedGroup, GroupMembership, Profile, UnifiedMembership } from "../../types/GroupTypes";
 
 // Hook configuration options with strict typing
 export interface UseUnifiedGroupsOptions {
@@ -25,7 +25,7 @@ export interface UseUnifiedGroupsReturn {
   
   // Legacy compatibility (deprecated but maintained)
   groups: UnifiedGroup[];
-  memberships: GroupMembership[];
+  memberships: UnifiedMembership[];
 }
 
 // Additional utility types for group operations

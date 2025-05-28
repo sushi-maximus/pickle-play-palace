@@ -51,7 +51,7 @@ export const RemoveMemberDialog = ({
             Remove Member
           </AlertDialogTitle>
           <AlertDialogDescription className="text-xs md:text-sm">
-            Are you sure you want to remove <strong>{member?.profiles.first_name} {member?.profiles.last_name}</strong> from this group? This action cannot be undone.
+            Are you sure you want to remove <strong>{member?.profile?.first_name} {member?.profile?.last_name}</strong> from this group? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-1 md:gap-2">

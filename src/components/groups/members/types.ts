@@ -7,16 +7,20 @@ export type { GroupMember, Profile, Group } from "../types/GroupTypes";
 // Component-specific interfaces
 export interface GroupMemberCardProps {
   member: GroupMember;
-  currentUserRole?: 'admin' | 'member';
-  onRemove?: (memberId: string) => void;
-  onRoleChange?: (memberId: string, newRole: 'admin' | 'member') => void;
+  isAdmin?: boolean;
+  currentUserId?: string;
+  groupId: string;
+  onMemberUpdate?: () => void;
+  isOpen: boolean;
+  onOpenChange: (memberId: string | null) => void;
   className?: string;
 }
 
 export interface GroupMembersListProps {
   groupId: string;
   members: GroupMember[];
-  currentUserRole?: 'admin' | 'member';
+  isAdmin?: boolean;
+  currentUserId?: string;
   loading?: boolean;
   onMemberUpdate?: () => void;
   className?: string;
@@ -24,14 +28,20 @@ export interface GroupMembersListProps {
 
 export interface MemberHoverCardProps {
   member: GroupMember;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
+  isAdmin?: boolean;
+  currentUserId?: string;
+  groupId: string;
+  onMemberUpdate?: () => void;
+  onClose: () => void;
 }
 
 export interface RemoveMemberDialogProps {
-  member: GroupMember;
+  member: GroupMember | null;
   open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
+  onOpenChange: (open: boolean) => void;
+  groupId: string;
+  onMemberUpdate?: () => void;
 }
 
 // Hook interfaces

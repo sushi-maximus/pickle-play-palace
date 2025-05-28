@@ -31,10 +31,10 @@ export const MemberHoverCard = ({
 
   // Get skill or DUPR rating display
   const getRatingDisplay = () => {
-    if (member.profiles.dupr_rating) {
-      return { label: "DUPR", value: member.profiles.dupr_rating };
+    if (member.profile?.dupr_rating) {
+      return { label: "DUPR", value: member.profile.dupr_rating };
     } else {
-      return { label: "Skill Level", value: member.profiles.skill_level || "2.5" };
+      return { label: "Skill Level", value: member.profile?.skill_level || "2.5" };
     }
   };
 
@@ -59,20 +59,20 @@ export const MemberHoverCard = ({
       <div className="flex flex-col">
         <div className="flex items-center gap-2 md:gap-3 px-3 py-4 md:px-6 md:py-6">
           <Avatar className="h-12 w-12 md:h-16 md:w-16 border-2" style={{ 
-            borderColor: getSkillLevelColor(member.profiles.dupr_rating, member.profiles.skill_level) 
+            borderColor: getSkillLevelColor(member.profile?.dupr_rating, member.profile?.skill_level) 
           }}>
             <AvatarImage 
-              src={member.profiles.avatar_url || ""} 
-              alt={`${member.profiles.first_name} ${member.profiles.last_name}`}
+              src={member.profile?.avatar_url || ""} 
+              alt={`${member.profile?.first_name} ${member.profile?.last_name}`}
             />
             <AvatarFallback className="bg-primary/10 text-sm md:text-lg">
-              {member.profiles.first_name?.charAt(0)}{member.profiles.last_name?.charAt(0)}
+              {member.profile?.first_name?.charAt(0)}{member.profile?.last_name?.charAt(0)}
             </AvatarFallback>
           </Avatar>
           
           <div>
             <h3 className="font-medium text-sm md:text-lg">
-              {member.profiles.first_name} {member.profiles.last_name}
+              {member.profile?.first_name} {member.profile?.last_name}
             </h3>
             <div className="flex flex-wrap gap-1 md:gap-2 mt-1">
               {/* Skill Level or DUPR Rating */}
@@ -83,9 +83,9 @@ export const MemberHoverCard = ({
               )}
               
               {/* Age (if available) */}
-              {member.profiles.birthday && (
+              {member.profile?.birthday && (
                 <Badge variant="outline" className="bg-secondary/5 text-xs">
-                  Age: {calculateAge(member.profiles.birthday)}
+                  Age: {calculateAge(member.profile.birthday)}
                 </Badge>
               )}
 

@@ -1,13 +1,13 @@
 
 import type { Database } from "@/integrations/supabase/types";
 
-// Base types from database
+// Base types from database - using Omit to avoid conflicts with optional fields
 export type DatabaseGroup = Database['public']['Tables']['groups']['Row'];
 export type DatabaseProfile = Database['public']['Tables']['profiles']['Row'];
 export type DatabaseGroupMember = Database['public']['Tables']['group_members']['Row'];
 
-// Enhanced Group type with strict validation
-export interface Group extends DatabaseGroup {
+// Enhanced Group type with strict validation - properly handling optional fields
+export interface Group {
   // Required fields with validation
   id: string;
   name: string;
@@ -30,8 +30,8 @@ export interface Group extends DatabaseGroup {
   currentUserMembership?: GroupMembership | null;
 }
 
-// Enhanced Profile type
-export interface Profile extends DatabaseProfile {
+// Enhanced Profile type - properly handling optional fields
+export interface Profile {
   // Required fields
   id: string;
   first_name: string;
@@ -49,8 +49,8 @@ export interface Profile extends DatabaseProfile {
   birthday?: string | null;
 }
 
-// Enhanced GroupMember type
-export interface GroupMember extends DatabaseGroupMember {
+// Enhanced GroupMember type - properly handling optional fields
+export interface GroupMember {
   // Required fields
   id: string;
   group_id: string;
@@ -62,7 +62,7 @@ export interface GroupMember extends DatabaseGroupMember {
   // Optional fields
   request_message?: string | null;
   
-  // Joined profile data
+  // Joined profile data - using 'profile' instead of 'profiles'
   profile?: Profile;
 }
 
@@ -81,6 +81,13 @@ export interface UnifiedGroup extends Group {
   membershipRole?: 'admin' | 'member';
   membershipId?: string;
   membershipStatus?: 'active' | 'pending' | 'banned';
+}
+
+// Unified membership type for backward compatibility
+export interface UnifiedMembership {
+  id: string;
+  role: 'admin' | 'member';
+  group: Group;
 }
 
 // Type guards for runtime validation

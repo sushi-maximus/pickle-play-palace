@@ -17,10 +17,12 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
   const [unifiedGroups, setUnifiedGroups] = useState<UnifiedGroup[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<UnifiedGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   // Fetch all groups and user memberships
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       console.log("useUnifiedGroups: Fetching data for mode:", mode, "userId:", userId);
       
@@ -48,8 +50,9 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
       
       setUnifiedGroups(unified);
       console.log("useUnifiedGroups: Unified groups created:", unified.length);
-    } catch (error) {
-      console.error("Error fetching unified groups data:", error);
+    } catch (err) {
+      console.error("Error fetching unified groups data:", err);
+      setError(err instanceof Error ? err : new Error('Failed to fetch groups'));
     } finally {
       setLoading(false);
     }
@@ -87,6 +90,10 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
     await fetchData();
   };
 
+  const refetch = () => {
+    fetchData();
+  };
+
   // Create legacy-compatible membership objects for my-groups mode
   const memberships: UnifiedMembership[] = mode === 'my-groups' 
     ? filteredGroups.map(group => ({
@@ -114,7 +121,9 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
     allGroups: unifiedGroups,
     filteredGroups,
     loading,
+    error,
     refreshData,
+    refetch,
     // Legacy compatibility - for groups without membership info
     groups: mode === 'all' ? filteredGroups : [],
     // Legacy compatibility - for membership-specific data
