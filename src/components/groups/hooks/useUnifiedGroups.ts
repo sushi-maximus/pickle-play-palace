@@ -145,9 +145,9 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
   // Calculate loading state
   const loading = groupsLoading || membershipsLoading || refreshMutation.isPending;
   
-  // Calculate error state
+  // Calculate error state - fix the type error
   const error = groupsError || membershipsError || refreshMutation.error;
-  const errorMessage = error instanceof Error ? error.message : null;
+  const errorMessage = error instanceof Error ? error.message : error ? String(error) : null;
 
   // Create legacy-compatible membership objects for my-groups mode
   const memberships: UnifiedMembership[] = mode === 'my-groups' 
