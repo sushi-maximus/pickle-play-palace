@@ -37,7 +37,7 @@ export const useGroupPosts = (
   console.log(`🕐 Timestamp: ${new Date().toISOString()}`);
   
   // CRITICAL DEBUG - Log query key generation
-  const queryKey = queryKeys.posts.list(groupId, userId);
+  const queryKey = queryKeys.posts.list(`group:${groupId}:user:${userId || 'anonymous'}`);
   console.log(`🔑 QUERY KEY GENERATED:`, queryKey);
   console.log(`🔑 QUERY KEY STRING:`, JSON.stringify(queryKey));
 

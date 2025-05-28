@@ -23,7 +23,7 @@ export const useEventPlayers = ({ eventId, enabled = true }: UseEventPlayersProp
         .from('player_status')
         .select(`
           *,
-          profiles:player_id (
+          profiles!player_status_player_id_fkey (
             id,
             first_name,
             last_name,
