@@ -1,171 +1,10 @@
 
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock, MapPin, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useParams } from "react-router-dom";
 import { useGroupEvents } from "./hooks/useGroupEvents";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
-import { EventRegistrationButton } from "./components/EventRegistrationButton";
-import { EventRegistrationStatus } from "./components/EventRegistrationStatus";
-import { PlayersList } from "./components/PlayersList";
+import { EventDetailsHeader } from "./components/EventDetailsHeader";
+import { EventDetailsTabs } from "./components/EventDetailsTabs";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Database } from "@/integrations/supabase/types";
-
-type Event = Database['public']['Tables']['events']['Row'];
-
-const EventDetailsHeader = ({ event, groupId }: { event: Event; groupId: string }) => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-
-  const formatTime = (timeStr: string) => {
-    const [hours, minutes] = timeStr.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
-
-  return (
-    <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate(-1)}
-            className="h-10 w-10 p-0"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900 leading-tight">
-              {event.event_title}
-            </h1>
-            <p className="text-sm text-gray-600">
-              {formatDate(event.event_date)} at {formatTime(event.event_time)}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <EventRegistrationStatus eventId={event.id} playerId={user?.id || null} />
-          {event.registration_open && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-              Open
-            </span>
-          )}
-        </div>
-      </div>
-      
-      {/* Registration Button */}
-      <div className="px-4 pb-3">
-        <EventRegistrationButton
-          eventId={event.id}
-          playerId={user?.id || null}
-          groupId={groupId}
-          isRegistrationOpen={event.registration_open}
-          className="w-full"
-        />
-      </div>
-    </div>
-  );
-};
-
-const EventDetailsTab = ({ event }: { event: Event }) => {
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-
-  const formatTime = (timeStr: string) => {
-    const [hours, minutes] = timeStr.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
-
-  return (
-    <div className="space-y-6 p-4">
-      <div className="space-y-4">
-        <div className="flex items-start gap-3">
-          <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
-          <div>
-            <p className="font-medium text-gray-900">Date & Time</p>
-            <p className="text-sm text-gray-600">
-              {formatDate(event.event_date)} at {formatTime(event.event_time)}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
-          <div>
-            <p className="font-medium text-gray-900">Location</p>
-            <p className="text-sm text-gray-600">{event.location}</p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <Users className="h-5 w-5 text-gray-400 mt-0.5" />
-          <div>
-            <p className="font-medium text-gray-900">Players</p>
-            <p className="text-sm text-gray-600">
-              Max {event.max_players} players
-              {event.allow_reserves && " (reserves allowed)"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {event.description && (
-        <div>
-          <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-          <p className="text-sm text-gray-600 leading-relaxed">{event.description}</p>
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <p className="font-medium text-gray-900 text-sm">Pricing</p>
-          <p className="text-sm text-gray-600">
-            {event.pricing_model === 'free' ? 'Free' : `$${event.fee_amount}`}
-          </p>
-        </div>
-        <div>
-          <p className="font-medium text-gray-900 text-sm">Skill Level</p>
-          <p className="text-sm text-gray-600 capitalize">{event.skill_category}</p>
-        </div>
-      </div>
-
-      <div>
-        <p className="font-medium text-gray-900 text-sm">Ranking Method</p>
-        <p className="text-sm text-gray-600 capitalize">{event.ranking_method.replace('-', ' ')}</p>
-      </div>
-
-      <div>
-        <p className="font-medium text-gray-900 text-sm">Registration Status</p>
-        <p className={`text-sm font-medium ${event.registration_open ? 'text-green-600' : 'text-red-600'}`}>
-          {event.registration_open ? 'Open' : 'Closed'}
-        </p>
-      </div>
-    </div>
-  );
-};
 
 export const EventDetailsPage = () => {
   const { groupId, eventId } = useParams<{ groupId: string; eventId: string }>();
@@ -200,52 +39,15 @@ export const EventDetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <EventDetailsHeader event={event} groupId={groupId} />
-      
-      <div className="max-w-2xl mx-auto">
-        <Tabs defaultValue="details" className="bg-white">
-          <TabsList className="grid w-full grid-cols-3 bg-gray-50 p-1 rounded-none border-b">
-            <TabsTrigger 
-              value="details" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary"
-            >
-              Details
-            </TabsTrigger>
-            <TabsTrigger 
-              value="confirmed" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary"
-            >
-              Confirmed
-            </TabsTrigger>
-            <TabsTrigger 
-              value="waitlist" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary"
-            >
-              Waitlist
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="details" className="mt-0">
-            <EventDetailsTab event={event} />
-          </TabsContent>
-
-          <TabsContent value="confirmed" className="mt-0">
-            <PlayersList 
-              eventId={event.id} 
-              type="confirmed" 
-              currentUserId={user?.id}
-            />
-          </TabsContent>
-
-          <TabsContent value="waitlist" className="mt-0">
-            <PlayersList 
-              eventId={event.id} 
-              type="waitlist" 
-              currentUserId={user?.id}
-            />
-          </TabsContent>
-        </Tabs>
-      </div>
+      <EventDetailsHeader 
+        event={event} 
+        groupId={groupId} 
+        userId={user?.id}
+      />
+      <EventDetailsTabs 
+        event={event} 
+        currentUserId={user?.id}
+      />
     </div>
   );
 };

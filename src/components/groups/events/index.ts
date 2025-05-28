@@ -19,3 +19,6 @@ export * from './components/EventRegistrationStatus';
 export * from './hooks/useEventRegistration';
 export * from './hooks/useEventPlayers';
 export * from './components/PlayersList';
+export * from './components/EventDetailsHeader';
+export * from './components/EventDetailsTab';
+export * from './components/EventDetailsTabs';
