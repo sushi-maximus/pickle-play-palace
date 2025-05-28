@@ -1,6 +1,5 @@
 
 import React, { memo, useMemo, useCallback, useRef, useEffect, useState } from "react";
-import { FixedSizeGrid as Grid } from "react-window";
 import { motion } from "framer-motion";
 import type { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
 import { OptimizedGroupCardHybrid1 } from "./OptimizedGroupCardHybrid1";
@@ -16,62 +15,7 @@ interface VirtualizedGroupsGridProps {
   itemsPerRow?: number;
 }
 
-// Grid item component for virtualization
-const GridItem = memo(({ 
-  columnIndex, 
-  rowIndex, 
-  style, 
-  data 
-}: {
-  columnIndex: number;
-  rowIndex: number;
-  style: React.CSSProperties;
-  data: {
-    groups: UnifiedGroup[];
-    itemsPerRow: number;
-    containerWidth: number;
-  };
-}) => {
-  const { groups, itemsPerRow } = data;
-  const index = rowIndex * itemsPerRow + columnIndex;
-  const group = groups[index];
-
-  if (!group) {
-    return <div style={style} />;
-  }
-
-  return (
-    <div style={style}>
-      <div className="p-2 h-full">
-        <GroupComponentErrorBoundary
-          fallback={
-            <div className="h-80 bg-gray-100 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Failed to load group</p>
-            </div>
-          }
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.3,
-              delay: index * 0.02 // Stagger animation
-            }}
-            className="h-full"
-          >
-            <OptimizedGroupCardHybrid1 
-              group={group} 
-              isMember={group.isMember}
-            />
-          </motion.div>
-        </GroupComponentErrorBoundary>
-      </div>
-    </div>
-  );
-});
-
-GridItem.displayName = "VirtualizedGridItem";
-
+// Simple virtualization using CSS and scrolling
 const VirtualizedGroupsGrid = memo(({ 
   groups, 
   loading = false, 
@@ -104,21 +48,6 @@ const VirtualizedGroupsGrid = memo(({
     if (containerWidth < 1024) return 2; // Tablet: 2 columns
     return itemsPerRow; // Desktop: configurable columns
   }, [containerWidth, itemsPerRow]);
-
-  // Calculate grid dimensions
-  const itemWidth = useMemo(() => {
-    return Math.floor((containerWidth - 32) / responsiveItemsPerRow); // 32px for padding
-  }, [containerWidth, responsiveItemsPerRow]);
-
-  const itemHeight = 320 + 16; // Card height + padding
-  const rowCount = Math.ceil(groups.length / responsiveItemsPerRow);
-
-  // Memoize grid data to prevent recreation
-  const gridData = useMemo(() => ({
-    groups,
-    itemsPerRow: responsiveItemsPerRow,
-    containerWidth
-  }), [groups, responsiveItemsPerRow, containerWidth]);
 
   // Memoize empty state content
   const emptyStateContent = useMemo(() => (
@@ -161,24 +90,47 @@ const VirtualizedGroupsGrid = memo(({
     );
   }
 
+  // Simple grid layout with responsive columns
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${responsiveItemsPerRow}, 1fr)`,
+    gap: '1rem',
+    maxHeight: containerHeight,
+    overflowY: 'auto' as const,
+    padding: '1rem'
+  };
+
   return (
     <GroupComponentErrorBoundary>
       <div ref={containerRef} className="w-full">
-        <Grid
-          columnCount={responsiveItemsPerRow}
-          columnWidth={itemWidth}
-          height={containerHeight}
-          rowCount={rowCount}
-          rowHeight={itemHeight}
-          width={containerWidth}
-          itemData={gridData}
-          overscanRowCount={1} // Render 1 extra row for smooth scrolling
-          style={{
-            overflowX: 'hidden' // Prevent horizontal scrolling
-          }}
-        >
-          {GridItem}
-        </Grid>
+        <div style={gridStyle}>
+          {groups.map((group, index) => (
+            <div key={group.id} className="h-fit">
+              <GroupComponentErrorBoundary
+                fallback={
+                  <div className="h-80 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-500">Failed to load group</p>
+                  </div>
+                }
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.3,
+                    delay: index * 0.02 // Stagger animation
+                  }}
+                  className="h-full"
+                >
+                  <OptimizedGroupCardHybrid1 
+                    group={group} 
+                    isMember={group.isMember}
+                  />
+                </motion.div>
+              </GroupComponentErrorBoundary>
+            </div>
+          ))}
+        </div>
       </div>
     </GroupComponentErrorBoundary>
   );
