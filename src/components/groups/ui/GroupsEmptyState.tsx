@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Users, Search, AlertTriangle, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -49,27 +50,66 @@ export const GroupsEmptyState = ({
     return error.message || "An unexpected error occurred";
   };
 
-  // Existing no-groups state
+  // Enhanced no-groups state with accessibility
   if (type === "no-groups") {
     return (
-      <div className="text-center py-12">
-        <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-2xl font-bold mb-2">You haven't joined any groups yet</h3>
-        <p className="text-muted-foreground mb-6">Create your first group or join an existing one</p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+      <div 
+        className="text-center py-12"
+        role="region"
+        aria-labelledby="no-groups-heading"
+        aria-describedby="no-groups-description"
+      >
+        <Users 
+          className="mx-auto h-12 w-12 text-muted-foreground mb-4" 
+          aria-hidden="true"
+        />
+        <h3 
+          id="no-groups-heading"
+          className="text-2xl font-bold mb-2"
+        >
+          You haven't joined any groups yet
+        </h3>
+        <p 
+          id="no-groups-description"
+          className="text-muted-foreground mb-6"
+        >
+          Create your first group or join an existing one to get started
+        </p>
+        <div 
+          className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+          role="group"
+          aria-label="Group actions"
+        >
           <CreateGroupDialog 
             trigger={
               <Button className="hover-scale">
-                <Users className="mr-2 h-4 w-4" />
+                <Users className="mr-2 h-4 w-4" aria-hidden="true" />
                 Create Group
               </Button>
             }
             onSuccess={onRefresh}
           />
           {onRefresh && (
-            <Button variant="outline" onClick={handleRetry} disabled={isRetrying}>
-              <RefreshCw className={`mr-2 h-4 w-4 ${isRetrying ? 'animate-spin' : ''}`} />
-              {isRetrying ? 'Refreshing...' : 'Refresh'}
+            <Button 
+              variant="outline" 
+              onClick={handleRetry} 
+              disabled={isRetrying}
+              aria-describedby={isRetrying ? "refresh-status" : undefined}
+            >
+              <RefreshCw 
+                className={`mr-2 h-4 w-4 ${isRetrying ? 'animate-spin' : ''}`} 
+                aria-hidden="true"
+              />
+              {isRetrying ? (
+                <>
+                  <span aria-hidden="true">Refreshing...</span>
+                  <span id="refresh-status" className="sr-only">
+                    Refresh in progress
+                  </span>
+                </>
+              ) : (
+                'Refresh'
+              )}
             </Button>
           )}
         </div>
@@ -77,23 +117,47 @@ export const GroupsEmptyState = ({
     );
   }
   
-  // Existing no-search-results state
+  // Enhanced no-search-results state with accessibility
   if (type === "no-search-results") {
     return (
-      <div className="text-center py-12">
-        <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-2xl font-bold mb-2">No matching groups</h3>
-        <p className="text-muted-foreground mb-6">
+      <div 
+        className="text-center py-12"
+        role="region"
+        aria-labelledby="no-results-heading"
+        aria-describedby="no-results-description"
+      >
+        <Search 
+          className="mx-auto h-12 w-12 text-muted-foreground mb-4" 
+          aria-hidden="true"
+        />
+        <h3 
+          id="no-results-heading"
+          className="text-2xl font-bold mb-2"
+        >
+          No matching groups
+        </h3>
+        <p 
+          id="no-results-description"
+          className="text-muted-foreground mb-6"
+        >
           No groups found matching "{searchTerm}". Try a different search term or create a new group.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Button variant="outline" onClick={() => navigate("/groups")}>
+        <div 
+          className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+          role="group"
+          aria-label="Search result actions"
+        >
+          <Button 
+            variant="outline" 
+            onClick={() => navigate("/groups")}
+            aria-label="Clear search and view all groups"
+          >
             Clear search
           </Button>
           <CreateGroupDialog 
             trigger={
               <Button>
-                <Users className="mr-2 h-4 w-4" />
+                <Users className="mr-2 h-4 w-4" aria-hidden="true" />
                 Create Group
               </Button>
             }
@@ -104,24 +168,64 @@ export const GroupsEmptyState = ({
     );
   }
 
-  // Enhanced error states
+  // Enhanced error states with accessibility
   if (type === "error" || type === "loading-error") {
     return (
-      <div className="text-center py-12">
-        <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-        <h3 className="text-2xl font-bold mb-2 text-red-600">Something went wrong</h3>
-        <p className="text-muted-foreground mb-4">
+      <div 
+        className="text-center py-12"
+        role="alert"
+        aria-labelledby="error-heading"
+        aria-describedby="error-description"
+      >
+        <AlertTriangle 
+          className="mx-auto h-12 w-12 text-red-500 mb-4" 
+          aria-hidden="true"
+        />
+        <h3 
+          id="error-heading"
+          className="text-2xl font-bold mb-2 text-red-600"
+        >
+          Something went wrong
+        </h3>
+        <p 
+          id="error-description"
+          className="text-muted-foreground mb-4"
+        >
           {getErrorMessage(error)}
         </p>
         <p className="text-sm text-muted-foreground mb-6">
           This might be a temporary issue. Please try refreshing or contact support if the problem persists.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Button onClick={handleRetry} disabled={isRetrying}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${isRetrying ? 'animate-spin' : ''}`} />
-            {isRetrying ? 'Retrying...' : 'Try Again'}
+        <div 
+          className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+          role="group"
+          aria-label="Error recovery actions"
+        >
+          <Button 
+            onClick={handleRetry} 
+            disabled={isRetrying}
+            aria-describedby={isRetrying ? "retry-status" : undefined}
+          >
+            <RefreshCw 
+              className={`mr-2 h-4 w-4 ${isRetrying ? 'animate-spin' : ''}`} 
+              aria-hidden="true"
+            />
+            {isRetrying ? (
+              <>
+                <span aria-hidden="true">Retrying...</span>
+                <span id="retry-status" className="sr-only">
+                  Retry in progress
+                </span>
+              </>
+            ) : (
+              'Try Again'
+            )}
           </Button>
-          <Button variant="outline" onClick={() => navigate("/")}>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate("/")}
+            aria-label="Go to dashboard"
+          >
             Go to Dashboard
           </Button>
         </div>
@@ -129,24 +233,64 @@ export const GroupsEmptyState = ({
     );
   }
 
-  // Network error state
+  // Enhanced network error state with accessibility
   if (type === "network-error") {
     return (
-      <div className="text-center py-12">
-        <AlertTriangle className="mx-auto h-12 w-12 text-orange-500 mb-4" />
-        <h3 className="text-2xl font-bold mb-2 text-orange-600">Connection Problem</h3>
-        <p className="text-muted-foreground mb-4">
+      <div 
+        className="text-center py-12"
+        role="alert"
+        aria-labelledby="network-error-heading"
+        aria-describedby="network-error-description"
+      >
+        <AlertTriangle 
+          className="mx-auto h-12 w-12 text-orange-500 mb-4" 
+          aria-hidden="true"
+        />
+        <h3 
+          id="network-error-heading"
+          className="text-2xl font-bold mb-2 text-orange-600"
+        >
+          Connection Problem
+        </h3>
+        <p 
+          id="network-error-description"
+          className="text-muted-foreground mb-4"
+        >
           Unable to connect to the server. Please check your internet connection.
         </p>
         <p className="text-sm text-muted-foreground mb-6">
           Make sure you're connected to the internet and try again.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Button onClick={handleRetry} disabled={isRetrying}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${isRetrying ? 'animate-spin' : ''}`} />
-            {isRetrying ? 'Reconnecting...' : 'Retry Connection'}
+        <div 
+          className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+          role="group"
+          aria-label="Network error recovery actions"
+        >
+          <Button 
+            onClick={handleRetry} 
+            disabled={isRetrying}
+            aria-describedby={isRetrying ? "reconnect-status" : undefined}
+          >
+            <RefreshCw 
+              className={`mr-2 h-4 w-4 ${isRetrying ? 'animate-spin' : ''}`} 
+              aria-hidden="true"
+            />
+            {isRetrying ? (
+              <>
+                <span aria-hidden="true">Reconnecting...</span>
+                <span id="reconnect-status" className="sr-only">
+                  Reconnection in progress
+                </span>
+              </>
+            ) : (
+              'Retry Connection'
+            )}
           </Button>
-          <Button variant="outline" onClick={() => window.location.reload()}>
+          <Button 
+            variant="outline" 
+            onClick={() => window.location.reload()}
+            aria-label="Reload the current page"
+          >
             Reload Page
           </Button>
         </div>

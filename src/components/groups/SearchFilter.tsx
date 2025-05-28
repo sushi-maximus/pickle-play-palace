@@ -1,62 +1,98 @@
 
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface SearchFilterProps {
   onSearch: (searchTerm: string) => void;
   placeholder?: string;
+  initialValue?: string;
 }
 
-export const SearchFilter = ({ onSearch, placeholder = "Search groups..." }: SearchFilterProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
+export const SearchFilter = ({ 
+  onSearch, 
+  placeholder = "Search groups...",
+  initialValue = ""
+}: SearchFilterProps) => {
+  const [searchTerm, setSearchTerm] = useState(initialValue);
+  const [isFocused, setIsFocused] = useState(false);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSearch = () => {
-    onSearch(searchTerm);
-  };
+  useEffect(() => {
+    onSearch(debouncedSearchTerm);
+  }, [debouncedSearchTerm, onSearch]);
 
-  const handleClear = () => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handleClear = useCallback(() => {
     setSearchTerm("");
-    onSearch("");
-  };
+    inputRef.current?.focus();
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    } else if (e.key === "Escape") {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
       handleClear();
     }
-  };
+  }, [handleClear]);
 
   return (
-    <div className="w-full">
+    <div className="relative w-full max-w-md">
       <div className="relative">
+        <Search 
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 pointer-events-none" 
+          aria-hidden="true"
+        />
         <Input
+          ref={inputRef}
           type="text"
           placeholder={placeholder}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
-          className="w-full rounded-full border-gray-300 pr-10"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className="pl-10 pr-10"
+          role="searchbox"
+          aria-label="Search groups"
+          aria-describedby="search-instructions"
+          autoComplete="off"
         />
         {searchTerm && (
           <Button
-            type="button"
             variant="ghost"
-            size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-gray-100"
+            size="sm"
             onClick={handleClear}
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
+            aria-label="Clear search"
+            tabIndex={0}
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </Button>
         )}
       </div>
-      {searchTerm && (
-        <div className="mt-2 text-xs text-gray-500 hidden md:block">
-          Press Enter to search, Esc to clear
-        </div>
-      )}
+      
+      {/* Hidden instructions for screen readers */}
+      <div id="search-instructions" className="sr-only">
+        Type to search groups by name or location. Press Escape to clear search.
+        {searchTerm && ` Currently searching for: ${searchTerm}`}
+      </div>
+      
+      {/* Live region for search results announcement */}
+      <div 
+        role="status" 
+        aria-live="polite" 
+        aria-atomic="true" 
+        className="sr-only"
+      >
+        {debouncedSearchTerm && (
+          `Search results will be updated for: ${debouncedSearchTerm}`
+        )}
+      </div>
     </div>
   );
 };

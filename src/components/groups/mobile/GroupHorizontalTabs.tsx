@@ -1,9 +1,7 @@
 
-import { Activity, Users, Calendar, Settings, MoreVertical } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, Calendar, Activity, Settings, UserCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useParams } from "react-router-dom";
 
 interface GroupHorizontalTabsProps {
   activeTab: string;
@@ -18,77 +16,116 @@ export const GroupHorizontalTabs = ({
   onTabChange, 
   isAdmin = false, 
   hasPendingRequests = false,
-  memberCount = 0
+  memberCount = 0 
 }: GroupHorizontalTabsProps) => {
-  const { id: groupId } = useParams<{ id: string }>();
-
-  const baseTabs = [
-    { id: "activity2", label: "Activity", icon: Activity },
-    { id: "calendar", label: "Calendar", icon: Calendar },
-    { id: "users", label: "Members", icon: Users, showBadge: isAdmin && hasPendingRequests }
+  const tabs = [
+    {
+      id: "home",
+      label: "Home",
+      icon: Activity,
+      ariaLabel: "Group home and posts"
+    },
+    {
+      id: "members",
+      label: "Members",
+      icon: Users,
+      ariaLabel: `Group members, ${memberCount} total`,
+      badge: memberCount > 0 ? memberCount.toString() : undefined
+    },
+    {
+      id: "calendar",
+      label: "Events",
+      icon: Calendar,
+      ariaLabel: "Group events and calendar"
+    }
   ];
 
+  // Add admin-only tabs
+  if (isAdmin) {
+    tabs.push({
+      id: "requests",
+      label: "Requests",
+      icon: UserCheck,
+      ariaLabel: "Join requests" + (hasPendingRequests ? " - has pending requests" : ""),
+      badge: hasPendingRequests ? "!" : undefined
+    });
+    
+    tabs.push({
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      ariaLabel: "Group settings and administration"
+    });
+  }
+
+  const handleTabChange = (value: string) => {
+    onTabChange(value);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent, tabId: string) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleTabChange(tabId);
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
+      const nextIndex = event.key === 'ArrowLeft' 
+        ? Math.max(0, currentIndex - 1)
+        : Math.min(tabs.length - 1, currentIndex + 1);
+      handleTabChange(tabs[nextIndex].id);
+    }
+  };
+
   return (
-    <div className="border-b border-gray-200 bg-white">
-      <div className="flex w-full">
-        {baseTabs.map((tab) => {
-          const IconComponent = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              aria-label={tab.label}
-              className={`flex-1 flex flex-col items-center justify-center min-h-[56px] px-4 py-3 text-sm font-medium transition-all duration-200 touch-manipulation relative ${
-                activeTab === tab.id
-                  ? "text-primary bg-primary/10 border-b-2 border-primary"
-                  : "text-gray-600 hover:text-primary hover:bg-primary/5"
-              }`}
-            >
-              <div className="relative flex items-center gap-1">
-                <IconComponent className="h-4 w-4 flex-shrink-0" />
-                {tab.showBadge && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-                )}
-              </div>
-            </button>
-          );
-        })}
-        
-        {/* Admin dropdown menu */}
-        {isAdmin && (
-          <div className="flex-shrink-0 flex items-center justify-center min-h-[56px] px-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label="Admin settings"
-                  className={`flex items-center gap-2 min-h-[48px] px-3 py-2 text-sm font-medium transition-all duration-200 touch-manipulation ${
-                    activeTab === "settings"
-                      ? "text-primary bg-primary/10"
-                      : "text-gray-600 hover:text-primary hover:bg-primary/5"
-                  }`}
+    <div className="border-b bg-white">
+      <Tabs 
+        value={activeTab} 
+        onValueChange={handleTabChange}
+        className="w-full"
+      >
+        <TabsList 
+          className="w-full justify-start bg-transparent p-0 h-auto"
+          role="tablist"
+          aria-label="Group navigation tabs"
+        >
+          <div className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-1">
+            {tabs.map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600 hover:bg-gray-50 transition-colors"
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
+                  aria-label={tab.ariaLabel}
+                  tabIndex={activeTab === tab.id ? 0 : -1}
+                  onKeyDown={(e) => handleKeyDown(e, tab.id)}
                 >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="end" 
-                className="w-40 bg-white shadow-lg border border-gray-200 z-[9999]"
-                sideOffset={8}
-              >
-                <DropdownMenuItem 
-                  onClick={() => onTabChange("settings")}
-                  className="min-h-[48px] flex items-center touch-manipulation cursor-pointer hover:bg-gray-100"
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <IconComponent 
+                    className="w-4 h-4" 
+                    aria-hidden="true"
+                  />
+                  <span>{tab.label}</span>
+                  {tab.badge && (
+                    <Badge 
+                      variant={tab.badge === "!" ? "destructive" : "secondary"} 
+                      className="ml-1 text-xs min-w-0 px-1"
+                      aria-label={
+                        tab.badge === "!" 
+                          ? "Has pending requests" 
+                          : `${tab.badge} items`
+                      }
+                    >
+                      {tab.badge}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              );
+            })}
           </div>
-        )}
-      </div>
+        </TabsList>
+      </Tabs>
     </div>
   );
 };
