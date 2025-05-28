@@ -3,15 +3,9 @@ import { useEventPlayers } from "../hooks/useEventPlayers";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
 import { PromotionIndicator } from "./PromotionIndicator";
 import type { Database } from "@/integrations/supabase/types";
+import type { Temp_ExtendedPlayerStatus } from "../types/promotionTypes";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
-type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
-
-// Extended type to include promotion fields
-type ExtendedPlayerStatus = PlayerStatus & {
-  promoted_at?: string | null;
-  promotion_reason?: string | null;
-};
 
 interface PlayersListProps {
   eventId: string;
@@ -35,7 +29,7 @@ const PlayerCard = ({ player, isCurrentUser, showRanking }: PlayerCardProps) => 
   const { profiles } = player;
   
   // Create an extended player status object for the promotion indicator
-  const playerStatus: ExtendedPlayerStatus = {
+  const playerStatus: Temp_ExtendedPlayerStatus = {
     created_at: new Date().toISOString(),
     event_id: '',
     player_id: player.player_id,

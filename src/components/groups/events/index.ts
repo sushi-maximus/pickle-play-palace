@@ -25,3 +25,4 @@ export * from './components/EventDetailsTabs';
 export * from './components/PromotionBanner';
 export * from './components/PromotionIndicator';
 export * from './hooks/usePromotionStatus';
+export * from './types/promotionTypes';

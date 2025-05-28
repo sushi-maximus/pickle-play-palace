@@ -4,15 +4,7 @@ import { CheckCircle, Clock, XCircle } from "lucide-react";
 import { useEventRegistration } from "../hooks/useEventRegistration";
 import { usePromotionStatus } from "../hooks/usePromotionStatus";
 import { PromotionIndicator } from "./PromotionIndicator";
-import type { Database } from "@/integrations/supabase/types";
-
-type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
-
-// Extended type to include promotion fields
-type ExtendedPlayerStatus = PlayerStatus & {
-  promoted_at?: string | null;
-  promotion_reason?: string | null;
-};
+import type { Temp_ExtendedPlayerStatus } from "../types/promotionTypes";
 
 interface EventRegistrationStatusProps {
   eventId: string;
@@ -68,7 +60,7 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
   const Icon = config.icon;
 
   // Create extended registration object for promotion indicator
-  const extendedRegistration: ExtendedPlayerStatus = {
+  const extendedRegistration: Temp_ExtendedPlayerStatus = {
     ...registration,
     promoted_at: null, // Will be populated by usePromotionStatus if available
     promotion_reason: null

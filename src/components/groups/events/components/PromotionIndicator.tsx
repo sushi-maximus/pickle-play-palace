@@ -1,22 +1,9 @@
 
 import { ArrowUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { Database } from "@/integrations/supabase/types";
+import type { Temp_PromotionIndicatorProps } from "../types/promotionTypes";
 
-type PlayerStatus = Database['public']['Tables']['player_status']['Row'];
-
-// Extended type to include promotion fields
-type ExtendedPlayerStatus = PlayerStatus & {
-  promoted_at?: string | null;
-  promotion_reason?: string | null;
-};
-
-interface PromotionIndicatorProps {
-  registration: ExtendedPlayerStatus;
-  size?: 'sm' | 'md';
-}
-
-export const PromotionIndicator = ({ registration, size = 'md' }: PromotionIndicatorProps) => {
+export const PromotionIndicator = ({ registration, size = 'md' }: Temp_PromotionIndicatorProps) => {
   if (!registration.promoted_at) {
     return null;
   }
