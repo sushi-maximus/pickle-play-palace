@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Calendar, Clock, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -188,7 +187,9 @@ export const EventDetailsPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <LoadingContainer isLoading={true} skeleton="card" skeletonCount={1} />
+        <LoadingContainer isLoading={true} skeleton="card" skeletonCount={1}>
+          <div />
+        </LoadingContainer>
       </div>
     );
   }

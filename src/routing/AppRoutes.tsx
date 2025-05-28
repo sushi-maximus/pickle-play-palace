@@ -50,7 +50,7 @@ export const AppRoutes = () => {
       {/* Protected Routes - require authentication */}
       <Route path="/dashboard" element={
         <ProtectedRoute>
-          <RouteLoader>
+          <RouteLoader routeName="dashboard">
             <RouteErrorBoundary>
               <LazyDashboard />
             </RouteErrorBoundary>
@@ -60,7 +60,7 @@ export const AppRoutes = () => {
 
       <Route path="/profile" element={
         <ProtectedRoute>
-          <RouteLoader>
+          <RouteLoader routeName="profile">
             <RouteErrorBoundary>
               <LazyProfile />
             </RouteErrorBoundary>
@@ -70,7 +70,7 @@ export const AppRoutes = () => {
 
       <Route path="/groups" element={
         <ProtectedRoute>
-          <RouteLoader>
+          <RouteLoader routeName="groups">
             <RouteErrorBoundary>
               <LazyGroups />
             </RouteErrorBoundary>
@@ -80,7 +80,7 @@ export const AppRoutes = () => {
 
       <Route path="/groups/:id" element={
         <ProtectedRoute>
-          <RouteLoader>
+          <RouteLoader routeName="group-details">
             <RouteErrorBoundary>
               <LazyGroupDetails />
             </RouteErrorBoundary>
@@ -90,7 +90,7 @@ export const AppRoutes = () => {
 
       <Route path="/groups/:groupId/events/:eventId" element={
         <ProtectedRoute>
-          <RouteLoader>
+          <RouteLoader routeName="event-details">
             <RouteErrorBoundary>
               <LazyEventDetailsPage />
             </RouteErrorBoundary>
@@ -100,7 +100,7 @@ export const AppRoutes = () => {
 
       <Route path="/admin" element={
         <ProtectedRoute>
-          <RouteLoader>
+          <RouteLoader routeName="admin">
             <RouteErrorBoundary>
               <LazyAdmin />
             </RouteErrorBoundary>
