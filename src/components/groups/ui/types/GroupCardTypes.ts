@@ -8,19 +8,20 @@ export type { Group, UnifiedGroup, Profile } from "../../types/GroupTypes";
 // Updated props interfaces using strict types
 export interface GroupCardProps {
   group: Group;
+  isMember?: boolean;
   isAdmin?: boolean;
   className?: string;
 }
 
 // Extended props for hybrid components with membership info
 export interface GroupCardHybridProps extends GroupCardProps {
-  isMember?: boolean;
   membershipRole?: 'admin' | 'member';
 }
 
 // Props for components that work with unified group data
 export interface UnifiedGroupCardProps {
   group: UnifiedGroup;
+  isMember?: boolean;
   className?: string;
 }
 
