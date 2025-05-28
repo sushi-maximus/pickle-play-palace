@@ -145,9 +145,9 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
   // Calculate loading state
   const loading = groupsLoading || membershipsLoading || refreshMutation.isPending;
   
-  // Calculate error state - fix the type error
-  const error = groupsError || membershipsError || refreshMutation.error;
-  const errorMessage = error instanceof Error ? error.message : error ? String(error) : null;
+  // Calculate error state - fix the type error by converting to Error type
+  const rawError = groupsError || membershipsError || refreshMutation.error;
+  const error = rawError instanceof Error ? rawError : rawError ? new Error(String(rawError)) : null;
 
   // Create legacy-compatible membership objects for my-groups mode
   const memberships: UnifiedMembership[] = mode === 'my-groups' 
@@ -176,7 +176,7 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
     allGroupsCount: unifiedGroups.length,
     filteredGroupsCount: filteredGroups.length,
     loading,
-    error: errorMessage,
+    error: error?.message,
     mode
   });
 
@@ -184,7 +184,7 @@ export const useUnifiedGroups = ({ mode, searchTerm, userId }: UseUnifiedGroupsO
     allGroups: unifiedGroups,
     filteredGroups,
     loading,
-    error: errorMessage,
+    error,
     refreshData,
     refetch,
     // Legacy compatibility
