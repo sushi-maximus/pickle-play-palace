@@ -1,9 +1,10 @@
+
 import { Users, Clock } from "lucide-react";
 import { useEventPlayers } from "../hooks/useEventPlayers";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
 import { PromotionIndicator } from "./PromotionIndicator";
 import type { Database } from "@/integrations/supabase/types";
-import type { Temp_ExtendedPlayerStatus } from "../types/promotionTypes";
+import type { PlayerStatus } from "../types/promotionTypes";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -28,8 +29,8 @@ interface PlayerCardProps {
 const PlayerCard = ({ player, isCurrentUser, showRanking }: PlayerCardProps) => {
   const { profiles } = player;
   
-  // Create an extended player status object for the promotion indicator
-  const playerStatus: Temp_ExtendedPlayerStatus = {
+  // Create a player status object for the promotion indicator
+  const playerStatus: PlayerStatus = {
     created_at: new Date().toISOString(),
     event_id: '',
     player_id: player.player_id,

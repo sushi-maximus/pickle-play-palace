@@ -2,9 +2,9 @@
 import { CheckCircle, ArrowUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { Temp_PromotionBannerProps } from "../types/promotionTypes";
+import type { PromotionBannerProps } from "../types/promotionTypes";
 
-export const PromotionBanner = ({ registration, className }: Temp_PromotionBannerProps) => {
+export const PromotionBanner = ({ registration, className }: PromotionBannerProps) => {
   // Only show for promoted players
   if (!registration.promoted_at || !registration.promotion_reason) {
     return null;

@@ -1,9 +1,9 @@
 
 import { ArrowUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { Temp_PromotionIndicatorProps } from "../types/promotionTypes";
+import type { PromotionIndicatorProps } from "../types/promotionTypes";
 
-export const PromotionIndicator = ({ registration, size = 'md' }: Temp_PromotionIndicatorProps) => {
+export const PromotionIndicator = ({ registration, size = 'md' }: PromotionIndicatorProps) => {
   if (!registration.promoted_at) {
     return null;
   }

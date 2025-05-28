@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { queryKeys } from "@/lib/queryKeys";
-import type { Temp_ExtendedPlayerStatus } from "../types/promotionTypes";
+import type { PlayerStatus } from "../types/promotionTypes";
 
 interface UsePromotionStatusProps {
   eventId: string;
@@ -12,7 +12,7 @@ interface UsePromotionStatusProps {
 export const usePromotionStatus = ({ eventId, playerId }: UsePromotionStatusProps) => {
   const { data: promotionStatus, isLoading } = useQuery({
     queryKey: [...queryKeys.events.registration(eventId, playerId), 'promotion'],
-    queryFn: async (): Promise<Temp_ExtendedPlayerStatus | null> => {
+    queryFn: async (): Promise<PlayerStatus | null> => {
       if (!playerId) return null;
       
       const { data, error } = await supabase
@@ -26,7 +26,7 @@ export const usePromotionStatus = ({ eventId, playerId }: UsePromotionStatusProp
         throw error;
       }
       
-      return data as Temp_ExtendedPlayerStatus;
+      return data;
     },
     enabled: !!eventId && !!playerId,
     staleTime: 30 * 1000, // 30 seconds
