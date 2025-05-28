@@ -295,6 +295,8 @@ export type Database = {
           created_at: string
           event_id: string
           player_id: string
+          promoted_at: string | null
+          promotion_reason: string | null
           ranking_order: number
           registration_timestamp: string
           status: string
@@ -304,6 +306,8 @@ export type Database = {
           created_at?: string
           event_id: string
           player_id: string
+          promoted_at?: string | null
+          promotion_reason?: string | null
           ranking_order?: number
           registration_timestamp?: string
           status: string
@@ -313,6 +317,8 @@ export type Database = {
           created_at?: string
           event_id?: string
           player_id?: string
+          promoted_at?: string | null
+          promotion_reason?: string | null
           ranking_order?: number
           registration_timestamp?: string
           status?: string
