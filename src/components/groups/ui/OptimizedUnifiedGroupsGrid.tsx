@@ -1,5 +1,5 @@
 
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { UnifiedGroup } from "../hooks/types/unifiedGroupTypes";
 import { OptimizedGroupCardHybrid1 } from "./OptimizedGroupCardHybrid1";
@@ -21,7 +21,7 @@ const OptimizedUnifiedGroupsGrid = memo(({
 }: UnifiedGroupsGridProps) => {
   console.log("OptimizedUnifiedGroupsGrid rendering with groups:", groups.length, "loading:", loading);
 
-  // Memoize animation variants
+  // Memoize animation variants with useCallback to prevent recreation
   const containerVariants = useMemo(() => ({
     hidden: { opacity: 0 },
     visible: {
@@ -50,7 +50,7 @@ const OptimizedUnifiedGroupsGrid = memo(({
     }
   }), []);
 
-  // Memoize empty state JSX
+  // Memoize empty state content to prevent recreation
   const emptyStateContent = useMemo(() => (
     <motion.div 
       className="text-center py-12"
@@ -68,12 +68,20 @@ const OptimizedUnifiedGroupsGrid = memo(({
     </motion.div>
   ), [emptyMessage, emptyDescription]);
 
+  // Memoize groups validation to avoid repeated checks
+  const validGroups = useMemo(() => {
+    if (!groups || !Array.isArray(groups)) {
+      console.warn("OptimizedUnifiedGroupsGrid: Invalid groups array:", groups);
+      return [];
+    }
+    return groups.filter(group => group && group.id);
+  }, [groups]);
+
   if (loading) {
-    return <GroupsLoadingState count={6} />;
+    return <GroupsLoadingState count={6} variant="grid" />;
   }
 
-  // Defensive check for groups array
-  if (!groups || !Array.isArray(groups) || groups.length === 0) {
+  if (validGroups.length === 0) {
     return emptyStateContent;
   }
 
@@ -85,9 +93,9 @@ const OptimizedUnifiedGroupsGrid = memo(({
         initial="hidden"
         animate="visible"
       >
-        {groups.map((group, index) => (
+        {validGroups.map((group, index) => (
           <GroupGridItem
-            key={group?.id || `group-${index}`}
+            key={group.id}
             group={group}
             index={index}
             variants={itemVariants}
@@ -98,11 +106,15 @@ const OptimizedUnifiedGroupsGrid = memo(({
   );
 });
 
+// Enhanced memoization with more specific comparisons
 const GroupGridItem = memo(({ group, index, variants }: {
   group: UnifiedGroup;
   index: number;
   variants: any;
 }) => {
+  // Memoize the transition delay to prevent recalculation
+  const transitionDelay = useMemo(() => `${index * 50}ms`, [index]);
+
   // Defensive check for group data
   if (!group || !group.id) {
     console.warn(`Invalid group data at index ${index}:`, group);
@@ -120,7 +132,7 @@ const GroupGridItem = memo(({ group, index, variants }: {
       <motion.div 
         variants={variants}
         style={{
-          transitionDelay: `${index * 50}ms`
+          transitionDelay
         }}
       >
         <OptimizedGroupCardHybrid1 
@@ -130,9 +142,56 @@ const GroupGridItem = memo(({ group, index, variants }: {
       </motion.div>
     </GroupComponentErrorBoundary>
   );
+}, (prevProps, nextProps) => {
+  // Custom comparison for better memoization
+  return (
+    prevProps.group.id === nextProps.group.id &&
+    prevProps.group.name === nextProps.group.name &&
+    prevProps.group.member_count === nextProps.group.member_count &&
+    prevProps.group.isMember === nextProps.group.isMember &&
+    prevProps.index === nextProps.index
+  );
+});
+
+// Enhanced memoization for the main component
+export const OptimizedUnifiedGroupsGridMemo = memo(OptimizedUnifiedGroupsGrid, (prevProps, nextProps) => {
+  // Quick length check first
+  if (prevProps.groups.length !== nextProps.groups.length) {
+    return false;
+  }
+
+  // Check loading states
+  if (prevProps.loading !== nextProps.loading) {
+    return false;
+  }
+
+  // Check if any group has changed (shallow comparison)
+  const groupsChanged = prevProps.groups.some((group, index) => {
+    const nextGroup = nextProps.groups[index];
+    return !nextGroup || 
+           group.id !== nextGroup.id || 
+           group.name !== nextGroup.name ||
+           group.member_count !== nextGroup.member_count ||
+           group.isMember !== nextGroup.isMember;
+  });
+
+  if (groupsChanged) {
+    return false;
+  }
+
+  // Check message props
+  if (
+    prevProps.emptyMessage !== nextProps.emptyMessage ||
+    prevProps.emptyDescription !== nextProps.emptyDescription
+  ) {
+    return false;
+  }
+
+  return true;
 });
 
 OptimizedUnifiedGroupsGrid.displayName = "OptimizedUnifiedGroupsGrid";
 GroupGridItem.displayName = "GroupGridItem";
 
-export { OptimizedUnifiedGroupsGrid };
+// Export the memoized version as the default
+export { OptimizedUnifiedGroupsGridMemo as OptimizedUnifiedGroupsGrid };
