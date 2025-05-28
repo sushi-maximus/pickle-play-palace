@@ -404,3 +404,42 @@ When a template is triggered, the AI should:
 - "Create a new notification component" + "template" → Component Creation Template
 
 This system allows the user to simply say "template" and trust that the appropriate structured approach will be applied based on the work context.
+
+## Multi-Step Progress Tracking
+
+### Progress Communication
+When using templates with multiple steps/phases, the AI MUST:
+
+1. **End each message with progress status**: "Step X of Y completed" or "Phase X of Y completed"
+2. **Clearly state what was just finished**: "Just completed: [specific task/phase name]"
+3. **Clearly state what comes next**: "Next: [specific next task/phase name]"
+
+### Action Button System
+At the end of each step in a multi-step process, provide an action button using `lov-message-prompt` that includes:
+
+- Reference to the specific template being used
+- Current step/phase number
+- What should happen next
+- All necessary context for continuation
+
+**Action Button Format:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Continue with [Template Name] - Phase X of Y. Previous: [what was completed]. Next: [what should happen]. Template reference: rules.md [Template Name]. Context: [brief context needed for next step]">Continue Phase X</lov-message-prompt>
+</lov-actions>
+```
+
+**Example Usage:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Continue with Systematic Feature Development Template - Phase 3 of 6. Previous: Type System Integration completed. Next: Backend Service Implementation. Template reference: rules.md Systematic Feature Development Template. Context: Database schema approved, types updated.">Continue Phase 3</lov-message-prompt>
+</lov-actions>
+```
+
+### Progress Status Requirements
+- Always show current step number and total steps (e.g., "3/8 steps")
+- Use consistent format: "Step X of Y completed" or "Phase X of Y completed"
+- Include clear "Just completed" and "Next" statements
+- Provide action button for easy continuation
+
+This ensures users can easily track progress through complex implementations and continue work seamlessly by clicking the action button with all necessary context included.
