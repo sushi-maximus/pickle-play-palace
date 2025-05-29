@@ -13,7 +13,7 @@ import { LoginPrompt } from "@/components/groups/LoginPrompt";
 
 const Groups = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("all-groups");
+  const [activeTab, setActiveTab] = useState("my-groups"); // Changed default to my-groups
   const { user, isLoading } = useAuth();
 
   // Use our new simple hooks for both tabs
@@ -74,18 +74,9 @@ const Groups = () => {
         <div className="px-3">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
-              <TabsTrigger value="all-groups" className="text-sm md:text-base">All Groups</TabsTrigger>
               <TabsTrigger value="my-groups" className="text-sm md:text-base">My Groups</TabsTrigger>
+              <TabsTrigger value="all-groups" className="text-sm md:text-base">All Groups</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="all-groups" className="space-y-4 md:space-y-6">
-              <SimpleGroupList 
-                groups={allGroupsQuery.groups}
-                loading={allGroupsQuery.loading}
-                error={allGroupsQuery.error}
-                onRetry={allGroupsQuery.refetch}
-              />
-            </TabsContent>
             
             <TabsContent value="my-groups" className="space-y-4 md:space-y-6">
               <SimpleGroupList 
@@ -93,6 +84,15 @@ const Groups = () => {
                 loading={myGroupsQuery.loading}
                 error={myGroupsQuery.error}
                 onRetry={myGroupsQuery.refetch}
+              />
+            </TabsContent>
+            
+            <TabsContent value="all-groups" className="space-y-4 md:space-y-6">
+              <SimpleGroupList 
+                groups={allGroupsQuery.groups}
+                loading={allGroupsQuery.loading}
+                error={allGroupsQuery.error}
+                onRetry={allGroupsQuery.refetch}
               />
             </TabsContent>
           </Tabs>

@@ -1,8 +1,8 @@
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Users, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, MessageCircle, Calendar, MapPin, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -29,57 +29,83 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
   };
 
   return (
-    <Card 
-      className="cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-white h-48 md:h-52"
-      onClick={handleCardClick}
-    >
-      <CardHeader className="pb-2 md:pb-3">
-        <div className="flex items-start gap-2 md:gap-3">
-          <Avatar className="h-10 w-10 md:h-12 md:w-12">
-            <AvatarImage src={group.avatar_url || undefined} alt={group.name} />
-            <AvatarFallback className="bg-blue-500 text-white text-xs md:text-sm font-medium">
-              {getGroupInitials(group.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1 md:gap-2 mb-1">
-              <h3 className="font-semibold text-sm md:text-base text-gray-900 truncate">
-                {group.name}
-              </h3>
-              {group.is_private && (
-                <Lock className="h-3 w-3 md:h-4 md:w-4 text-gray-500 flex-shrink-0" />
-              )}
-            </div>
-            {group.location && (
-              <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
-                <MapPin className="h-2 w-2 md:h-3 md:w-3" />
-                <span className="truncate">{group.location}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </CardHeader>
+    <Card className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: group.avatar_url 
+            ? `url(${group.avatar_url})` 
+            : 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
       
-      <CardContent className="pt-0 pb-2 md:pb-3">
-        {group.description && (
-          <p className="text-xs md:text-sm text-gray-600 mb-2 md:mb-3 line-clamp-2">
-            {group.description}
-          </p>
-        )}
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
-            <Users className="h-3 w-3 md:h-4 md:w-4" />
-            <span>{group.member_count || 0} member{(group.member_count || 0) !== 1 ? 's' : ''}</span>
+      {/* Content Overlay */}
+      <CardContent className="relative z-10 h-full flex flex-col p-6 text-white">
+        {/* Header with badges and avatar */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex gap-2">
+            <Badge variant="outline" className="bg-white/20 border-white/30 text-white backdrop-blur-sm">
+              {group.is_private ? (
+                <>
+                  <Lock className="h-3 w-3 mr-1" />
+                  Private
+                </>
+              ) : (
+                <>@ Public</>
+              )}
+            </Badge>
+            {/* Admin badge - would need actual admin check */}
+            <Badge variant="outline" className="bg-green-500/80 border-green-400/50 text-white backdrop-blur-sm">
+              Admin
+            </Badge>
           </div>
           
-          {(group.skill_level_min || group.skill_level_max) && (
-            <Badge variant="secondary" className="text-xs">
-              {group.skill_level_min && group.skill_level_max && group.skill_level_min !== group.skill_level_max
-                ? `${group.skill_level_min} - ${group.skill_level_max}`
-                : group.skill_level_min || group.skill_level_max}
-            </Badge>
+          {/* User avatar */}
+          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+            {getGroupInitials(group.name)}
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold">{group.member_count || 0}</div>
+            <div className="text-sm text-white/80">Members</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold">24</div>
+            <div className="text-sm text-white/80">Posts</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold">12</div>
+            <div className="text-sm text-white/80">Events</div>
+          </div>
+        </div>
+
+        {/* Group Info */}
+        <div className="space-y-2 mb-6">
+          <h3 className="text-xl font-bold leading-tight">{group.name}</h3>
+          
+          {group.location && (
+            <div className="flex items-center text-sm text-white/90">
+              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+              <span className="truncate">{group.location}</span>
+            </div>
           )}
+        </div>
+
+        {/* Action Button */}
+        <div className="mt-auto">
+          <Button 
+            onClick={handleCardClick}
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            size="lg"
+          >
+            View Group
+          </Button>
         </div>
       </CardContent>
     </Card>
