@@ -10,6 +10,17 @@ import { useDashboardPullToRefresh } from "@/components/dashboard/hooks/useDashb
 
 const Dashboard = () => {
   const { isLoading, user } = useAuth();
+  
+  // Always call all hooks at the top level to ensure consistent hook calls
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
+
+  // Only bind pull-to-refresh when user exists and container is available
+  useEffect(() => {
+    if (scrollContainerRef.current && user && !isLoading) {
+      bindToElement(scrollContainerRef.current);
+    }
+  }, [bindToElement, user, isLoading]);
 
   // Show loading state while authentication is being resolved
   if (isLoading || !user) {
@@ -22,23 +33,7 @@ const Dashboard = () => {
     );
   }
 
-  // Only render the authenticated dashboard content when user exists
-  return <AuthenticatedDashboard />;
-};
-
-const AuthenticatedDashboard = () => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
-  // Only call the pull-to-refresh hook when we're in the authenticated component
-  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
-
-  // Bind pull-to-refresh to the scroll container
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      bindToElement(scrollContainerRef.current);
-    }
-  }, [bindToElement]);
-
+  // Render authenticated dashboard content
   return (
     <RouteErrorBoundary routeName="Dashboard">
       <AppLayout title="Dashboard">
