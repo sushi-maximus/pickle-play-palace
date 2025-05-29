@@ -16,7 +16,7 @@ export const rankingService = {
     try {
       console.log('[Ranking Service] Setting initial rankings for event:', eventId);
       
-      const { error } = await supabase.rpc('set_initial_rankings' as any, {
+      const { error } = await supabase.rpc('set_initial_rankings', {
         p_event_id: eventId
       });
 
@@ -52,7 +52,7 @@ export const rankingService = {
     try {
       console.log('[Ranking Service] Reorganizing confirmed players:', { eventId, adminId });
       
-      const { error } = await supabase.rpc('reorganize_confirmed_players' as any, {
+      const { error } = await supabase.rpc('reorganize_confirmed_players', {
         p_event_id: eventId,
         p_admin_id: adminId
       });
@@ -89,7 +89,7 @@ export const rankingService = {
     try {
       console.log('[Ranking Service] Reordering players:', { eventId, adminId, playerCount: playerIds.length });
       
-      const { error } = await supabase.rpc('reorder_players' as any, {
+      const { error } = await supabase.rpc('reorder_players', {
         p_event_id: eventId,
         p_admin_id: adminId,
         p_player_ids: playerIds
