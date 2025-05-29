@@ -1,5 +1,5 @@
 
-Important Instruction for Lovable.dev
+# Important Instruction for Lovable.dev
 AI, you are breaking my site when you are making changes I didn't ask for. Please read this file and follow it.
 
 # Change Only What's Requested Protocol
@@ -206,6 +206,78 @@ Always use the database types from `@/integrations/supabase/types` instead of de
 - Use `OptimizedNavLink` for navigation with preload capabilities
 - Hover/focus events automatically preload routes
 
+## CRITICAL: File Protection Protocol
+
+**BEFORE MODIFYING ANY FILE**, you MUST:
+
+1. **Check the locked files list below** - if a file is locked, you CANNOT modify it under any circumstances
+2. **Request explicit permission** if you need to modify a locked file
+3. **Analyze file impact** - determine if your change might affect locked files
+4. **Prevent rollback scenarios** - avoid changes that could force the user to lose work
+
+### LOCKED FILES LIST
+
+**CORE PAGES (LOCKED):**
+- `src/pages/Dashboard.tsx`
+- `src/pages/Groups.tsx`
+- `src/pages/Index.tsx`
+- `src/pages/Login.tsx`
+- `src/pages/Signup.tsx`
+- `src/pages/Profile.tsx`
+- `src/pages/Admin.tsx`
+- `src/pages/Contact.tsx`
+- `src/pages/Privacy.tsx`
+- `src/pages/NotFound.tsx`
+- `src/pages/ForgotPassword.tsx`
+- `src/pages/AuthCallback.tsx`
+- `src/pages/EventDetailsPage.tsx`
+- `src/pages/GroupDetails.tsx`
+
+**CRITICAL COMPONENTS (LOCKED):**
+- All files in `src/components/groups/ui/`
+- All files in `src/components/groups/mobile/`
+- All files in `src/components/groups/posts/`
+- All files in `src/components/groups/events/`
+- All files in `src/components/groups/details/`
+- All files in `src/components/navigation/`
+- All files in `src/components/layout/`
+- `src/components/groups/SearchFilter.tsx`
+
+**HOOKS AND UTILITIES (LOCKED):**
+- All files in `src/components/groups/hooks/`
+- All files in `src/components/groups/utils/`
+- All files in `src/components/groups/services/`
+- All files in `src/hooks/`
+
+**TYPE DEFINITIONS (LOCKED):**
+- All files ending in `/types.ts` or `/types/`
+- All files ending in `/index.ts`
+
+### FILE PROTECTION RULES:
+
+1. **ABSOLUTE PROHIBITION**: Never modify locked files without explicit user permission
+2. **IMPACT ANALYSIS**: Before ANY change, verify it won't affect locked files
+3. **PERMISSION REQUEST**: If locked file modification is needed, ask user to unlock specific files first
+4. **ROLLBACK PREVENTION**: Avoid changes that could cascade into locked file dependencies
+
+### UNLOCKING PROCESS:
+
+When user wants to work on a locked file:
+1. User must explicitly say: "Unlock [filename] for editing"
+2. AI confirms which file is being unlocked
+3. AI removes the file from the locked list
+4. Work proceeds with normal change protocols
+5. When work is complete, AI asks if file should be locked again
+
+### VIOLATION CONSEQUENCES:
+
+If you modify a locked file without permission:
+- User loses work and must rollback
+- Trust is broken
+- Development velocity is severely impacted
+
+**REMEMBER: The locked files list is your safety net to prevent rollbacks and lost work.**
+
 ## Development Templates
 
 ### Systematic Feature Development Template
@@ -366,179 +438,61 @@ types/componentTypes.ts (if custom types needed)
 **For New Components**: Use Component Creation Template  
 **For Bug Fixes**: Use Error Debugging Template  
 **For Performance**: Use Performance Optimization Template  
-**For Testing**: Use Testing and Validation Template  
 
 **How to Reference**: Simply mention the template name in your request:  
 - "Let's use the systematic development template for batch confirmation"  
 - "Follow the component creation template for this new feature"  
 - "Use the debugging template to fix this error"
 
-## Template Trigger System
+## MANDATORY TRANSPARENCY RULE
 
-### Auto-Template Selection
+**AT THE END OF EVERY MESSAGE**, you MUST include a transparency statement that clearly indicates:
 
-When the user says "template" or "use template", the AI should automatically determine which template to use based on the context and nature of the request:
+1. **What was specifically requested by the user**
+2. **What changes you made that were explicitly requested**
+3. **Any additional changes you made that were NOT explicitly requested** (if any)
+4. **Confirmation that you made NO unrequested changes** (if true)
 
-**Context Analysis for Template Selection:**  
-- **Complex new features** (multiple components, database changes, etc.) → Use **Systematic Feature Development Template**  
-- **Simple UI changes, styling, single component changes** → Use **Quick Feature Implementation Template**  
-- **Database schema changes, migrations, new tables** → Use **Database Migration Template**  
-- **Creating new UI components** → Use **Component Creation Template**  
-- **Bugs, errors, issues reported** → Use **Error Debugging Template**  
-- **Performance complaints, optimization requests** → Use **Performance Optimization Template**  
-- **Testing, validation requests** → Use **Testing and Validation Template**
-
-**Decision Process:**  
-1. Analyze the user's request context  
-2. Determine complexity and scope  
-3. Select the most appropriate template  
-4. Explicitly state which template is being used  
-5. Follow the template methodology  
-
-**Template Usage Format:**  
-When a template is triggered, the AI should:  
-1. State: "Using [Template Name] for this request"  
-2. Follow the template's step-by-step process  
-3. Ask for approval between phases when needed (for systematic template)  
-4. Maintain the template's quality standards  
-
-**Examples:**  
-- "Add batch confirmation logic" + "template" → Systematic Feature Development Template  
-- "Fix this button color" + "template" → Quick Feature Implementation Template  
-- "This component is broken" + "template" → Error Debugging Template  
-- "Create a new notification component" + "template" → Component Creation Template  
-
-This system allows the user to simply say "template" and trust that the appropriate structured approach will be applied based on the work context.
-
-## Multi-Step Progress Tracking
-
-### Progress Communication
-When using templates with multiple steps/phases, the AI MUST:
-
-1. **End each message with progress status**: "Step X of Y completed" or "Phase X of Y completed"  
-2. **Clearly state what was just finished**: "Just completed: [specific task/phase name]"  
-3. **Clearly state what comes next**: "Next: [specific next task/phase name]"
-
-### Action Button System
-At the end of each step in a multi-step process, provide an action button using `lov-message-prompt` that includes:
-
-- Reference to the specific template being used
-- Current step/phase number
-- What should happen next
-- All necessary context for continuation
-
-**Action Button Format:**
-```xml
-<lov-actions>
-<lov-message-prompt message="Continue with [Template Name] - Phase X of Y. Previous: [what was completed]. Next: [what should happen]. Template reference: rules.md [Template Name]. Context: [brief context needed for next step]">Continue Phase X</lov-message-prompt>
-</lov-actions>
+**Format for transparency statement:**
+```
+---
+**TRANSPARENCY REPORT:**
+- **User requested:** [exact description of what user asked for]
+- **Changes made as requested:** [list of specific changes that matched the request]
+- **Additional unrequested changes:** [list any changes you made beyond the request, OR state "NONE"]
+- **Unrequested changes confirmation:** [YES - I made changes beyond the request / NO - I only made requested changes]
+---
 ```
 
-**Example Usage:**
-```xml
-<lov-actions>
-<lov-message-prompt message="Continue with Systematic Feature Development Template - Phase 3 of 6. Previous: Type System Integration completed. Next: Backend Service Implementation. Template reference: rules.md Systematic Feature Development Template. Context: Database schema approved, types updated.">Continue Phase 3</lov-message-prompt>
-</lov-actions>
-```
+**This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
 
-### Progress Status Requirements
-- Always show current step number and total steps (e.g., "3/8 steps")
-- Use consistent format: "Step X of Y completed" or "Phase X of Y completed"
-- Include clear "Just completed" and "Next" statements
-- Provide action button for easy continuation
+IMPORTANT: rules.md is 725 lines long. If you make any modifications to it, let the user know that it's getting too long and that they should consider asking you to refactor it after you're done with the lov-code block.
 
-This ensures users can easily track progress through complex implementations and continue work seamlessly by clicking the action button with all necessary context included.
-
-## Error Debugging Action Button System
-
-### When Errors Occur
-When the AI encounters or the user reports errors, the AI MUST provide action buttons that reference the appropriate debugging approach from rules.md.
-
-### Error Action Button Categories
-
-**TypeScript/Compilation Errors:**
-```xml
-<lov-actions>
-<lov-message-prompt message="Fix TypeScript compilation error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: TypeScript types and compilation issues.">Fix TypeScript Error</lov-message-prompt>
-</lov-actions>
-```
-
-**Component/React Errors:**
-```xml
-<lov-actions>
-<lov-message-prompt message="Debug React component error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Component lifecycle, hooks, and JSX issues.">Fix Component Error</lov-message-prompt>
-</lov-actions>
-```
-
-**Build/Import Errors:**
-```xml
-<lov-actions>
-<lov-message-prompt message="Resolve build/import error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Module resolution and dependency issues.">Fix Build Error</lov-message-prompt>
-</lov-actions>
-```
-
-**Runtime/Logic Errors:**
-```xml
-<lov-actions>
-<lov-message-prompt message="Debug runtime error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Application logic and runtime behavior.">Fix Runtime Error</lov-message-prompt>
-</lov-actions>
-```
-
-**Database/API Errors:**
-```xml
-<lov-actions>
-<lov-message-prompt message="Fix database/API error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Database queries, API calls, and data handling.">Fix Database Error</lov-message-prompt>
-</lov-actions>
-```
-
-### Error Action Button Requirements
-
-1. **Always include template reference**: "Template reference: rules.md Error Debugging Template"
-2. **Provide error context**: Brief description of the specific error
-3. **Specify focus area**: What type of debugging approach is needed
-4. **Use descriptive button text**: Clear indication of what the button will do
-
-### Integration with Error Debugging Template
-
-When error action buttons are clicked, the AI will automatically:
-1. Reference the Error Debugging Template from rules.md
-2. Follow the systematic debugging steps:
-   - Reproduce Error
-   - Isolate Files
-   - Review Code
-   - Add Debug Logs
-   - Test Fix
-   - Clean Up
-3. Apply the Change Only What's Requested Protocol
-4. Preserve all existing functionality while fixing the specific error
-
-This system ensures consistent, structured error resolution while maintaining code quality and user workflow continuity.
-
-# Pickle Ninja Implementation Prompt: Player Registration and Initial Ranking - Step 3 (User Dashboard and Group Activity Page)
+# Pickle Ninja Implementation Prompt: Player Registration and Initial Ranking - Step 4 (Reorganization, Admin Reordering, and Initial Ranking)
 
 ## Overview
-This file is Step 3 of the implementation guide for the player registration and initial ranking functionality of the "Pickle Ninja" app. It focuses on the User Dashboard, which serves as the user's home page, and the Group Details - Activity Page, which displays group activities and the next upcoming event. This step assumes the Calendar Page (Step 1) and registration process with the Event Details Page (Step 2) are implemented. Subsequent steps will cover ranking logic, database tables, Supabase functions, and enhanced features. This step is designed to be small and testable to ensure compatibility with Lovable.dev.
+This file is Step 4 of the implementation guide for the player registration and initial ranking functionality of the "Pickle Ninja" app. It focuses on reorganizing confirmed players based on rankings, allowing admins to manually reorder players, and setting initial rankings for new events. This step assumes the Calendar Page (Step 1), registration process with the Event Details Page (Step 2), and User Dashboard (Step 3) are implemented. Subsequent steps will cover Supabase table designs, functions, and enhanced features. This step is designed to be small and testable to ensure compatibility with Lovable.dev.
 
-**Current Date/Time**: 11:43 AM MST, May 28, 2025  
+**Current Date/Time**: 01:21 AM MST, May 29, 2025  
 **Module 1 Status**: Group functionality (e.g., creating groups like "Pickle Pros," ID 456) is already implemented.  
-**Module 2 Status**: Event Creation Wizard creates events within a group (e.g., "Week 1 Ladder Matchup," ID 789), the Calendar Page (Step 1) displays events, and players can register via the Event Details Page (Step 2).  
-**Functionality (This Step)**: Implements the User Dashboard as the user's home page, showing registered events, and the Group Details - Activity Page, displaying group activities with the next upcoming event at the top.
+**Module 2 Status**: Event Creation Wizard creates events within a group (e.g., "Week 1 Ladder Matchup," ID 789), the Calendar Page (Step 1) displays events, players can register via the Event Details Page (Step 2), and the User Dashboard (Step 3) shows registered events.  
+**Functionality (This Step)**: Implements logic for reorganizing confirmed players based on rankings, allows admins to manually reorder players, and sets initial rankings for new events.
 
 ## Mobile-First UI/UX Design Principles (Lovable.dev Guidelines)
-Both the User Dashboard and Group Details - Activity Page are optimized for mobile devices with the following principles to ensure consistency in Lovable.dev:
-1. **Single-Column Layout**: Content fits within a 360px viewport, avoiding horizontal scrolling.
-2. **Large Touch Targets**: Interactive elements (buttons, cards) have a minimum size of 48x48 pixels.
-3. **Minimal Content per Screen**: Prioritize key actions and information to reduce scrolling.
-4. **Sticky Navigation**: Sticky headers/footers for consistent navigation (e.g., "Back to Group").
-5. **Clear Progress Indicators**: Not applicable in this step (used in multi-step processes).
-6. **Optimized Interactions**: Use mobile-friendly gestures (e.g., pull-to-refresh) and input types.
-7. **Haptic Feedback**: Light vibration (`navigator.vibrate(200)`) on button presses for tactile confirmation.
-8. **Responsive Typography**: Base font size of 16px, headings at 20px, scaling for larger screens.
-9. **Error Handling**: Inline error messages in red (e.g., "No events registered") in the main content area.
-10. **Onboarding Tooltips**: Dismissible tooltips or first-use modals to guide users, with a "Skip" option.
+This step includes UI updates to the Event Details Page (from Step 2) to allow admins to reorder players. The following principles ensure alignment with Lovable.dev's mobile-first requirements:
+1. **Single-Column Layout**: Updates maintain the single-column layout (max 360px viewport).
+2. **Large Touch Targets**: Buttons (e.g., "Reorder Players") are at least 48x48 pixels.
+3. **Minimal Content per Screen**: Add minimal UI elements to avoid clutter.
+4. **Sticky Navigation**: Maintain sticky headers/footers for navigation.
+5. **Clear Progress Indicators**: Not applicable (used in multi-step processes).
+6. **Optimized Interactions**: Support fast backend responses for reordering actions.
+7. **Haptic Feedback**: Add haptic feedback (`navigator.vibrate(200)`) for admin actions.
+8. **Responsive Typography**: Use 16px font size for new UI elements, scaling to 20px for headings.
+9. **Error Handling**: Show inline error messages in red (e.g., "Failed to reorder players").
+10. **Onboarding Tooltips**: Add tooltips for new features (e.g., "Drag to reorder players").
 
 ## Database Tables
-This section defines the database tables required for the User Dashboard and Group Details - Activity Page: `player_status`, `groups`, `group_members`, `events`, `auth.users`, and `posts`. These tables are referenced from previous steps (e.g., Step 1, File 2a; Step 2, File 2b) but are redefined here for self-containment.
+This section defines the database tables required for reorganization, admin reordering, and initial ranking: `player_status`, `groups`, `group_members`, `events`, and `auth.users`. These tables are referenced from previous steps (e.g., Step 2, File 2b; Step 3, File 2c) but are redefined here for self-containment.
 
 ### 1. `player_status` Table (Defined in Step 2)
 - **Purpose**: Tracks the participation status of players for each event, including registration, confirmation, waitlist, and ranking order.
@@ -553,7 +507,7 @@ This section defines the database tables required for the User Dashboard and Gro
   | `ranking_order`     | INTEGER     | NOT NULL, default 0                                         |
   | `created_at`        | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
 - **Usage**:
-  - Used in the User Dashboard to fetch events the user has registered for, along with their status.
+  - The `ranking_order` field is updated by the `reorganize_confirmed_players` and `reorder_players` procedures to reflect the new ranking order.
 - **Example Entry**:
   | `player_id`        | `event_id`        | `status`      | `substitute_id` | `registration_timestamp` | `ranking_order` | `created_at`              |
   |--------------------|-------------------|---------------|-----------------|--------------------------|-----------------|---------------------------|
@@ -576,7 +530,7 @@ This section defines the database tables required for the User Dashboard and Gro
   | `member_count`   | INTEGER     | NOT NULL, default 0                                         |
   | `created_at`     | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
 - **Usage**:
-  - Used in the Group Details - Activity Page to fetch group details and validate user membership.
+  - Used to validate group membership for admin actions (e.g., reordering players).
 - **Example Entry**:
   | `id`               | `group_name`   | `description`           | `location`   | `organizer_id`    | `member_count` | `created_at`              |
   |--------------------|----------------|-------------------------|--------------|-------------------|----------------|---------------------------|
@@ -596,7 +550,7 @@ This section defines the database tables required for the User Dashboard and Gro
   ```
 
 ### 4. `group_members` Table (Defined in Step 1)
-- **Purpose**: Tracks membership of users in groups, ensuring only group members can access the Group Details - Activity Page.
+- **Purpose**: Tracks membership of users in groups, ensuring only admins can perform reordering actions.
 - **Table Design**:
   | Field Name      | Data Type   | Constraints/Description                                      |
   |-----------------|-------------|-------------------------------------------------------------|
@@ -608,17 +562,17 @@ This section defines the database tables required for the User Dashboard and Gro
   | `joined_at`     | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
   | `request_message` | TEXT      | NULLABLE                                                    |
 - **Usage**:
-  - Validates that a user is part of the group with `role: 'member'` and `status: 'active'` before allowing access to the Group Details - Activity Page.
+  - Validates that a user is part of the group with `role: 'admin'` and `status: 'active'` before allowing reordering actions.
 - **Example Entry**:
   | `id`               | `group_id`        | `user_id`         | `role`      | `status`   | `joined_at`               | `request_message`   |
   |--------------------|-------------------|-------------------|-------------|------------|---------------------------|---------------------|
-  | `999e8888-e89b-12d3-a456-426614174000` | `456e7890-e89b-12d3-a456-426614174000` | `111e2223-e89b-12d3-a456-426614174000` | "member"    | "active"   | "2025-05-27T16:54:00Z"    | NULL                |
+  | `999e8888-e89b-12d3-a456-426614174000` | `456e7890-e89b-12d3-a456-426614174000` | `123e4567-e89b-12d3-a456-426614174000` | "admin"     | "active"   | "2025-05-27T16:54:00Z"    | NULL                |
 - **Indexing Recommendations**:
   - Index on `group_id` for efficient retrieval of members in a group.
   - Index on `user_id` for efficient retrieval of groups a user belongs to.
 
 ### 5. `events` Table (Defined in Step 1)
-- **Purpose**: Stores individual events, providing the event details for display on the User Dashboard and Group Details - Activity Page.
+- **Purpose**: Stores individual events, providing the event details for reordering players.
 - **Table Design**:
   | Field Name       | Data Type   | Constraints/Description                                      |
   |------------------|-------------|-------------------------------------------------------------|
@@ -632,8 +586,7 @@ This section defines the database tables required for the User Dashboard and Gro
   | `registration_open` | BOOLEAN  | NOT NULL, default true                                     |
   | `created_at`     | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
 - **Usage**:
-  - Used in the User Dashboard to fetch events the user has registered for.
-  - Used in the Group Details - Activity Page to fetch the next upcoming event for the group.
+  - Used to fetch event details for reordering players within an event.
 - **Example Entry**:
   | `id`               | `group_id`        | `event_title`    | `description`           | `event_date` | `event_time` | `location`         | `registration_open` | `created_at`              |
   |--------------------|-------------------|------------------|-------------------------|--------------|--------------|--------------------|---------------------|---------------------------|
@@ -650,214 +603,215 @@ This section defines the database tables required for the User Dashboard and Gro
   | `id`            | UUID        | Primary Key, auto-generated                                 |
   | `email`         | TEXT        | NOT NULL, unique                                            |
 - **Usage**:
-  - Used to authenticate users and fetch their ID for the User Dashboard.
+  - Used to authenticate users and fetch their ID for admin validation.
 - **Example Entry**:
   | `id`               | `email`             |
   |--------------------|---------------------|
-  | `111e2223-e89b-12d3-a456-426614174000` | "john.doe@example.com" |
+  | `123e4567-e89b-12d3-a456-426614174000` | "admin@example.com" |
 
-### 7. `posts` Table (Provided by User)
-- **Purpose**: Stores posts made by group members on the Group Details - Activity Page, functioning like a Facebook feed.
-- **Table Design**:
-  ```sql
-  CREATE TABLE public.posts (
-    id UUID NOT NULL DEFAULT gen_random_uuid(),
-    group_id UUID NOT NULL,
-    user_id UUID NOT NULL,
-    content TEXT NOT NULL,
-    media_urls TEXT[] NULL,
-    pinned BOOLEAN NULL DEFAULT false,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CONSTRAINT posts_pkey PRIMARY KEY (id),
-    CONSTRAINT posts_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
-  ) TABLESPACE pg_default;
+## Supabase Stored Procedures
 
-  CREATE TRIGGER update_posts_updated_at
-  BEFORE UPDATE ON posts
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
-  ```
-- **Relationships**:
-  - Foreign Key: `group_id` references `groups(id)`, `user_id` references `auth.users(id)`.
-- **Usage**:
-  - Stores posts for the activity feed on the Group Details - Activity Page.
-  - `media_urls` stores an array of URLs for media attachments (e.g., images, videos).
-  - `pinned` allows marking posts to display at the top of the feed.
-  - The `update_posts_updated_at` trigger ensures the `updated_at` column reflects the latest modification time.
-- **Example Entry**:
-  | `id`               | `group_id`        | `user_id`         | `content`                    | `media_urls`                          | `pinned` | `created_at`              | `updated_at`              |
-  |--------------------|-------------------|-------------------|------------------------------|---------------------------------------|----------|---------------------------|---------------------------|
-  | `555e6667-e89b-12d3-a456-426614174000` | `456e7890-e89b-12d3-a456-426614174000` | `111e2223-e89b-12d3-a456-426614174000` | "Excited for the next match!" | {"https://example.com/image.jpg"} | false    | "2025-05-28T09:26:00Z"    | "2025-05-28T09:26:00Z"    |
-- **Indexing Recommendations**:
-  - Index on `group_id` for efficient retrieval of posts for a group.
-  - Index on `created_at` for sorting posts in the activity feed.
-  - Index on `pinned` for efficient filtering of pinned posts.
+### Stored Procedure: `reorganize_confirmed_players`
+-- Purpose: Reorganizes confirmed players for an event based on their skill level and DUPR rating.
+-- Usage: Called automatically after registration closes or manually by an admin via a UI button on the Event Details Page.
+-- Parameters:
+--   p_event_id (UUID): The ID of the event to reorganize players for.
+--   p_admin_id (UUID): The ID of the admin performing the action.
+-- Returns: None (procedure; updates the `player_status` table).
+-- Example Call: CALL reorganize_confirmed_players('789e0123-e89b-12d3-a456-426614174000', '123e4567-e89b-12d3-a456-426614174000');
+CREATE OR REPLACE PROCEDURE reorganize_confirmed_players(p_event_id UUID, p_admin_id UUID)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_group_id UUID;
+    v_is_admin BOOLEAN;
+    player_record RECORD;
+    rank_counter INTEGER := 1;
+BEGIN
+    -- Get event details
+    SELECT group_id
+    INTO v_group_id
+    FROM events
+    WHERE id = p_event_id;
 
-## User Dashboard (User Home Page)
-- **Access**: The User Dashboard serves as the user's home page, the default landing page after login. It is accessible to all authenticated users via the root route (e.g., `/dashboard`).
-- **Functionality**:
-  - Displays a list of events the user has registered for, including event details (`event_title`, `event_date`, `event_time`, `location`) and their registration status (`status` from `player_status`).
-  - Clicking an event navigates to the Event Details page (implemented in Step 2).
-- **Query Example**:
+    -- Check if user is an admin for the group
+    SELECT EXISTS (
+        SELECT 1 FROM group_members
+        WHERE group_id = v_group_id
+          AND user_id = p_admin_id
+          AND role = 'admin'
+          AND status = 'active'
+    ) INTO v_is_admin;
+
+    IF NOT v_is_admin THEN
+        RAISE EXCEPTION 'User % is not an admin for the group of event %.', p_admin_id, p_event_id;
+    END IF;
+
+    -- Reset ranking order for confirmed players
+    UPDATE player_status
+    SET ranking_order = 0
+    WHERE event_id = p_event_id AND status = 'confirmed';
+
+    -- Reorganize players based on skill level and DUPR rating
+    FOR player_record IN (
+        SELECT ps.player_id
+        FROM player_status ps
+        JOIN profiles p ON ps.player_id = p.id
+        WHERE ps.event_id = p_event_id AND ps.status = 'confirmed'
+        ORDER BY p.skill_level DESC, p.dupr_rating DESC NULLS LAST
+    )
+    LOOP
+        UPDATE player_status
+        SET ranking_order = rank_counter
+        WHERE event_id = p_event_id AND player_id = player_record.player_id;
+        rank_counter := rank_counter + 1;
+    END LOOP;
+END;
+$$;
+
+### Stored Procedure: `reorder_players`
+-- Purpose: Allows an admin to manually reorder confirmed players for an event.
+-- Usage: Called via a UI button on the Event Details Page after the admin reorders players.
+-- Parameters:
+--   p_event_id (UUID): The ID of the event to reorder players for.
+--   p_admin_id (UUID): The ID of the admin performing the action.
+--   p_player_ids (UUID[]): Array of player IDs in the new order.
+-- Returns: None (procedure; updates the `player_status` table).
+-- Example Call: CALL reorder_players('789e0123-e89b-12d3-a456-426614174000', '123e4567-e89b-12d3-a456-426614174000', ARRAY['111e2223-e89b-12d3-a456-426614174000', ...]);
+CREATE OR REPLACE PROCEDURE reorder_players(p_event_id UUID, p_admin_id UUID, p_player_ids UUID[])
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_group_id UUID;
+    v_is_admin BOOLEAN;
+    v_rank_counter INTEGER := 1;
+    v_player_id UUID;
+BEGIN
+    -- Get event details
+    SELECT group_id
+    INTO v_group_id
+    FROM events
+    WHERE id = p_event_id;
+
+    -- Check if user is an admin for the group
+    SELECT EXISTS (
+        SELECT 1 FROM group_members
+        WHERE group_id = v_group_id
+          AND user_id = p_admin_id
+          AND role = 'admin'
+          AND status = 'active'
+    ) INTO v_is_admin;
+
+    IF NOT v_is_admin THEN
+        RAISE EXCEPTION 'User % is not an admin for the group of event %.', p_admin_id, p_event_id;
+    END IF;
+
+    -- Verify all player IDs are confirmed for the event
+    FOR v_player_id IN SELECT unnest(p_player_ids)
+    LOOP
+        IF NOT EXISTS (
+            SELECT 1 FROM player_status
+            WHERE event_id = p_event_id
+              AND player_id = v_player_id
+              AND status = 'confirmed'
+        ) THEN
+            RAISE EXCEPTION 'Player % is not confirmed for event %.', v_player_id, p_event_id;
+        END IF;
+    END LOOP;
+
+    -- Reset ranking order for confirmed players
+    UPDATE player_status
+    SET ranking_order = 0
+    WHERE event_id = p_event_id AND status = 'confirmed';
+
+    -- Apply new ranking order based on the provided player IDs
+    FOREACH v_player_id IN ARRAY p_player_ids
+    LOOP
+        UPDATE player_status
+        SET ranking_order = v_rank_counter
+        WHERE event_id = p_event_id AND player_id = v_player_id;
+        v_rank_counter := v_rank_counter + 1;
+    END LOOP;
+END;
+$$;
+
+### Stored Procedure: `set_initial_rankings`
+-- Purpose: Sets initial rankings for players when an event is created, based on registration order.
+-- Usage: Called automatically after an event is created or when the first player registers.
+-- Parameters:
+--   p_event_id (UUID): The ID of the event to set initial rankings for.
+-- Returns: None (procedure; updates the `player_status` table).
+-- Example Call: CALL set_initial_rankings('789e0123-e89b-12d3-a456-426614174000');
+CREATE OR REPLACE PROCEDURE set_initial_rankings(p_event_id UUID)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    rank_counter INTEGER := 1;
+    player_record RECORD;
+BEGIN
+    -- Reset ranking order for all players in the event
+    UPDATE player_status
+    SET ranking_order = 0
+    WHERE event_id = p_event_id;
+
+    -- Set initial rankings based on registration timestamp
+    FOR player_record IN (
+        SELECT player_id
+        FROM player_status
+        WHERE event_id = p_event_id
+        ORDER BY registration_timestamp
+    )
+    LOOP
+        UPDATE player_status
+        SET ranking_order = rank_counter
+        WHERE event_id = p_event_id AND player_id = player_record.player_id;
+        rank_counter := rank_counter + 1;
+    END LOOP;
+END;
+$$;
+
+## Updated Event Details Page (Enhances Step 2, File 2b)
+The Event Details Page (from Step 2) is updated to support admin reordering of players.
+
+- **Functionality Updates**:
+  - **Reorder Players Button** (Admin Only):
+    - Visible to users with `role: 'admin'` in `group_members`.
+    - Allows admins to reorder confirmed players by dragging and dropping player cards.
+    - Calls the `reorder_players` stored procedure with the new order.
+  - **Reorganize Players Button** (Admin Only):
+    - Visible to users with `role: 'admin'` in `group_members`.
+    - Automatically reorganizes players based on skill level and DUPR rating.
+    - Calls the `reorganize_confirmed_players` stored procedure.
+  - **Ranking Display**:
+    - Show the `ranking_order` in the "Confirmed Players" tab for each player (e.g., "Rank: 1").
+
+- **Query Example for Confirmed Players (Updated)**:
   ```sql
   SELECT 
-      e.id,
-      e.event_title,
-      e.event_date,
-      e.event_time,
-      e.location,
-      ps.status
+      ps.player_id,
+      p.first_name,
+      p.last_name,
+      p.dupr_rating,
+      p.skill_level,
+      ps.ranking_order
   FROM player_status ps
-  JOIN events e ON ps.event_id = e.id
-  WHERE ps.player_id = :user_id
-    AND e.event_date >= CURRENT_DATE
-  ORDER BY e.event_date, e.event_time;
+  JOIN profiles p ON ps.player_id = p.id
+  WHERE ps.event_id = :event_id
+    AND ps.status = 'confirmed'
+  ORDER BY ps.ranking_order;
   ```
-- **Mobile-First UI/UX Recommendations**:
-  - **Routing**: Set the User Dashboard as the default route (`/dashboard`) in `AppRouter.tsx`, ensuring it's the landing page after login.
-  - **Layout**: Single-column layout with a sticky header showing the app name ("Pickle Ninja") and a sticky footer with navigation (e.g., "Groups", "Dashboard", "Profile"). The dashboard view occupies the full viewport width (e.g., 360px).
-  - **Event List View**: Display events as cards in chronological order (sorted by `event_date` and `event_time`).
-    - Each event card shows: Title (e.g., "Week 1 Ladder Matchup"), Date (e.g., "May 28, 2025"), Time (e.g., "18:00"), Location (e.g., "Central Park Courts"), and Status (e.g., "Confirmed" in green; "Waitlisted" in orange).
-    - Card height: ~80px, with 16px padding, 16px font size, and a subtle border (1px solid #ddd).
-    - Add a "Next Event" badge (e.g., green dot) for the nearest upcoming event after 2025-05-28 11:43 AM MST.
-  - **Interaction**: Tapping an event card navigates to the Event Details page (Step 2). Cards are touch-friendly with a 48px touch target (entire card tappable).
-  - **Onboarding**: Tooltip on first load: "This is your home page! View your registered events here. Tap an event to see details." (dismissible with "Don't Show Again").
-  - **Pull-to-Refresh**: Implement a pull-to-refresh gesture to reload events, ensuring real-time updates (e.g., if `status` changes).
-  - **Error Handling**: If no events are found, display a centered message: "No upcoming events. Check out groups to join events!" with 16px font size, linking to the Groups page.
 
-## Group Details - Activity Page
-- **Access**: Accessible to group members (with `role: 'member'` and `status: 'active'` in `group_members`) via a route like `/groups/:group_id/activity`. Navigated to from the Groups page or navigation menu.
-- **Functionality**:
-  - Displays group activities in a feed-like format (similar to a Facebook feed), including posts made by group members.
-  - Shows the next upcoming event for the group at the top, below the "Add Post Card".
-  - **Next Event Display**:
-    - Fetches the nearest upcoming event for the group (`group_id: 456`) after the current date and time.
-    - Displays event details: `event_title`, `event_date`, `event_time`, `location`, and `registration_open` status.
-    - Includes a "View Details" button linking to the Event Details page (Step 2).
-  - **Activity Feed**:
-    - Displays posts from the `posts` table, prioritizing pinned posts (`pinned = true`) at the top, followed by other posts in reverse chronological order.
-    - Includes an "Add Post Card" at the top for users to create new posts, supporting text and media uploads.
-- **Query Example for Next Event**:
-  ```sql
-  SELECT 
-      e.id,
-      e.event_title,
-      e.event_date,
-      e.event_time,
-      e.location,
-      e.registration_open
-  FROM events e
-  WHERE e.group_id = :group_id
-    AND e.event_date >= CURRENT_DATE
-    AND (e.event_date > CURRENT_DATE OR (e.event_date = CURRENT_DATE AND e.event_time >= CURRENT_TIME))
-  ORDER BY e.event_date, e.event_time
-  LIMIT 1;
-  ```
-- **Query Example for Activity Feed**:
-  ```sql
-  SELECT 
-      p.id,
-      p.content,
-      p.media_urls,
-      p.pinned,
-      p.created_at,
-      p.updated_at,
-      u.email AS user_email
-  FROM posts p
-  JOIN auth.users u ON p.user_id = u.id
-  WHERE p.group_id = :group_id
-  ORDER BY p.pinned DESC, p.created_at DESC
-  LIMIT 20;
-  ```
-- **Mobile-First UI/UX Recommendations**:
-  - **Layout**: Single-column layout with a sticky header showing the group name ("Pickle Pros") and a sticky footer with navigation (e.g., "Back", "Activity", "Events"). The activity feed occupies the full viewport width (e.g., 360px).
-  - **Add Post Card**:
-    - Positioned at the top of the feed.
-    - A text input field with a placeholder: "Share something with the group..." (16px font size).
-    - A media upload button (48x48px, icon of a camera) to attach images/videos, storing URLs in `media_urls`.
-    - A "Post" button (48x48px, green background) to submit the post, with haptic feedback (`navigator.vibrate(200)`).
-    - Card height: ~80px, with 16px padding and a subtle border (1px solid #ddd).
-  - **Next Event Section** (Below Add Post Card):
-    - **Position**: Place immediately below the "Add Post Card" at the top of the feed.
-    - **Display**: Show as a card with a "Next Event" badge (e.g., green dot or label).
-      - Card details: Title (e.g., "Week 1 Ladder Matchup"), Date (e.g., "May 28, 2025"), Time (e.g., "18:00"), Location (e.g., "Central Park Courts"), and Status (e.g., "Registration Open" in green; "Closed" in red).
-      - Card height: ~80px, with 16px padding, 16px font size, and a subtle border (1px solid #ddd).
-    - **Interaction**: Include a "View Details" button (48x48px, green background) on the right side of the card, linking to the Event Details page (`/events/:event_id`).
-    - **Error Handling**: If no upcoming events are found, display a message: "No upcoming events. Check the calendar for more!" with a link to the Calendar Page (Step 1).
-  - **Activity Feed**:
-    - Display posts as cards below the "Next Event" section, with pinned posts at the top, followed by others in reverse chronological order.
-    - Each post card shows:
-      - User email (e.g., "john.doe@example.com") in 16px font size.
-      - Content (e.g., "Excited for the next match!") in 16px font size.
-      - Media: If `media_urls` is not empty, display the first media item as a thumbnail (e.g., 100x100px image) below the content. If multiple URLs exist, add a "View More Media" link (16px font size, blue) to expand additional media (future step).
-      - Timestamp: Show `updated_at` if different from `created_at` (e.g., "Edited: May 28, 2025, 09:26 AM"), otherwise show `created_at` (e.g., "Posted: May 28, 2025, 09:26 AM"), in 14px font size, gray.
-    - Card height: ~100px (adjusts based on media), with 16px padding and a subtle border (1px solid #ddd).
-    - **Interaction**: Cards are read-only (no editing/deleting in this step). Tapping a card could navigate to a post details page (future step).
-    - **Pull-to-Refresh**: Implement a pull-to-refresh gesture to reload posts and the next event.
-    - **Error Handling**: If no posts are found, display a centered message: "No posts yet. Be the first to share something!" with 16px font size.
-  - **Onboarding**: Tooltip on first load: "This is your group's activity feed. See the next event and share updates with the group!" (dismissible with "Don't Show Again").
-
-## Comments and Recommendations
-
-- **User Dashboard (Home Page)**:
-  - **Recommendation 1: Add Upcoming Group Events Section**:
-    - Consider adding a section below the registered events list to show upcoming events for all groups the user is part of, even if they haven't registered. This can encourage engagement by prompting users to register for events they might have missed.
-    - Example Query:
-      ```sql
-      SELECT 
-          e.id,
-          e.event_title,
-          e.event_date,
-          e.event_time,
-          e.location,
-          g.group_name
-      FROM events e
-      JOIN groups g ON e.group_id = g.id
-      JOIN group_members gm ON g.id = gm.group_id
-      WHERE gm.user_id = :user_id
-        AND gm.status = 'active'
-        AND e.event_date >= CURRENT_DATE
-        AND e.id NOT IN (SELECT event_id FROM player_status WHERE player_id = :user_id)
-      ORDER BY e.event_date, e.event_time
-      LIMIT 5;
-      ```
-    - Display as a separate section titled "Upcoming Group Events" with cards similar to the registered events list, including a "Register" button linking to the Event Details page.
-
-  - **Recommendation 2: Personalized Welcome Message**:
-    - Add a personalized welcome message at the top of the User Dashboard (e.g., "Welcome back, John!"), fetching the user's `first_name` from the `profiles` table (defined in Step 2). This enhances user engagement by making the home page feel more tailored.
-
-- **Group Details - Activity Page**:
-  - **Recommendation 1: Infinite Scroll for Activity Feed**:
-    - Instead of limiting the feed to 20 posts, implement infinite scroll to load more posts as the user scrolls down. This improves the user experience by allowing seamless browsing of group activities.
-    - Use a pagination approach in the query:
-      ```sql
-      SELECT 
-          p.id,
-          p.content,
-          p.media_urls,
-          p.pinned,
-          p.created_at,
-          p.updated_at,
-          u.email AS user_email
-      FROM posts p
-      JOIN auth.users u ON p.user_id = u.id
-      WHERE p.group_id = :group_id
-        AND p.created_at < :last_timestamp
-      ORDER BY p.pinned DESC, p.created_at DESC
-      LIMIT 20;
-      ```
-    - Fetch the next batch when the user reaches the bottom of the feed, updating the `last_timestamp` parameter.
-
-  - **Recommendation 2: Highlight User's Posts**:
-    - Highlight posts made by the logged-in user with a light green background (`#e6ffe6`) to make their contributions stand out in the feed. This can increase engagement by giving users a sense of ownership over their posts.
-
-  - **Recommendation 3: Event Registration Prompt**:
-    - If the "Next Event" has `registration_open = true` and the user hasn't registered, add a "Register Now" button alongside "View Details" on the event card. This encourages users to register directly from the activity page, reducing friction.
-
-  - **Recommendation 4: Media Previews**:
-    - For posts with `media_urls`, consider using a lightbox or modal to preview all media items when the user taps "View More Media". This provides a better experience for viewing images/videos without navigating away from the feed.
-
-- **General Recommendation: Performance Optimization**:
-  - **Cache Queries**: Use Supabase's caching capabilities (e.g., `pg_bouncer` for connection pooling) to cache frequently accessed data like the next event and recent posts. This reduces database load and improves page load times, especially for the Group Details - Activity Page, which may have high traffic.
-  - **Preload Data**: Use `OptimizedNavLink` (as per the `rules.md`) to preload the next event and initial batch of posts when the user hovers over or focuses on the "Activity" navigation link, ensuring a faster initial load.
+- **Mobile-First UI/UX Recommendations (Updated)**:
+  - **Reorder Players Button** (Admin Only):
+    - Add a "Reorder Players" button in the "Confirmed Players" tab for admins, visible only if there are confirmed players.
+    - Button size: 48x48px, blue background, with haptic feedback (`navigator.vibrate(200)`).
+    - On click, enables drag-and-drop mode for player cards, allowing admins to reorder players.
+    - Tooltip: "Drag to reorder players in the list." (dismissible).
+  - **Reorganize Players Button** (Admin Only):
+    - Add a "Reorganize Players" button in the "Confirmed Players" tab for admins, visible only if there are confirmed players.
+    - Button size: 48x48px, green background, with haptic feedback (`navigator.vibrate(200)`).
+    - On click, calls `reorganize_confirmed_players` to sort players by skill level and DUPR rating.
+    - Tooltip: "Automatically reorganize players based on skill level and DUPR rating." (dismissible).
+  - **Ranking Display**:
+    - In the "Confirmed Players" tab, update player cards to include `ranking_order` (e.g., "Rank: 1") in 16px font size, displayed in green.
+    - Ensure player cards are sortable via drag-and-drop when in reordering mode.
