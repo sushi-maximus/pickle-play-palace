@@ -35,9 +35,19 @@ export const useEventPlayers = ({ eventId, enabled = true }: UseEventPlayersProp
     enabled: !!eventId && enabled
   });
 
-  // Separate confirmed and waitlisted players
-  const confirmedPlayers = players.filter(player => player.status === 'confirmed');
-  const waitlistPlayers = players.filter(player => player.status === 'waitlist')
+  // Separate confirmed and waitlisted players with proper ranking order
+  const confirmedPlayers = players
+    .filter(player => player.status === 'confirmed')
+    .sort((a, b) => {
+      // Primary sort by ranking_order, fallback to registration timestamp
+      if (a.ranking_order !== b.ranking_order) {
+        return a.ranking_order - b.ranking_order;
+      }
+      return new Date(a.registration_timestamp).getTime() - new Date(b.registration_timestamp).getTime();
+    });
+
+  const waitlistPlayers = players
+    .filter(player => player.status === 'waitlist')
     .sort((a, b) => new Date(a.registration_timestamp).getTime() - new Date(b.registration_timestamp).getTime());
 
   return {

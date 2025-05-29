@@ -1,3 +1,4 @@
+
 export const queryKeys = {
   posts: {
     all: ['posts'] as const,
