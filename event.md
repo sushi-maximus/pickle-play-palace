@@ -1,4 +1,3 @@
-
 # Important Instruction for Lovable.dev
 AI, you are breaking my site when you are making changes I didn't ask for. Please read this file and follow it.
 
@@ -815,3 +814,172 @@ The Event Details Page (from Step 2) is updated to support admin reordering of p
   - **Ranking Display**:
     - In the "Confirmed Players" tab, update player cards to include `ranking_order` (e.g., "Rank: 1") in 16px font size, displayed in green.
     - Ensure player cards are sortable via drag-and-drop when in reordering mode.
+
+## Step 4 Implementation Plan: Player Ranking and Reorganization
+
+## Overview
+This plan implements the player ranking and reorganization functionality described above. Each phase is designed to be small, testable, and non-breaking to ensure compatibility with Lovable.dev's development approach.
+
+## Phase 1: Database Schema Preparation
+**Goal**: Ensure database schema supports ranking functionality
+**Estimated Time**: 1 implementation session
+**Risk**: Low - additive changes only
+
+### Step 1.1: Verify player_status table structure
+- Confirm `ranking_order` field exists in `player_status` table
+- If missing, add `ranking_order INTEGER NOT NULL DEFAULT 0`
+- Test that existing data is preserved
+
+### Step 1.2: Create stored procedures (one at a time)
+- Create `set_initial_rankings` procedure first (simplest)
+- Test with sample data
+- Create `reorganize_confirmed_players` procedure second
+- Test with sample data
+- Create `reorder_players` procedure last (most complex)
+- Test with sample data
+
+**Validation**: All procedures execute without errors, existing data unchanged
+
+## Phase 2: Backend Service Layer
+**Goal**: Create TypeScript service functions to interact with stored procedures
+**Estimated Time**: 1 implementation session
+**Risk**: Low - new files only
+
+### Step 2.1: Create ranking service file
+- Create `src/components/groups/events/services/rankingService.ts`
+- Add function to call `set_initial_rankings`
+- Add proper TypeScript typing
+- Add error handling
+
+### Step 2.2: Add admin permission utilities
+- Create `src/components/groups/events/utils/adminUtils.ts`
+- Add function to check if user is admin for group
+- Use existing `group_members` table query pattern
+
+### Step 2.3: Extend ranking service
+- Add function to call `reorganize_confirmed_players`
+- Add function to call `reorder_players`
+- Add comprehensive error handling and logging
+
+**Validation**: Service functions can be called without errors, proper TypeScript types
+
+## Phase 3: Enhanced Data Fetching
+**Goal**: Update existing hooks to include ranking data
+**Estimated Time**: 1 implementation session
+**Risk**: Low - modify existing queries only
+
+### Step 3.1: Update useEventPlayers hook
+- Modify query to include `ranking_order` in SELECT
+- Update ORDER BY to use `ranking_order ASC`
+- Ensure backward compatibility with existing components
+
+### Step 3.2: Add admin status to event context
+- Create `useEventAdminStatus` hook
+- Check if current user is admin for event's group
+- Use existing authentication context
+
+**Validation**: Existing PlayersList component still works, shows ranking order
+
+## Phase 4: Basic UI Components
+**Goal**: Create reusable ranking components
+**Estimated Time**: 2 implementation sessions
+**Risk**: Low - new components only
+
+### Step 4.1: Create ranking display component
+- Create `src/components/groups/events/components/PlayerRanking.tsx`
+- Display ranking number for each player (e.g., "#1", "#2")
+- Add to existing PlayerCard without breaking layout
+
+### Step 4.2: Create admin action buttons
+- Create `src/components/groups/events/components/AdminRankingControls.tsx`
+- Add "Reorganize Players" button (calls reorganize service)
+- Add loading states and success/error feedback
+- Show only for admins
+
+### Step 4.3: Add buttons to Event Details Page
+- Import AdminRankingControls in EventDetailsPage
+- Place in "Confirmed Players" tab
+- Ensure responsive design on mobile
+
+**Validation**: Ranking numbers display correctly, admin buttons work, no layout issues
+
+## Phase 5: Manual Reordering (Advanced)
+**Goal**: Add drag-and-drop functionality for manual reordering
+**Estimated Time**: 2-3 implementation sessions
+**Risk**: Medium - complex UI interactions
+
+### Step 5.1: Add drag-and-drop library
+- Install `@dnd-kit/core` and related packages
+- Create basic draggable player list component
+- Test drag-and-drop without persistence
+
+### Step 5.2: Create reordering component
+- Create `src/components/groups/events/components/PlayerReorderList.tsx`
+- Implement drag-and-drop reordering
+- Add visual feedback during drag operations
+
+### Step 5.3: Integrate with reorder service
+- Connect drag-and-drop to `reorder_players` service
+- Add optimistic updates with rollback on failure
+- Add "Reorder Players" toggle button
+
+### Step 5.4: Add to Event Details Page
+- Toggle between view mode and reorder mode
+- Ensure mobile-friendly touch interactions
+- Add haptic feedback for mobile
+
+**Validation**: Drag-and-drop works smoothly, changes persist, mobile-friendly
+
+## Phase 6: Mobile Optimization
+**Goal**: Ensure excellent mobile experience
+**Estimated Time**: 1 implementation session
+**Risk**: Low - UI improvements only
+
+### Step 6.1: Optimize button sizes
+- Ensure all admin buttons are minimum 48x48px
+- Test on various mobile screen sizes
+- Add proper touch targets
+
+### Step 6.2: Add haptic feedback
+- Add `navigator.vibrate(200)` to admin actions
+- Test on mobile devices
+- Graceful fallback for browsers without vibration
+
+### Step 6.3: Add helpful tooltips
+- Create dismissible tooltips for new features
+- Explain drag-and-drop functionality
+- Explain ranking system to new users
+
+**Validation**: Excellent mobile experience, intuitive for new users
+
+## Implementation Order & Safety Measures
+
+### Recommended Implementation Sequence:
+1. **Start with Phase 1** - Database foundation (safest)
+2. **Move to Phase 2** - Backend services (isolated)
+3. **Continue with Phase 3** - Data layer (minimal changes)
+4. **Implement Phase 4** - Basic UI (visible progress)
+5. **Add Phase 5** - Advanced features (most complex)
+6. **Finish with Phase 6** - Polish and optimization
+
+### Safety Measures for Each Phase:
+- **Always test with sample data** before real events
+- **Preserve existing functionality** - never break current features
+- **Add feature flags** for admin-only features
+- **Use optimistic updates** with proper rollback
+- **Add comprehensive error handling** at each layer
+- **Log all ranking operations** for debugging
+
+### Rollback Strategy:
+- Each phase can be rolled back independently
+- Database changes are additive (safe to rollback)
+- New components can be disabled via feature flags
+- Service layer changes don't affect existing functionality
+
+### Testing Approach:
+- **Unit test** each service function
+- **Integration test** with sample event data
+- **Manual test** admin workflows on mobile
+- **Regression test** existing event registration flow
+
+This phased approach ensures that each step is small, testable, and non-breaking while building toward the complete ranking and reorganization functionality.
