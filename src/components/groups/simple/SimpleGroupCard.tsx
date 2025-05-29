@@ -47,7 +47,7 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
       {/* Content Overlay */}
       <CardContent className="relative z-10 h-full flex flex-col p-6 text-white">
         {/* Header with badges and avatar */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-6 mt-2">
           <div className="flex gap-2">
             <Badge variant="outline" className="bg-white/20 border-white/30 text-white backdrop-blur-sm px-2 py-1">
               {group.is_private ? (
@@ -72,7 +72,7 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="text-center">
             <div className="text-2xl font-bold">{group.member_count || 0}</div>
             <div className="text-sm text-white/80">Members</div>
@@ -87,8 +87,8 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
           </div>
         </div>
 
-        {/* Group Info */}
-        <div className="space-y-2 flex-1">
+        {/* Group Info - positioned at bottom */}
+        <div className="mt-auto space-y-2">
           <h3 className="text-xl font-bold leading-tight">{group.name}</h3>
           
           {group.location && (
