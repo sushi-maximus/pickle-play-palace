@@ -203,164 +203,403 @@ Always use the database types from `@/integrations/supabase/types` instead of de
 - Use `OptimizedNavLink` for navigation with preload capabilities
 - Hover/focus events automatically preload routes
 
+## CRITICAL: File Protection Protocol
+
+**BEFORE MODIFYING ANY FILE**, you MUST:
+
+1. **Check the locked files list below** - if a file is locked, you CANNOT modify it under any circumstances
+2. **Request explicit permission** if you need to modify a locked file
+3. **Analyze file impact** - determine if your change might affect locked files
+4. **Prevent rollback scenarios** - avoid changes that could force the user to lose work
+
+### LOCKED FILES LIST
+
+**CORE PAGES (LOCKED):**
+- `src/pages/Dashboard.tsx`
+- `src/pages/Groups.tsx`
+- `src/pages/Index.tsx`
+- `src/pages/Login.tsx`
+- `src/pages/Signup.tsx`
+- `src/pages/Profile.tsx`
+- `src/pages/Admin.tsx`
+- `src/pages/Contact.tsx`
+- `src/pages/Privacy.tsx`
+- `src/pages/NotFound.tsx`
+- `src/pages/ForgotPassword.tsx`
+- `src/pages/AuthCallback.tsx`
+- `src/pages/EventDetailsPage.tsx`
+- `src/pages/GroupDetails.tsx`
+
+**CRITICAL COMPONENTS (LOCKED):**
+- All files in `src/components/groups/ui/`
+- All files in `src/components/groups/mobile/`
+- All files in `src/components/groups/posts/`
+- All files in `src/components/groups/events/`
+- All files in `src/components/groups/details/`
+- All files in `src/components/navigation/`
+- All files in `src/components/layout/`
+- `src/components/groups/SearchFilter.tsx`
+
+**HOOKS AND UTILITIES (LOCKED):**
+- All files in `src/components/groups/hooks/`
+- All files in `src/components/groups/utils/`
+- All files in `src/components/groups/services/`
+- All files in `src/hooks/`
+
+**TYPE DEFINITIONS (LOCKED):**
+- All files ending in `/types.ts` or `/types/`
+- All files ending in `/index.ts`
+
+### FILE PROTECTION RULES:
+
+1. **ABSOLUTE PROHIBITION**: Never modify locked files without explicit user permission
+2. **IMPACT ANALYSIS**: Before ANY change, verify it won't affect locked files
+3. **PERMISSION REQUEST**: If locked file modification is needed, ask user to unlock specific files first
+4. **ROLLBACK PREVENTION**: Avoid changes that could cascade into locked file dependencies
+
+### UNLOCKING PROCESS:
+
+When user wants to work on a locked file:
+1. User must explicitly say: "Unlock [filename] for editing"
+2. AI confirms which file is being unlocked
+3. AI removes the file from the locked list
+4. Work proceeds with normal change protocols
+5. When work is complete, AI asks if file should be locked again
+
+### VIOLATION CONSEQUENCES:
+
+If you modify a locked file without permission:
+- User loses work and must rollback
+- Trust is broken
+- Development velocity is severely impacted
+
+**REMEMBER: The locked files list is your safety net to prevent rollbacks and lost work.**
+
+## Development Templates
+
+### Systematic Feature Development Template
+
+**Usage**: Reference this template when implementing complex features to ensure quality, maintainability, and proper testing.
+
+**AI Instructions**: When a user references this template or asks to "follow the systematic approach," break the work into these phases and explicitly ask for approval before proceeding to the next phase.
+
+#### Phase 1: Database Schema Design
+- [ ] Review existing schema compatibility
+- [ ] Design new tables and relationships with proper indexes
+- [ ] Plan migration strategy (what data needs to migrate)
+- [ ] Create SQL migration files with proper error handling
+- **AI Action**: Present SQL migration in `lov-sql` block, wait for user approval
+- **User Action**: Review and approve the database changes
+
+#### Phase 2: Type System Integration
+- [ ] Update TypeScript types to match new database schema
+- [ ] Ensure native database type usage from `@/integrations/supabase/types`
+- [ ] Remove any custom type definitions that duplicate database types
+- [ ] Validate type imports across all affected components
+- **AI Action**: Update all type definitions, ensure no `any` types used
+- **User Action**: Verify TypeScript compilation passes
+
+#### Phase 3: Backend Service Implementation
+- [ ] Create edge functions for complex logic (if needed)
+- [ ] Implement service layer functions with proper error handling
+- [ ] Add comprehensive logging for debugging
+- [ ] Set up cron jobs if needed (with proper SQL setup)
+- **AI Action**: Implement backend services, test error scenarios
+- **User Action**: Test API endpoints, verify edge function deployment
+
+#### Phase 4: Frontend Component Development
+- [ ] Create focused, small components (50 lines or less)
+- [ ] Implement hooks for data fetching and state management
+- [ ] Add proper loading and error states
+- [ ] Ensure mobile-first responsive design patterns
+- **AI Action**: Build UI components following design system
+- **User Action**: Test UI interactions, verify responsive behavior
+
+#### Phase 5: Validation and Testing
+- [ ] Create validation test components (like PromotionValidationTest)
+- [ ] Add comprehensive logging for debugging complex flows
+- [ ] Test all user flows and edge cases
+- [ ] Verify database integration and data consistency
+- **AI Action**: Build test components, add debug logging
+- **User Action**: Run validation tests, verify all scenarios work
+
+#### Phase 6: Integration and Polish
+- [ ] Integrate all components into main application flow
+- [ ] Add proper error boundaries and fallback states
+- [ ] Implement user feedback (toasts, notifications)
+- [ ] Final testing and performance optimization
+- **AI Action**: Complete integration, add polish features
+- **User Action**: Full end-to-end testing, user acceptance
+
+### Template Usage Examples
+
+**To start a feature systematically:**
+"Let's implement [feature] using the systematic development template. Start with Phase 1."
+
+**To continue to next phase:**
+"Phase X looks good. Proceed to Phase Y."
+
+**To validate current phase:**
+"Let's validate the current phase before moving forward."
+
+### Quick Feature Implementation Template
+
+**Usage**: For smaller features that don't need the full systematic approach.
+
+**AI Instructions**: Use this for simple features, UI changes, or bug fixes.
+
+#### Steps:
+1. **Identify Scope**: What exactly needs to change?
+2. **Preserve Existing**: List what must remain unchanged
+3. **Implement Changes**: Make only the requested modifications
+4. **Validate**: Ensure no existing functionality breaks
+
+### Database Migration Template
+
+**Usage**: When database changes are needed.
+
+**AI Instructions**: Always follow this pattern for database changes.
+
+#### Steps:
+1. **Review Impact**: What tables/functions will be affected?
+2. **Design Migration**: Plan the SQL changes carefully
+3. **Present Migration**: Use `lov-sql` block, wait for approval
+4. **Update Types**: Ensure TypeScript types match new schema
+5. **Update Components**: Modify affected components to use new schema
+
+### Component Creation Template
+
+**Usage**: When creating new UI components.
+
+**AI Instructions**: Follow this pattern to maintain consistency.
+
+#### Requirements:
+- **Size Limit**: 50 lines or less per file
+- **Single Responsibility**: One clear purpose per component
+- **Mobile-First**: Use responsive design patterns
+- **Type Safety**: Proper TypeScript with database types
+- **Error Handling**: Loading states and error boundaries
+
+#### File Structure:
+```
+ComponentName.tsx (main component)
+hooks/useComponentName.ts (if complex logic needed)
+types/componentTypes.ts (if custom types needed)
+```
+
+### Testing and Validation Template
+
+**Usage**: For ensuring features work correctly.
+
+**AI Instructions**: Create validation components for complex features.
+
+#### Components to Create:
+- **Validation Test Component**: Interactive testing interface
+- **Debug Logging**: Console logs for flow tracking
+- **Status Indicators**: Visual feedback for current state
+- **Error Simulation**: Test error conditions
+
+### Error Debugging Template
+
+**Usage**: When users report errors or bugs.
+
+**AI Instructions**: Follow this systematic debugging approach.
+
+#### Steps:
+1. **Reproduce Error**: Understand the exact issue
+2. **Isolate Files**: Identify which files might be causing it
+3. **Review Code**: Examine relevant code sections
+4. **Add Debug Logs**: Insert console.log statements for tracking
+5. **Test Fix**: Implement and verify the solution
+6. **Clean Up**: Remove debug logs after fixing
+
+### Performance Optimization Template
+
+**Usage**: When performance improvements are needed.
+
+**AI Instructions**: Use this for optimization requests.
+
+#### Areas to Check:
+- **Component Memoization**: React.memo(), useMemo(), useCallback()
+- **Query Optimization**: Reduce database calls, better caching
+- **Bundle Size**: Lazy loading, code splitting
+- **Rendering**: Minimize re-renders, optimize state updates
+
 ---
 
-# Complete Groups Page Rewrite - Detailed Implementation Steps
+## Template Reference Quick Guide
 
-## PHASE 1: Create New Simple Components Foundation (20 minutes)
+**For Complex Features**: Use Systematic Feature Development Template
+**For Simple Changes**: Use Quick Feature Implementation Template
+**For Database Work**: Use Database Migration Template
+**For New Components**: Use Component Creation Template
+**For Bug Fixes**: Use Error Debugging Template
+**For Performance**: Use Performance Optimization Template
 
-### Step 1.1: Create Simple Types File
-**File**: `src/components/groups/simple/types.ts`
-**Purpose**: Type definitions for new simple components
-**Required Types**:
-```typescript
-import type { Database } from "@/integrations/supabase/types";
+**How to Reference**: Simply mention the template name in your request:
+- "Let's use the systematic development template for batch confirmation"
+- "Follow the component creation template for this new feature"
+- "Use the debugging template to fix this error"
 
-export type SimpleGroup = Database['public']['Tables']['groups']['Row'] & {
-  member_count: number;
-};
+## Template Trigger System
 
-export type SimpleGroupMember = Database['public']['Tables']['group_members']['Row'] & {
-  profile?: Database['public']['Tables']['profiles']['Row'];
-};
+### Auto-Template Selection
+
+When the user says "template" or "use template", the AI should automatically determine which template to use based on the context and nature of the request:
+
+**Context Analysis for Template Selection:**
+- **Complex new features** (multiple components, database changes, etc.) → Use **Systematic Feature Development Template**
+- **Simple UI changes, styling, single component changes** → Use **Quick Feature Implementation Template**
+- **Database schema changes, migrations, new tables** → Use **Database Migration Template**
+- **Creating new UI components** → Use **Component Creation Template**
+- **Bugs, errors, issues reported** → Use **Error Debugging Template**
+- **Performance complaints, optimization requests** → Use **Performance Optimization Template**
+- **Testing, validation requests** → Use **Testing and Validation Template**
+
+**Decision Process:**
+1. Analyze the user's request context
+2. Determine complexity and scope
+3. Select the most appropriate template
+4. Explicitly state which template is being used
+5. Follow the template's methodology
+
+**Template Usage Format:**
+When a template is triggered, the AI should:
+1. State: "Using [Template Name] for this request"
+2. Follow the template's step-by-step process
+3. Ask for approval between phases when needed (for systematic template)
+4. Maintain the template's quality standards
+
+**Examples:**
+- "Add batch confirmation logic" + "template" → Systematic Feature Development Template
+- "Fix this button color" + "template" → Quick Feature Implementation Template
+- "This component is broken" + "template" → Error Debugging Template
+- "Create a new notification component" + "template" → Component Creation Template
+
+This system allows the user to simply say "template" and trust that the appropriate structured approach will be applied based on the work context.
+
+## Multi-Step Progress Tracking
+
+### Progress Communication
+When using templates with multiple steps/phases, the AI MUST:
+
+1. **End each message with progress status**: "Step X of Y completed" or "Phase X of Y completed"
+2. **Clearly state what was just finished**: "Just completed: [specific task/phase name]"
+3. **Clearly state what comes next**: "Next: [specific next task/phase name]"
+
+### Action Button System
+At the end of each step in a multi-step process, provide an action button using `lov-message-prompt` that includes:
+
+- Reference to the specific template being used
+- Current step/phase number
+- What should happen next
+- All necessary context for continuation
+
+**Action Button Format:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Continue with [Template Name] - Phase X of Y. Previous: [what was completed]. Next: [what should happen]. Template reference: rules.md [Template Name]. Context: [brief context needed for next step]">Continue Phase X</lov-message-prompt>
+</lov-actions>
 ```
 
-### Step 1.2: Create Simple Groups Hook
-**File**: `src/components/groups/simple/useSimpleGroups.ts`
-**Purpose**: Direct Supabase queries for groups data
-**Features**:
-- Fetch all groups with member counts
-- Fetch user's groups (where user is a member)
-- Simple loading and error states
-- No complex filtering or unified hooks
-
-### Step 1.3: Create Simple Group Card Component
-**File**: `src/components/groups/simple/SimpleGroupCard.tsx`
-**Size Limit**: 50 lines or less
-**Mobile-First Design**: Use `px-3 py-4 md:px-6 md:py-8` padding
-**Features**:
-- Group name and description display
-- Member count display
-- Join/Leave button (basic functionality)
-- Clean, simple styling with hover effects
-
-### Step 1.4: Create Simple Group List Component
-**File**: `src/components/groups/simple/SimpleGroupList.tsx`
-**Features**:
-- Grid layout for group cards
-- Loading state with spinner
-- Empty state with helpful message
-- Error state with retry functionality
-- Responsive grid (1 col mobile, 2-3 cols desktop)
-
-## PHASE 2: Rewrite Groups Page (15 minutes)
-
-### Step 2.1: Replace Groups Page Content
-**File**: `src/pages/Groups.tsx` (COMPLETE REWRITE)
-**Preserve**:
-- AppLayout wrapper
-- RouteErrorBoundary
-- Authentication check and login prompt
-- Page title and basic structure
-
-**Replace**:
-- All existing complex group components
-- Complex state management
-- Unified hooks system
-- Advanced filtering
-
-**New Structure**:
-```typescript
-// Basic authentication check
-// Simple search input
-// Tabs for "My Groups" vs "All Groups" 
-// SimpleGroupList component
-// Basic create group button
+**Example Usage:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Continue with Systematic Feature Development Template - Phase 3 of 6. Previous: Type System Integration completed. Next: Backend Service Implementation. Template reference: rules.md Systematic Feature Development Template. Context: Database schema approved, types updated.">Continue Phase 3</lov-message-prompt>
+</lov-actions>
 ```
 
-### Step 2.2: Add Basic Search Functionality
-**Implementation**: Inline search input in page header
-**Logic**: Client-side filtering by group name (simple string includes)
-**State**: Single search term string, filter groups array
-**No Advanced Features**: Avoid complex search algorithms initially
+### Progress Status Requirements
+- Always show current step number and total steps (e.g., "3/8 steps")
+- Use consistent format: "Step X of Y completed" or "Phase X of Y completed"
+- Include clear "Just completed" and "Next" statements
+- Provide action button for easy continuation
 
-## PHASE 3: Add Tabs and Group Creation (15 minutes)
+This ensures users can easily track progress through complex implementations and continue work seamlessly by clicking the action button with all necessary context included.
 
-### Step 3.1: Implement Tab Logic
-**Tabs**: "My Groups" and "All Groups"
-**State Management**: Simple boolean for tab switching
-**Data Filtering**: 
-- My Groups: Filter by user membership in group_members table
-- All Groups: Show all available groups
-**UI**: Use existing Tabs component from UI library
+## Error Debugging Action Button System
 
-### Step 3.2: Create Simple Group Creation Dialog
-**File**: `src/components/groups/simple/SimpleCreateGroupDialog.tsx`
-**Form Fields**:
-- Group name (required)
-- Group description (required)
-- Basic form validation
-**Success Flow**: Create group → Close dialog → Refresh groups list → Show success toast
-**Error Handling**: Display user-friendly error messages
+### When Errors Occur
+When the AI encounters or the user reports errors, the AI MUST provide action buttons that reference the appropriate debugging approach from rules.md.
 
-### Step 3.3: Add Group Membership Logic
-**Database Queries**: Direct queries to group_members table
-**Membership Check**: Simple function to check if user is member of group
-**Join/Leave Actions**: Basic mutation functions with optimistic updates
+### Error Action Button Categories
 
-## PHASE 4: Polish and Testing (15 minutes)
+**TypeScript/Compilation Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Fix TypeScript compilation error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: TypeScript types and compilation issues.">Fix TypeScript Error</lov-message-prompt>
+</lov-actions>
+```
 
-### Step 4.1: Add Comprehensive Error Handling
-**Loading States**: Skeleton components or spinners for all async operations
-**Error States**: User-friendly error messages with retry buttons
-**Empty States**: Helpful guidance when no groups are found
-**Form Validation**: Real-time validation with clear error messages
+**Component/React Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Debug React component error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Component lifecycle, hooks, and JSX issues.">Fix Component Error</lov-message-prompt>
+</lov-actions>
+```
 
-### Step 4.2: Ensure Mobile Responsiveness
-**Touch Targets**: Minimum 44px for all interactive elements
-**Spacing**: Follow `space-y-3 md:space-y-4` pattern
-**Grid Layout**: 1 column on mobile, 2-3 on desktop
-**Icon Sizing**: `h-4 w-4` mobile, `md:h-5 md:w-5` desktop
+**Build/Import Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Resolve build/import error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Module resolution and dependency issues.">Fix Build Error</lov-message-prompt>
+</lov-actions>
+```
 
-### Step 4.3: Test All Functionality End-to-End
-**Authentication Flow**: 
-- Non-authenticated users see login prompt
-- Authenticated users see groups interface
-**Group Creation**: Complete create → success → refresh flow
-**Search**: Type in search box → see filtered results
-**Tabs**: Switch between My Groups and All Groups
-**Group Joining**: Join group → see updated member count → group appears in My Groups
+**Runtime/Logic Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Debug runtime error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Application logic and runtime behavior.">Fix Runtime Error</lov-message-prompt>
+</lov-actions>
+```
 
-## FILES TO CREATE (All New):
+**Database/API Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Fix database/API error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Database queries, API calls, and data handling.">Fix Database Error</lov-message-prompt>
+</lov-actions>
+```
 
-1. `src/components/groups/simple/types.ts`
-2. `src/components/groups/simple/useSimpleGroups.ts`
-3. `src/components/groups/simple/SimpleGroupCard.tsx`
-4. `src/components/groups/simple/SimpleGroupList.tsx`
-5. `src/components/groups/simple/SimpleCreateGroupDialog.tsx`
+### Error Action Button Requirements
 
-## FILES TO MODIFY:
+1. **Always include template reference**: "Template reference: rules.md Error Debugging Template"
+2. **Provide error context**: Brief description of the specific error
+3. **Specify focus area**: What type of debugging approach is needed
+4. **Use descriptive button text**: Clear indication of what the button will do
 
-1. `src/pages/Groups.tsx` (COMPLETE REWRITE - User Permission Granted)
+### Integration with Error Debugging Template
 
-## SUCCESS CRITERIA:
+When error action buttons are clicked, the AI will automatically:
+1. Reference the Error Debugging Template from rules.md
+2. Follow the systematic debugging steps:
+   - Reproduce Error
+   - Isolate Files
+   - Review Code
+   - Add Debug Logs
+   - Test Fix
+   - Clean Up
+3. Apply the Change Only What's Requested Protocol
+4. Preserve all existing functionality while fixing the specific error
 
-1. ✅ Groups page loads without errors
-2. ✅ Authentication works (login prompt for non-authenticated users)
-3. ✅ Can view all groups and my groups via tabs
-4. ✅ Can search groups by name
-5. ✅ Can create new groups
-6. ✅ Can join/leave groups
-7. ✅ Responsive design works on mobile and desktop
-8. ✅ All loading, error, and empty states work properly
+This system ensures consistent, structured error resolution while maintaining code quality and user workflow continuity.
 
-## POST-IMPLEMENTATION:
+## MANDATORY TRANSPARENCY RULE
 
-- **Keep Old Components**: Don't delete existing locked group components until new system is proven
-- **Gradual Migration**: Can enhance new system with additional features as needed
-- **Performance Testing**: Verify new simple approach performs well
-- **User Feedback**: Gather feedback on simplified interface
+**AT THE END OF EVERY MESSAGE**, you MUST include a transparency statement that clearly indicates:
 
-## TOTAL ESTIMATED TIME: 65 minutes
+1. **What was specifically requested by the user**
+2. **What changes you made that were explicitly requested**
+3. **Any additional changes you made that were NOT explicitly requested** (if any)
+4. **Confirmation that you made NO unrequested changes** (if true)
 
-This plan creates a completely new, simple Groups page that works independently of all existing complex group components while following all rules.md protocols.
+**Format for transparency statement:**
+```
+---
+**TRANSPARENCY REPORT:**
+- **User requested:** [exact description of what user asked for]
+- **Changes made as requested:** [list of specific changes that matched the request]
+- **Additional unrequested changes:** [list any changes you made beyond the request, OR state "NONE"]
+- **Unrequested changes confirmation:** [YES - I made changes beyond the request / NO - I only made requested changes]
+---
+```
+
+**This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
