@@ -16,7 +16,7 @@ interface EventItemProps {
   };
   isNextEvent: boolean;
   onEventClick: (eventId: string) => void;
-  getStatusBadgeVariant: (status: string) => string;
+  getStatusBadgeVariant: (status: string) => "default" | "secondary" | "destructive" | "outline";
   getStatusBadgeClass: (status: string) => string;
 }
 
