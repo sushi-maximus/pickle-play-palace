@@ -1,145 +1,154 @@
 
-import { Users, Clock } from "lucide-react";
 import { useEventPlayers } from "../hooks/useEventPlayers";
+import { useEventAdminStatus } from "../hooks/useEventAdminStatus";
+import { PlayerRanking } from "./PlayerRanking";
+import { AdminRankingControls } from "./AdminRankingControls";
 import { LoadingContainer } from "@/components/ui/LoadingContainer";
-import { PromotionIndicator } from "./PromotionIndicator";
+import { Users, Clock } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
-import type { PlayerStatus } from "../types/promotionTypes";
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+type Event = Database['public']['Tables']['events']['Row'];
 
 interface PlayersListProps {
-  eventId: string;
-  type: 'confirmed' | 'waitlist';
+  event: Event;
   currentUserId?: string;
 }
 
-interface PlayerCardProps {
-  player: {
-    player_id: string;
-    profiles: Profile;
-    ranking_order?: number;
-    promoted_at?: string | null;
-    promotion_reason?: string | null;
-  };
-  isCurrentUser: boolean;
-  showRanking?: boolean;
-}
-
-const PlayerCard = ({ player, isCurrentUser, showRanking }: PlayerCardProps) => {
-  const { profiles } = player;
-  
-  // Create a player status object for the promotion indicator
-  const playerStatus: PlayerStatus = {
-    created_at: new Date().toISOString(),
-    event_id: '',
-    player_id: player.player_id,
-    status: 'confirmed',
-    ranking_order: player.ranking_order || 0,
-    registration_timestamp: new Date().toISOString(),
-    substitute_id: null,
-    promoted_at: player.promoted_at || null,
-    promotion_reason: player.promotion_reason || null
-  };
-  
-  return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 shadow-sm ${
-      isCurrentUser ? 'bg-green-50 border-green-200' : ''
-    }`}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {profiles.avatar_url ? (
-            <img 
-              src={profiles.avatar_url} 
-              alt={`${profiles.first_name} ${profiles.last_name}`}
-              className="h-10 w-10 rounded-full object-cover"
-            />
-          ) : (
-            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-600">
-                {profiles.first_name[0]}{profiles.last_name[0]}
-              </span>
-            </div>
-          )}
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="font-medium text-gray-900">
-                {profiles.first_name} {profiles.last_name}
-                {isCurrentUser && (
-                  <span className="ml-2 text-xs text-green-600 font-medium">(You)</span>
-                )}
-              </p>
-              {/* Show promotion indicator for promoted players */}
-              {player.promoted_at && (
-                <PromotionIndicator registration={playerStatus} size="sm" />
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              {profiles.dupr_rating && (
-                <span>DUPR: {profiles.dupr_rating}</span>
-              )}
-              <span className="capitalize">{profiles.skill_level}</span>
-            </div>
-          </div>
-        </div>
-        {showRanking && player.ranking_order && (
-          <div className="text-sm font-medium text-gray-500">
-            #{player.ranking_order}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const EmptyState = ({ type }: { type: 'confirmed' | 'waitlist' }) => {
-  const Icon = type === 'confirmed' ? Users : Clock;
-  const title = type === 'confirmed' ? 'No confirmed players yet' : 'No waitlisted players';
-  const description = type === 'confirmed' 
-    ? 'Players will appear here once they register and are confirmed.'
-    : 'Players on the waitlist will appear here.';
-
-  return (
-    <div className="text-center py-8">
-      <Icon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-      <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-      <p className="text-sm text-gray-600">{description}</p>
-    </div>
-  );
-};
-
-export const PlayersList = ({ eventId, type, currentUserId }: PlayersListProps) => {
-  const { confirmedPlayers, waitlistPlayers, isLoading } = useEventPlayers({ 
-    eventId,
-    enabled: !!eventId 
+export const PlayersList = ({ event, currentUserId }: PlayersListProps) => {
+  const { 
+    confirmedPlayers, 
+    waitlistPlayers, 
+    isLoading, 
+    error 
+  } = useEventPlayers({ 
+    eventId: event.id, 
+    enabled: true 
   });
 
-  const players = type === 'confirmed' ? confirmedPlayers : waitlistPlayers;
-  const showRanking = type === 'confirmed';
+  const { isAdmin } = useEventAdminStatus({ 
+    eventId: event.id, 
+    enabled: !!currentUserId 
+  });
+
+  if (error) {
+    return (
+      <div className="text-center py-8 px-4">
+        <p className="text-red-600">Error loading players. Please try again.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4">
-      <LoadingContainer 
-        isLoading={isLoading} 
-        skeleton="card" 
-        skeletonCount={3}
-        className="space-y-4"
-      >
-        {players.length > 0 ? (
-          <div className="space-y-3">
-            {players.map((player) => (
-              <PlayerCard
-                key={player.player_id}
-                player={player}
-                isCurrentUser={player.player_id === currentUserId}
-                showRanking={showRanking}
-              />
-            ))}
+    <LoadingContainer 
+      isLoading={isLoading} 
+      skeleton="card" 
+      skeletonCount={3}
+      className="space-y-4"
+    >
+      <div className="space-y-6">
+        {/* Admin Controls */}
+        <AdminRankingControls 
+          eventId={event.id}
+          isAdmin={isAdmin}
+          hasConfirmedPlayers={confirmedPlayers.length > 0}
+        />
+
+        {/* Confirmed Players Section */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-green-600" />
+            <h3 className="text-lg font-semibold text-gray-900">
+              Confirmed Players ({confirmedPlayers.length})
+            </h3>
           </div>
-        ) : (
-          <EmptyState type={type} />
-        )}
-      </LoadingContainer>
-    </div>
+          
+          {confirmedPlayers.length > 0 ? (
+            <div className="space-y-2">
+              {confirmedPlayers.map((player) => (
+                <div 
+                  key={player.player_id} 
+                  className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <PlayerRanking player={player} showRanking={true} />
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {player.profiles.first_name} {player.profiles.last_name}
+                      </p>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        {player.profiles.skill_level && (
+                          <span>Skill: {player.profiles.skill_level}</span>
+                        )}
+                        {player.profiles.dupr_rating && (
+                          <span>• DUPR: {player.profiles.dupr_rating}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500">
+                    Registered: {new Date(player.registration_timestamp).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 px-4 bg-gray-50 rounded-lg">
+              <Users className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600">No confirmed players yet</p>
+            </div>
+          )}
+        </div>
+
+        {/* Waitlist Players Section */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-orange-600" />
+            <h3 className="text-lg font-semibold text-gray-900">
+              Waitlist ({waitlistPlayers.length})
+            </h3>
+          </div>
+          
+          {waitlistPlayers.length > 0 ? (
+            <div className="space-y-2">
+              {waitlistPlayers.map((player, index) => (
+                <div 
+                  key={player.player_id} 
+                  className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-8 h-8 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {player.profiles.first_name} {player.profiles.last_name}
+                      </p>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        {player.profiles.skill_level && (
+                          <span>Skill: {player.profiles.skill_level}</span>
+                        )}
+                        {player.profiles.dupr_rating && (
+                          <span>• DUPR: {player.profiles.dupr_rating}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500">
+                    Waitlisted: {new Date(player.registration_timestamp).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 px-4 bg-gray-50 rounded-lg">
+              <Clock className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600">No players on waitlist</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </LoadingContainer>
   );
 };
