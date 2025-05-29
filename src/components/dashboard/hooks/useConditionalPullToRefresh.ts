@@ -1,5 +1,3 @@
-
-import { useRef } from 'react';
 import { useDashboardPullToRefresh } from './useDashboardPullToRefresh';
 
 interface UseConditionalPullToRefreshProps {
@@ -10,13 +8,16 @@ export const useConditionalPullToRefresh = ({ enabled }: UseConditionalPullToRef
   // ALWAYS call the hook to maintain consistent hook order
   const hookResult = useDashboardPullToRefresh();
   
-  const defaultReturn = {
-    pullDistance: 0,
-    isRefreshing: false,
-    isPulling: false,
-    bindToElement: () => {},
-  };
+  // If not enabled, return disabled state but keep the same structure
+  if (!enabled) {
+    return {
+      pullDistance: 0,
+      isRefreshing: false,
+      isPulling: false,
+      bindToElement: () => {}, // No-op function when disabled
+    };
+  }
 
-  // Return the hook result if enabled, otherwise return default values
-  return enabled ? hookResult : defaultReturn;
+  // Return the actual hook result when enabled
+  return hookResult;
 };

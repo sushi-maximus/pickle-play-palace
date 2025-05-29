@@ -9,17 +9,21 @@ export const useDashboardPullToRefresh = () => {
   const { user } = useAuth();
 
   const handleRefresh = useCallback(async () => {
-    if (!user?.id) return;
-    
-    // Only refresh the registered events query (as per user decision A10)
-    await queryClient.invalidateQueries({
-      queryKey: ['userRegisteredEvents', user.id]
-    });
+    // Only refresh if user exists, but always define the callback
+    if (user?.id) {
+      await queryClient.invalidateQueries({
+        queryKey: ['userRegisteredEvents', user.id]
+      });
+    }
   }, [queryClient, user?.id]);
 
-  return useOptimizedPullToRefresh({
+  // ALWAYS call useOptimizedPullToRefresh to maintain hook order
+  const pullToRefreshResult = useOptimizedPullToRefresh({
     onRefresh: handleRefresh,
     threshold: 80,
     resistance: 2.5,
   });
+
+  // Return the result regardless of user state - the onRefresh callback handles the conditional logic
+  return pullToRefreshResult;
 };
