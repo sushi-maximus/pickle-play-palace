@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Button } from "@/components/ui/button";
@@ -66,9 +65,7 @@ export const DragDropPlayerList = ({
       const result = await rankingService.reorderPlayers(eventId, user.id, playerIds);
       
       if (result.success) {
-        toast({
-          description: "Player order updated successfully"
-        });
+        toast("Player order updated successfully");
         
         // Refetch player data
         queryClient.invalidateQueries({
@@ -77,17 +74,11 @@ export const DragDropPlayerList = ({
         
         onCancel(); // Exit reorder mode
       } else {
-        toast({
-          description: `Error: ${result.message}`,
-          variant: "destructive"
-        });
+        toast(`Error: ${result.message}`);
       }
     } catch (error) {
       console.error('[DragDropPlayerList] Error reordering players:', error);
-      toast({
-        description: "Failed to update player order. Please try again.",
-        variant: "destructive"
-      });
+      toast("Failed to update player order. Please try again.");
     } finally {
       setIsSaving(false);
     }
