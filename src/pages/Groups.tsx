@@ -1,28 +1,37 @@
 
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { SearchFilter } from "@/components/groups/SearchFilter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { MyGroupsList } from "@/components/groups/MyGroupsList";
-import { GroupsList } from "@/components/groups/GroupsList";
+import { RouteErrorBoundary } from "@/components/error-boundaries";
+import { SimpleGroupList, useSimpleGroups } from "@/components/groups/simple";
 import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 import { LoginPrompt } from "@/components/groups/LoginPrompt";
-import { RouteErrorBoundary } from "@/components/error-boundaries";
 
 const Groups = () => {
-  const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [activeTab, setActiveTab] = useState("all-groups");
   const { user, isLoading } = useAuth();
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    console.log("Searching for:", term);
-  };
+  // Use our new simple hooks for both tabs
+  const allGroupsQuery = useSimpleGroups({ 
+    userId: user?.id, 
+    searchTerm, 
+    mode: 'all' 
+  });
+  
+  const myGroupsQuery = useSimpleGroups({ 
+    userId: user?.id, 
+    searchTerm, 
+    mode: 'my-groups' 
+  });
 
   const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
+    allGroupsQuery.refetch();
+    myGroupsQuery.refetch();
   };
 
   // Show login prompt if user is not authenticated
@@ -38,15 +47,24 @@ const Groups = () => {
     <RouteErrorBoundary routeName="Groups">
       <AppLayout title="Groups">
         {/* Search and Create Section */}
-        <div className="bg-white border-b px-4 py-4 -mx-3 mb-4">
+        <div className="bg-white border-b px-4 py-4 -mx-3 mb-6">
           <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <SearchFilter 
-                onSearch={handleSearch}
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
                 placeholder="Search groups..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
               />
             </div>
             <CreateGroupDialog 
+              trigger={
+                <Button className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Create
+                </Button>
+              }
               onSuccess={handleRefresh}
             />
           </div>
@@ -54,33 +72,23 @@ const Groups = () => {
         
         {/* Main Content */}
         <div className="px-3">
-          {showSearch && (
-            <div className="mb-4 p-4 bg-white rounded-lg border">
-              <h3 className="font-medium mb-2">Advanced Search</h3>
-              <p className="text-gray-600">Additional search options would go here</p>
-            </div>
-          )}
-
-          <Tabs defaultValue="my-groups" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="my-groups">My Groups</TabsTrigger>
               <TabsTrigger value="all-groups">All Groups</TabsTrigger>
+              <TabsTrigger value="my-groups">My Groups</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="my-groups" className="space-y-6">
-              <MyGroupsList 
-                key={`my-groups-${refreshKey}`}
-                user={user}
-                onRefresh={handleRefresh}
-                searchTerm={searchTerm}
+            <TabsContent value="all-groups" className="space-y-6">
+              <SimpleGroupList 
+                groups={allGroupsQuery.groups}
+                loading={allGroupsQuery.loading}
               />
             </TabsContent>
             
-            <TabsContent value="all-groups" className="space-y-6">
-              <GroupsList 
-                key={`all-groups-${refreshKey}`}
-                user={user}
-                searchTerm={searchTerm}
+            <TabsContent value="my-groups" className="space-y-6">
+              <SimpleGroupList 
+                groups={myGroupsQuery.groups}
+                loading={myGroupsQuery.loading}
               />
             </TabsContent>
           </Tabs>
