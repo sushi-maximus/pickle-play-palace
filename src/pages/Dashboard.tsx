@@ -1,7 +1,9 @@
 
 
+
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RegisteredEventsCard } from "@/components/dashboard/RegisteredEventsCard";
+import { AreasOfFocusCard } from "@/components/dashboard/AreasOfFocusCard";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/loading/DashboardSkeleton";
@@ -20,7 +22,7 @@ const Dashboard = () => {
     );
   }
 
-  // Dashboard content with events card
+  // Dashboard content with events card and focus card
   return (
     <RouteErrorBoundary routeName="Dashboard">
       <AppLayout title="Dashboard">
@@ -31,6 +33,7 @@ const Dashboard = () => {
           </div>
           
           <RegisteredEventsCard />
+          <AreasOfFocusCard />
         </div>
       </AppLayout>
     </RouteErrorBoundary>
@@ -38,4 +41,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
 
