@@ -6,14 +6,16 @@ import { RegisteredEventsCard } from "@/components/dashboard/RegisteredEventsCar
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/loading/DashboardSkeleton";
-import { useDashboardPullToRefresh } from "@/components/dashboard/hooks/useDashboardPullToRefresh";
+import { useConditionalPullToRefresh } from "@/components/dashboard/hooks/useConditionalPullToRefresh";
 
 const Dashboard = () => {
   const { isLoading, user } = useAuth();
-  
-  // Always call all hooks at the top level to ensure consistent hook calls
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
+  
+  // Only enable pull-to-refresh when user is authenticated
+  const { pullDistance, isRefreshing, isPulling, bindToElement } = useConditionalPullToRefresh({
+    enabled: !isLoading && !!user
+  });
 
   // Only bind pull-to-refresh when user exists and container is available
   useEffect(() => {
