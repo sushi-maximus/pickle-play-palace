@@ -1,7 +1,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Users, MessageCircle, Calendar, MapPin, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
@@ -29,7 +28,10 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
   };
 
   return (
-    <Card className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0">
+    <Card 
+      className="h-80 overflow-hidden relative group cursor-pointer hover:shadow-xl transition-all duration-300 border-0"
+      onClick={handleCardClick}
+    >
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
@@ -47,7 +49,7 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
         {/* Header with badges and avatar */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex gap-2">
-            <Badge variant="outline" className="bg-white/20 border-white/30 text-white backdrop-blur-sm">
+            <Badge variant="outline" className="bg-white/20 border-white/30 text-white backdrop-blur-sm px-2 py-1">
               {group.is_private ? (
                 <>
                   <Lock className="h-3 w-3 mr-1" />
@@ -58,7 +60,7 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
               )}
             </Badge>
             {/* Admin badge - would need actual admin check */}
-            <Badge variant="outline" className="bg-green-500/80 border-green-400/50 text-white backdrop-blur-sm">
+            <Badge variant="outline" className="bg-green-500/80 border-green-400/50 text-white backdrop-blur-sm px-2 py-1">
               Admin
             </Badge>
           </div>
@@ -86,7 +88,7 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
         </div>
 
         {/* Group Info */}
-        <div className="space-y-2 mb-6">
+        <div className="space-y-2 flex-1">
           <h3 className="text-xl font-bold leading-tight">{group.name}</h3>
           
           {group.location && (
@@ -95,17 +97,6 @@ export const SimpleGroupCard = ({ group }: SimpleGroupCardProps) => {
               <span className="truncate">{group.location}</span>
             </div>
           )}
-        </div>
-
-        {/* Action Button */}
-        <div className="mt-auto">
-          <Button 
-            onClick={handleCardClick}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
-            size="lg"
-          >
-            View Group
-          </Button>
         </div>
       </CardContent>
     </Card>
