@@ -3,7 +3,6 @@ import { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Button } from "@/components/ui/button";
 import { Check, X, GripVertical } from "lucide-react";
-import { PlayerRanking } from "./PlayerRanking";
 import { rankingService } from "../services/rankingService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -67,7 +66,9 @@ export const DragDropPlayerList = ({
       const result = await rankingService.reorderPlayers(eventId, user.id, playerIds);
       
       if (result.success) {
-        toast("Player order updated successfully");
+        toast({
+          description: "Player order updated successfully"
+        });
         
         // Refetch player data
         queryClient.invalidateQueries({
@@ -76,11 +77,17 @@ export const DragDropPlayerList = ({
         
         onCancel(); // Exit reorder mode
       } else {
-        toast(`Error: ${result.message}`);
+        toast({
+          description: `Error: ${result.message}`,
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('[DragDropPlayerList] Error reordering players:', error);
-      toast("Failed to update player order. Please try again.");
+      toast({
+        description: "Failed to update player order. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
