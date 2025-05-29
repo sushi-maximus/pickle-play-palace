@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
 type Group = Database['public']['Tables']['groups']['Row'];
-type GroupMember = Database['public']['Tables']['group_members']['Row'];
 
 interface SimpleGroupsHookProps {
   userId?: string;
@@ -29,11 +28,15 @@ export const useSimpleGroups = ({ userId, searchTerm = "", mode = 'all' }: Simpl
 
       // If mode is 'my-groups', only fetch groups where user is a member
       if (mode === 'my-groups' && userId) {
-        const { data: memberGroups } = await supabase
+        const { data: memberGroups, error: memberError } = await supabase
           .from('group_members')
           .select('group_id')
           .eq('user_id', userId)
           .eq('status', 'active');
+
+        if (memberError) {
+          throw memberError;
+        }
 
         if (memberGroups && memberGroups.length > 0) {
           const groupIds = memberGroups.map(mg => mg.group_id);
@@ -56,6 +59,7 @@ export const useSimpleGroups = ({ userId, searchTerm = "", mode = 'all' }: Simpl
     } catch (err) {
       console.error('Error fetching groups:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch groups');
+      setGroups([]);
     } finally {
       setLoading(false);
     }
