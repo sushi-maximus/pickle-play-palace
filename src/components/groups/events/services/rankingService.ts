@@ -1,11 +1,20 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import type { DatabaseWithFunctions } from "./types/rpcTypes";
 
 export interface RankingServiceResult {
   success: boolean;
   message: string;
   error?: string;
 }
+
+// Type-safe wrapper for supabase client with our custom functions
+const typedSupabase = supabase as unknown as {
+  rpc: <T extends keyof DatabaseWithFunctions['public']['Functions']>(
+    fn: T,
+    args: DatabaseWithFunctions['public']['Functions'][T]['Args']
+  ) => Promise<{ data: DatabaseWithFunctions['public']['Functions'][T]['Returns']; error: any }>;
+};
 
 export const rankingService = {
   /**
@@ -16,7 +25,7 @@ export const rankingService = {
     try {
       console.log('[Ranking Service] Setting initial rankings for event:', eventId);
       
-      const { error } = await (supabase as any).rpc('set_initial_rankings', {
+      const { error } = await typedSupabase.rpc('set_initial_rankings', {
         p_event_id: eventId
       });
 
@@ -52,7 +61,7 @@ export const rankingService = {
     try {
       console.log('[Ranking Service] Reorganizing confirmed players:', { eventId, adminId });
       
-      const { error } = await (supabase as any).rpc('reorganize_confirmed_players', {
+      const { error } = await typedSupabase.rpc('reorganize_confirmed_players', {
         p_event_id: eventId,
         p_admin_id: adminId
       });
@@ -89,7 +98,7 @@ export const rankingService = {
     try {
       console.log('[Ranking Service] Reordering players:', { eventId, adminId, playerCount: playerIds.length });
       
-      const { error } = await (supabase as any).rpc('reorder_players', {
+      const { error } = await typedSupabase.rpc('reorder_players', {
         p_event_id: eventId,
         p_admin_id: adminId,
         p_player_ids: playerIds
