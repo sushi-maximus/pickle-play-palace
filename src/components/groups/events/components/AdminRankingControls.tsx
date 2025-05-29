@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { RotateCcw, Users } from "lucide-react";
 import { rankingService } from "../services/rankingService";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 
@@ -20,7 +20,6 @@ export const AdminRankingControls = ({
   hasConfirmedPlayers 
 }: AdminRankingControlsProps) => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isReorganizing, setIsReorganizing] = useState(false);
 
@@ -42,29 +41,18 @@ export const AdminRankingControls = ({
       const result = await rankingService.reorganizeConfirmedPlayers(eventId, user.id);
       
       if (result.success) {
-        toast({
-          title: "Success",
-          description: "Players reorganized successfully based on skill level and DUPR rating",
-        });
+        toast("Players reorganized successfully based on skill level and DUPR rating");
         
         // Refetch player data
         queryClient.invalidateQueries({
           queryKey: queryKeys.events.players(eventId)
         });
       } else {
-        toast({
-          title: "Error",
-          description: result.message,
-          variant: "destructive",
-        });
+        toast(`Error: ${result.message}`);
       }
     } catch (error) {
       console.error('[AdminRankingControls] Error reorganizing players:', error);
-      toast({
-        title: "Error",
-        description: "Failed to reorganize players. Please try again.",
-        variant: "destructive",
-      });
+      toast("Failed to reorganize players. Please try again.");
     } finally {
       setIsReorganizing(false);
     }

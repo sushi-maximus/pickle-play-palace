@@ -18,8 +18,7 @@ export const EventDetailsTabs = ({ event, currentUserId }: EventDetailsTabsProps
       <Tabs defaultValue="details" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
-          <TabsTrigger value="waitlist">Waitlist</TabsTrigger>
+          <TabsTrigger value="players">Players</TabsTrigger>
           <TabsTrigger value="validation">Validation</TabsTrigger>
         </TabsList>
         
@@ -27,18 +26,9 @@ export const EventDetailsTabs = ({ event, currentUserId }: EventDetailsTabsProps
           <EventDetailsTab event={event} />
         </TabsContent>
         
-        <TabsContent value="confirmed" className="mt-0">
+        <TabsContent value="players" className="mt-0">
           <PlayersList 
-            eventId={event.id} 
-            type="confirmed" 
-            currentUserId={currentUserId}
-          />
-        </TabsContent>
-        
-        <TabsContent value="waitlist" className="mt-0">
-          <PlayersList 
-            eventId={event.id} 
-            type="waitlist" 
+            event={event} 
             currentUserId={currentUserId}
           />
         </TabsContent>
