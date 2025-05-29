@@ -1,38 +1,11 @@
 
-import { useEffect, useRef } from 'react';
 import { AppLayout } from "@/components/layout/AppLayout";
-import { AreasOfFocusCard } from "@/components/dashboard/AreasOfFocusCard";
-import { RegisteredEventsCard } from "@/components/dashboard/RegisteredEventsCard";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/loading/DashboardSkeleton";
-import { useOptimizedPullToRefresh } from "@/hooks/useOptimizedPullToRefresh";
-import { useQueryClient } from '@tanstack/react-query';
 
 const Dashboard = () => {
   const { isLoading, user } = useAuth();
-  const queryClient = useQueryClient();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
-  // Simple, direct hook call with no conditional logic
-  const { pullDistance, isRefreshing, isPulling, bindToElement } = useOptimizedPullToRefresh({
-    onRefresh: async () => {
-      if (user?.id) {
-        await queryClient.invalidateQueries({
-          queryKey: ['userRegisteredEvents', user.id]
-        });
-      }
-    },
-    threshold: 80,
-    resistance: 2.5,
-  });
-
-  // Bind pull-to-refresh when container is available
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      bindToElement(scrollContainerRef.current);
-    }
-  }, [bindToElement]);
 
   // Show loading state while authentication is being resolved
   if (isLoading || !user) {
@@ -45,37 +18,15 @@ const Dashboard = () => {
     );
   }
 
-  // Render authenticated dashboard content
+  // Empty dashboard content
   return (
     <RouteErrorBoundary routeName="Dashboard">
       <AppLayout title="Dashboard">
-        <div 
-          ref={scrollContainerRef}
-          className="space-y-6 animate-fade-in relative"
-          style={{
-            transform: isPulling ? `translateY(${pullDistance}px)` : 'none',
-            transition: isPulling ? 'none' : 'transform 0.3s ease-out'
-          }}
-        >
-          {/* Pull-to-refresh indicator */}
-          {(isPulling || isRefreshing) && (
-            <div 
-              className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full"
-              style={{ transform: `translateX(-50%) translateY(${Math.max(pullDistance - 80, -80)}px)` }}
-            >
-              <div className="bg-white rounded-full p-2 shadow-lg border">
-                <div className={`w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full ${isRefreshing ? 'animate-spin' : ''}`} />
-              </div>
-            </div>
-          )}
-
+        <div className="space-y-6 animate-fade-in">
           <div>
             <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
             <p className="text-slate-600">Welcome to your dashboard!</p>
           </div>
-          
-          <RegisteredEventsCard />
-          <AreasOfFocusCard />
         </div>
       </AppLayout>
     </RouteErrorBoundary>
