@@ -6,23 +6,21 @@ import { RegisteredEventsCard } from "@/components/dashboard/RegisteredEventsCar
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/loading/DashboardSkeleton";
-import { useConditionalPullToRefresh } from "@/components/dashboard/hooks/useConditionalPullToRefresh";
+import { useDashboardPullToRefresh } from "@/components/dashboard/hooks/useDashboardPullToRefresh";
 
 const Dashboard = () => {
   const { isLoading, user } = useAuth();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // Only enable pull-to-refresh when user is authenticated
-  const { pullDistance, isRefreshing, isPulling, bindToElement } = useConditionalPullToRefresh({
-    enabled: !isLoading && !!user
-  });
+  // Always call the hook - it handles the user authentication internally
+  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
 
-  // Only bind pull-to-refresh when user exists and container is available
+  // Bind pull-to-refresh when container is available
   useEffect(() => {
-    if (scrollContainerRef.current && user && !isLoading) {
+    if (scrollContainerRef.current) {
       bindToElement(scrollContainerRef.current);
     }
-  }, [bindToElement, user, isLoading]);
+  }, [bindToElement]);
 
   // Show loading state while authentication is being resolved
   if (isLoading || !user) {
@@ -64,9 +62,7 @@ const Dashboard = () => {
             <p className="text-slate-600">Welcome to your dashboard!</p>
           </div>
           
-          {/* RegisteredEventsCard above AreasOfFocusCard (as per user decision A7) */}
           <RegisteredEventsCard />
-          
           <AreasOfFocusCard />
         </div>
       </AppLayout>
