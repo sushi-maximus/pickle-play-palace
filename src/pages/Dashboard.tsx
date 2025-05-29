@@ -6,14 +6,26 @@ import { RegisteredEventsCard } from "@/components/dashboard/RegisteredEventsCar
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/loading/DashboardSkeleton";
-import { useDashboardPullToRefresh } from "@/components/dashboard/hooks/useDashboardPullToRefresh";
+import { useOptimizedPullToRefresh } from "@/hooks/useOptimizedPullToRefresh";
+import { useQueryClient } from '@tanstack/react-query';
 
 const Dashboard = () => {
   const { isLoading, user } = useAuth();
+  const queryClient = useQueryClient();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // Always call the hook - it handles the user authentication internally
-  const { pullDistance, isRefreshing, isPulling, bindToElement } = useDashboardPullToRefresh();
+  // Simple, direct hook call with no conditional logic
+  const { pullDistance, isRefreshing, isPulling, bindToElement } = useOptimizedPullToRefresh({
+    onRefresh: async () => {
+      if (user?.id) {
+        await queryClient.invalidateQueries({
+          queryKey: ['userRegisteredEvents', user.id]
+        });
+      }
+    },
+    threshold: 80,
+    resistance: 2.5,
+  });
 
   // Bind pull-to-refresh when container is available
   useEffect(() => {
