@@ -1,5 +1,7 @@
 
+
 import { AppLayout } from "@/components/layout/AppLayout";
+import { RegisteredEventsCard } from "@/components/dashboard/RegisteredEventsCard";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/loading/DashboardSkeleton";
@@ -18,7 +20,7 @@ const Dashboard = () => {
     );
   }
 
-  // Empty dashboard content
+  // Dashboard content with events card
   return (
     <RouteErrorBoundary routeName="Dashboard">
       <AppLayout title="Dashboard">
@@ -27,6 +29,8 @@ const Dashboard = () => {
             <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
             <p className="text-slate-600">Welcome to your dashboard!</p>
           </div>
+          
+          <RegisteredEventsCard />
         </div>
       </AppLayout>
     </RouteErrorBoundary>
@@ -34,3 +38,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
