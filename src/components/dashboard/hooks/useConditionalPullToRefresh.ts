@@ -7,6 +7,9 @@ interface UseConditionalPullToRefreshProps {
 }
 
 export const useConditionalPullToRefresh = ({ enabled }: UseConditionalPullToRefreshProps) => {
+  // ALWAYS call the hook to maintain consistent hook order
+  const hookResult = useDashboardPullToRefresh();
+  
   const defaultReturn = {
     pullDistance: 0,
     isRefreshing: false,
@@ -14,8 +17,6 @@ export const useConditionalPullToRefresh = ({ enabled }: UseConditionalPullToRef
     bindToElement: () => {},
   };
 
-  // Only call the actual hook when enabled (user is authenticated)
-  const actualHook = enabled ? useDashboardPullToRefresh() : defaultReturn;
-  
-  return actualHook;
+  // Return the hook result if enabled, otherwise return default values
+  return enabled ? hookResult : defaultReturn;
 };
