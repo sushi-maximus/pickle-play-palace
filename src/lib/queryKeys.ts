@@ -1,4 +1,3 @@
-
 export const queryKeys = {
   posts: {
     all: ['posts'] as const,
@@ -27,6 +26,7 @@ export const queryKeys = {
     players: (eventId: string) => [...queryKeys.events.detail(eventId), 'players'] as const,
     registration: (eventId: string, userId?: string) => [...queryKeys.events.detail(eventId), 'registration', { userId }] as const,
     group: (groupId: string) => [...queryKeys.events.all, 'group', groupId] as const,
+    adminStatus: (eventId: string, userId: string) => [...queryKeys.events.detail(eventId), 'admin-status', userId] as const,
   },
   profile: {
     all: ['profile'] as const,
