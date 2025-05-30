@@ -25,9 +25,20 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
       const fullYear = year.length === 2 ? `20${year}` : year;
       const paddedMonth = month.padStart(2, '0');
       const paddedDay = day.padStart(2, '0');
+      
+      // Create the date string in YYYY-MM-DD format
       const result = `${fullYear}-${paddedMonth}-${paddedDay}`;
       console.log('EventDateField - Converted to input format:', result);
-      return result;
+      
+      // Validate the date to ensure it's correct
+      const testDate = new Date(fullYear, parseInt(month) - 1, parseInt(day));
+      const isValidDate = testDate.getFullYear() == parseInt(fullYear) && 
+                         testDate.getMonth() == parseInt(month) - 1 && 
+                         testDate.getDate() == parseInt(day);
+      
+      console.log('EventDateField - Date validation:', isValidDate, testDate);
+      
+      return isValidDate ? result : '';
     }
     
     // If already in YYYY-MM-DD format, return as is
@@ -48,7 +59,12 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
     
     const [year, month, day] = inputDate.split('-');
     const shortYear = year.slice(2); // Convert 2025 to 25
-    const result = `${parseInt(month)}-${parseInt(day)}-${shortYear}`;
+    
+    // Remove leading zeros and convert to integers to ensure clean format
+    const cleanMonth = parseInt(month).toString();
+    const cleanDay = parseInt(day).toString();
+    
+    const result = `${cleanMonth}-${cleanDay}-${shortYear}`;
     console.log('EventDateField - Converted to database format:', result);
     return result;
   };
@@ -56,6 +72,12 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     console.log('EventDateField - User input:', inputValue);
+    
+    if (!inputValue) {
+      onChange('');
+      return;
+    }
+    
     const dbFormat = convertInputFormatToDatabaseFormat(inputValue);
     console.log('EventDateField - Calling onChange with:', dbFormat);
     onChange(dbFormat);
