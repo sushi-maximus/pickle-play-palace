@@ -64,6 +64,9 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
       queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
       
+      // Invalidate dashboard registered events queries
+      queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents'] });
+      
       // Get the group ID from the event to invalidate next event queries
       queryClient.getQueryCache().findAll({ queryKey: ['events'] }).forEach(query => {
         if (query.queryKey.includes('next-event')) {
@@ -102,6 +105,9 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
       queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
+      
+      // Invalidate dashboard registered events queries
+      queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents'] });
       
       // Get the group ID from the event to invalidate next event queries
       queryClient.getQueryCache().findAll({ queryKey: ['events'] }).forEach(query => {
