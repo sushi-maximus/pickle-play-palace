@@ -1,11 +1,14 @@
 
 import { memo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGroupPosts } from "../posts/hooks/useGroupPosts";
+import { useNextEvent } from "../events/hooks/useNextEvent";
 import { FacebookNetworkStatus } from "./FacebookNetworkStatus";
 import { FacebookErrorBoundary } from "./FacebookErrorBoundary";
 import { FacebookErrorState } from "./FacebookErrorState";
 import { FacebookLoadingState } from "./FacebookLoadingState";
 import { FacebookErrorFallback } from "./FacebookErrorFallback";
+import { NextEventCard } from "../events/components/NextEventCard";
 import type { Profile } from "../posts/hooks/types/groupPostTypes";
 import { FacebookCreatePost } from "./FacebookCreatePost";
 import { FacebookPostsList } from "./FacebookPostsList";
@@ -18,6 +21,7 @@ interface Activity2TabProps {
 
 const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabProps) => {
   const [retryKey, setRetryKey] = useState(0);
+  const navigate = useNavigate();
   
   console.log("Activity2Tab - Rendering with:", { groupId, userId: user?.id });
 
@@ -39,6 +43,12 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
     key: retryKey
   });
 
+  // Fetch next event data
+  const { nextEventData, isLoading: isLoadingNextEvent } = useNextEvent({
+    groupId,
+    userId: user?.id
+  });
+
   const handlePostCreated = async () => {
     try {
       await refreshPosts();
@@ -55,6 +65,12 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
 
   const handleCreatePost = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleEventClick = () => {
+    if (nextEventData?.event) {
+      navigate(`/events/${nextEventData.event.id}`);
+    }
   };
 
   const handleErrorReset = () => {
@@ -90,6 +106,17 @@ const Activity2TabComponent = ({ groupId, user, onPostCreated }: Activity2TabPro
               onPostCreated={handlePostCreated}
             />
           </div>
+
+          {/* Next Event Card - Only show if there's an upcoming event */}
+          {nextEventData && !isLoadingNextEvent && (
+            <div className="flex-shrink-0 mb-4 px-3 md:px-4">
+              <NextEventCard 
+                event={nextEventData.event}
+                registrationStatus={nextEventData.registrationStatus}
+                onClick={handleEventClick}
+              />
+            </div>
+          )}
 
           {/* Posts Feed Area - Enhanced scrolling with momentum and safe areas */}
           <div className="flex-1 overflow-y-auto overscroll-behavior-y-contain webkit-overflow-scrolling-touch min-h-0">

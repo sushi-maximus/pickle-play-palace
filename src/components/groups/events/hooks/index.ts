@@ -1,3 +1,4 @@
+
 export * from './useWizardState';
 export * from './useEventSubmission';
 export * from './useStepValidation';
@@ -7,3 +8,4 @@ export * from './useEventPlayers';
 export * from './usePromotionStatus';
 export * from './useEventAdminStatus';
 export * from './useEditEvent';
+export * from './useNextEvent';
