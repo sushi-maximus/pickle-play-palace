@@ -801,3 +801,81 @@ This system ensures consistent, structured error resolution while maintaining co
 - Preview what will happen in the next step
 
 **This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
+
+---
+
+## IMPLEMENTATION PLAN: Next Event Card Feature
+
+### Overview
+Add a Next Event card to the group activity feed that appears below the post creation form and above the posts list. The card should only display if there's an upcoming event within the next 7 days and show the user's registration status.
+
+### Detailed Implementation Plan
+
+#### Step 1: Analysis and Design (5 minutes)
+- **Target Location**: Below FacebookCreatePost, above FacebookPostsList in Activity2Tab.tsx
+- **Conditional Display**: Only show if event exists within next 7 days
+- **Registration Status**: Show user's status (registered, waitlisted, or not registered)
+- **Design**: No section header, just the card component
+- **Mobile-First**: Follow existing responsive patterns
+
+#### Step 2: Create Next Event Hook (10 minutes)
+- **File**: `src/components/groups/events/hooks/useNextEvent.ts`
+- **Functionality**: 
+  - Fetch upcoming events for group (next 7 days)
+  - Get user's registration status for the event
+  - Return single next event or null
+- **Dependencies**: Use existing `useGroupEvents` hook pattern
+- **Types**: Use existing database types from `@/integrations/supabase/types`
+
+#### Step 3: Create Next Event Card Component (15 minutes)
+- **File**: `src/components/groups/events/components/NextEventCard.tsx`
+- **Features**:
+  - Display event details (title, date, time, location)
+  - Show registration status badge
+  - Mobile-responsive design
+  - Touch-friendly interactions
+  - Click to navigate to event details
+- **Size**: Keep under 50 lines, focused component
+- **Styling**: Match existing card patterns in Activity2Tab
+
+#### Step 4: Request Permission for Integration (2 minutes)
+- **Issue**: Activity2Tab.tsx is in locked files list
+- **Solution**: Request explicit permission to modify the file
+- **Integration Point**: Add NextEventCard between FacebookCreatePost and FacebookPostsList
+- **Preservation**: Maintain all existing functionality
+
+#### Step 5: Integration and Testing (8 minutes)
+- **Import**: Add NextEventCard to Activity2Tab.tsx
+- **Positioning**: Place after FacebookCreatePost, before posts list
+- **Props**: Pass groupId and user props
+- **Testing**: Verify 7-day filtering, registration status display, responsive behavior
+
+#### Step 6: Validation (5 minutes)
+- **Functionality**: Confirm card only shows for events within 7 days
+- **Registration Status**: Verify correct status display for all states
+- **Performance**: Ensure no impact on existing feed performance
+- **Mobile**: Test touch interactions and responsive layout
+
+### Risk Mitigation Strategy
+- **Locked File**: Activity2Tab.tsx requires permission to modify
+- **Fallback**: Create new components without touching existing logic
+- **Minimal Integration**: Single import and component placement
+- **Error Handling**: Graceful degradation if event data unavailable
+
+### Files to Create:
+1. `src/components/groups/events/hooks/useNextEvent.ts`
+2. `src/components/groups/events/components/NextEventCard.tsx`
+
+### Files Requiring Permission:
+1. `src/components/groups/mobile/Activity2Tab.tsx` (LOCKED)
+
+### Implementation Notes:
+- Use Component Creation Template for new components
+- Follow mobile-first design patterns: `px-3 py-4 md:px-6 md:py-8`
+- Include mobile (`h-3 w-3`) and desktop (`md:h-4 md:w-4`) icon sizing
+- Use `space-y-3 md:space-y-4` for consistent spacing
+- Implement proper TypeScript typing with database types
+- Add touch-friendly interactions for mobile users
+- Ensure graceful error handling and loading states
+
+This plan ensures systematic implementation while preserving all existing functionality and following established patterns in the codebase.
