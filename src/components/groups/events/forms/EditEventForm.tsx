@@ -25,19 +25,11 @@ const editEventSchema = z.object({
   pricing_model: z.enum(["free", "one-time", "per-event"]),
   fee_amount: z.number().nullable()
 }).refine((data) => {
-  // Allow editing events until end of event day (11:59 PM)
+  // For editing: Allow until end of event day (11:59 PM)
   const eventDate = new Date(data.event_date + "T00:00:00");
   const endOfEventDay = new Date(eventDate);
   endOfEventDay.setHours(23, 59, 59, 999);
   const now = new Date();
-  
-  console.log('[EditEventForm] Date validation:', {
-    eventDate: data.event_date,
-    eventDateParsed: eventDate.toISOString(),
-    endOfEventDay: endOfEventDay.toISOString(),
-    now: now.toISOString(),
-    canEdit: now <= endOfEventDay
-  });
   
   return now <= endOfEventDay;
 }, {
