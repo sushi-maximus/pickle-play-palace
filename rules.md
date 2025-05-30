@@ -323,17 +323,116 @@ Always use the database types from `@/integrations/supabase/types` instead of de
 - All files in `src/components/groups/details/`
 - All files in `src/components/navigation/`
 - All files in `src/components/layout/`
+- All files in `src/components/auth/`
+- All files in `src/components/dashboard/`
+- All files in `src/components/error-boundaries/`
+- All files in `src/components/groups/forms/`
+- All files in `src/components/groups/header/`
+- All files in `src/components/groups/join-requests/`
+- All files in `src/components/groups/members/`
+- All files in `src/components/groups/services/`
+- All files in `src/components/groups/settings/`
+- All files in `src/components/groups/simple/`
+- All files in `src/components/groups/utils/`
+- All files in `src/components/landing/`
+- All files in `src/components/loading/`
+- All files in `src/components/performance/`
+- All files in `src/components/profile/`
+- All files in `src/components/routing/`
+- All files in `src/components/ui/`
 - `src/components/groups/SearchFilter.tsx`
+- `src/components/groups/CreateGroupDialog.tsx`
+- `src/components/groups/GroupAboutTab.tsx`
+- `src/components/groups/GroupDetailsHeader.tsx`
+- `src/components/groups/GroupDetailsLoading.tsx`
+- `src/components/groups/GroupSettingsTab.tsx`
+- `src/components/groups/GroupsList.tsx`
+- `src/components/groups/JoinRequestDialog.tsx`
+- `src/components/groups/JoinRequestsManager.tsx`
+- `src/components/groups/LoginPrompt.tsx`
+- `src/components/groups/MyGroupsList.tsx`
+
+**EVENT SYSTEM (LOCKED):**
+- `src/components/groups/events/CreateEventButton.tsx`
+- `src/components/groups/events/EventCard.tsx`
+- `src/components/groups/events/EventCreationWizard.tsx`
+- `src/components/groups/events/EventDetailsPage.tsx`
+- `src/components/groups/events/EventsList.tsx`
+- `src/components/groups/events/StepIndicator.tsx`
+- `src/components/groups/events/TabbedEventsList.tsx`
+- `src/components/groups/events/WizardFooter.tsx`
+- `src/components/groups/events/WizardHeader.tsx`
+- `src/components/groups/events/components/AdminRankingControls.tsx`
+- `src/components/groups/events/components/DragDropPlayerList.tsx`
+- `src/components/groups/events/components/EventDetailsHeader.tsx`
+- `src/components/groups/events/components/EventDetailsTabs.tsx`
+- `src/components/groups/events/components/EventDetailsTab.tsx`
+- `src/components/groups/events/components/EventRegistrationButton.tsx`
+- `src/components/groups/events/components/EventRegistrationStatus.tsx`
+- `src/components/groups/events/components/PlayerRanking.tsx`
+- `src/components/groups/events/components/PlayersList.tsx`
+- `src/components/groups/events/components/PromotionBanner.tsx`
+- `src/components/groups/events/components/PromotionIndicator.tsx`
+- `src/components/groups/events/components/PromotionValidationTest.tsx`
+- `src/components/groups/events/components/WizardStepRenderer.tsx`
+- `src/components/groups/events/forms/EditEventDialog.tsx`
+- `src/components/groups/events/forms/EditEventForm.tsx`
+- `src/components/groups/events/forms/fields/EventBasicFields.tsx`
+- `src/components/groups/events/forms/fields/EventCapacityFields.tsx`
+- `src/components/groups/events/forms/fields/EventDateField.tsx`
+- `src/components/groups/events/forms/fields/EventPricingFields.tsx`
+- `src/components/groups/events/forms/fields/EventTimeField.tsx`
+- `src/components/groups/events/forms/types/eventFormTypes.ts`
+- `src/components/groups/events/forms/validation/EditEventFormValidationTest.tsx`
+
+**POSTS SYSTEM (LOCKED):**
+- `src/components/groups/posts/CreatePostForm2.tsx`
+- `src/components/groups/posts/GroupPostsEmpty.tsx`
+- `src/components/groups/posts/index.ts`
+- `src/components/groups/posts/post-card/index.ts`
+- `src/components/groups/posts/post-card/CommentActions.tsx`
+- `src/components/groups/posts/post-card/CommentContent.tsx`
+- `src/components/groups/posts/post-card/CommentForm2.tsx`
+- `src/components/groups/posts/post-card/CommentHeader.tsx`
+- `src/components/groups/posts/post-card/CommentReactions.tsx`
+- `src/components/groups/posts/post-card/CommentThumbsDown2.tsx`
+- `src/components/groups/posts/post-card/CommentThumbsUp2.tsx`
+- `src/components/groups/posts/post-card/Comment2.tsx`
+- `src/components/groups/posts/post-card/CommentsSection2.tsx`
+- `src/components/groups/posts/post-card/DeleteCommentDialog.tsx`
+- `src/components/groups/posts/post-card/DeleteCommentDialog2.tsx`
+- `src/components/groups/posts/post-card/DeletePostDialog.tsx`
+- `src/components/groups/posts/post-card/PostContent.tsx`
+- `src/components/groups/posts/post-card/PostHeader.tsx`
+- `src/components/groups/posts/post-card/PostHeart2.tsx`
+- `src/components/groups/posts/post-card/PostReactions.tsx`
+- `src/components/groups/posts/post-card/PostReactions2.tsx`
+- `src/components/groups/posts/post-card/ThumbsDown2.tsx`
+- `src/components/groups/posts/post-card/ThumbsUp2.tsx`
 
 **HOOKS AND UTILITIES (LOCKED):**
 - All files in `src/components/groups/hooks/`
 - All files in `src/components/groups/utils/`
 - All files in `src/components/groups/services/`
 - All files in `src/hooks/`
+- All files in `src/utils/`
+- All files in `src/integrations/`
 
 **TYPE DEFINITIONS (LOCKED):**
 - All files ending in `/types.ts` or `/types/`
 - All files ending in `/index.ts`
+- All files in `src/types/`
+
+**CONFIGURATION AND SETUP (LOCKED):**
+- `src/main.tsx`
+- `src/App.tsx`
+- `src/App.css`
+- All files in `src/lib/`
+- `package.json`
+- `tsconfig.json`
+- `vite.config.ts`
+- `tailwind.config.ts`
+- `postcss.config.js`
 
 ### FILE PROTECTION RULES:
 
@@ -633,7 +732,7 @@ When the AI encounters or the user reports errors, the AI MUST provide action bu
 **Runtime/Logic Errors:**
 ```xml
 <lov-actions>
-<lov-message-prompt message="Debug runtime error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Application logic and runtime behavior.">Fix Runtime Error</lov-message-prompt>
+<lov-message-prompt message="Debug runtime error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Application logic and runtime behavior.">Fix Runtime Error</lov-message-prompted>
 </lov-actions>
 ```
 
@@ -702,5 +801,3 @@ This system ensures consistent, structured error resolution while maintaining co
 - Preview what will happen in the next step
 
 **This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
-
-IMPORTANT: rules.md is 725 lines long. If you make any modifications to it, let the user know that it's getting too long and that they should consider asking you to refactor it after you're done with the lov-code block.
