@@ -10,20 +10,23 @@ interface EditEventDialogProps {
   event: Event | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
-export const EditEventDialog = ({ event, open, onOpenChange }: EditEventDialogProps) => {
-  const { updateEvent, isLoading } = useEditEvent();
+export const EditEventDialog = ({ event, open, onOpenChange, onSuccess }: EditEventDialogProps) => {
+  const { editEvent, isEditing } = useEditEvent({
+    eventId: event?.id || '',
+    onSuccess: () => {
+      onSuccess?.();
+      onOpenChange(false);
+    }
+  });
 
   if (!event) return null;
 
   const handleSubmit = async (data: any) => {
     try {
-      await updateEvent.mutateAsync({
-        eventId: event.id,
-        updates: data
-      });
-      onOpenChange(false);
+      editEvent(data);
     } catch (error) {
       console.error('Failed to update event:', error);
     }
@@ -43,7 +46,7 @@ export const EditEventDialog = ({ event, open, onOpenChange }: EditEventDialogPr
           event={event}
           onSubmit={handleSubmit}
           onCancel={() => onOpenChange(false)}
-          isLoading={isLoading}
+          isLoading={isEditing}
         />
       </DialogContent>
     </Dialog>
