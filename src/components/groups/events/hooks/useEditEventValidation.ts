@@ -11,14 +11,7 @@ export const useEditEventValidation = () => {
     if (!eventData.event_time) return false;
     if (!eventData.location?.trim()) return false;
     
-    // For editing: Allow until end of event day (11:59 PM)
-    const eventDate = new Date(eventData.event_date + "T00:00:00");
-    const endOfEventDay = new Date(eventDate);
-    endOfEventDay.setHours(23, 59, 59, 999);
-    const now = new Date();
-    
-    if (now > endOfEventDay) return false;
-    
+    // No date validation for editing - allow editing regardless of date
     return true;
   };
 
@@ -33,15 +26,6 @@ export const useEditEventValidation = () => {
     }
     if (!eventData.event_date) {
       errors.event_date = "Date is required";
-    } else {
-      const eventDate = new Date(eventData.event_date + "T00:00:00");
-      const endOfEventDay = new Date(eventDate);
-      endOfEventDay.setHours(23, 59, 59, 999);
-      const now = new Date();
-      
-      if (now > endOfEventDay) {
-        errors.event_date = "Cannot edit events after the event day has ended";
-      }
     }
     if (!eventData.event_time) {
       errors.event_time = "Time is required";
@@ -50,6 +34,7 @@ export const useEditEventValidation = () => {
       errors.location = "Location is required";
     }
     
+    // No date validation errors for editing
     return errors;
   };
 
