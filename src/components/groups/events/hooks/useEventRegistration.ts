@@ -18,11 +18,13 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
   const queryClient = useQueryClient();
   const [isRegistering, setIsRegistering] = useState(false);
 
-  // Get current registration status
+  // Get current registration status - ensuring consistent query key
   const { data: registration, isLoading: isLoadingRegistration } = useQuery({
-    queryKey: queryKeys.events.registration(eventId, playerId || undefined),
+    queryKey: ['playerRegistration', eventId, playerId],
     queryFn: async (): Promise<PlayerStatus | null> => {
       if (!playerId) return null;
+      
+      console.log('[Event Registration] Fetching registration status:', { eventId, playerId });
       
       const { data, error } = await supabase
         .from('player_status')
@@ -32,13 +34,15 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
         .single();
       
       if (error && error.code !== 'PGRST116') {
+        console.error('[Event Registration] Fetch error:', error);
         throw error;
       }
       
+      console.log('[Event Registration] Registration data:', data);
       return data;
     },
     enabled: !!eventId && !!playerId,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 10 * 1000, // 10 seconds - shorter than dashboard to ensure freshness
   });
 
   // Register mutation using the service
@@ -59,20 +63,23 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
     },
     onSuccess: (result) => {
       toast.success(result.message);
-      // Invalidate related queries including next event queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
+      
+      // Invalidate ALL related queries with consistent keys
+      queryClient.invalidateQueries({ queryKey: ['playerRegistration', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents'] });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
       
-      // Invalidate dashboard registered events queries
-      queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents'] });
-      
-      // Get the group ID from the event to invalidate next event queries
-      queryClient.getQueryCache().findAll({ queryKey: ['events'] }).forEach(query => {
-        if (query.queryKey.includes('next-event')) {
-          queryClient.invalidateQueries({ queryKey: query.queryKey });
+      // Invalidate next event queries for any group
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey.some(key => 
+            typeof key === 'string' && key.includes('next-event')
+          );
         }
       });
+      
+      console.log('[Event Registration] Successfully registered, invalidated queries');
     },
     onError: (error: Error) => {
       console.error('Registration error:', error);
@@ -101,20 +108,23 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
     },
     onSuccess: (result) => {
       toast.success(result.message);
-      // Invalidate related queries including next event queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
+      
+      // Invalidate ALL related queries with consistent keys
+      queryClient.invalidateQueries({ queryKey: ['playerRegistration', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents'] });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
       
-      // Invalidate dashboard registered events queries
-      queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents'] });
-      
-      // Get the group ID from the event to invalidate next event queries
-      queryClient.getQueryCache().findAll({ queryKey: ['events'] }).forEach(query => {
-        if (query.queryKey.includes('next-event')) {
-          queryClient.invalidateQueries({ queryKey: query.queryKey });
+      // Invalidate next event queries for any group
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey.some(key => 
+            typeof key === 'string' && key.includes('next-event')
+          );
         }
       });
+      
+      console.log('[Event Registration] Successfully cancelled, invalidated queries');
     },
     onError: (error: Error) => {
       console.error('Cancellation error:', error);

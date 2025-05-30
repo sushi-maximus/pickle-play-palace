@@ -19,7 +19,7 @@ export const useUserRegisteredEvents = () => {
   return useQuery({
     queryKey: ['userRegisteredEvents', user?.id],
     queryFn: async () => {
-      console.log('Fetching registered events for user:', user?.id);
+      console.log('[Dashboard] Fetching registered events for user:', user?.id);
 
       // First get the player status records
       const { data: playerStatusData, error: playerStatusError } = await supabase
@@ -28,14 +28,14 @@ export const useUserRegisteredEvents = () => {
         .eq('player_id', user!.id);
 
       if (playerStatusError) {
-        console.error('Error fetching player status:', playerStatusError);
+        console.error('[Dashboard] Error fetching player status:', playerStatusError);
         throw playerStatusError;
       }
 
-      console.log('Player status data:', playerStatusData);
+      console.log('[Dashboard] Player status data:', playerStatusData);
 
       if (!playerStatusData || playerStatusData.length === 0) {
-        console.log('No player status records found');
+        console.log('[Dashboard] No player status records found');
         return [];
       }
 
@@ -51,11 +51,11 @@ export const useUserRegisteredEvents = () => {
         .order('event_time', { ascending: true });
 
       if (eventsError) {
-        console.error('Error fetching events:', eventsError);
+        console.error('[Dashboard] Error fetching events:', eventsError);
         throw eventsError;
       }
 
-      console.log('Events data:', eventsData);
+      console.log('[Dashboard] Events data:', eventsData);
 
       // Combine the data
       const registeredEvents: RegisteredEvent[] = (eventsData || []).map(event => {
@@ -68,10 +68,11 @@ export const useUserRegisteredEvents = () => {
         };
       });
 
-      console.log('Transformed registered events:', registeredEvents);
+      console.log('[Dashboard] Transformed registered events:', registeredEvents);
 
       return registeredEvents;
     },
     enabled: !!user?.id,
+    staleTime: 30 * 1000, // 30 seconds - consistent with other queries
   });
 };

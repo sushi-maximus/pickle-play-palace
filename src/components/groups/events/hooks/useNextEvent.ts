@@ -24,7 +24,7 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
     isLoading,
     error
   } = useQuery({
-    queryKey: [...queryKeys.events.group(groupId), 'next-event', userId],
+    queryKey: ['nextEvent', groupId, userId],
     queryFn: async (): Promise<NextEventData | null> => {
       // Get today's date in local timezone (YYYY-MM-DD format)
       const today = new Date();
@@ -39,7 +39,7 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
         String(sevenDaysFromNow.getMonth() + 1).padStart(2, '0') + '-' + 
         String(sevenDaysFromNow.getDate()).padStart(2, '0');
 
-      console.log('Next Event Query - Date range:', { todayStr, sevenDaysStr, groupId });
+      console.log('[Next Event] Date range:', { todayStr, sevenDaysStr, groupId });
 
       // Get the next event within 7 days (including today)
       const { data: events, error: eventsError } = await supabase
@@ -53,21 +53,23 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
         .limit(1);
 
       if (eventsError) {
-        console.error('Error fetching next event:', eventsError);
+        console.error('[Next Event] Error fetching events:', eventsError);
         throw new Error(eventsError.message);
       }
 
       if (!events || events.length === 0) {
-        console.log('No events found in the next 7 days for group:', groupId);
+        console.log('[Next Event] No events found in the next 7 days for group:', groupId);
         return null;
       }
 
       const nextEvent = events[0];
-      console.log('Found next event:', nextEvent);
+      console.log('[Next Event] Found next event:', nextEvent);
       let registrationStatus: PlayerStatus | null = null;
 
-      // Get user's registration status if logged in
+      // Get user's registration status if logged in - using consistent query approach
       if (userId) {
+        console.log('[Next Event] Checking registration status for user:', userId);
+        
         const { data: playerStatus, error: statusError } = await supabase
           .from('player_status')
           .select('*')
@@ -76,11 +78,11 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
           .maybeSingle();
 
         if (statusError) {
-          console.error('Error fetching registration status:', statusError);
+          console.error('[Next Event] Error fetching registration status:', statusError);
           // Don't throw error here, just log it and continue without status
         } else {
           registrationStatus = playerStatus;
-          console.log('User registration status:', registrationStatus);
+          console.log('[Next Event] User registration status:', registrationStatus);
         }
       }
 
@@ -90,8 +92,8 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
       };
     },
     enabled: enabled && !!groupId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 30 * 1000, // 30 seconds - consistent with other registration queries
+    gcTime: 2 * 60 * 1000, // 2 minutes
   });
 
   return {
