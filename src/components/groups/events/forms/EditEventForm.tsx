@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +17,6 @@ type Event = Database['public']['Tables']['events']['Row'];
 const editEventSchema = z.object({
   event_title: z.string().min(1, "Event title is required"),
   description: z.string().min(1, "Description is required"),
-  event_date: z.string().min(1, "Event date is required"),
   event_time: z.string().min(1, "Event time is required"),
   location: z.string().min(1, "Location is required"),
   max_players: z.number().min(1, "Must have at least 1 player"),
@@ -46,7 +46,7 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
   const cleanDateString = String(event.event_date);
   console.log('cleanDateString:', cleanDateString);
   
-  // Use separate state for the date to bypass react-hook-form's conversion
+  // Use separate state for the date - completely isolated from react-hook-form
   const [dateValue, setDateValue] = useState(cleanDateString);
   
   console.log('useState initial dateValue:', dateValue);
@@ -56,7 +56,6 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
-      event_date: event.event_date, // This will be overridden by our controlled input
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
@@ -111,21 +110,22 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
         />
 
         <div className="grid grid-cols-2 gap-4">
-          {/* Controlled date input that bypasses react-hook-form */}
-          <FormItem>
-            <FormLabel>Date</FormLabel>
-            <FormControl>
-              <Input 
-                type="date" 
-                value={dateValue}
-                onChange={(e) => {
-                  console.log('Date input onChange:', e.target.value);
-                  setDateValue(e.target.value);
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          {/* Standalone date input - completely separate from react-hook-form */}
+          <div className="space-y-2">
+            <label htmlFor="event-date" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Date
+            </label>
+            <Input 
+              id="event-date"
+              type="date" 
+              value={dateValue}
+              onChange={(e) => {
+                console.log('Date input onChange:', e.target.value);
+                setDateValue(e.target.value);
+              }}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            />
+          </div>
 
           <FormField
             control={form.control}
