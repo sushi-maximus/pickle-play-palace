@@ -1,32 +1,14 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Database } from "@/integrations/supabase/types";
+import { Form } from "@/components/ui/form";
+import { EventDateField } from "./fields/EventDateField";
+import { EventTimeField } from "./fields/EventTimeField";
+import { EventBasicFields } from "./fields/EventBasicFields";
+import { EventCapacityFields } from "./fields/EventCapacityFields";
+import { EventPricingFields } from "./fields/EventPricingFields";
+import type { Event, EventFormData } from "./types/eventFormTypes";
 import type { EventUpdateData } from "../services/eventUpdateService";
-
-type Event = Database['public']['Tables']['events']['Row'];
-
-const editEventSchema = z.object({
-  event_title: z.string().min(1, "Event title is required"),
-  description: z.string().min(1, "Description is required"),
-  event_date: z.string().min(1, "Event date is required"),
-  event_time: z.string().min(1, "Event time is required"),
-  location: z.string().min(1, "Location is required"),
-  max_players: z.number().min(1, "Must have at least 1 player"),
-  allow_reserves: z.boolean(),
-  registration_open: z.boolean(),
-  pricing_model: z.enum(["free", "one-time", "per-event"]),
-  fee_amount: z.number().nullable()
-});
-
-type EditEventFormData = z.infer<typeof editEventSchema>;
 
 interface EditEventFormProps {
   event: Event;
@@ -36,243 +18,66 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
-  // Safe date formatting - treat the date as already being in YYYY-MM-DD format
-  const formatDateForInput = (dateValue: any): string => {
-    if (!dateValue) return '';
-    
-    // If it's already a string in YYYY-MM-DD format, use it directly
-    if (typeof dateValue === 'string') {
-      // Check if it's already in the correct format
-      if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        return dateValue;
-      }
-      
-      // If it contains time info, extract just the date part
-      if (dateValue.includes('T')) {
-        return dateValue.split('T')[0];
-      }
-      
-      // If it's a different date format, try to parse it carefully
-      try {
-        // Create date object but don't apply timezone conversion
-        const date = new Date(dateValue + 'T00:00:00'); // Force local time
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      } catch (error) {
-        console.error('Date parsing error:', error);
-        return '';
-      }
-    }
-    
-    return '';
-  };
-
+  console.log('EditEventForm - Event data:', event);
   console.log('EditEventForm - Raw event date:', event.event_date);
-  const formattedDate = formatDateForInput(event.event_date);
-  console.log('EditEventForm - Formatted date for input:', formattedDate);
 
-  const form = useForm<EditEventFormData>({
-    resolver: zodResolver(editEventSchema),
-    defaultValues: {
-      event_title: event.event_title,
-      description: event.description,
-      event_date: formattedDate,
-      event_time: event.event_time,
-      location: event.location,
-      max_players: event.max_players,
-      allow_reserves: event.allow_reserves,
-      registration_open: event.registration_open,
-      pricing_model: event.pricing_model as "free" | "one-time" | "per-event",
-      fee_amount: event.fee_amount ? Number(event.fee_amount) : null
-    }
+  const [formData, setFormData] = useState<EventFormData>({
+    event_title: event.event_title,
+    description: event.description,
+    event_date: event.event_date || '',
+    event_time: event.event_time,
+    location: event.location,
+    max_players: event.max_players,
+    allow_reserves: event.allow_reserves,
+    registration_open: event.registration_open,
+    pricing_model: event.pricing_model as "free" | "one-time" | "per-event",
+    fee_amount: event.fee_amount ? Number(event.fee_amount) : null
   });
 
-  const handleSubmit = (data: EditEventFormData) => {
-    console.log('EditEventForm - Submitting data:', data);
-    onSubmit(data);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('EditEventForm - Submitting form data:', formData);
+    onSubmit(formData);
   };
 
-  const pricingModel = form.watch('pricing_model');
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="event_title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Title</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter event title" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <Form>
+      <form onSubmit={handleSubmit} className="space-y-4 px-3 py-4 md:px-6 md:py-8">
+        <EventBasicFields
+          title={formData.event_title}
+          description={formData.description}
+          location={formData.location}
+          onTitleChange={(title) => setFormData(prev => ({ ...prev, event_title: title }))}
+          onDescriptionChange={(description) => setFormData(prev => ({ ...prev, description }))}
+          onLocationChange={(location) => setFormData(prev => ({ ...prev, location }))}
         />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea {...field} placeholder="Enter event description" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="event_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date</FormLabel>
-                <FormControl>
-                  <Input {...field} type="date" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <EventDateField
+            value={formData.event_date}
+            onChange={(date) => setFormData(prev => ({ ...prev, event_date: date }))}
           />
-
-          <FormField
-            control={form.control}
-            name="event_time"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Time</FormLabel>
-                <FormControl>
-                  <Input {...field} type="time" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <EventTimeField
+            value={formData.event_time}
+            onChange={(time) => setFormData(prev => ({ ...prev, event_time: time }))}
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter event location" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        <EventCapacityFields
+          maxPlayers={formData.max_players}
+          allowReserves={formData.allow_reserves}
+          registrationOpen={formData.registration_open}
+          onMaxPlayersChange={(maxPlayers) => setFormData(prev => ({ ...prev, max_players: maxPlayers }))}
+          onAllowReservesChange={(allowReserves) => setFormData(prev => ({ ...prev, allow_reserves: allowReserves }))}
+          onRegistrationOpenChange={(registrationOpen) => setFormData(prev => ({ ...prev, registration_open: registrationOpen }))}
         />
 
-        <FormField
-          control={form.control}
-          name="max_players"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Max Players</FormLabel>
-              <FormControl>
-                <Input 
-                  {...field} 
-                  type="number" 
-                  min="1"
-                  onChange={(e) => field.onChange(parseInt(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        <EventPricingFields
+          pricingModel={formData.pricing_model}
+          feeAmount={formData.fee_amount}
+          onPricingModelChange={(model) => setFormData(prev => ({ ...prev, pricing_model: model }))}
+          onFeeAmountChange={(amount) => setFormData(prev => ({ ...prev, fee_amount: amount }))}
         />
-
-        <FormField
-          control={form.control}
-          name="pricing_model"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Pricing Model</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select pricing model" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="free">Free</SelectItem>
-                  <SelectItem value="one-time">One-time Fee</SelectItem>
-                  <SelectItem value="per-event">Per Event</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {pricingModel !== 'free' && (
-          <FormField
-            control={form.control}
-            name="fee_amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fee Amount ($)</FormLabel>
-                <FormControl>
-                  <Input 
-                    {...field} 
-                    type="number" 
-                    step="0.01"
-                    min="0"
-                    value={field.value || ''}
-                    onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-
-        <div className="space-y-3">
-          <FormField
-            control={form.control}
-            name="allow_reserves"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                <div className="space-y-0.5">
-                  <FormLabel>Allow Reserves</FormLabel>
-                  <div className="text-sm text-muted-foreground">
-                    Allow players to join a waitlist when event is full
-                  </div>
-                </div>
-                <FormControl>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="registration_open"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                <div className="space-y-0.5">
-                  <FormLabel>Registration Open</FormLabel>
-                  <div className="text-sm text-muted-foreground">
-                    Allow new players to register for this event
-                  </div>
-                </div>
-                <FormControl>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
 
         <div className="flex gap-3 pt-4">
           <Button type="submit" disabled={isLoading} className="flex-1">
