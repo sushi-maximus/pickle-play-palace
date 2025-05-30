@@ -2,7 +2,6 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EditEventForm } from "./EditEventForm";
-import { EditEventFormValidationTest } from "./validation/EditEventFormValidationTest";
 import { useEditEvent } from "../hooks/useEditEvent";
 import type { Event } from "./types/eventFormTypes";
 
@@ -38,9 +37,6 @@ export const EditEventDialog = ({ event, open, onOpenChange, onSuccess }: EditEv
         <DialogHeader>
           <DialogTitle>Edit Event</DialogTitle>
         </DialogHeader>
-        
-        {/* Temporary validation test component for debugging */}
-        <EditEventFormValidationTest event={event} />
         
         <EditEventForm
           event={event}
