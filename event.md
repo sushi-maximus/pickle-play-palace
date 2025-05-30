@@ -1,11 +1,9 @@
-# Important Instruction for Lovable.dev
-AI, you are breaking my site when you are making changes I didn't ask for. Please read this file and follow it.
 
 # Change Only What's Requested Protocol
 
-**Make ONLY the specific change requested** - nothing more, nothing less  
-**If code is working, don't modify the JavaScript logic** - only change what was explicitly asked for  
-**CSS changes = CSS only** - don't touch state management, hooks, or business logic  
+**Make ONLY the specific change requested** - nothing more, nothing less
+**If code is working, don't modify the JavaScript logic** - only change what was explicitly asked for
+**CSS changes = CSS only** - don't touch state management, hooks, or business logic
 **Before making ANY change, explicitly state what will be modified and what will be preserved**
 
 ## Verification Before Changes:
@@ -53,7 +51,7 @@ For new implementations where there is no existing code to preserve (e.g., creat
 
 ## UI/UX Translation to CSS Protocol
 
-When UI/UX recommendations specify layout details (e.g., 'card height: ~80px, with 16px padding'), translate them into CSS properties following the mobile-first design guidelines (e.g., height: 80px; padding: 16px;) and include responsive patterns (e.g., md:padding: 20px). If the recommendation is high-level (e.g., 'single-column layout'), implement it as display: flex; flex-direction: column; max-width: 360px; unless instructed otherwise. Always confirm the CSS implementation in the step.
+When UI/UX recommendations specify layout details (e.g., 'card height: ~80px, with 16px padding'), translate these into CSS properties following the mobile-first design guidelines (e.g., height: 80px; padding: 16px;) and include responsive patterns (e.g., md:padding: 20px). If the recommendation is high-level (e.g., 'single-column layout'), implement it as display: flex; flex-direction: column; max-width: 360px; unless instructed otherwise. Always confirm the CSS implementation in the step.
 
 ## CRITICAL: Never Use 'any' Types - TypeScript Best Practices
 
@@ -431,17 +429,158 @@ types/componentTypes.ts (if custom types needed)
 
 ## Template Reference Quick Guide
 
-**For Complex Features**: Use Systematic Feature Development Template  
-**For Simple Changes**: Use Quick Feature Implementation Template  
-**For Database Work**: Use Database Migration Template  
-**For New Components**: Use Component Creation Template  
-**For Bug Fixes**: Use Error Debugging Template  
-**For Performance**: Use Performance Optimization Template  
+**For Complex Features**: Use Systematic Feature Development Template
+**For Simple Changes**: Use Quick Feature Implementation Template
+**For Database Work**: Use Database Migration Template
+**For New Components**: Use Component Creation Template
+**For Bug Fixes**: Use Error Debugging Template
+**For Performance**: Use Performance Optimization Template
 
-**How to Reference**: Simply mention the template name in your request:  
-- "Let's use the systematic development template for batch confirmation"  
-- "Follow the component creation template for this new feature"  
+**How to Reference**: Simply mention the template name in your request:
+- "Let's use the systematic development template for batch confirmation"
+- "Follow the component creation template for this new feature"
 - "Use the debugging template to fix this error"
+
+## Template Trigger System
+
+### Auto-Template Selection
+
+When the user says "template" or "use template", the AI should automatically determine which template to use based on the context and nature of the request:
+
+**Context Analysis for Template Selection:**
+- **Complex new features** (multiple components, database changes, etc.) → Use **Systematic Feature Development Template**
+- **Simple UI changes, styling, single component changes** → Use **Quick Feature Implementation Template**
+- **Database schema changes, migrations, new tables** → Use **Database Migration Template**
+- **Creating new UI components** → Use **Component Creation Template**
+- **Bugs, errors, issues reported** → Use **Error Debugging Template**
+- **Performance complaints, optimization requests** → Use **Performance Optimization Template**
+- **Testing, validation requests** → Use **Testing and Validation Template**
+
+**Decision Process:**
+1. Analyze the user's request context
+2. Determine complexity and scope
+3. Select the most appropriate template
+4. Explicitly state which template is being used
+5. Follow the template's methodology
+
+**Template Usage Format:**
+When a template is triggered, the AI should:
+1. State: "Using [Template Name] for this request"
+2. Follow the template's step-by-step process
+3. Ask for approval between phases when needed (for systematic template)
+4. Maintain the template's quality standards
+
+**Examples:**
+- "Add batch confirmation logic" + "template" → Systematic Feature Development Template
+- "Fix this button color" + "template" → Quick Feature Implementation Template
+- "This component is broken" + "template" → Error Debugging Template
+- "Create a new notification component" + "template" → Component Creation Template
+
+This system allows the user to simply say "template" and trust that the appropriate structured approach will be applied based on the work context.
+
+## Multi-Step Progress Tracking
+
+### Progress Communication
+When using templates with multiple steps/phases, the AI MUST:
+
+1. **End each message with progress status**: "Step X of Y completed" or "Phase X of Y completed"
+2. **Clearly state what was just finished**: "Just completed: [specific task/phase name]"
+3. **Clearly state what comes next**: "Next: [specific next task/phase name]"
+
+### Action Button System
+At the end of each step in a multi-step process, provide an action button using `lov-message-prompt` that includes:
+
+- Reference to the specific template being used
+- Current step/phase number
+- What should happen next
+- All necessary context for continuation
+
+**Action Button Format:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Continue with [Template Name] - Phase X of Y. Previous: [what was completed]. Next: [what should happen]. Template reference: rules.md [Template Name]. Context: [brief context needed for next step]">Continue Phase X</lov-message-prompt>
+</lov-actions>
+```
+
+**Example Usage:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Continue with Systematic Feature Development Template - Phase 3 of 6. Previous: Type System Integration completed. Next: Backend Service Implementation. Template reference: rules.md Systematic Feature Development Template. Context: Database schema approved, types updated.">Continue Phase 3</lov-message-prompt>
+</lov-actions>
+```
+
+### Progress Status Requirements
+- Always show current step number and total steps (e.g., "3/8 steps")
+- Use consistent format: "Step X of Y completed" or "Phase X of Y completed"
+- Include clear "Just completed" and "Next" statements
+- Provide action button for easy continuation
+
+This ensures users can easily track progress through complex implementations and continue work seamlessly by clicking the action button with all necessary context included.
+
+## Error Debugging Action Button System
+
+### When Errors Occur
+When the AI encounters or the user reports errors, the AI MUST provide action buttons that reference the appropriate debugging approach from rules.md.
+
+### Error Action Button Categories
+
+**TypeScript/Compilation Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Fix TypeScript compilation error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: TypeScript types and compilation issues.">Fix TypeScript Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Component/React Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Debug React component error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Component lifecycle, hooks, and JSX issues.">Fix Component Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Build/Import Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Resolve build/import error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Module resolution and dependency issues.">Fix Build Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Runtime/Logic Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Debug runtime error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Application logic and runtime behavior.">Fix Runtime Error</lov-message-prompt>
+</lov-actions>
+```
+
+**Database/API Errors:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Fix database/API error using Error Debugging Template. Template reference: rules.md Error Debugging Template. Error context: [brief error description]. Focus: Database queries, API calls, and data handling.">Fix Database Error</lov-message-prompt>
+</lov-actions>
+```
+
+### Error Action Button Requirements
+
+1. **Always include template reference**: "Template reference: rules.md Error Debugging Template"
+2. **Provide error context**: Brief description of the specific error
+3. **Specify focus area**: What type of debugging approach is needed
+4. **Use descriptive button text**: Clear indication of what the button will do
+
+### Integration with Error Debugging Template
+
+When error action buttons are clicked, the AI will automatically:
+1. Reference the Error Debugging Template from rules.md
+2. Follow the systematic debugging steps:
+   - Reproduce Error
+   - Isolate Files
+   - Review Code
+   - Add Debug Logs
+   - Test Fix
+   - Clean Up
+3. Apply the Change Only What's Requested Protocol
+4. Preserve all existing functionality while fixing the specific error
+
+This system ensures consistent, structured error resolution while maintaining code quality and user workflow continuity.
 
 ## MANDATORY TRANSPARENCY RULE
 
@@ -465,521 +604,266 @@ types/componentTypes.ts (if custom types needed)
 
 **This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
 
-IMPORTANT: rules.md is 725 lines long. If you make any modifications to it, let the user know that it's getting too long and that they should consider asking you to refactor it after you're done with the lov-code block.
-
-# Pickle Ninja Implementation Prompt: Player Registration and Initial Ranking - Step 4 (Reorganization, Admin Reordering, and Initial Ranking)
-
-## Overview
-This file is Step 4 of the implementation guide for the player registration and initial ranking functionality of the "Pickle Ninja" app. It focuses on reorganizing confirmed players based on rankings, allowing admins to manually reorder players, and setting initial rankings for new events. This step assumes the Calendar Page (Step 1), registration process with the Event Details Page (Step 2), and User Dashboard (Step 3) are implemented. Subsequent steps will cover Supabase table designs, functions, and enhanced features. This step is designed to be small and testable to ensure compatibility with Lovable.dev.
-
-**Current Date/Time**: 01:21 AM MST, May 29, 2025  
-**Module 1 Status**: Group functionality (e.g., creating groups like "Pickle Pros," ID 456) is already implemented.  
-**Module 2 Status**: Event Creation Wizard creates events within a group (e.g., "Week 1 Ladder Matchup," ID 789), the Calendar Page (Step 1) displays events, players can register via the Event Details Page (Step 2), and the User Dashboard (Step 3) shows registered events.  
-**Functionality (This Step)**: Implements logic for reorganizing confirmed players based on rankings, allows admins to manually reorder players, and sets initial rankings for new events.
-
-## Mobile-First UI/UX Design Principles (Lovable.dev Guidelines)
-This step includes UI updates to the Event Details Page (from Step 2) to allow admins to reorder players. The following principles ensure alignment with Lovable.dev's mobile-first requirements:
-1. **Single-Column Layout**: Updates maintain the single-column layout (max 360px viewport).
-2. **Large Touch Targets**: Buttons (e.g., "Reorder Players") are at least 48x48 pixels.
-3. **Minimal Content per Screen**: Add minimal UI elements to avoid clutter.
-4. **Sticky Navigation**: Maintain sticky headers/footers for navigation.
-5. **Clear Progress Indicators**: Not applicable (used in multi-step processes).
-6. **Optimized Interactions**: Support fast backend responses for reordering actions.
-7. **Haptic Feedback**: Add haptic feedback (`navigator.vibrate(200)`) for admin actions.
-8. **Responsive Typography**: Use 16px font size for new UI elements, scaling to 20px for headings.
-9. **Error Handling**: Show inline error messages in red (e.g., "Failed to reorder players").
-10. **Onboarding Tooltips**: Add tooltips for new features (e.g., "Drag to reorder players").
-
-## Database Tables
-This section defines the database tables required for reorganization, admin reordering, and initial ranking: `player_status`, `groups`, `group_members`, `events`, and `auth.users`. These tables are referenced from previous steps (e.g., Step 2, File 2b; Step 3, File 2c) but are redefined here for self-containment.
-
-### 1. `player_status` Table (Defined in Step 2)
-- **Purpose**: Tracks the participation status of players for each event, including registration, confirmation, waitlist, and ranking order.
-- **Table Design**:
-  | Field Name          | Data Type   | Constraints/Description                                      |
-  |---------------------|-------------|-------------------------------------------------------------|
-  | `player_id`         | UUID        | Foreign Key (`profiles.id`), NOT NULL, part of composite key |
-  | `event_id`          | UUID        | Foreign Key (`events.id`), NOT NULL, part of composite key |
-  | `status`            | TEXT        | NOT NULL, ENUM: "confirmed", "waitlist", "absent", "substituted" |
-  | `substitute_id`     | UUID        | Foreign Key (`profiles.id`), NULLABLE                      |
-  | `registration_timestamp` | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                   |
-  | `ranking_order`     | INTEGER     | NOT NULL, default 0                                         |
-  | `created_at`        | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
-- **Usage**:
-  - The `ranking_order` field is updated by the `reorganize_confirmed_players` and `reorder_players` procedures to reflect the new ranking order.
-- **Example Entry**:
-  | `player_id`        | `event_id`        | `status`      | `substitute_id` | `registration_timestamp` | `ranking_order` | `created_at`              |
-  |--------------------|-------------------|---------------|-----------------|--------------------------|-----------------|---------------------------|
-  | `111e2223-e89b-12d3-a456-426614174000` | `789e0123-e89b-12d3-a456-426614174000` | "confirmed"   | NULL            | "2025-05-27T16:54:00Z"   | 1               | "2025-05-27T16:54:00Z"    |
-- **Indexing Recommendations**:
-  - Index on `event_id` for efficient retrieval of player statuses for an event.
-  - Index on `player_id` for efficient retrieval of a player's status across events.
-  - Index on `status` for efficient filtering of confirmed vs. waitlist players.
-
-### 2. `groups` Table (Defined in Step 1)
-- **Purpose**: Stores groups, which serve as containers for events and membership tracking.
-- **Table Design**:
-  | Field Name       | Data Type   | Constraints/Description                                      |
-  |------------------|-------------|-------------------------------------------------------------|
-  | `id`             | UUID        | Primary Key, auto-generated                                 |
-  | `group_name`     | TEXT        | NOT NULL, max 100 chars                                     |
-  | `description`    | TEXT        | NOT NULL                                                    |
-  | `location`       | TEXT        | NOT NULL                                                    |
-  | `organizer_id`   | UUID        | Foreign Key (`auth.users.id`), NOT NULL                    |
-  | `member_count`   | INTEGER     | NOT NULL, default 0                                         |
-  | `created_at`     | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
-- **Usage**:
-  - Used to validate group membership for admin actions (e.g., reordering players).
-- **Example Entry**:
-  | `id`               | `group_name`   | `description`           | `location`   | `organizer_id`    | `member_count` | `created_at`              |
-  |--------------------|----------------|-------------------------|--------------|-------------------|----------------|---------------------------|
-  | `456e7890-e89b-12d3-a456-426614174000` | "Pickle Pros" | "Local pickleball community" | "Denver, CO" | `123e4567-e89b-12d3-a456-426614174000` | 5              | "2025-05-27T16:54:00Z"    |
-- **Indexing Recommendations**:
-  - Index on `organizer_id` for efficient retrieval of groups by organizer.
-  - Index on `created_at` for sorting and filtering by creation date.
-
-### 3. Custom Enum Types (Defined in Step 1)
-- **Type: `group_member_role`**:
-  ```sql
-  CREATE TYPE public.group_member_role AS ENUM ('member', 'organizer', 'admin');
-  ```
-- **Type: `group_member_status`**:
-  ```sql
-  CREATE TYPE public.group_member_status AS ENUM ('active', 'pending', 'invited');
-  ```
-
-### 4. `group_members` Table (Defined in Step 1)
-- **Purpose**: Tracks membership of users in groups, ensuring only admins can perform reordering actions.
-- **Table Design**:
-  | Field Name      | Data Type   | Constraints/Description                                      |
-  |-----------------|-------------|-------------------------------------------------------------|
-  | `id`            | UUID        | Primary Key, default gen_random_uuid()                      |
-  | `group_id`      | UUID        | Foreign Key (`groups.id`), NOT NULL, part of unique key    |
-  | `user_id`       | UUID        | Foreign Key (`auth.users.id`), NOT NULL, part of unique key |
-  | `role`          | public.group_member_role | NOT NULL, default 'member'                    |
-  | `status`        | public.group_member_status | NOT NULL, default 'active'                  |
-  | `joined_at`     | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
-  | `request_message` | TEXT      | NULLABLE                                                    |
-- **Usage**:
-  - Validates that a user is part of the group with `role: 'admin'` and `status: 'active'` before allowing reordering actions.
-- **Example Entry**:
-  | `id`               | `group_id`        | `user_id`         | `role`      | `status`   | `joined_at`               | `request_message`   |
-  |--------------------|-------------------|-------------------|-------------|------------|---------------------------|---------------------|
-  | `999e8888-e89b-12d3-a456-426614174000` | `456e7890-e89b-12d3-a456-426614174000` | `123e4567-e89b-12d3-a456-426614174000` | "admin"     | "active"   | "2025-05-27T16:54:00Z"    | NULL                |
-- **Indexing Recommendations**:
-  - Index on `group_id` for efficient retrieval of members in a group.
-  - Index on `user_id` for efficient retrieval of groups a user belongs to.
-
-### 5. `events` Table (Defined in Step 1)
-- **Purpose**: Stores individual events, providing the event details for reordering players.
-- **Table Design**:
-  | Field Name       | Data Type   | Constraints/Description                                      |
-  |------------------|-------------|-------------------------------------------------------------|
-  | `id`             | UUID        | Primary Key, auto-generated                                 |
-  | `group_id`       | UUID        | Foreign Key (`groups.id`), NOT NULL                        |
-  | `event_title`    | TEXT        | NOT NULL, max 100 chars                                     |
-  | `description`    | TEXT        | NOT NULL                                                    |
-  | `event_date`     | DATE        | NOT NULL                                                    |
-  | `event_time`     | TIME        | NOT NULL                                                    |
-  | `location`       | TEXT        | NOT NULL                                                    |
-  | `registration_open` | BOOLEAN  | NOT NULL, default true                                     |
-  | `created_at`     | TIMESTAMPTZ | NOT NULL, default CURRENT_TIMESTAMP                        |
-- **Usage**:
-  - Used to fetch event details for reordering players within an event.
-- **Example Entry**:
-  | `id`               | `group_id`        | `event_title`    | `description`           | `event_date` | `event_time` | `location`         | `registration_open` | `created_at`              |
-  |--------------------|-------------------|------------------|-------------------------|--------------|--------------|--------------------|---------------------|---------------------------|
-  | `789e0123-e89b-12d3-a456-426614174000` | `456e7890-e89b-12d3-a456-426614174000` | "Week 1 Ladder Matchup" | "Competitive ladder..." | "2025-05-28" | "18:00"      | "Central Park Courts" | true                | "2025-05-27T16:54:00Z"    |
-- **Indexing Recommendations**:
-  - Index on `group_id` for efficient retrieval of events within a group.
-  - Index on `event_date` and `event_time` for sorting events on the calendar.
-
-### 6. `auth.users` Table (Defined in Step 1)
-- **Purpose**: Stores core user authentication data, managed by Supabase Auth.
-- **Table Design**:
-  | Field Name      | Data Type   | Constraints/Description                                      |
-  |-----------------|-------------|-------------------------------------------------------------|
-  | `id`            | UUID        | Primary Key, auto-generated                                 |
-  | `email`         | TEXT        | NOT NULL, unique                                            |
-- **Usage**:
-  - Used to authenticate users and fetch their ID for admin validation.
-- **Example Entry**:
-  | `id`               | `email`             |
-  |--------------------|---------------------|
-  | `123e4567-e89b-12d3-a456-426614174000` | "admin@example.com" |
-
-## Supabase Stored Procedures
-
-### Stored Procedure: `reorganize_confirmed_players`
--- Purpose: Reorganizes confirmed players for an event based on their skill level and DUPR rating.
--- Usage: Called automatically after registration closes or manually by an admin via a UI button on the Event Details Page.
--- Parameters:
---   p_event_id (UUID): The ID of the event to reorganize players for.
---   p_admin_id (UUID): The ID of the admin performing the action.
--- Returns: None (procedure; updates the `player_status` table).
--- Example Call: CALL reorganize_confirmed_players('789e0123-e89b-12d3-a456-426614174000', '123e4567-e89b-12d3-a456-426614174000');
-CREATE OR REPLACE PROCEDURE reorganize_confirmed_players(p_event_id UUID, p_admin_id UUID)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    v_group_id UUID;
-    v_is_admin BOOLEAN;
-    player_record RECORD;
-    rank_counter INTEGER := 1;
-BEGIN
-    -- Get event details
-    SELECT group_id
-    INTO v_group_id
-    FROM events
-    WHERE id = p_event_id;
-
-    -- Check if user is an admin for the group
-    SELECT EXISTS (
-        SELECT 1 FROM group_members
-        WHERE group_id = v_group_id
-          AND user_id = p_admin_id
-          AND role = 'admin'
-          AND status = 'active'
-    ) INTO v_is_admin;
-
-    IF NOT v_is_admin THEN
-        RAISE EXCEPTION 'User % is not an admin for the group of event %.', p_admin_id, p_event_id;
-    END IF;
-
-    -- Reset ranking order for confirmed players
-    UPDATE player_status
-    SET ranking_order = 0
-    WHERE event_id = p_event_id AND status = 'confirmed';
-
-    -- Reorganize players based on skill level and DUPR rating
-    FOR player_record IN (
-        SELECT ps.player_id
-        FROM player_status ps
-        JOIN profiles p ON ps.player_id = p.id
-        WHERE ps.event_id = p_event_id AND ps.status = 'confirmed'
-        ORDER BY p.skill_level DESC, p.dupr_rating DESC NULLS LAST
-    )
-    LOOP
-        UPDATE player_status
-        SET ranking_order = rank_counter
-        WHERE event_id = p_event_id AND player_id = player_record.player_id;
-        rank_counter := rank_counter + 1;
-    END LOOP;
-END;
-$$;
-
-### Stored Procedure: `reorder_players`
--- Purpose: Allows an admin to manually reorder confirmed players for an event.
--- Usage: Called via a UI button on the Event Details Page after the admin reorders players.
--- Parameters:
---   p_event_id (UUID): The ID of the event to reorder players for.
---   p_admin_id (UUID): The ID of the admin performing the action.
---   p_player_ids (UUID[]): Array of player IDs in the new order.
--- Returns: None (procedure; updates the `player_status` table).
--- Example Call: CALL reorder_players('789e0123-e89b-12d3-a456-426614174000', '123e4567-e89b-12d3-a456-426614174000', ARRAY['111e2223-e89b-12d3-a456-426614174000', ...]);
-CREATE OR REPLACE PROCEDURE reorder_players(p_event_id UUID, p_admin_id UUID, p_player_ids UUID[])
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    v_group_id UUID;
-    v_is_admin BOOLEAN;
-    v_rank_counter INTEGER := 1;
-    v_player_id UUID;
-BEGIN
-    -- Get event details
-    SELECT group_id
-    INTO v_group_id
-    FROM events
-    WHERE id = p_event_id;
-
-    -- Check if user is an admin for the group
-    SELECT EXISTS (
-        SELECT 1 FROM group_members
-        WHERE group_id = v_group_id
-          AND user_id = p_admin_id
-          AND role = 'admin'
-          AND status = 'active'
-    ) INTO v_is_admin;
-
-    IF NOT v_is_admin THEN
-        RAISE EXCEPTION 'User % is not an admin for the group of event %.', p_admin_id, p_event_id;
-    END IF;
-
-    -- Verify all player IDs are confirmed for the event
-    FOR v_player_id IN SELECT unnest(p_player_ids)
-    LOOP
-        IF NOT EXISTS (
-            SELECT 1 FROM player_status
-            WHERE event_id = p_event_id
-              AND player_id = v_player_id
-              AND status = 'confirmed'
-        ) THEN
-            RAISE EXCEPTION 'Player % is not confirmed for event %.', v_player_id, p_event_id;
-        END IF;
-    END LOOP;
-
-    -- Reset ranking order for confirmed players
-    UPDATE player_status
-    SET ranking_order = 0
-    WHERE event_id = p_event_id AND status = 'confirmed';
-
-    -- Apply new ranking order based on the provided player IDs
-    FOREACH v_player_id IN ARRAY p_player_ids
-    LOOP
-        UPDATE player_status
-        SET ranking_order = v_rank_counter
-        WHERE event_id = p_event_id AND player_id = v_player_id;
-        v_rank_counter := v_rank_counter + 1;
-    END LOOP;
-END;
-$$;
-
-### Stored Procedure: `set_initial_rankings`
--- Purpose: Sets initial rankings for players when an event is created, based on registration order.
--- Usage: Called automatically after an event is created or when the first player registers.
--- Parameters:
---   p_event_id (UUID): The ID of the event to set initial rankings for.
--- Returns: None (procedure; updates the `player_status` table).
--- Example Call: CALL set_initial_rankings('789e0123-e89b-12d3-a456-426614174000');
-CREATE OR REPLACE PROCEDURE set_initial_rankings(p_event_id UUID)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    rank_counter INTEGER := 1;
-    player_record RECORD;
-BEGIN
-    -- Reset ranking order for all players in the event
-    UPDATE player_status
-    SET ranking_order = 0
-    WHERE event_id = p_event_id;
-
-    -- Set initial rankings based on registration timestamp
-    FOR player_record IN (
-        SELECT player_id
-        FROM player_status
-        WHERE event_id = p_event_id
-        ORDER BY registration_timestamp
-    )
-    LOOP
-        UPDATE player_status
-        SET ranking_order = rank_counter
-        WHERE event_id = p_event_id AND player_id = player_record.player_id;
-        rank_counter := rank_counter + 1;
-    END LOOP;
-END;
-$$;
-
-## Updated Event Details Page (Enhances Step 2, File 2b)
-The Event Details Page (from Step 2) is updated to support admin reordering of players.
-
-- **Functionality Updates**:
-  - **Reorder Players Button** (Admin Only):
-    - Visible to users with `role: 'admin'` in `group_members`.
-    - Allows admins to reorder confirmed players by dragging and dropping player cards.
-    - Calls the `reorder_players` stored procedure with the new order.
-  - **Reorganize Players Button** (Admin Only):
-    - Visible to users with `role: 'admin'` in `group_members`.
-    - Automatically reorganizes players based on skill level and DUPR rating.
-    - Calls the `reorganize_confirmed_players` stored procedure.
-  - **Ranking Display**:
-    - Show the `ranking_order` in the "Confirmed Players" tab for each player (e.g., "Rank: 1").
-
-- **Query Example for Confirmed Players (Updated)**:
-  ```sql
-  SELECT 
-      ps.player_id,
-      p.first_name,
-      p.last_name,
-      p.dupr_rating,
-      p.skill_level,
-      ps.ranking_order
-  FROM player_status ps
-  JOIN profiles p ON ps.player_id = p.id
-  WHERE ps.event_id = :event_id
-    AND ps.status = 'confirmed'
-  ORDER BY ps.ranking_order;
-  ```
-
-- **Mobile-First UI/UX Recommendations (Updated)**:
-  - **Reorder Players Button** (Admin Only):
-    - Add a "Reorder Players" button in the "Confirmed Players" tab for admins, visible only if there are confirmed players.
-    - Button size: 48x48px, blue background, with haptic feedback (`navigator.vibrate(200)`).
-    - On click, enables drag-and-drop mode for player cards, allowing admins to reorder players.
-    - Tooltip: "Drag to reorder players in the list." (dismissible).
-  - **Reorganize Players Button** (Admin Only):
-    - Add a "Reorganize Players" button in the "Confirmed Players" tab for admins, visible only if there are confirmed players.
-    - Button size: 48x48px, green background, with haptic feedback (`navigator.vibrate(200)`).
-    - On click, calls `reorganize_confirmed_players` to sort players by skill level and DUPR rating.
-    - Tooltip: "Automatically reorganize players based on skill level and DUPR rating." (dismissible).
-  - **Ranking Display**:
-    - In the "Confirmed Players" tab, update player cards to include `ranking_order` (e.g., "Rank: 1") in 16px font size, displayed in green.
-    - Ensure player cards are sortable via drag-and-drop when in reordering mode.
-
-## Step 4 Implementation Plan: Player Ranking and Reorganization
-
-## Overview
-This plan implements the player ranking and reorganization functionality described above. Each phase is designed to be small, testable, and non-breaking to ensure compatibility with Lovable.dev's development approach.
-
-## Phase 1: Database Schema Preparation
-**Goal**: Ensure database schema supports ranking functionality
-**Estimated Time**: 1 implementation session
-**Risk**: Low - additive changes only
-
-### Step 1.1: Verify player_status table structure
-- Confirm `ranking_order` field exists in `player_status` table
-- If missing, add `ranking_order INTEGER NOT NULL DEFAULT 0`
-- Test that existing data is preserved
-
-### Step 1.2: Create stored procedures (one at a time)
-- Create `set_initial_rankings` procedure first (simplest)
-- Test with sample data
-- Create `reorganize_confirmed_players` procedure second
-- Test with sample data
-- Create `reorder_players` procedure last (most complex)
-- Test with sample data
-
-**Validation**: All procedures execute without errors, existing data unchanged
-
-## Phase 2: Backend Service Layer
-**Goal**: Create TypeScript service functions to interact with stored procedures
-**Estimated Time**: 1 implementation session
-**Risk**: Low - new files only
-
-### Step 2.1: Create ranking service file
-- Create `src/components/groups/events/services/rankingService.ts`
-- Add function to call `set_initial_rankings`
-- Add proper TypeScript typing
-- Add error handling
-
-### Step 2.2: Add admin permission utilities
-- Create `src/components/groups/events/utils/adminUtils.ts`
-- Add function to check if user is admin for group
-- Use existing `group_members` table query pattern
-
-### Step 2.3: Extend ranking service
-- Add function to call `reorganize_confirmed_players`
-- Add function to call `reorder_players`
-- Add comprehensive error handling and logging
-
-**Validation**: Service functions can be called without errors, proper TypeScript types
-
-## Phase 3: Enhanced Data Fetching
-**Goal**: Update existing hooks to include ranking data
-**Estimated Time**: 1 implementation session
-**Risk**: Low - modify existing queries only
-
-### Step 3.1: Update useEventPlayers hook
-- Modify query to include `ranking_order` in SELECT
-- Update ORDER BY to use `ranking_order ASC`
-- Ensure backward compatibility with existing components
-
-### Step 3.2: Add admin status to event context
-- Create `useEventAdminStatus` hook
-- Check if current user is admin for event's group
-- Use existing authentication context
-
-**Validation**: Existing PlayersList component still works, shows ranking order
-
-## Phase 4: Basic UI Components
-**Goal**: Create reusable ranking components
-**Estimated Time**: 2 implementation sessions
-**Risk**: Low - new components only
-
-### Step 4.1: Create ranking display component
-- Create `src/components/groups/events/components/PlayerRanking.tsx`
-- Display ranking number for each player (e.g., "#1", "#2")
-- Add to existing PlayerCard without breaking layout
-
-### Step 4.2: Create admin action buttons
-- Create `src/components/groups/events/components/AdminRankingControls.tsx`
-- Add "Reorganize Players" button (calls reorganize service)
-- Add loading states and success/error feedback
-- Show only for admins
-
-### Step 4.3: Add buttons to Event Details Page
-- Import AdminRankingControls in EventDetailsPage
-- Place in "Confirmed Players" tab
-- Ensure responsive design on mobile
-
-**Validation**: Ranking numbers display correctly, admin buttons work, no layout issues
-
-## Phase 5: Manual Reordering (Advanced)
-**Goal**: Add drag-and-drop functionality for manual reordering
-**Estimated Time**: 2-3 implementation sessions
-**Risk**: Medium - complex UI interactions
-
-### Step 5.1: Add drag-and-drop library
-- Install `@dnd-kit/core` and related packages
-- Create basic draggable player list component
-- Test drag-and-drop without persistence
-
-### Step 5.2: Create reordering component
-- Create `src/components/groups/events/components/PlayerReorderList.tsx`
-- Implement drag-and-drop reordering
-- Add visual feedback during drag operations
-
-### Step 5.3: Integrate with reorder service
-- Connect drag-and-drop to `reorder_players` service
-- Add optimistic updates with rollback on failure
-- Add "Reorder Players" toggle button
-
-### Step 5.4: Add to Event Details Page
-- Toggle between view mode and reorder mode
-- Ensure mobile-friendly touch interactions
-- Add haptic feedback for mobile
-
-**Validation**: Drag-and-drop works smoothly, changes persist, mobile-friendly
-
-## Phase 6: Mobile Optimization
-**Goal**: Ensure excellent mobile experience
-**Estimated Time**: 1 implementation session
-**Risk**: Low - UI improvements only
-
-### Step 6.1: Optimize button sizes
-- Ensure all admin buttons are minimum 48x48px
-- Test on various mobile screen sizes
-- Add proper touch targets
-
-### Step 6.2: Add haptic feedback
-- Add `navigator.vibrate(200)` to admin actions
-- Test on mobile devices
-- Graceful fallback for browsers without vibration
-
-### Step 6.3: Add helpful tooltips
-- Create dismissible tooltips for new features
-- Explain drag-and-drop functionality
-- Explain ranking system to new users
-
-**Validation**: Excellent mobile experience, intuitive for new users
-
-## Implementation Order & Safety Measures
-
-### Recommended Implementation Sequence:
-1. **Start with Phase 1** - Database foundation (safest)
-2. **Move to Phase 2** - Backend services (isolated)
-3. **Continue with Phase 3** - Data layer (minimal changes)
-4. **Implement Phase 4** - Basic UI (visible progress)
-5. **Add Phase 5** - Advanced features (most complex)
-6. **Finish with Phase 6** - Polish and optimization
-
-### Safety Measures for Each Phase:
-- **Always test with sample data** before real events
-- **Preserve existing functionality** - never break current features
-- **Add feature flags** for admin-only features
-- **Use optimistic updates** with proper rollback
-- **Add comprehensive error handling** at each layer
-- **Log all ranking operations** for debugging
-
-### Rollback Strategy:
-- Each phase can be rolled back independently
-- Database changes are additive (safe to rollback)
-- New components can be disabled via feature flags
-- Service layer changes don't affect existing functionality
-
-### Testing Approach:
-- **Unit test** each service function
-- **Integration test** with sample event data
-- **Manual test** admin workflows on mobile
-- **Regression test** existing event registration flow
-
-This phased approach ensures that each step is small, testable, and non-breaking while building toward the complete ranking and reorganization functionality.
+---
+
+# DETAILED PLAN: Add Upcoming/Past Events Tabs to Group Calendar
+
+## Using Component Creation Template
+
+### Phase 1: Create New Hook Variants (No Breaking Changes)
+
+**Objective**: Create specialized hooks for upcoming and past events without modifying existing hooks.
+
+**Files to modify:**
+- `src/components/groups/events/hooks/useGroupEvents.ts` (ADD new exports)
+- `src/components/groups/events/hooks/index.ts` (ADD new exports)
+
+**Implementation Steps:**
+1. **Create `useUpcomingEvents` hook**
+   - Filter events where `event_date >= today`
+   - Use same interface as existing `useGroupEvents`
+   - Preserve all existing functionality (loading, error states, admin status)
+
+2. **Create `usePastEvents` hook**
+   - Filter events where `event_date < today`
+   - Use same interface as existing `useGroupEvents`
+   - Include proper sorting (most recent first)
+
+3. **Export new hooks**
+   - Add exports to `hooks/index.ts`
+   - Keep existing exports unchanged
+   - Maintain backward compatibility
+
+**Verification Criteria:**
+- [ ] Original `useGroupEvents` remains unchanged
+- [ ] New hooks use same TypeScript interfaces
+- [ ] No breaking changes to existing components
+- [ ] Both hooks handle loading/error states properly
+
+---
+
+### Phase 2: Create Tabbed Events Component
+
+**Objective**: Build new component that uses the specialized hooks with tab interface.
+
+**Files to create:**
+- `src/components/groups/events/TabbedEventsList.tsx`
+
+**Implementation Steps:**
+1. **Create base component structure**
+   - Import shadcn `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent`
+   - Accept same props as existing `EventsList`
+   - Use mobile-first design patterns (`px-3 py-4 md:px-6 md:py-8`)
+
+2. **Implement tab content**
+   - "Upcoming Events" tab using `useUpcomingEvents`
+   - "Past Events" tab using `usePastEvents`
+   - Render existing `EventCard` components in each tab
+
+3. **Add tab-specific features**
+   - Event count badges in tab labels (e.g., "Upcoming (3)")
+   - Tab-specific empty states with appropriate messaging
+   - Preserve all existing `EventCard` click behavior
+
+4. **Handle loading and error states**
+   - Show loading skeletons while data loads
+   - Display error messages if hooks fail
+   - Maintain responsive design on all screen sizes
+
+**Component Structure:**
+```typescript
+interface TabbedEventsListProps {
+  groupId: string;
+  currentUserId?: string;
+}
+
+// Tab structure:
+// - Upcoming Events (default active)
+// - Past Events
+```
+
+**Verification Criteria:**
+- [ ] Component renders properly on mobile and desktop
+- [ ] All existing EventCard functionality preserved
+- [ ] Loading states work for both tabs
+- [ ] Error handling works for both tabs
+- [ ] Empty states are appropriate for each tab type
+
+---
+
+### Phase 3: Update GroupCalendarTab (Minimal Integration)
+
+**Objective**: Replace EventsList with TabbedEventsList in the calendar view.
+
+**Files to modify:**
+- `src/components/groups/mobile/GroupCalendarTab.tsx`
+
+**Implementation Steps:**
+1. **Update imports**
+   - Replace `EventsList` import with `TabbedEventsList`
+   - Keep all other imports unchanged
+
+2. **Replace component usage**
+   - Change `<EventsList>` to `<TabbedEventsList>`
+   - Pass same props (groupId, currentUserId)
+   - Maintain exact same positioning in component tree
+
+3. **Preserve all existing features**
+   - Keep admin controls (if any)
+   - Maintain header components
+   - Preserve styling and layout
+   - Keep all loading/error boundaries
+
+**Verification Criteria:**
+- [ ] Calendar page loads without errors
+- [ ] All existing navigation works
+- [ ] Admin controls still function (if applicable)
+- [ ] Page styling remains consistent
+- [ ] Mobile and desktop views both work
+
+---
+
+### Phase 4: Update Component Exports
+
+**Objective**: Make new component available while maintaining backward compatibility.
+
+**Files to modify:**
+- `src/components/groups/events/index.ts`
+
+**Implementation Steps:**
+1. **Add new exports**
+   - Export `TabbedEventsList` component
+   - Export new hooks (`useUpcomingEvents`, `usePastEvents`)
+
+2. **Maintain existing exports**
+   - Keep `EventsList` export for other pages
+   - Keep all existing hook exports
+   - Preserve component availability for other features
+
+**Verification Criteria:**
+- [ ] New components can be imported elsewhere
+- [ ] Existing imports continue working
+- [ ] No TypeScript compilation errors
+- [ ] All exports follow naming conventions
+
+---
+
+### Phase 5: Enhanced User Experience
+
+**Objective**: Add polish and improved user feedback.
+
+**Files to modify:**
+- `src/components/groups/events/TabbedEventsList.tsx`
+
+**Implementation Steps:**
+1. **Add event count badges**
+   - Show count in tab labels: "Upcoming (5)" and "Past (12)"
+   - Handle zero counts gracefully: "Upcoming" vs "Upcoming (0)"
+   - Update counts reactively when data changes
+
+2. **Improve empty states**
+   - Upcoming empty: "No upcoming events" with appropriate icon
+   - Past empty: "No past events yet" with different messaging
+   - Include admin-specific messaging for upcoming when applicable
+
+3. **Add loading improvements**
+   - Skeleton loading that matches tab structure
+   - Stagger loading between tabs if needed
+   - Smooth transitions between loading and loaded states
+
+4. **Responsive design polish**
+   - Ensure tabs work well on small screens
+   - Optimize tab spacing and sizing
+   - Test tab overflow behavior on very small screens
+
+**Verification Criteria:**
+- [ ] Tab badges show accurate counts
+- [ ] Empty states are contextually appropriate
+- [ ] Loading states are smooth and responsive
+- [ ] Component works well across all screen sizes
+- [ ] No visual glitches or layout issues
+
+---
+
+### Phase 6: Testing and Validation
+
+**Objective**: Comprehensive testing to ensure reliability.
+
+**Implementation Steps:**
+1. **Functional Testing**
+   - Test tab switching with real data
+   - Verify event card interactions work in both tabs
+   - Test loading states by throttling network
+   - Test error states by simulating API failures
+
+2. **Data Validation**
+   - Verify events appear in correct tabs based on dates
+   - Test edge cases (events today, events from yesterday)
+   - Ensure event counts match actual data
+   - Test with empty data sets
+
+3. **Responsive Testing**
+   - Test on mobile devices (320px and up)
+   - Test on tablets (768px and up)
+   - Test on desktop (1024px and up)
+   - Verify tab behavior on touch devices
+
+4. **Performance Validation**
+   - Ensure hooks don't cause unnecessary re-renders
+   - Verify tab switching is smooth
+   - Test with large numbers of events
+   - Monitor memory usage during tab operations
+
+**Verification Criteria:**
+- [ ] All functionality works as expected
+- [ ] No console errors or warnings
+- [ ] Performance remains acceptable
+- [ ] User experience is smooth and intuitive
+- [ ] Ready for production deployment
+
+---
+
+## Risk Mitigation Strategy
+
+### Zero Breaking Changes Approach
+1. **Original EventsList preserved** - Can be used by other components
+2. **New hooks are additions** - Don't modify existing hook behavior
+3. **Single integration point** - Only GroupCalendarTab needs changes
+4. **Easy rollback** - Single import change can revert to original
+
+### Incremental Development
+1. **Phase 1-2** - Build new functionality in isolation
+2. **Phase 3** - Single-line integration change
+3. **Phase 4-6** - Polish and enhancement without risk
+4. **Independent testing** - Each phase can be validated separately
+
+### Fallback Plan
+If any issues arise:
+1. Revert GroupCalendarTab import to original EventsList
+2. All functionality returns to previous state
+3. No data loss or corruption possible
+4. New components remain available for future use
+
+---
+
+## Success Metrics
+
+### User Experience
+- [ ] Users can easily switch between upcoming and past events
+- [ ] Tab counts provide immediate value understanding
+- [ ] Loading and empty states are clear and helpful
+- [ ] Mobile experience is smooth and touch-friendly
+
+### Technical Quality
+- [ ] No breaking changes to existing functionality
+- [ ] TypeScript compilation passes without errors
+- [ ] Performance remains optimal
+- [ ] Code follows established patterns and conventions
+
+### Maintainability
+- [ ] New components are small and focused (< 50 lines)
+- [ ] Proper separation of concerns between hooks and UI
+- [ ] Clear component interfaces and prop types
+- [ ] Comprehensive error handling and edge case coverage
+
+This plan ensures a systematic, safe implementation that maintains all existing functionality while adding the requested tabbed interface for better event organization.
