@@ -637,6 +637,8 @@ This system ensures consistent, structured error resolution while maintaining co
 2. **What changes you made that were explicitly requested**
 3. **Any additional changes you made that were NOT explicitly requested** (if any)
 4. **Confirmation that you made NO unrequested changes** (if true)
+5. **Step progress tracking** (when working on multi-step processes)
+6. **Testing instructions** (what the user should test to verify the step worked)
 
 **Format for transparency statement:**
 ```
@@ -646,8 +648,18 @@ This system ensures consistent, structured error resolution while maintaining co
 - **Changes made as requested:** [list of specific changes that matched the request]
 - **Additional unrequested changes:** [list any changes you made beyond the request, OR state "NONE"]
 - **Unrequested changes confirmation:** [YES - I made changes beyond the request / NO - I only made requested changes]
+- **Step progress:** [current step number and total steps, e.g., "Step 3 of 8 completed"]
+- **What was accomplished:** [brief summary of what was just finished]
+- **Test to verify this step:** [specific things to test to verify the step worked]
+- **Next step:** [what will happen in the next step]
 ---
 ```
+
+**Step Progress Requirements:**
+- Always show current step number and total steps (e.g., "3/8 steps")
+- At the end of each step, clearly state what was accomplished
+- Provide specific testing instructions for validating each step's completion
+- Preview what will happen in the next step
 
 **This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
 
