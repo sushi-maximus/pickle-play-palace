@@ -1,4 +1,3 @@
-
 # Change Only What's Requested Protocol
 
 **Make ONLY the specific change requested** - nothing more, nothing less
@@ -391,7 +390,7 @@ types/componentTypes.ts (if custom types needed)
 
 **Usage**: For ensuring features work correctly.
 
-**AI Instructions**: Create validation components for complex features.
+**AI Instructions**: Create validation test components for complex features.
 
 #### Components to Create:
 - **Validation Test Component**: Interactive testing interface
@@ -867,3 +866,285 @@ If any issues arise:
 - [ ] Comprehensive error handling and edge case coverage
 
 This plan ensures a systematic, safe implementation that maintains all existing functionality while adding the requested tabbed interface for better event organization.
+
+---
+
+# EVENT EDIT PLAN: Admin Event Editing Functionality
+
+## Using Component Creation Template with Systematic Approach
+
+### Phase 1: Create Edit Event Hook and Service (Backend Logic)
+
+**Objective**: Build the backend logic for event editing with proper admin validation.
+
+**Files to create:**
+- `src/components/groups/events/hooks/useEditEvent.ts`
+- `src/components/groups/events/services/eventUpdateService.ts`
+
+**Implementation Steps:**
+1. **Create `eventUpdateService.ts`**
+   - Add function to update event via Supabase
+   - Include admin permission validation
+   - Handle all event fields (title, description, date, time, location, max_players, etc.)
+   - Add proper error handling and logging
+
+2. **Create `useEditEvent.ts` hook**
+   - Manage edit mutation state (loading, error, success)
+   - Use React Query's `useMutation` for optimistic updates
+   - Include form validation logic
+   - Handle cache invalidation after successful edit
+
+3. **Add admin validation**
+   - Verify user is admin before allowing edits
+   - Check event ownership/group admin status
+   - Prevent editing of past events (optional business rule)
+
+4. **Export new services**
+   - Add exports to `services/index.ts`
+   - Add exports to `hooks/index.ts`
+
+**Verification Criteria:**
+- [ ] Service function handles all event update scenarios
+- [ ] Hook properly manages mutation state
+- [ ] Admin validation works correctly
+- [ ] Error handling covers edge cases
+- [ ] TypeScript types are properly defined
+
+**Status**: Step 1 of 6 completed
+**How to test**: Create a simple test component that calls the service with mock data
+
+---
+
+### Phase 2: Create Edit Event Form Components (UI Layer)
+
+**Objective**: Build reusable form components for event editing with proper validation.
+
+**Files to create:**
+- `src/components/groups/events/forms/EditEventForm.tsx`
+- `src/components/groups/events/forms/EditEventDialog.tsx`
+- `src/components/groups/events/forms/index.ts`
+
+**Implementation Steps:**
+1. **Create `EditEventForm.tsx`**
+   - Reuse form fields from existing wizard components
+   - Include all editable event properties
+   - Add form validation using react-hook-form
+   - Handle form submission and error states
+
+2. **Create `EditEventDialog.tsx`**
+   - Build modal wrapper using shadcn Dialog component
+   - Include form inside dialog
+   - Add cancel/save/delete action buttons
+   - Handle dialog open/close state
+
+3. **Add form validation**
+   - Reuse existing event validation schemas
+   - Add client-side validation feedback
+   - Prevent submission of invalid data
+
+4. **Mobile-responsive design**
+   - Ensure forms work on mobile devices
+   - Use proper spacing and sizing patterns
+   - Test touch interactions
+
+**Verification Criteria:**
+- [ ] Form renders all event fields correctly
+- [ ] Validation works as expected
+- [ ] Dialog opens and closes properly
+- [ ] Mobile responsive design functions
+- [ ] Error states display appropriately
+
+**Status**: Step 2 of 6 completed
+**How to test**: Open dialog with mock event data, verify all fields populate and validation works
+
+---
+
+### Phase 3: Add Edit Button to Event Details Header
+
+**Objective**: Add admin-only edit button to existing event details header.
+
+**Files to modify:**
+- `src/components/groups/events/components/EventDetailsHeader.tsx`
+
+**Implementation Steps:**
+1. **Import required dependencies**
+   - Import `useEventAdminStatus` hook
+   - Import edit dialog components
+   - Add necessary state management
+
+2. **Add admin status check**
+   - Use existing `useEventAdminStatus` hook
+   - Only show edit button for verified admins
+   - Handle loading state while checking permissions
+
+3. **Add edit button UI**
+   - Place button in header alongside other actions
+   - Use appropriate icon (Edit/Pencil from lucide-react)
+   - Style consistently with existing buttons
+
+4. **Connect button functionality**
+   - Open edit dialog when clicked
+   - Pass current event data to form
+   - Handle dialog state management
+
+**Verification Criteria:**
+- [ ] Button only appears for group admins
+- [ ] Button opens edit dialog correctly
+- [ ] UI maintains existing layout and styling
+- [ ] Loading states work properly
+- [ ] Non-admins cannot see the button
+
+**Status**: Step 3 of 6 completed
+**How to test**: View event as admin (should see button) and as regular user (should not see button)
+
+---
+
+### Phase 4: Integrate Edit Functionality with Event Details Page
+
+**Objective**: Complete integration of edit functionality with proper data flow and user feedback.
+
+**Files to modify:**
+- `src/components/groups/events/EventDetailsPage.tsx`
+
+**Implementation Steps:**
+1. **Add edit dialog state management**
+   - Manage dialog open/close state
+   - Handle edit mode vs view mode
+   - Coordinate between header and page components
+
+2. **Connect edit success to data refresh**
+   - Refetch event data after successful edit
+   - Update cache with new event information
+   - Handle optimistic updates if needed
+
+3. **Add user feedback**
+   - Show success toast after edit
+   - Display error messages for failed edits
+   - Add loading indicators during save
+
+4. **Handle edge cases**
+   - Prevent editing if user loses admin status
+   - Handle network errors gracefully
+   - Manage concurrent edit scenarios
+
+**Verification Criteria:**
+- [ ] Edit dialog integrates smoothly with page
+- [ ] Data refreshes after successful edit
+- [ ] User receives appropriate feedback
+- [ ] Error handling works correctly
+- [ ] Page state management is consistent
+
+**Status**: Step 4 of 6 completed
+**How to test**: Complete edit workflow - open dialog, modify event, save, verify changes appear
+
+---
+
+### Phase 5: Add Delete Event Functionality (Optional)
+
+**Objective**: Allow admins to delete events with proper confirmation and safety checks.
+
+**Files to modify:**
+- `src/components/groups/events/forms/EditEventDialog.tsx`
+- `src/components/groups/events/services/eventUpdateService.ts`
+
+**Implementation Steps:**
+1. **Add delete confirmation dialog**
+   - Create nested confirmation dialog
+   - Warn about permanent deletion
+   - Show impact (number of registered players)
+
+2. **Implement delete service function**
+   - Add `deleteEvent` function to service
+   - Handle cascade deletion (player registrations, etc.)
+   - Include admin permission validation
+
+3. **Handle post-deletion navigation**
+   - Redirect to group calendar after deletion
+   - Show success message
+   - Update group events cache
+
+4. **Add safety restrictions**
+   - Prevent deletion of events with registered players (optional)
+   - Require additional confirmation for events in progress
+   - Log deletion actions for audit trail
+
+**Verification Criteria:**
+- [ ] Delete confirmation works properly
+- [ ] Service handles deletion correctly
+- [ ] Navigation works after deletion
+- [ ] Safety checks prevent accidental deletion
+- [ ] Audit logging functions (if implemented)
+
+**Status**: Step 5 of 6 completed
+**How to test**: Attempt to delete event, verify confirmation works and navigation redirects properly
+
+---
+
+### Phase 6: Real-time Updates and Cache Management
+
+**Objective**: Ensure data consistency and optimal performance across the application.
+
+**Files to modify:**
+- `src/components/groups/events/hooks/useEditEvent.ts`
+- Various query invalidation in related hooks
+
+**Implementation Steps:**
+1. **Implement query invalidation**
+   - Invalidate group events queries after edit
+   - Update event details queries
+   - Refresh related data (player lists, etc.)
+
+2. **Add optimistic updates**
+   - Update local cache immediately on edit
+   - Revert on error
+   - Show loading states appropriately
+
+3. **Handle concurrent scenarios**
+   - Detect if event was modified by another user
+   - Show conflict resolution options
+   - Prevent data loss from concurrent edits
+
+4. **Optimize performance**
+   - Use selective query invalidation
+   - Minimize unnecessary re-renders
+   - Cache form data during editing
+
+**Verification Criteria:**
+- [ ] Cache updates correctly after edits
+- [ ] Optimistic updates work smoothly
+- [ ] Concurrent edit handling functions
+- [ ] Performance remains optimal
+- [ ] Data consistency maintained
+
+**Status**: Step 6 of 6 completed
+**How to test**: Edit event in multiple browser tabs simultaneously, verify data consistency
+
+---
+
+## Success Metrics
+
+### User Experience
+- [ ] Admins can easily edit events with intuitive interface
+- [ ] Form validation provides clear feedback
+- [ ] Edit process is smooth and responsive
+- [ ] Mobile experience works seamlessly
+
+### Technical Quality
+- [ ] No breaking changes to existing functionality
+- [ ] TypeScript compilation passes without errors
+- [ ] Performance remains optimal
+- [ ] Proper error handling throughout
+
+### Security & Permissions
+- [ ] Only group admins can edit events
+- [ ] Proper validation at all levels
+- [ ] Audit trail for changes (optional)
+- [ ] Data integrity maintained
+
+### Maintainability
+- [ ] Components are small and focused (< 50 lines)
+- [ ] Proper separation of concerns
+- [ ] Clear interfaces and prop types
+- [ ] Comprehensive error handling
+
+This plan ensures a systematic, safe implementation that maintains all existing functionality while adding the requested admin edit capabilities.
