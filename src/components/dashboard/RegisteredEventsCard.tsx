@@ -5,7 +5,6 @@ import { useUserRegisteredEvents } from './hooks/useUserRegisteredEvents';
 import { useNavigate } from 'react-router-dom';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { EventItem } from './EventItem';
-import { Info } from 'lucide-react';
 
 export const RegisteredEventsCard = () => {
   const { data: events, isLoading, error } = useUserRegisteredEvents();
@@ -109,24 +108,14 @@ export const RegisteredEventsCard = () => {
       </CardHeader>
       <CardContent className="space-y-3 md:space-y-4">
         {events?.map((event) => (
-          <div key={event.id} className="space-y-2">
-            <EventItem
-              event={event}
-              isNextEvent={event.id === nextEventId}
-              onEventClick={handleEventClick}
-              getStatusBadgeVariant={getStatusBadgeVariant}
-              getStatusBadgeClass={getStatusBadgeClass}
-            />
-            {/* Show info message for waitlisted events */}
-            {event.status === 'waitlist' && (
-              <div className="flex items-start gap-2 p-2 bg-blue-50 rounded-md border border-blue-200 ml-4">
-                <Info className="h-3 w-3 md:h-4 md:w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-blue-700">
-                  Every 4 players registered will be confirmed.
-                </p>
-              </div>
-            )}
-          </div>
+          <EventItem
+            key={event.id}
+            event={event}
+            isNextEvent={event.id === nextEventId}
+            onEventClick={handleEventClick}
+            getStatusBadgeVariant={getStatusBadgeVariant}
+            getStatusBadgeClass={getStatusBadgeClass}
+          />
         ))}
       </CardContent>
     </Card>

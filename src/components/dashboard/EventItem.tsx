@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatDateForDisplay } from '@/utils/dateUtils';
 import { useTouchFeedback } from '@/hooks/useTouchFeedback';
 import { cn } from '@/lib/utils';
+import { Info } from 'lucide-react';
 
 interface EventItemProps {
   event: {
@@ -86,6 +87,16 @@ export const EventItem = ({
           </Badge>
         </div>
       </div>
+      
+      {/* Show info message for waitlisted events inside the card */}
+      {event.status === 'waitlist' && (
+        <div className="flex items-start gap-2 p-2 bg-blue-50 rounded-md border border-blue-200 mt-2">
+          <Info className="h-3 w-3 md:h-4 md:w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-blue-700">
+            Every 4 players registered will be confirmed.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
