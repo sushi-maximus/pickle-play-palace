@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,17 +25,6 @@ const editEventSchema = z.object({
   registration_open: z.boolean(),
   pricing_model: z.enum(["free", "one-time", "per-event"]),
   fee_amount: z.number().nullable()
-}).refine((data) => {
-  // For editing: Allow until end of event day (11:59 PM)
-  const eventDate = new Date(data.event_date + "T00:00:00");
-  const endOfEventDay = new Date(eventDate);
-  endOfEventDay.setHours(23, 59, 59, 999);
-  const now = new Date();
-  
-  return now <= endOfEventDay;
-}, {
-  message: "Cannot edit events after the event day has ended",
-  path: ["event_date"]
 });
 
 type EditEventFormData = z.infer<typeof editEventSchema>;
