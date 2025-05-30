@@ -10,6 +10,8 @@ interface EventDateFieldProps {
 }
 
 export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) => {
+  console.log('EventDateField - Received value:', value);
+  
   // Convert database format "MM-DD-YY" to HTML input format "YYYY-MM-DD"
   const convertDatabaseDateToInputFormat = (dbDate: string): string => {
     if (!dbDate || typeof dbDate !== 'string') return '';
@@ -30,6 +32,7 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
     
     // If already in YYYY-MM-DD format, return as is
     if (dbDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      console.log('EventDateField - Already in YYYY-MM-DD format:', dbDate);
       return dbDate;
     }
     
@@ -52,11 +55,14 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
+    console.log('EventDateField - User input:', inputValue);
     const dbFormat = convertInputFormatToDatabaseFormat(inputValue);
+    console.log('EventDateField - Calling onChange with:', dbFormat);
     onChange(dbFormat);
   };
 
   const displayValue = convertDatabaseDateToInputFormat(value);
+  console.log('EventDateField - Display value for HTML input:', displayValue);
 
   return (
     <FormItem>
