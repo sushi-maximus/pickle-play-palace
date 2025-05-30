@@ -1,5 +1,6 @@
 
 import { Calendar, MapPin, Clock } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
@@ -11,12 +12,8 @@ interface EventCardProps {
 
 export const EventCard = ({ event, onClick }: EventCardProps) => {
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    const date = parseISO(dateStr);
+    return format(date, 'EEE, MMM d');
   };
 
   const formatTime = (timeStr: string) => {
