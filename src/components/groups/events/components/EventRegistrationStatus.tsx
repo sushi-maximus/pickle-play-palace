@@ -1,6 +1,6 @@
 
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, XCircle } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Info } from "lucide-react";
 import { useEventRegistration } from "../hooks/useEventRegistration";
 import { usePromotionStatus } from "../hooks/usePromotionStatus";
 import { PromotionIndicator } from "./PromotionIndicator";
@@ -59,18 +59,30 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
   const Icon = config.icon;
 
   return (
-    <div className="flex items-center gap-2">
-      <Badge variant={config.variant} className={`${config.color} flex items-center gap-1`}>
-        <Icon className="h-3 w-3" />
-        {config.text}
-        {registration.ranking_order && registration.status === 'waitlist' && (
-          <span className="ml-1">#{registration.ranking_order}</span>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Badge variant={config.variant} className={`${config.color} flex items-center gap-1`}>
+          <Icon className="h-3 w-3" />
+          {config.text}
+          {registration.ranking_order && registration.status === 'waitlist' && (
+            <span className="ml-1">#{registration.ranking_order}</span>
+          )}
+        </Badge>
+        
+        {/* Show promotion indicator for recently promoted players */}
+        {wasPromoted && isRecentPromotion && registration.status === 'confirmed' && (
+          <PromotionIndicator registration={registration} size="sm" />
         )}
-      </Badge>
-      
-      {/* Show promotion indicator for recently promoted players */}
-      {wasPromoted && isRecentPromotion && registration.status === 'confirmed' && (
-        <PromotionIndicator registration={registration} size="sm" />
+      </div>
+
+      {/* Info section for waitlisted players */}
+      {registration.status === 'waitlist' && (
+        <div className="flex items-start gap-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+          <Info className="h-3 w-3 md:h-4 md:w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-blue-700">
+            Every 4 players registered will be confirmed.
+          </p>
+        </div>
       )}
     </div>
   );
