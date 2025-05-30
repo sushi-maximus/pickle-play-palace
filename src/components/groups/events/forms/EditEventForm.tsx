@@ -37,12 +37,19 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
+  // Helper function to format date for input (YYYY-MM-DD format)
+  const formatDateForInput = (dateString: string) => {
+    // Create date object treating the input as local date to avoid timezone shift
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toISOString().split('T')[0];
+  };
+
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
-      event_date: event.event_date,
+      event_date: formatDateForInput(event.event_date),
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
