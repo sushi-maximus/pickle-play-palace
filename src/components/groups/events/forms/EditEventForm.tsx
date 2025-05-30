@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -37,18 +36,13 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
-  // DEBUGGING: Trace the date value from database
-  console.log('=== DATE TRACING ===');
-  console.log('Raw event.event_date from database:', event.event_date);
-  console.log('Type of event.event_date:', typeof event.event_date);
-  
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
-      // Use the date string directly from the database without any parsing
-      event_date: event.event_date,
+      // Don't set event_date here to prevent timezone conversion
+      event_date: "",
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
@@ -59,10 +53,11 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
     }
   });
 
-  // DEBUGGING: Check what value is actually set in the form
-  const currentDateValue = form.watch('event_date');
-  console.log('Form event_date value:', currentDateValue);
-  console.log('Type of form event_date:', typeof currentDateValue);
+  // Set the date value after form initialization to prevent timezone conversion
+  useEffect(() => {
+    console.log('Setting date value directly:', event.event_date);
+    form.setValue('event_date', event.event_date);
+  }, [form, event.event_date]);
 
   const handleSubmit = (data: EditEventFormData) => {
     console.log('Submitting event_date:', data.event_date);
@@ -107,23 +102,13 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
             control={form.control}
             name="event_date"
             render={({ field }) => {
-              // DEBUGGING: Check what the field receives
-              console.log('Date field value:', field.value);
-              console.log('Date field value type:', typeof field.value);
+              console.log('Date field value after fix:', field.value);
               
               return (
                 <FormItem>
                   <FormLabel>Date</FormLabel>
                   <FormControl>
-                    <Input 
-                      {...field} 
-                      type="date"
-                      onFocus={() => console.log('Date input focused, value:', field.value)}
-                      onChange={(e) => {
-                        console.log('Date input changed to:', e.target.value);
-                        field.onChange(e);
-                      }}
-                    />
+                    <Input {...field} type="date" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
