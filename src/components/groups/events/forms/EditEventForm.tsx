@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,24 +36,34 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
+  // Add comprehensive logging for the event object
+  console.log('=== EditEventForm Debug ===');
+  console.log('Full event object received:', event);
+  console.log('Raw event.event_date from props:', event.event_date);
+  console.log('Type of event.event_date:', typeof event.event_date);
+  
   // Helper function to format date for input (YYYY-MM-DD format)
   const formatDateForInput = (dateString: string) => {
-    console.log('Original event.event_date from database:', dateString);
+    console.log('formatDateForInput - Input dateString:', dateString);
+    console.log('formatDateForInput - Input type:', typeof dateString);
     
     // Simply return the date string as-is since it's already in YYYY-MM-DD format
     // Avoid any Date object creation to prevent timezone conversion issues
     const formattedDate = dateString;
-    console.log('Formatted date for input field:', formattedDate);
+    console.log('formatDateForInput - Output formattedDate:', formattedDate);
     
     return formattedDate;
   };
+
+  const formattedDate = formatDateForInput(event.event_date);
+  console.log('Final formatted date for form:', formattedDate);
 
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
-      event_date: formatDateForInput(event.event_date),
+      event_date: formattedDate,
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
@@ -65,6 +74,8 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
     }
   });
 
+  console.log('Form defaultValues.event_date:', form.getValues('event_date'));
+
   const handleSubmit = (data: EditEventFormData) => {
     console.log('Form submission data - event_date:', data.event_date);
     onSubmit(data);
@@ -74,7 +85,7 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
 
   // Add debugging for form values
   const currentFormDate = form.watch('event_date');
-  console.log('Current form date value:', currentFormDate);
+  console.log('Current form date value from watch:', currentFormDate);
 
   return (
     <Form {...form}>
@@ -119,7 +130,8 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
                     {...field} 
                     type="date" 
                     onChange={(e) => {
-                      console.log('Date input changed to:', e.target.value);
+                      console.log('Date input onChange - Raw value:', e.target.value);
+                      console.log('Date input onChange - Input type:', e.target.type);
                       field.onChange(e.target.value);
                     }}
                   />
