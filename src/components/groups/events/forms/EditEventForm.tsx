@@ -42,8 +42,12 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
   console.log('event.event_date value:', event.event_date);
   console.log('event.event_date type:', typeof event.event_date);
   
+  // Force string conversion to prevent any Date object interference
+  const cleanDateString = String(event.event_date);
+  console.log('cleanDateString:', cleanDateString);
+  
   // Use separate state for the date to bypass react-hook-form's conversion
-  const [dateValue, setDateValue] = useState(event.event_date);
+  const [dateValue, setDateValue] = useState(cleanDateString);
   
   console.log('useState initial dateValue:', dateValue);
   
