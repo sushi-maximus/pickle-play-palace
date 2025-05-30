@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,6 +17,7 @@ type Event = Database['public']['Tables']['events']['Row'];
 const editEventSchema = z.object({
   event_title: z.string().min(1, "Event title is required"),
   description: z.string().min(1, "Description is required"),
+  event_date: z.string().min(1, "Event date is required"),
   event_time: z.string().min(1, "Event time is required"),
   location: z.string().min(1, "Location is required"),
   max_players: z.number().min(1, "Must have at least 1 player"),
@@ -36,52 +37,34 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
-  // Debug the raw date value extensively
-  console.log('=== DETAILED DATE DEBUGGING ===');
-  console.log('Raw event object:', event);
-  console.log('event.event_date raw value:', event.event_date);
-  console.log('event.event_date JSON.stringify:', JSON.stringify(event.event_date));
-  console.log('typeof event.event_date:', typeof event.event_date);
-  
-  // Try multiple approaches to extract the correct date
-  let correctDateString;
-  
-  if (event.event_date instanceof Date) {
-    correctDateString = event.event_date.toISOString().split('T')[0];
-    console.log('Date object detected, converted to:', correctDateString);
-  } else if (typeof event.event_date === 'string') {
-    // If it's already a string, check if it looks like a proper date
-    if (event.event_date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      correctDateString = event.event_date;
-      console.log('Valid date string detected:', correctDateString);
-    } else {
-      // Try to parse and reformat
-      const parsed = new Date(event.event_date);
-      if (!isNaN(parsed.getTime())) {
-        correctDateString = parsed.toISOString().split('T')[0];
-        console.log('Parsed corrupted string to:', correctDateString);
-      } else {
-        correctDateString = '2025-05-30'; // fallback
-        console.log('Used fallback date:', correctDateString);
-      }
+  // Properly format the date for the form
+  const formatDateForInput = (dateValue: any): string => {
+    if (!dateValue) return '';
+    
+    // If it's already a properly formatted date string
+    if (typeof dateValue === 'string' && dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return dateValue;
     }
-  } else {
-    correctDateString = '2025-05-30'; // fallback
-    console.log('Unknown type, used fallback:', correctDateString);
-  }
-  
-  console.log('Final correctDateString:', correctDateString);
-  
-  // Use the corrected date string in state
-  const [dateValue, setDateValue] = useState(correctDateString);
-  
-  console.log('useState initialized with:', dateValue);
+    
+    // Try to parse and format the date
+    try {
+      const date = new Date(dateValue);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+    } catch (error) {
+      console.error('Date parsing error:', error);
+    }
+    
+    return '';
+  };
 
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
+      event_date: formatDateForInput(event.event_date),
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
@@ -93,13 +76,7 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
   });
 
   const handleSubmit = (data: EditEventFormData) => {
-    // Use our controlled date value instead of the form's value
-    const submitData = {
-      ...data,
-      event_date: dateValue
-    };
-    console.log('Submitting event_date:', submitData.event_date);
-    onSubmit(submitData);
+    onSubmit(data);
   };
 
   const pricingModel = form.watch('pricing_model');
@@ -136,25 +113,19 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
         />
 
         <div className="grid grid-cols-2 gap-4">
-          {/* Standalone date input with enhanced debugging */}
-          <div className="space-y-2">
-            <label htmlFor="event-date" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Date
-            </label>
-            <Input 
-              id="event-date"
-              type="date" 
-              value={dateValue}
-              onChange={(e) => {
-                console.log('Date input onChange triggered');
-                console.log('e.target.value:', e.target.value);
-                console.log('Previous dateValue:', dateValue);
-                setDateValue(e.target.value);
-                console.log('New dateValue set to:', e.target.value);
-              }}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="event_date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date</FormLabel>
+                <FormControl>
+                  <Input {...field} type="date" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
