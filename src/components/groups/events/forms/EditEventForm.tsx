@@ -18,8 +18,7 @@ interface EditEventFormProps {
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
   console.log('EditEventForm - Event data:', event);
-  console.log('EditEventForm - Raw event date:', event.event_date);
-
+  
   const [formData, setFormData] = useState<EventFormData>({
     event_title: event.event_title,
     description: event.description,
