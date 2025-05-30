@@ -1,3 +1,4 @@
+
 # Change Only What's Requested Protocol
 
 **Make ONLY the specific change requested** - nothing more, nothing less
@@ -166,6 +167,44 @@ type ExtendedGroup = Database['public']['Tables']['groups']['Row'] & {
 - Normal requests: Make ONLY the requested changes, preserve everything else
 - Cleanup requests: Only when explicitly asked to "optimize", "clean up", or "find unused code" should broader code analysis and removal happen
 
+## CRITICAL: MANDATORY CODE VERIFICATION AND HONESTY PROTOCOL
+
+**BEFORE CLAIMING ANY CHANGES ARE MADE:**
+
+1. **MANDATORY FILE VERIFICATION**: Use `lov-view` to actually examine ALL files that you claim to have modified
+2. **VERIFY ACTUAL CHANGES**: Check that the changes you claimed to make actually exist in the code
+3. **NO FALSE CLAIMS**: NEVER say "I updated X" without first verifying the file actually contains your claimed changes
+4. **ADMIT WHEN WRONG**: If you discover you didn't actually make the changes you claimed, immediately admit the error
+
+**ABSOLUTE HONESTY REQUIREMENT:**
+- If you haven't actually checked a file, say "I need to verify this file first"
+- If you find you were wrong about previous changes, say "I was incorrect - the file still contains [old code]"
+- NEVER make assumptions about file contents without verification
+- NEVER claim work is done without proving it through file examination
+
+**SHARED UTILITIES ENFORCEMENT:**
+- When working with dates, ALWAYS use utilities from `@/utils/dateUtils`
+- NEVER use `new Date()` constructor directly for date parsing - it causes timezone issues
+- ALWAYS use `formatDateForDisplay()` for consistent date formatting
+- Before implementing date handling, verify existing utilities and use them
+
+**CONSISTENCY VERIFICATION PROTOCOL:**
+1. **Identify all files** that handle the same data type (e.g., dates, user profiles, etc.)
+2. **Check each file** to ensure they use the same shared utilities
+3. **Report inconsistencies** and fix them systematically
+4. **Test consistency** by verifying the same data shows identically across different components
+
+**EXAMPLES OF FORBIDDEN BEHAVIOR:**
+- Saying "I updated EventDetailsTab.tsx to use formatDateForDisplay" without actually checking the file
+- Claiming "Both components now use the same date utility" without verifying both files
+- Making assumptions about what utilities a file imports without looking
+- Apologizing for errors while continuing to make the same errors
+
+**CONSEQUENCES FOR VIOLATIONS:**
+- These rules exist because previous violations wasted user time and credits
+- Following these rules is mandatory, not optional
+- Verification is required, not suggested
+
 **CRITICAL**: When modifying UI navigation components, always preserve ALL existing functionality unless explicitly asked to remove it.
 
 - When changing labels or icons, modify ONLY the requested elements
@@ -284,17 +323,116 @@ Always use the database types from `@/integrations/supabase/types` instead of de
 - All files in `src/components/groups/details/`
 - All files in `src/components/navigation/`
 - All files in `src/components/layout/`
+- All files in `src/components/auth/`
+- All files in `src/components/dashboard/`
+- All files in `src/components/error-boundaries/`
+- All files in `src/components/groups/forms/`
+- All files in `src/components/groups/header/`
+- All files in `src/components/groups/join-requests/`
+- All files in `src/components/groups/members/`
+- All files in `src/components/groups/services/`
+- All files in `src/components/groups/settings/`
+- All files in `src/components/groups/simple/`
+- All files in `src/components/groups/utils/`
+- All files in `src/components/landing/`
+- All files in `src/components/loading/`
+- All files in `src/components/performance/`
+- All files in `src/components/profile/`
+- All files in `src/components/routing/`
+- All files in `src/components/ui/`
 - `src/components/groups/SearchFilter.tsx`
+- `src/components/groups/CreateGroupDialog.tsx`
+- `src/components/groups/GroupAboutTab.tsx`
+- `src/components/groups/GroupDetailsHeader.tsx`
+- `src/components/groups/GroupDetailsLoading.tsx`
+- `src/components/groups/GroupSettingsTab.tsx`
+- `src/components/groups/GroupsList.tsx`
+- `src/components/groups/JoinRequestDialog.tsx`
+- `src/components/groups/JoinRequestsManager.tsx`
+- `src/components/groups/LoginPrompt.tsx`
+- `src/components/groups/MyGroupsList.tsx`
+
+**EVENT SYSTEM (LOCKED):**
+- `src/components/groups/events/CreateEventButton.tsx`
+- `src/components/groups/events/EventCard.tsx`
+- `src/components/groups/events/EventCreationWizard.tsx`
+- `src/components/groups/events/EventDetailsPage.tsx`
+- `src/components/groups/events/EventsList.tsx`
+- `src/components/groups/events/StepIndicator.tsx`
+- `src/components/groups/events/TabbedEventsList.tsx`
+- `src/components/groups/events/WizardFooter.tsx`
+- `src/components/groups/events/WizardHeader.tsx`
+- `src/components/groups/events/components/AdminRankingControls.tsx`
+- `src/components/groups/events/components/DragDropPlayerList.tsx`
+- `src/components/groups/events/components/EventDetailsHeader.tsx`
+- `src/components/groups/events/components/EventDetailsTabs.tsx`
+- `src/components/groups/events/components/EventDetailsTab.tsx`
+- `src/components/groups/events/components/EventRegistrationButton.tsx`
+- `src/components/groups/events/components/EventRegistrationStatus.tsx`
+- `src/components/groups/events/components/PlayerRanking.tsx`
+- `src/components/groups/events/components/PlayersList.tsx`
+- `src/components/groups/events/components/PromotionBanner.tsx`
+- `src/components/groups/events/components/PromotionIndicator.tsx`
+- `src/components/groups/events/components/PromotionValidationTest.tsx`
+- `src/components/groups/events/components/WizardStepRenderer.tsx`
+- `src/components/groups/events/forms/EditEventDialog.tsx`
+- `src/components/groups/events/forms/EditEventForm.tsx`
+- `src/components/groups/events/forms/fields/EventBasicFields.tsx`
+- `src/components/groups/events/forms/fields/EventCapacityFields.tsx`
+- `src/components/groups/events/forms/fields/EventDateField.tsx`
+- `src/components/groups/events/forms/fields/EventPricingFields.tsx`
+- `src/components/groups/events/forms/fields/EventTimeField.tsx`
+- `src/components/groups/events/forms/types/eventFormTypes.ts`
+- `src/components/groups/events/forms/validation/EditEventFormValidationTest.tsx`
+
+**POSTS SYSTEM (LOCKED):**
+- `src/components/groups/posts/CreatePostForm2.tsx`
+- `src/components/groups/posts/GroupPostsEmpty.tsx`
+- `src/components/groups/posts/index.ts`
+- `src/components/groups/posts/post-card/index.ts`
+- `src/components/groups/posts/post-card/CommentActions.tsx`
+- `src/components/groups/posts/post-card/CommentContent.tsx`
+- `src/components/groups/posts/post-card/CommentForm2.tsx`
+- `src/components/groups/posts/post-card/CommentHeader.tsx`
+- `src/components/groups/posts/post-card/CommentReactions.tsx`
+- `src/components/groups/posts/post-card/CommentThumbsDown2.tsx`
+- `src/components/groups/posts/post-card/CommentThumbsUp2.tsx`
+- `src/components/groups/posts/post-card/Comment2.tsx`
+- `src/components/groups/posts/post-card/CommentsSection2.tsx`
+- `src/components/groups/posts/post-card/DeleteCommentDialog.tsx`
+- `src/components/groups/posts/post-card/DeleteCommentDialog2.tsx`
+- `src/components/groups/posts/post-card/DeletePostDialog.tsx`
+- `src/components/groups/posts/post-card/PostContent.tsx`
+- `src/components/groups/posts/post-card/PostHeader.tsx`
+- `src/components/groups/posts/post-card/PostHeart2.tsx`
+- `src/components/groups/posts/post-card/PostReactions.tsx`
+- `src/components/groups/posts/post-card/PostReactions2.tsx`
+- `src/components/groups/posts/post-card/ThumbsDown2.tsx`
+- `src/components/groups/posts/post-card/ThumbsUp2.tsx`
 
 **HOOKS AND UTILITIES (LOCKED):**
 - All files in `src/components/groups/hooks/`
 - All files in `src/components/groups/utils/`
 - All files in `src/components/groups/services/`
 - All files in `src/hooks/`
+- All files in `src/utils/`
+- All files in `src/integrations/`
 
 **TYPE DEFINITIONS (LOCKED):**
 - All files ending in `/types.ts` or `/types/`
 - All files ending in `/index.ts`
+- All files in `src/types/`
+
+**CONFIGURATION AND SETUP (LOCKED):**
+- `src/main.tsx`
+- `src/App.tsx`
+- `src/App.css`
+- All files in `src/lib/`
+- `package.json`
+- `tsconfig.json`
+- `vite.config.ts`
+- `tailwind.config.ts`
+- `postcss.config.js`
 
 ### FILE PROTECTION RULES:
 
@@ -636,6 +774,9 @@ This system ensures consistent, structured error resolution while maintaining co
 2. **What changes you made that were explicitly requested**
 3. **Any additional changes you made that were NOT explicitly requested** (if any)
 4. **Confirmation that you made NO unrequested changes** (if true)
+5. **Step progress tracking** (when working on multi-step processes)
+6. **Testing instructions** (what the user should test to verify the step worked)
+7. **HONESTY VERIFICATION** (confirmation that you did not lie about changes made)
 
 **Format for transparency statement:**
 ```
@@ -645,239 +786,18 @@ This system ensures consistent, structured error resolution while maintaining co
 - **Changes made as requested:** [list of specific changes that matched the request]
 - **Additional unrequested changes:** [list any changes you made beyond the request, OR state "NONE"]
 - **Unrequested changes confirmation:** [YES - I made changes beyond the request / NO - I only made requested changes]
+- **Step progress:** [current step number and total steps, e.g., "Step 3 of 8 completed"]
+- **What was accomplished:** [brief summary of what was just finished]
+- **Test to verify this step:** [specific things to test to verify the step worked]
+- **Next step:** [what will happen in the next step]
+- **HONESTY VERIFICATION:** [I verified all claimed changes exist in the code / I did not lie about any implementations / All statements about code changes are accurate]
 ---
 ```
 
-**This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
-
----
-
-# EditEventForm Rebuild Plan - Following Rules.md Best Practices
-
-## Problem Analysis
-- Database date value: "5-30-25" (MM-DD-YY format)
-- Current form shows incorrect date due to timezone conversion issues
-- Need to rebuild using Component Creation Template and Error Debugging Template
-
-## Detailed Implementation Plan
-
-### Phase 1: Component Architecture Analysis (Component Creation Template)
-**Goal**: Break down the monolithic EditEventForm into focused, single-responsibility components
-
-#### Current Issues:
-- EditEventForm.tsx is 289 lines (exceeds 50 line limit)
-- Complex date formatting logic mixed with form logic
-- Multiple responsibilities in one component
-
-#### Components to Create:
-1. **EventDateField.tsx** (≤50 lines)
-   - Handles date input with proper formatting
-   - Focused on date display/input only
-   - Uses database types from @/integrations/supabase/types
-
-2. **EventTimeField.tsx** (≤50 lines)
-   - Handles time input
-   - Single responsibility for time management
-
-3. **EventBasicFields.tsx** (≤50 lines)
-   - Title, description, location fields
-   - Basic string input handling
-
-4. **EventCapacityFields.tsx** (≤50 lines)
-   - Max players, allow reserves, registration open
-   - Capacity and registration settings
-
-5. **EventPricingFields.tsx** (≤50 lines)
-   - Pricing model, fee amount
-   - Conditional pricing logic
-
-6. **EditEventForm.tsx** (≤50 lines)
-   - Main form coordinator
-   - Uses all sub-components
-   - Form submission and validation
-
-### Phase 2: Date Handling Strategy (Error Debugging Template)
-**Goal**: Solve the date display issue with proper date handling
-
-#### Root Cause Analysis:
-- Database stores: "5-30-25" (MM-DD-YY)
-- HTML date input expects: "YYYY-MM-DD"
-- Current conversion creates timezone shifts
-
-#### Solution Strategy:
-1. **Create DateUtils.ts**
-   - Parse "MM-DD-YY" to "YYYY-MM-DD" without timezone conversion
-   - Handle edge cases (invalid dates, null values)
-   - Use string manipulation instead of Date objects
-
-2. **Date Conversion Logic**:
-   ```typescript
-   // Input: "5-30-25" -> Output: "2025-05-30"
-   const convertDatabaseDateToInputFormat = (dbDate: string): string => {
-     const [month, day, year] = dbDate.split('-');
-     const fullYear = `20${year}`; // Assume 20xx for 2-digit years
-     return `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-   };
-   ```
-
-### Phase 3: Type Safety Implementation (TypeScript Best Practices)
-**Goal**: Ensure proper TypeScript typing throughout
-
-#### Type Definitions:
-1. **Database Types**: Use `Database['public']['Tables']['events']['Row']`
-2. **Form Types**: Create focused interfaces for each component
-3. **Date Types**: Explicit string types for date handling
-
-#### Type Structure:
-```typescript
-// types/eventFormTypes.ts
-import type { Database } from "@/integrations/supabase/types";
-
-type Event = Database['public']['Tables']['events']['Row'];
-
-interface EventDateFieldProps {
-  value: string;
-  onChange: (date: string) => void;
-  error?: string;
-}
-
-interface EventFormData {
-  event_title: string;
-  description: string;
-  event_date: string; // Always YYYY-MM-DD format
-  event_time: string;
-  location: string;
-  max_players: number;
-  allow_reserves: boolean;
-  registration_open: boolean;
-  pricing_model: "free" | "one-time" | "per-event";
-  fee_amount: number | null;
-}
-```
-
-### Phase 4: Form State Management
-**Goal**: Implement proper form state with react-hook-form
-
-#### Implementation:
-1. **Main Form Controller**: EditEventForm.tsx manages overall state
-2. **Field Components**: Each receives value and onChange from main form
-3. **Validation**: Zod schema validation at main form level
-4. **Error Handling**: FormErrorBoundary wrapping
-
-### Phase 5: Mobile-First Design
-**Goal**: Ensure responsive design following rules.md patterns
-
-#### Design Patterns:
-- Padding: `px-3 py-4 md:px-6 md:py-8`
-- Spacing: `space-y-3 md:space-y-4`
-- Icons: Mobile `h-3 w-3`, Desktop `md:h-4 md:w-4`
-
-### Phase 6: Testing and Validation
-**Goal**: Create validation component for testing
-
-#### Create EventFormValidationTest.tsx:
-- Test date conversion with actual database values
-- Verify form submission data format
-- Debug logging for troubleshooting
-
-## Implementation Steps
-
-### Step 1: Create Utility Functions
-- DateUtils.ts for date conversion
-- FormValidation.ts for validation helpers
-
-### Step 2: Create Type Definitions
-- eventFormTypes.ts with all interfaces
-- Ensure no 'any' types used
-
-### Step 3: Build Field Components
-- EventDateField.tsx (priority - fixes main issue)
-- EventTimeField.tsx
-- EventBasicFields.tsx
-- EventCapacityFields.tsx
-- EventPricingFields.tsx
-
-### Step 4: Rebuild Main Form
-- New EditEventForm.tsx using sub-components
-- Proper form state management
-- Error boundaries
-
-### Step 5: Create Validation Test
-- EventFormValidationTest.tsx
-- Test with database value "5-30-25"
-- Verify correct display and submission
-
-### Step 6: Integration Testing
-- Test in EditEventDialog.tsx
-- Verify no breaking changes to existing functionality
-- Toast notifications using sonner (not shadcn toast)
-
-## Success Criteria
-1. Date "5-30-25" displays correctly as "May 30, 2025" in form
-2. All components under 50 lines
-3. No 'any' types used
-4. Mobile-first responsive design
-5. Proper error handling with FormErrorBoundary
-6. Working form submission with correct data format
-
-## File Structure After Rebuild
-```
-src/components/groups/events/forms/
-├── EditEventForm.tsx (≤50 lines)
-├── fields/
-│   ├── EventDateField.tsx (≤50 lines)
-│   ├── EventTimeField.tsx (≤50 lines)
-│   ├── EventBasicFields.tsx (≤50 lines)
-│   ├── EventCapacityFields.tsx (≤50 lines)
-│   └── EventPricingFields.tsx (≤50 lines)
-├── utils/
-│   ├── dateUtils.ts
-│   └── formValidation.ts
-├── types/
-│   └── eventFormTypes.ts
-└── validation/
-    └── EventFormValidationTest.tsx
-```
-
-This plan follows rules.md by:
-- Creating small, focused components (50 lines or less)
-- Using proper database types from @/integrations/supabase/types
-- Implementing mobile-first design patterns
-- Using Component Creation Template for structure
-- Using Error Debugging Template for date issue resolution
-- Avoiding 'any' types
-- Using correct toast imports (sonner)
-- Following MANDATORY TRANSPARENCY RULE
-
-## USER REQUIREMENTS FOR STEP TRACKING
-
-### Progress Status Requirements
+**Step Progress Requirements:**
 - Always show current step number and total steps (e.g., "3/8 steps")
 - At the end of each step, clearly state what was accomplished
 - Provide specific testing instructions for validating each step's completion
+- Preview what will happen in the next step
 
-### Step Completion Format
-Each step completion message should include:
-1. **Step Progress**: "Step X of Y completed"
-2. **What was accomplished**: Brief summary of what was just finished
-3. **Testing instructions**: Specific things to test to verify the step worked
-4. **Next step preview**: What will happen in the next step
-
-### Example Step Completion Message:
-```
-**Step 3 of 8 completed: Component Architecture Analysis**
-
-**What was accomplished:**
-- Created 6 focused components (all under 50 lines)
-- Built EventDateField with proper MM-DD-YY format handling
-- Implemented mobile-first responsive design
-
-**Test to verify this step:**
-- Check that EditEventForm.tsx compiles without errors
-- Verify date "5-30-25" displays correctly in the form
-- Confirm form components render on mobile and desktop
-
-**Next step:** Phase 2 - Type System Integration
-```
-
-This ensures clear progress tracking and validation testing throughout the rebuild process.
+**This transparency statement is MANDATORY and must appear at the end of EVERY message where code changes are made.**
