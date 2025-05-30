@@ -1,15 +1,18 @@
 
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ProfileMobileLayout } from "@/components/profile/mobile/ProfileMobileLayout";
 import { RouteErrorBoundary } from "@/components/error-boundaries";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Profile = () => {
   const { user, profile, isLoading, refreshProfile, signOut } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -39,17 +42,33 @@ const Profile = () => {
   };
 
   if (isLoading) {
+    const LoadingLayout = isMobile ? ProfileMobileLayout : AppLayout;
     return (
       <RouteErrorBoundary routeName="Profile">
-        <AppLayout title="Profile">
+        <LoadingLayout title="Profile">
           <div>Loading...</div>
-        </AppLayout>
+        </LoadingLayout>
       </RouteErrorBoundary>
     );
   }
 
   if (!user) {
     return null;
+  }
+
+  // Use ProfileMobileLayout for mobile, AppLayout for desktop
+  if (isMobile) {
+    return (
+      <RouteErrorBoundary routeName="Profile">
+        <ProfileMobileLayout title="Profile">
+          <ProfileContent 
+            profile={profile}
+            onProfileUpdate={handleProfileUpdate}
+            onLogout={handleLogout}
+          />
+        </ProfileMobileLayout>
+      </RouteErrorBoundary>
+    );
   }
 
   return (

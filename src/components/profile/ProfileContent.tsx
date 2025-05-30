@@ -1,8 +1,10 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { MobileProfileHeader } from "@/components/profile/MobileProfileHeader";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProgressionCard } from "@/components/profile/ProgressionCard";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -14,12 +16,19 @@ interface ProfileContentProps {
 }
 
 export const ProfileContent = ({ profile, onProfileUpdate }: ProfileContentProps) => {
+  const isMobile = useIsMobile();
+
   const handleProfileUpdate = (updatedProfile: Profile) => {
     onProfileUpdate();
   };
 
   return (
     <>
+      {/* Mobile Profile Header - Only shown on mobile and when using ProfileMobileLayout */}
+      {isMobile && profile && (
+        <MobileProfileHeader profile={profile} />
+      )}
+      
       {/* Desktop Profile Header - Hidden on mobile, shown on desktop, no card wrapper */}
       <div className="hidden md:block mb-4 md:mb-6">
         <ProfileHeader profile={profile} />
