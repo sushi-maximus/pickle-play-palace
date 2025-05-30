@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { format, parseISO } from 'date-fns';
+import { formatDateForDisplay } from '@/utils/dateUtils';
 import { useTouchFeedback } from '@/hooks/useTouchFeedback';
 import { cn } from '@/lib/utils';
 
@@ -57,7 +57,7 @@ export const EventItem = ({
           </div>
           <div className="text-sm text-gray-600 space-y-1">
             <div>
-              {format(parseISO(event.event_date), 'MMM d, yyyy')} at{' '}
+              {formatDateForDisplay(event.event_date)} at{' '}
               {event.event_time}
             </div>
             <div>{event.location}</div>
