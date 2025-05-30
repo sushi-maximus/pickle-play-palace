@@ -36,21 +36,47 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
-  // Debug the event object
-  console.log('=== EVENT OBJECT DEBUG ===');
+  // Debug the raw date value extensively
+  console.log('=== DETAILED DATE DEBUGGING ===');
   console.log('Raw event object:', event);
-  console.log('event.event_date value:', event.event_date);
-  console.log('event.event_date type:', typeof event.event_date);
+  console.log('event.event_date raw value:', event.event_date);
+  console.log('event.event_date JSON.stringify:', JSON.stringify(event.event_date));
+  console.log('typeof event.event_date:', typeof event.event_date);
   
-  // Force string conversion to prevent any Date object interference
-  const cleanDateString = String(event.event_date);
-  console.log('cleanDateString:', cleanDateString);
+  // Try multiple approaches to extract the correct date
+  let correctDateString;
   
-  // Use separate state for the date - completely isolated from react-hook-form
-  const [dateValue, setDateValue] = useState(cleanDateString);
+  if (event.event_date instanceof Date) {
+    correctDateString = event.event_date.toISOString().split('T')[0];
+    console.log('Date object detected, converted to:', correctDateString);
+  } else if (typeof event.event_date === 'string') {
+    // If it's already a string, check if it looks like a proper date
+    if (event.event_date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      correctDateString = event.event_date;
+      console.log('Valid date string detected:', correctDateString);
+    } else {
+      // Try to parse and reformat
+      const parsed = new Date(event.event_date);
+      if (!isNaN(parsed.getTime())) {
+        correctDateString = parsed.toISOString().split('T')[0];
+        console.log('Parsed corrupted string to:', correctDateString);
+      } else {
+        correctDateString = '2025-05-30'; // fallback
+        console.log('Used fallback date:', correctDateString);
+      }
+    }
+  } else {
+    correctDateString = '2025-05-30'; // fallback
+    console.log('Unknown type, used fallback:', correctDateString);
+  }
   
-  console.log('useState initial dateValue:', dateValue);
+  console.log('Final correctDateString:', correctDateString);
   
+  // Use the corrected date string in state
+  const [dateValue, setDateValue] = useState(correctDateString);
+  
+  console.log('useState initialized with:', dateValue);
+
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
@@ -110,7 +136,7 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
         />
 
         <div className="grid grid-cols-2 gap-4">
-          {/* Standalone date input - completely separate from react-hook-form */}
+          {/* Standalone date input with enhanced debugging */}
           <div className="space-y-2">
             <label htmlFor="event-date" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               Date
@@ -120,8 +146,11 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
               type="date" 
               value={dateValue}
               onChange={(e) => {
-                console.log('Date input onChange:', e.target.value);
+                console.log('Date input onChange triggered');
+                console.log('e.target.value:', e.target.value);
+                console.log('Previous dateValue:', dateValue);
                 setDateValue(e.target.value);
+                console.log('New dateValue set to:', e.target.value);
               }}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             />
