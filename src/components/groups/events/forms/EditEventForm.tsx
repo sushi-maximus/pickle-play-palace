@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -36,8 +36,16 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
+  // Debug the event object
+  console.log('=== EVENT OBJECT DEBUG ===');
+  console.log('Raw event object:', event);
+  console.log('event.event_date value:', event.event_date);
+  console.log('event.event_date type:', typeof event.event_date);
+  
   // Use separate state for the date to bypass react-hook-form's conversion
   const [dateValue, setDateValue] = useState(event.event_date);
+  
+  console.log('useState initial dateValue:', dateValue);
   
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
@@ -106,7 +114,10 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
               <Input 
                 type="date" 
                 value={dateValue}
-                onChange={(e) => setDateValue(e.target.value)}
+                onChange={(e) => {
+                  console.log('Date input onChange:', e.target.value);
+                  setDateValue(e.target.value);
+                }}
               />
             </FormControl>
             <FormMessage />
