@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,9 +38,8 @@ interface EditEventFormProps {
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
   // Helper function to format date for input (YYYY-MM-DD format)
   const formatDateForInput = (dateString: string) => {
-    // Create date object treating the input as local date to avoid timezone shift
-    const date = new Date(dateString + 'T00:00:00');
-    return date.toISOString().split('T')[0];
+    // Simply return the date string as-is since it's already in YYYY-MM-DD format
+    return dateString;
   };
 
   const form = useForm<EditEventFormData>({
