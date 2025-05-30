@@ -90,11 +90,13 @@ export const EventItem = ({
       
       {/* Show info message for waitlisted events inside the card */}
       {event.status === 'waitlist' && (
-        <div className="flex items-start gap-2 p-2 bg-blue-50 rounded-md border border-blue-200 mt-2">
-          <Info className="h-3 w-3 md:h-4 md:w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-blue-700">
-            Every 4 players registered will be confirmed.
-          </p>
+        <div className="mt-2">
+          <div className="inline-flex items-center gap-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+            <Info className="h-3 w-3 md:h-4 md:w-4 text-blue-500 flex-shrink-0" />
+            <p className="text-xs text-blue-700">
+              Every 4 players registered will be confirmed.
+            </p>
+          </div>
         </div>
       )}
     </div>
