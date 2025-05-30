@@ -59,10 +59,17 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
     },
     onSuccess: (result) => {
       toast.success(result.message);
-      // Invalidate related queries
+      // Invalidate related queries including next event queries
       queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
+      
+      // Get the group ID from the event to invalidate next event queries
+      queryClient.getQueryCache().findAll({ queryKey: ['events'] }).forEach(query => {
+        if (query.queryKey.includes('next-event')) {
+          queryClient.invalidateQueries({ queryKey: query.queryKey });
+        }
+      });
     },
     onError: (error: Error) => {
       console.error('Registration error:', error);
@@ -91,10 +98,17 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
     },
     onSuccess: (result) => {
       toast.success(result.message);
-      // Invalidate related queries
+      // Invalidate related queries including next event queries
       queryClient.invalidateQueries({ queryKey: queryKeys.events.registration(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.players(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(eventId) });
+      
+      // Get the group ID from the event to invalidate next event queries
+      queryClient.getQueryCache().findAll({ queryKey: ['events'] }).forEach(query => {
+        if (query.queryKey.includes('next-event')) {
+          queryClient.invalidateQueries({ queryKey: query.queryKey });
+        }
+      });
     },
     onError: (error: Error) => {
       console.error('Cancellation error:', error);
