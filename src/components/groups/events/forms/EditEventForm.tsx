@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -36,13 +36,15 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
+  // Use separate state for the date to bypass react-hook-form's conversion
+  const [dateValue, setDateValue] = useState(event.event_date);
+  
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
-      // Don't set event_date here to prevent timezone conversion
-      event_date: "",
+      event_date: event.event_date, // This will be overridden by our controlled input
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
@@ -53,15 +55,14 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
     }
   });
 
-  // Set the date value after form initialization to prevent timezone conversion
-  useEffect(() => {
-    console.log('Setting date value directly:', event.event_date);
-    form.setValue('event_date', event.event_date);
-  }, [form, event.event_date]);
-
   const handleSubmit = (data: EditEventFormData) => {
-    console.log('Submitting event_date:', data.event_date);
-    onSubmit(data);
+    // Use our controlled date value instead of the form's value
+    const submitData = {
+      ...data,
+      event_date: dateValue
+    };
+    console.log('Submitting event_date:', submitData.event_date);
+    onSubmit(submitData);
   };
 
   const pricingModel = form.watch('pricing_model');
@@ -98,23 +99,18 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
         />
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="event_date"
-            render={({ field }) => {
-              console.log('Date field value after fix:', field.value);
-              
-              return (
-                <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="date" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+          {/* Controlled date input that bypasses react-hook-form */}
+          <FormItem>
+            <FormLabel>Date</FormLabel>
+            <FormControl>
+              <Input 
+                type="date" 
+                value={dateValue}
+                onChange={(e) => setDateValue(e.target.value)}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
 
           <FormField
             control={form.control}
