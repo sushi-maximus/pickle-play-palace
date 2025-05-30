@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,34 +36,49 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
-  // Properly format the date for the form
+  // Safe date formatting - treat the date as already being in YYYY-MM-DD format
   const formatDateForInput = (dateValue: any): string => {
     if (!dateValue) return '';
     
-    // If it's already a properly formatted date string
-    if (typeof dateValue === 'string' && dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      return dateValue;
-    }
-    
-    // Try to parse and format the date
-    try {
-      const date = new Date(dateValue);
-      if (!isNaN(date.getTime())) {
-        return date.toISOString().split('T')[0];
+    // If it's already a string in YYYY-MM-DD format, use it directly
+    if (typeof dateValue === 'string') {
+      // Check if it's already in the correct format
+      if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return dateValue;
       }
-    } catch (error) {
-      console.error('Date parsing error:', error);
+      
+      // If it contains time info, extract just the date part
+      if (dateValue.includes('T')) {
+        return dateValue.split('T')[0];
+      }
+      
+      // If it's a different date format, try to parse it carefully
+      try {
+        // Create date object but don't apply timezone conversion
+        const date = new Date(dateValue + 'T00:00:00'); // Force local time
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      } catch (error) {
+        console.error('Date parsing error:', error);
+        return '';
+      }
     }
     
     return '';
   };
+
+  console.log('EditEventForm - Raw event date:', event.event_date);
+  const formattedDate = formatDateForInput(event.event_date);
+  console.log('EditEventForm - Formatted date for input:', formattedDate);
 
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
-      event_date: formatDateForInput(event.event_date),
+      event_date: formattedDate,
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
@@ -76,6 +90,7 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
   });
 
   const handleSubmit = (data: EditEventFormData) => {
+    console.log('EditEventForm - Submitting data:', data);
     onSubmit(data);
   };
 
