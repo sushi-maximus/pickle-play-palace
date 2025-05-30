@@ -9,6 +9,7 @@ import { useEventRegistration } from "../hooks/useEventRegistration";
 import { usePromotionStatus } from "../hooks/usePromotionStatus";
 import { useEventAdminStatus } from "../hooks/useEventAdminStatus";
 import { useState } from "react";
+import { formatDateForDisplay } from "@/utils/dateUtils";
 import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
@@ -32,16 +33,6 @@ export const EventDetailsHeader = ({ event, groupId, userId, onEventUpdated }: E
     eventId: event.id,
     enabled: !!userId 
   });
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
 
   const formatTime = (timeStr: string) => {
     const [hours, minutes] = timeStr.split(':');
@@ -91,7 +82,7 @@ export const EventDetailsHeader = ({ event, groupId, userId, onEventUpdated }: E
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-gray-700">
                 <Calendar className="h-5 w-5 text-gray-400" />
-                <span className="font-medium">{formatDate(event.event_date)}</span>
+                <span className="font-medium">{formatDateForDisplay(event.event_date)}</span>
               </div>
               
               <div className="flex items-center gap-3 text-gray-700">
