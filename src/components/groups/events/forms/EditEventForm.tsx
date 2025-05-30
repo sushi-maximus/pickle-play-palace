@@ -42,6 +42,7 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
+      // Use the date string directly from the database without any parsing
       event_date: event.event_date,
       event_time: event.event_time,
       location: event.location,
