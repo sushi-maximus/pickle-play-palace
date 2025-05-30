@@ -37,6 +37,11 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
+  // DEBUGGING: Trace the date value from database
+  console.log('=== DATE TRACING ===');
+  console.log('Raw event.event_date from database:', event.event_date);
+  console.log('Type of event.event_date:', typeof event.event_date);
+  
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
@@ -54,7 +59,13 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
     }
   });
 
+  // DEBUGGING: Check what value is actually set in the form
+  const currentDateValue = form.watch('event_date');
+  console.log('Form event_date value:', currentDateValue);
+  console.log('Type of form event_date:', typeof currentDateValue);
+
   const handleSubmit = (data: EditEventFormData) => {
+    console.log('Submitting event_date:', data.event_date);
     onSubmit(data);
   };
 
@@ -95,15 +106,29 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
           <FormField
             control={form.control}
             name="event_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date</FormLabel>
-                <FormControl>
-                  <Input {...field} type="date" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              // DEBUGGING: Check what the field receives
+              console.log('Date field value:', field.value);
+              console.log('Date field value type:', typeof field.value);
+              
+              return (
+                <FormItem>
+                  <FormLabel>Date</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field} 
+                      type="date"
+                      onFocus={() => console.log('Date input focused, value:', field.value)}
+                      onChange={(e) => {
+                        console.log('Date input changed to:', e.target.value);
+                        field.onChange(e);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <FormField
