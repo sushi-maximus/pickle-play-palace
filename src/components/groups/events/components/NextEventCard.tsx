@@ -34,7 +34,7 @@ export const NextEventCard = ({ event, registrationStatus, onClick }: NextEventC
       case 'confirmed':
         return (
           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-            Registered
+            Confirmed
           </span>
         );
       case 'waitlist':

@@ -1,5 +1,4 @@
 
-
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, XCircle, Info } from "lucide-react";
 import { useEventRegistration } from "../hooks/useEventRegistration";
@@ -94,4 +93,3 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
     </div>
   );
 };
-
