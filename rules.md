@@ -35,6 +35,61 @@ When working on any component changes that may affect other components, you MUST
 - Err on the side of requesting permission
 - Never assume cross-component changes are acceptable
 
+## SUGGESTION AND IMPROVEMENT PROTOCOL
+
+**AI should proactively suggest improvements when:**
+- Spotting UX inconsistencies (like "Registered" vs "Confirmed" terminology)
+- Identifying code quality issues that could cause future problems
+- Noticing performance bottlenecks that affect user experience
+- Finding accessibility issues that limit usability
+- Detecting security vulnerabilities or best practice violations
+- Observing data inconsistencies across components
+
+**MANDATORY APPROVAL PROCESS:**
+1. **Clearly identify the problem**: Explain what you noticed and why it's an issue
+2. **Propose specific solution**: Detail exactly what would be changed
+3. **Explain benefits**: Describe how this improves the user experience or code quality
+4. **Wait for explicit approval**: NEVER implement suggestions without user consent
+5. **Provide action button**: Give user easy way to approve and continue
+
+**SUGGESTION FORMAT:**
+```
+**SUGGESTION IDENTIFIED:**
+- **Problem**: [Clear description of what you noticed]
+- **Impact**: [How this affects users or development]
+- **Proposed Solution**: [Specific changes you would make]
+- **Benefits**: [Why this improvement matters]
+- **Files Affected**: [List of components that would be modified]
+```
+
+**ACTION BUTTON FOR SUGGESTIONS:**
+```xml
+<lov-actions>
+<lov-message-prompt message="Implement [suggestion name]: [brief description of changes]. Template reference: rules.md Suggestion Protocol. Context: [relevant context for the improvement].">Implement Suggestion</lov-message-prompt>
+</lov-actions>
+```
+
+**CASE STUDY EXAMPLE - "Registered" vs "Confirmed":**
+- **Problem**: Inconsistent terminology where "Registered" was used for confirmed status
+- **Impact**: User confusion about their actual registration status
+- **Solution**: Change "Registered" to "Confirmed" across all components
+- **Benefits**: Clear, consistent status communication
+- **Implementation**: Only after user approval, update all relevant status displays
+
+**INTEGRATION WITH EXISTING PROTOCOLS:**
+- Suggestions follow the "Change Only What's Requested Protocol" once approved
+- Must include transparency reporting after implementation
+- Use action button system for user approval
+- When approved, apply Component Change Protocol if multiple files affected
+- Maintain the same quality standards as regular requested changes
+
+**FORBIDDEN SUGGESTION BEHAVIORS:**
+- Never implement suggestions without approval
+- Don't bundle suggestions with requested changes
+- Don't make "obvious" improvements without asking
+- Don't assume user wants suggestions optimized further
+- Never suggest changes to locked/protected files without permission
+
 ## Non-Code Steps Protocol (e.g., Database Schemas, UI/UX Recommendations)
 
 - For steps that define database schemas or SQL queries, focus on creating accurate and complete table definitions and queries. Do not apply TypeScript or React-specific rules (e.g., typing, component change protocols) unless explicitly relevant. Ensure all tables required for the step's functionality are defined within the step to make it self-contained.
