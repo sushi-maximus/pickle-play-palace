@@ -18,7 +18,7 @@ export const EventDetailsPage = () => {
   const navigate = useNavigate();
 
   // Fetch event details directly if we don't have groupId
-  const { data: event, isLoading, error } = useQuery({
+  const { data: event, isLoading, error, refetch } = useQuery({
     queryKey: ['event', eventId],
     queryFn: async () => {
       console.log('Fetching event details for eventId:', eventId);
@@ -51,6 +51,11 @@ export const EventDetailsPage = () => {
     } else {
       navigate('/dashboard');
     }
+  };
+
+  const handleEventUpdated = () => {
+    // Refetch event data when it's updated
+    refetch();
   };
 
   if (isLoading) {
@@ -114,6 +119,7 @@ export const EventDetailsPage = () => {
           event={event} 
           groupId={effectiveGroupId} 
           userId={user?.id}
+          onEventUpdated={handleEventUpdated}
         />
         <EventDetailsTabs 
           event={event} 

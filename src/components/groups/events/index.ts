@@ -27,3 +27,5 @@ export * from './components/PromotionIndicator';
 export * from './hooks/usePromotionStatus';
 export * from './types/promotionTypes';
 export { TabbedEventsList } from './TabbedEventsList';
+export * from './forms';
+export * from './hooks/useEditEvent';
