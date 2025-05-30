@@ -677,6 +677,7 @@ This system ensures consistent, structured error resolution while maintaining co
 4. **Confirmation that you made NO unrequested changes** (if true)
 5. **Step progress tracking** (when working on multi-step processes)
 6. **Testing instructions** (what the user should test to verify the step worked)
+7. **HONESTY VERIFICATION** (confirmation that you did not lie about changes made)
 
 **Format for transparency statement:**
 ```
@@ -690,6 +691,7 @@ This system ensures consistent, structured error resolution while maintaining co
 - **What was accomplished:** [brief summary of what was just finished]
 - **Test to verify this step:** [specific things to test to verify the step worked]
 - **Next step:** [what will happen in the next step]
+- **HONESTY VERIFICATION:** [I verified all claimed changes exist in the code / I did not lie about any implementations / All statements about code changes are accurate]
 ---
 ```
 
