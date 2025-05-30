@@ -167,6 +167,44 @@ type ExtendedGroup = Database['public']['Tables']['groups']['Row'] & {
 - Normal requests: Make ONLY the requested changes, preserve everything else
 - Cleanup requests: Only when explicitly asked to "optimize", "clean up", or "find unused code" should broader code analysis and removal happen
 
+## CRITICAL: MANDATORY CODE VERIFICATION AND HONESTY PROTOCOL
+
+**BEFORE CLAIMING ANY CHANGES ARE MADE:**
+
+1. **MANDATORY FILE VERIFICATION**: Use `lov-view` to actually examine ALL files that you claim to have modified
+2. **VERIFY ACTUAL CHANGES**: Check that the changes you claimed to make actually exist in the code
+3. **NO FALSE CLAIMS**: NEVER say "I updated X" without first verifying the file actually contains your claimed changes
+4. **ADMIT WHEN WRONG**: If you discover you didn't actually make the changes you claimed, immediately admit the error
+
+**ABSOLUTE HONESTY REQUIREMENT:**
+- If you haven't actually checked a file, say "I need to verify this file first"
+- If you find you were wrong about previous changes, say "I was incorrect - the file still contains [old code]"
+- NEVER make assumptions about file contents without verification
+- NEVER claim work is done without proving it through file examination
+
+**SHARED UTILITIES ENFORCEMENT:**
+- When working with dates, ALWAYS use utilities from `@/utils/dateUtils`
+- NEVER use `new Date()` constructor directly for date parsing - it causes timezone issues
+- ALWAYS use `formatDateForDisplay()` for consistent date formatting
+- Before implementing date handling, verify existing utilities and use them
+
+**CONSISTENCY VERIFICATION PROTOCOL:**
+1. **Identify all files** that handle the same data type (e.g., dates, user profiles, etc.)
+2. **Check each file** to ensure they use the same shared utilities
+3. **Report inconsistencies** and fix them systematically
+4. **Test consistency** by verifying the same data shows identically across different components
+
+**EXAMPLES OF FORBIDDEN BEHAVIOR:**
+- Saying "I updated EventDetailsTab.tsx to use formatDateForDisplay" without actually checking the file
+- Claiming "Both components now use the same date utility" without verifying both files
+- Making assumptions about what utilities a file imports without looking
+- Apologizing for errors while continuing to make the same errors
+
+**CONSEQUENCES FOR VIOLATIONS:**
+- These rules exist because previous violations wasted user time and credits
+- Following these rules is mandatory, not optional
+- Verification is required, not suggested
+
 **CRITICAL**: When modifying UI navigation components, always preserve ALL existing functionality unless explicitly asked to remove it.
 
 - When changing labels or icons, modify ONLY the requested elements
