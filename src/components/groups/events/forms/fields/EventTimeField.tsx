@@ -1,6 +1,6 @@
 
 import React from "react";
-import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 interface EventTimeFieldProps {
@@ -15,17 +15,16 @@ export const EventTimeField = ({ value, onChange, error }: EventTimeFieldProps) 
   };
 
   return (
-    <FormItem>
-      <FormLabel>Time</FormLabel>
-      <FormControl>
-        <Input 
-          type="time" 
-          value={value || ''}
-          onChange={handleTimeChange}
-          className="w-full"
-        />
-      </FormControl>
-      {error && <FormMessage>{error}</FormMessage>}
-    </FormItem>
+    <div className="space-y-2">
+      <Label htmlFor="event-time">Time</Label>
+      <Input 
+        id="event-time"
+        type="time" 
+        value={value || ''}
+        onChange={handleTimeChange}
+        className="w-full"
+      />
+      {error && <p className="text-sm text-red-600">{error}</p>}
+    </div>
   );
 };
