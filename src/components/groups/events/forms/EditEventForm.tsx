@@ -38,8 +38,13 @@ interface EditEventFormProps {
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
   // Helper function to format date for input (YYYY-MM-DD format)
   const formatDateForInput = (dateString: string) => {
+    console.log('Original event.event_date from database:', dateString);
+    
     // Simply return the date string as-is since it's already in YYYY-MM-DD format
-    return dateString;
+    const formattedDate = dateString;
+    console.log('Formatted date for input field:', formattedDate);
+    
+    return formattedDate;
   };
 
   const form = useForm<EditEventFormData>({
@@ -59,10 +64,15 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
   });
 
   const handleSubmit = (data: EditEventFormData) => {
+    console.log('Form submission data - event_date:', data.event_date);
     onSubmit(data);
   };
 
   const pricingModel = form.watch('pricing_model');
+
+  // Add debugging for form values
+  const currentFormDate = form.watch('event_date');
+  console.log('Current form date value:', currentFormDate);
 
   return (
     <Form {...form}>
@@ -103,7 +113,14 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
               <FormItem>
                 <FormLabel>Date</FormLabel>
                 <FormControl>
-                  <Input {...field} type="date" />
+                  <Input 
+                    {...field} 
+                    type="date" 
+                    onChange={(e) => {
+                      console.log('Date input changed to:', e.target.value);
+                      field.onChange(e.target.value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
