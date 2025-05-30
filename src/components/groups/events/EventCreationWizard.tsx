@@ -1,3 +1,4 @@
+
 import { useReducer } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { WizardHeader } from "./WizardHeader";
@@ -6,7 +7,7 @@ import { StepIndicator } from "./StepIndicator";
 import { WizardStepRenderer } from "./components/WizardStepRenderer";
 import { wizardReducer, initialWizardState } from "./hooks/useWizardState";
 import { useEventSubmission } from "./hooks/useEventSubmission";
-import { useStepValidation } from "./hooks/useStepValidation";
+import { useWizardValidation } from "./hooks/useWizardValidation";
 
 export const EventCreationWizard = () => {
   const { id: groupId } = useParams<{ id: string }>();
@@ -20,7 +21,7 @@ export const EventCreationWizard = () => {
   });
 
   const { handleEventSubmission } = useEventSubmission(groupId || "");
-  const { validateCurrentStep, getValidationErrors } = useStepValidation();
+  const { validateWizardStep, getWizardValidationErrors } = useWizardValidation();
 
   if (!groupId) {
     navigate('/groups');
@@ -93,7 +94,7 @@ export const EventCreationWizard = () => {
           validationErrors={state.validationErrors}
           onFormDataUpdate={handleFormDataUpdate}
           onEventSubmission={onEventSubmission}
-          getValidationErrors={() => getValidationErrors(state.currentStep, state.formData)}
+          getValidationErrors={() => getWizardValidationErrors(state.currentStep, state.formData)}
           isLoading={state.isLoading}
         />
       </div>
@@ -104,7 +105,7 @@ export const EventCreationWizard = () => {
         onBack={handleBack}
         onNext={handleNext}
         onCancel={handleCancel}
-        canGoNext={validateCurrentStep(state.currentStep, state.formData)}
+        canGoNext={validateWizardStep(state.currentStep, state.formData)}
         isLoading={state.isLoading}
       />
     </div>
