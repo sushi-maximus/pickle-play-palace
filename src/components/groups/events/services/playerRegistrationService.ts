@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -22,7 +21,7 @@ export interface PromotionResult {
 export const playerRegistrationService = {
   async registerForEvent(eventId: string, playerId: string): Promise<RegistrationResult> {
     try {
-      console.log('[Registration Validation] Starting registration:', { eventId, playerId });
+      console.log('[Group Registration] Starting registration:', { eventId, playerId });
       
       // Check if user is already registered
       const { data: existingRegistration } = await supabase
@@ -33,7 +32,7 @@ export const playerRegistrationService = {
         .single();
 
       if (existingRegistration) {
-        console.log('[Registration Validation] User already registered:', existingRegistration);
+        console.log('[Group Registration] User already registered:', existingRegistration);
         return {
           success: false,
           status: existingRegistration.status,
@@ -41,7 +40,7 @@ export const playerRegistrationService = {
         };
       }
 
-      // Get event details to check capacity
+      // Get event details
       const { data: event, error: eventError } = await supabase
         .from('events')
         .select('max_players, allow_reserves')
@@ -49,7 +48,7 @@ export const playerRegistrationService = {
         .single();
 
       if (eventError || !event) {
-        console.error('[Registration Validation] Event error:', eventError);
+        console.error('[Group Registration] Event error:', eventError);
         return {
           success: false,
           status: 'error',
@@ -57,81 +56,94 @@ export const playerRegistrationService = {
         };
       }
 
-      // Count current confirmed players
+      // Count current players by status
       const { count: confirmedCount } = await supabase
         .from('player_status')
         .select('*', { count: 'exact', head: true })
         .eq('event_id', eventId)
         .eq('status', 'confirmed');
 
-      // Determine registration status
-      const isEventFull = (confirmedCount || 0) >= event.max_players;
-      const registrationStatus = isEventFull && event.allow_reserves ? 'waitlist' : 'confirmed';
+      const { count: waitlistCount } = await supabase
+        .from('player_status')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId)
+        .eq('status', 'waitlist');
 
-      console.log('[Registration Validation] Registration status determined:', {
-        confirmedCount,
-        maxPlayers: event.max_players,
-        isEventFull,
-        registrationStatus
+      console.log('[Group Registration] Current counts:', {
+        confirmed: confirmedCount || 0,
+        waitlist: waitlistCount || 0,
+        maxPlayers: event.max_players
       });
 
-      // Calculate ranking order
-      let rankingOrder = 1;
-      if (registrationStatus === 'confirmed') {
-        const { count } = await supabase
-          .from('player_status')
-          .select('*', { count: 'exact', head: true })
-          .eq('event_id', eventId)
-          .eq('status', 'confirmed');
-        rankingOrder = (count || 0) + 1;
+      // Group-of-4 logic: determine if this player completes a group
+      const currentWaitlist = waitlistCount || 0;
+      const currentConfirmed = confirmedCount || 0;
+      
+      let registrationStatus: string;
+      let shouldPromoteGroup = false;
+
+      if (currentWaitlist === 3) {
+        // This player would complete a group of 4
+        if (currentConfirmed + 4 <= event.max_players) {
+          // Space available for full group
+          registrationStatus = 'confirmed';
+          shouldPromoteGroup = true;
+        } else {
+          // Event would be full, add to waitlist
+          registrationStatus = 'waitlist';
+        }
       } else {
-        const { count } = await supabase
-          .from('player_status')
-          .select('*', { count: 'exact', head: true })
-          .eq('event_id', eventId)
-          .eq('status', 'waitlist');
-        rankingOrder = (count || 0) + 1;
+        // Not completing a group, add to waitlist
+        registrationStatus = 'waitlist';
       }
 
-      // Insert registration
-      const registrationData: PlayerStatusInsert = {
-        event_id: eventId,
-        player_id: playerId,
-        status: registrationStatus,
-        ranking_order: rankingOrder,
-        registration_timestamp: new Date().toISOString()
-      };
+      console.log('[Group Registration] Registration decision:', {
+        registrationStatus,
+        shouldPromoteGroup,
+        currentWaitlist,
+        currentConfirmed
+      });
 
-      console.log('[Registration Validation] Inserting registration:', registrationData);
+      if (shouldPromoteGroup) {
+        // Promote the entire group of 4 (3 waitlisted + 1 new)
+        return await this.promoteGroupOfFour(eventId, playerId);
+      } else {
+        // Add player to waitlist
+        const rankingOrder = currentWaitlist + 1;
+        
+        const registrationData: PlayerStatusInsert = {
+          event_id: eventId,
+          player_id: playerId,
+          status: registrationStatus,
+          ranking_order: rankingOrder,
+          registration_timestamp: new Date().toISOString()
+        };
 
-      const { data: newRegistration, error: insertError } = await supabase
-        .from('player_status')
-        .insert(registrationData)
-        .select()
-        .single();
+        const { data: newRegistration, error: insertError } = await supabase
+          .from('player_status')
+          .insert(registrationData)
+          .select()
+          .single();
 
-      if (insertError) {
-        console.error('[Registration Validation] Insert error:', insertError);
+        if (insertError) {
+          console.error('[Group Registration] Insert error:', insertError);
+          return {
+            success: false,
+            status: 'error',
+            message: 'Failed to register for event'
+          };
+        }
+
         return {
-          success: false,
-          status: 'error',
-          message: 'Failed to register for event'
+          success: true,
+          status: registrationStatus,
+          message: 'Added to waitlist',
+          registrationData: newRegistration
         };
       }
 
-      console.log('[Registration Validation] Registration successful:', newRegistration);
-
-      return {
-        success: true,
-        status: registrationStatus,
-        message: registrationStatus === 'confirmed' 
-          ? 'Successfully registered for event!' 
-          : 'Added to waitlist',
-        registrationData: newRegistration
-      };
-
     } catch (error) {
-      console.error('[Registration Validation] Service error:', error);
+      console.error('[Group Registration] Service error:', error);
       return {
         success: false,
         status: 'error',
@@ -140,20 +152,109 @@ export const playerRegistrationService = {
     }
   },
 
+  async promoteGroupOfFour(eventId: string, newPlayerId: string): Promise<RegistrationResult> {
+    try {
+      console.log('[Group Promotion] Promoting group of 4 including:', newPlayerId);
+
+      // Get the 3 waitlisted players
+      const { data: waitlistedPlayers, error: waitlistError } = await supabase
+        .from('player_status')
+        .select('player_id, ranking_order')
+        .eq('event_id', eventId)
+        .eq('status', 'waitlist')
+        .order('registration_timestamp', { ascending: true })
+        .limit(3);
+
+      if (waitlistError || !waitlistedPlayers || waitlistedPlayers.length !== 3) {
+        console.error('[Group Promotion] Error fetching waitlisted players:', waitlistError);
+        return {
+          success: false,
+          status: 'error',
+          message: 'Error promoting group'
+        };
+      }
+
+      // Get current confirmed count for ranking
+      const { count: confirmedCount } = await supabase
+        .from('player_status')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId)
+        .eq('status', 'confirmed');
+
+      const baseRanking = (confirmedCount || 0) + 1;
+
+      // Update the 3 waitlisted players to confirmed
+      const playerIds = waitlistedPlayers.map(p => p.player_id);
+      
+      for (let i = 0; i < playerIds.length; i++) {
+        await supabase
+          .from('player_status')
+          .update({
+            status: 'confirmed',
+            ranking_order: baseRanking + i,
+            promoted_at: new Date().toISOString(),
+            promotion_reason: 'group_completed'
+          })
+          .eq('event_id', eventId)
+          .eq('player_id', playerIds[i]);
+      }
+
+      // Insert the new player as confirmed
+      const newPlayerData: PlayerStatusInsert = {
+        event_id: eventId,
+        player_id: newPlayerId,
+        status: 'confirmed',
+        ranking_order: baseRanking + 3,
+        registration_timestamp: new Date().toISOString()
+      };
+
+      const { data: newRegistration, error: insertError } = await supabase
+        .from('player_status')
+        .insert(newPlayerData)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('[Group Promotion] New player insert error:', insertError);
+        return {
+          success: false,
+          status: 'error',
+          message: 'Failed to complete group registration'
+        };
+      }
+
+      console.log('[Group Promotion] Successfully promoted group of 4');
+
+      return {
+        success: true,
+        status: 'confirmed',
+        message: 'Registered! Your group of 4 has been confirmed.',
+        registrationData: newRegistration
+      };
+
+    } catch (error) {
+      console.error('[Group Promotion] Service error:', error);
+      return {
+        success: false,
+        status: 'error',
+        message: 'An unexpected error occurred during group promotion'
+      };
+    }
+  },
+
   async cancelRegistration(eventId: string, playerId: string): Promise<RegistrationResult> {
     try {
-      console.log('[Cancellation Validation] Starting cancellation:', { eventId, playerId });
+      console.log('[Group Cancellation] Starting cancellation:', { eventId, playerId });
       
-      // Get the player's current registration to check their status
+      // Get the player's current registration
       const { data: currentRegistration } = await supabase
         .from('player_status')
-        .select('status')
+        .select('status, ranking_order')
         .eq('event_id', eventId)
         .eq('player_id', playerId)
         .single();
 
       if (!currentRegistration) {
-        console.log('[Cancellation Validation] No registration found');
         return {
           success: false,
           status: 'error',
@@ -161,17 +262,17 @@ export const playerRegistrationService = {
         };
       }
 
-      console.log('[Cancellation Validation] Current registration:', currentRegistration);
+      console.log('[Group Cancellation] Current registration:', currentRegistration);
 
       // Delete the registration
-      const { error } = await supabase
+      const { error: deleteError } = await supabase
         .from('player_status')
         .delete()
         .eq('event_id', eventId)
         .eq('player_id', playerId);
 
-      if (error) {
-        console.error('[Cancellation Validation] Delete error:', error);
+      if (deleteError) {
+        console.error('[Group Cancellation] Delete error:', deleteError);
         return {
           success: false,
           status: 'error',
@@ -179,13 +280,10 @@ export const playerRegistrationService = {
         };
       }
 
-      // If a confirmed player cancelled, promote waitlist players
+      // If a confirmed player cancelled, handle group breakage
       if (currentRegistration.status === 'confirmed') {
-        console.log('[Cancellation Validation] Confirmed player cancelled, promoting waitlist...');
-        await this.promoteWaitlistPlayers(eventId, 1);
+        await this.handleConfirmedCancellation(eventId);
       }
-
-      console.log('[Cancellation Validation] Cancellation successful');
 
       return {
         success: true,
@@ -194,12 +292,76 @@ export const playerRegistrationService = {
       };
 
     } catch (error) {
-      console.error('[Cancellation Validation] Service error:', error);
+      console.error('[Group Cancellation] Service error:', error);
       return {
         success: false,
         status: 'error',
         message: 'An unexpected error occurred'
       };
+    }
+  },
+
+  async handleConfirmedCancellation(eventId: string): Promise<void> {
+    try {
+      console.log('[Group Breakage] Handling confirmed player cancellation');
+
+      // Get current confirmed count
+      const { count: confirmedCount } = await supabase
+        .from('player_status')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId)
+        .eq('status', 'confirmed');
+
+      const currentConfirmed = confirmedCount || 0;
+      console.log('[Group Breakage] Current confirmed count:', currentConfirmed);
+
+      // If confirmed count is not divisible by 4, move excess players to waitlist
+      const excessPlayers = currentConfirmed % 4;
+      
+      if (excessPlayers > 0) {
+        console.log('[Group Breakage] Moving', excessPlayers, 'players to waitlist');
+
+        // Get the excess players (those with highest ranking_order)
+        const { data: excessPlayersList } = await supabase
+          .from('player_status')
+          .select('player_id, ranking_order')
+          .eq('event_id', eventId)
+          .eq('status', 'confirmed')
+          .order('ranking_order', { ascending: false })
+          .limit(excessPlayers);
+
+        if (excessPlayersList && excessPlayersList.length > 0) {
+          // Get current waitlist count for proper ranking
+          const { count: waitlistCount } = await supabase
+            .from('player_status')
+            .select('*', { count: 'exact', head: true })
+            .eq('event_id', eventId)
+            .eq('status', 'waitlist');
+
+          let waitlistRanking = (waitlistCount || 0) + 1;
+
+          // Move excess players to waitlist
+          for (const player of excessPlayersList) {
+            await supabase
+              .from('player_status')
+              .update({
+                status: 'waitlist',
+                ranking_order: waitlistRanking,
+                promoted_at: null,
+                promotion_reason: null
+              })
+              .eq('event_id', eventId)
+              .eq('player_id', player.player_id);
+
+            waitlistRanking++;
+          }
+
+          console.log('[Group Breakage] Moved excess players to waitlist');
+        }
+      }
+
+    } catch (error) {
+      console.error('[Group Breakage] Error handling cancellation:', error);
     }
   },
 
