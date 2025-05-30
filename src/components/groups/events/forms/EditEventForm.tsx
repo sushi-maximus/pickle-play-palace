@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,57 +37,12 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEventFormProps) => {
-  // CRITICAL DEBUG: Let's see exactly what we get from the database
-  console.log('=== DATABASE EVENT OBJECT DEBUG ===');
-  console.log('Raw event from database:', event);
-  console.log('Event ID:', event.id);
-  console.log('Event title:', event.event_title);
-  console.log('Raw event_date from DB:', event.event_date);
-  console.log('Type of event_date:', typeof event.event_date);
-  console.log('event_date as JSON:', JSON.stringify(event.event_date));
-  console.log('event_date length:', event.event_date?.length);
-  
-  // Let's see what happens with different parsing approaches
-  console.log('--- PARSING TESTS ---');
-  console.log('Direct string value:', event.event_date);
-  console.log('new Date(event.event_date):', new Date(event.event_date));
-  console.log('new Date(event.event_date).toISOString():', new Date(event.event_date).toISOString());
-  console.log('new Date(event.event_date).toLocaleDateString():', new Date(event.event_date).toLocaleDateString());
-  console.log('new Date(event.event_date).getDate():', new Date(event.event_date).getDate());
-  console.log('new Date(event.event_date).getMonth():', new Date(event.event_date).getMonth());
-  console.log('new Date(event.event_date).getFullYear():', new Date(event.event_date).getFullYear());
-  
-  // Test if it's a timezone issue
-  console.log('--- TIMEZONE TESTS ---');
-  console.log('Current timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
-  console.log('UTC offset:', new Date().getTimezoneOffset());
-  const testDate = new Date(event.event_date + 'T00:00:00');
-  console.log('With T00:00:00 suffix:', testDate);
-  console.log('With T00:00:00 suffix toDateString:', testDate.toDateString());
-  
-  // Test manual parsing
-  console.log('--- MANUAL PARSING TEST ---');
-  const parts = event.event_date.split('-');
-  console.log('Split parts:', parts);
-  const year = parseInt(parts[0]);
-  const month = parseInt(parts[1]) - 1; // JS months are 0-indexed
-  const day = parseInt(parts[2]);
-  console.log('Parsed:', { year, month, day });
-  const manualDate = new Date(year, month, day);
-  console.log('Manual Date object:', manualDate);
-  console.log('Manual toISOString:', manualDate.toISOString());
-  console.log('Manual date only:', manualDate.toISOString().split('T')[0]);
-
-  // Use the exact string from database without any processing
-  const formDateValue = event.event_date;
-  console.log('Form will use this date value:', formDateValue);
-
   const form = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
       event_title: event.event_title,
       description: event.description,
-      event_date: formDateValue,
+      event_date: event.event_date,
       event_time: event.event_time,
       location: event.location,
       max_players: event.max_players,
@@ -97,23 +53,11 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
     }
   });
 
-  console.log('=== FORM INITIAL STATE ===');
-  console.log('Form getValues():', form.getValues());
-  console.log('Form event_date specifically:', form.getValues('event_date'));
-
   const handleSubmit = (data: EditEventFormData) => {
-    console.log('=== FORM SUBMISSION ===');
-    console.log('Submitting data:', data);
-    console.log('Submitted event_date:', data.event_date);
     onSubmit(data);
   };
 
   const pricingModel = form.watch('pricing_model');
-
-  // Real-time watching
-  const watchedDate = form.watch('event_date');
-  console.log('=== REAL-TIME WATCH ===');
-  console.log('Currently watched date value:', watchedDate);
 
   return (
     <Form {...form}>
@@ -154,38 +98,9 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
               <FormItem>
                 <FormLabel>Date</FormLabel>
                 <FormControl>
-                  <Input 
-                    {...field} 
-                    type="date" 
-                    onChange={(e) => {
-                      console.log('=== INPUT CHANGE EVENT ===');
-                      console.log('Input event target value:', e.target.value);
-                      console.log('Input valueAsDate:', e.target.valueAsDate);
-                      console.log('Current field value before change:', field.value);
-                      
-                      // Let's see what the browser gives us
-                      const inputValue = e.target.value;
-                      console.log('Raw input value:', inputValue);
-                      console.log('Input value type:', typeof inputValue);
-                      
-                      field.onChange(inputValue);
-                      console.log('Field value after onChange:', inputValue);
-                    }}
-                    onFocus={(e) => {
-                      console.log('=== INPUT FOCUS ===');
-                      console.log('Input value on focus:', e.target.value);
-                    }}
-                    onBlur={(e) => {
-                      console.log('=== INPUT BLUR ===');
-                      console.log('Input value on blur:', e.target.value);
-                      field.onBlur();
-                    }}
-                  />
+                  <Input {...field} type="date" />
                 </FormControl>
                 <FormMessage />
-                <div className="text-xs text-gray-500 mt-1">
-                  Debug: Current value = {field.value}
-                </div>
               </FormItem>
             )}
           />
