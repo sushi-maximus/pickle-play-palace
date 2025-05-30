@@ -1,8 +1,10 @@
 
+
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, XCircle, Info } from "lucide-react";
 import { useEventRegistration } from "../hooks/useEventRegistration";
 import { usePromotionStatus } from "../hooks/usePromotionStatus";
+import { useEventPlayers } from "../hooks/useEventPlayers";
 import { PromotionIndicator } from "./PromotionIndicator";
 
 interface EventRegistrationStatusProps {
@@ -13,6 +15,7 @@ interface EventRegistrationStatusProps {
 export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistrationStatusProps) => {
   const { registration, isLoadingRegistration } = useEventRegistration({ eventId, playerId });
   const { wasPromoted, isRecentPromotion } = usePromotionStatus({ eventId, playerId });
+  const { players } = useEventPlayers({ eventId });
 
   if (!playerId || isLoadingRegistration) {
     return null;
@@ -57,6 +60,10 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
 
   const config = getStatusConfig(registration.status);
   const Icon = config.icon;
+  
+  // Check if total registered players is 32 or less
+  const totalRegisteredPlayers = players?.length || 0;
+  const shouldShowWaitlistInfo = registration.status === 'waitlist' && totalRegisteredPlayers <= 32;
 
   return (
     <div className="flex flex-col gap-2">
@@ -75,8 +82,8 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
         )}
       </div>
 
-      {/* Info section for waitlisted players */}
-      {registration.status === 'waitlist' && (
+      {/* Info section for waitlisted players when total players is 32 or less */}
+      {shouldShowWaitlistInfo && (
         <div className="flex items-start gap-2 p-2 bg-blue-50 rounded-md border border-blue-200">
           <Info className="h-3 w-3 md:h-4 md:w-4 text-blue-500 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-blue-700">
@@ -87,3 +94,4 @@ export const EventRegistrationStatus = ({ eventId, playerId }: EventRegistration
     </div>
   );
 };
+
