@@ -1,5 +1,5 @@
 
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, Info } from "lucide-react";
 import { formatDateForDisplay } from "@/utils/dateUtils";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -52,6 +52,21 @@ export const NextEventCard = ({ event, registrationStatus, onClick }: NextEventC
     }
   };
 
+  const getInfoSection = () => {
+    if (!registrationStatus || registrationStatus.status !== 'waitlist') {
+      return null;
+    }
+
+    return (
+      <div className="flex items-start gap-2 mt-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+        <Info className="h-3 w-3 md:h-4 md:w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+        <p className="text-xs text-blue-700">
+          Every 4 players registered will be confirmed.
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div 
       className="bg-white rounded-lg border border-gray-200 p-3 md:p-4 shadow-sm hover:shadow-md transition-shadow duration-200 touch-manipulation cursor-pointer"
@@ -78,6 +93,8 @@ export const NextEventCard = ({ event, registrationStatus, onClick }: NextEventC
             <span className="truncate">{event.location}</span>
           </div>
         </div>
+
+        {getInfoSection()}
       </div>
     </div>
   );
