@@ -1,7 +1,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { eventUpdateService, type EventUpdateData } from "../services/eventUpdateService";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { queryKeys } from "@/lib/queryKeys";
 
 interface UseEditEventProps {
@@ -10,17 +10,13 @@ interface UseEditEventProps {
 }
 
 export const useEditEvent = ({ eventId, onSuccess }: UseEditEventProps) => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const editMutation = useMutation({
     mutationFn: (updates: EventUpdateData) => eventUpdateService.updateEvent(eventId, updates),
     onSuccess: (result) => {
       if (result.success) {
-        toast({
-          title: "Event updated",
-          description: "The event has been successfully updated.",
-        });
+        toast.success("Event updated successfully");
         
         // Invalidate related queries
         queryClient.invalidateQueries({ queryKey: ['event', eventId] });
@@ -28,20 +24,12 @@ export const useEditEvent = ({ eventId, onSuccess }: UseEditEventProps) => {
         
         onSuccess?.();
       } else {
-        toast({
-          title: "Error updating event",
-          description: result.error || "Failed to update the event. Please try again.",
-          variant: "destructive",
-        });
+        toast.error(result.error || "Failed to update the event. Please try again.");
       }
     },
     onError: (error) => {
       console.error('[useEditEvent] Error:', error);
-      toast({
-        title: "Error updating event",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred. Please try again.");
     }
   });
 
@@ -49,30 +37,19 @@ export const useEditEvent = ({ eventId, onSuccess }: UseEditEventProps) => {
     mutationFn: () => eventUpdateService.deleteEvent(eventId),
     onSuccess: (result) => {
       if (result.success) {
-        toast({
-          title: "Event deleted",
-          description: "The event has been successfully deleted.",
-        });
+        toast.success("Event deleted successfully");
         
         // Invalidate related queries
         queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
         
         onSuccess?.();
       } else {
-        toast({
-          title: "Error deleting event",
-          description: result.error || "Failed to delete the event. Please try again.",
-          variant: "destructive",
-        });
+        toast.error(result.error || "Failed to delete the event. Please try again.");
       }
     },
     onError: (error) => {
       console.error('[useEditEvent] Delete error:', error);
-      toast({
-        title: "Error deleting event",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred. Please try again.");
     }
   });
 
