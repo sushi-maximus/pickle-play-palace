@@ -40,8 +40,9 @@ export const EditEventForm = ({ event, onSubmit, onCancel, isLoading }: EditEven
   const formatDateForInput = (dateString: string) => {
     console.log('Original event.event_date from database:', dateString);
     
-    // Simply return the date string as-is since it's already in YYYY-MM-DD format
-    const formattedDate = dateString;
+    // Create a date object treating the date string as local time to prevent timezone shifts
+    const dateObj = new Date(dateString + 'T00:00:00');
+    const formattedDate = dateObj.toISOString().split('T')[0];
     console.log('Formatted date for input field:', formattedDate);
     
     return formattedDate;
