@@ -1,4 +1,3 @@
-
 # Change Only What's Requested Protocol
 
 **Make ONLY the specific change requested** - nothing more, nothing less
@@ -849,3 +848,36 @@ This plan follows rules.md by:
 - Avoiding 'any' types
 - Using correct toast imports (sonner)
 - Following MANDATORY TRANSPARENCY RULE
+
+## USER REQUIREMENTS FOR STEP TRACKING
+
+### Progress Status Requirements
+- Always show current step number and total steps (e.g., "3/8 steps")
+- At the end of each step, clearly state what was accomplished
+- Provide specific testing instructions for validating each step's completion
+
+### Step Completion Format
+Each step completion message should include:
+1. **Step Progress**: "Step X of Y completed"
+2. **What was accomplished**: Brief summary of what was just finished
+3. **Testing instructions**: Specific things to test to verify the step worked
+4. **Next step preview**: What will happen in the next step
+
+### Example Step Completion Message:
+```
+**Step 3 of 8 completed: Component Architecture Analysis**
+
+**What was accomplished:**
+- Created 6 focused components (all under 50 lines)
+- Built EventDateField with proper MM-DD-YY format handling
+- Implemented mobile-first responsive design
+
+**Test to verify this step:**
+- Check that EditEventForm.tsx compiles without errors
+- Verify date "5-30-25" displays correctly in the form
+- Confirm form components render on mobile and desktop
+
+**Next step:** Phase 2 - Type System Integration
+```
+
+This ensures clear progress tracking and validation testing throughout the rebuild process.
