@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { formatDateForDisplay } from '@/utils/dateUtils';
@@ -33,7 +32,7 @@ export const EventItem = ({
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return 'Registered';
+        return 'Confirmed';
       case 'waitlist':
         return 'Waitlisted';
       default:
