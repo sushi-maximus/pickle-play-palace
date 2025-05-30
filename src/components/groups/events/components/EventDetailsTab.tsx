@@ -1,5 +1,5 @@
-
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { formatDateForDisplay } from "@/utils/dateUtils";
 import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
@@ -9,16 +9,6 @@ interface EventDetailsTabProps {
 }
 
 export const EventDetailsTab = ({ event }: EventDetailsTabProps) => {
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-
   const formatTime = (timeStr: string) => {
     const [hours, minutes] = timeStr.split(':');
     const hour = parseInt(hours);
@@ -35,7 +25,7 @@ export const EventDetailsTab = ({ event }: EventDetailsTabProps) => {
           <div>
             <p className="font-medium text-gray-900">Date & Time</p>
             <p className="text-sm text-gray-600">
-              {formatDate(event.event_date)} at {formatTime(event.event_time)}
+              {formatDateForDisplay(event.event_date)} at {formatTime(event.event_time)}
             </p>
           </div>
         </div>
