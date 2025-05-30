@@ -13,10 +13,8 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
   console.log('EventDateField - Received value:', value);
   
   // Convert database format "MM-DD-YY" to HTML input format "YYYY-MM-DD"
-  const convertDatabaseDateToInputFormat = (dbDate: string): string => {
-    if (!dbDate || typeof dbDate !== 'string') return '';
-    
-    console.log('EventDateField - Converting database date:', dbDate);
+  const convertToInputFormat = (dbDate: string): string => {
+    if (!dbDate) return '';
     
     // Handle "MM-DD-YY" format (e.g., "5-30-25")
     const parts = dbDate.split('-');
@@ -25,48 +23,27 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
       const fullYear = year.length === 2 ? `20${year}` : year;
       const paddedMonth = month.padStart(2, '0');
       const paddedDay = day.padStart(2, '0');
-      
-      // Create the date string in YYYY-MM-DD format
-      const result = `${fullYear}-${paddedMonth}-${paddedDay}`;
-      console.log('EventDateField - Converted to input format:', result);
-      
-      // Validate the date to ensure it's correct
-      const testDate = new Date(parseInt(fullYear), parseInt(month) - 1, parseInt(day));
-      const isValidDate = testDate.getFullYear() == parseInt(fullYear) && 
-                         testDate.getMonth() == parseInt(month) - 1 && 
-                         testDate.getDate() == parseInt(day);
-      
-      console.log('EventDateField - Date validation:', isValidDate, testDate);
-      
-      return isValidDate ? result : '';
+      return `${fullYear}-${paddedMonth}-${paddedDay}`;
     }
     
     // If already in YYYY-MM-DD format, return as is
     if (dbDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      console.log('EventDateField - Already in YYYY-MM-DD format:', dbDate);
       return dbDate;
     }
     
-    console.log('EventDateField - Unable to parse date format:', dbDate);
     return '';
   };
 
   // Convert HTML input format "YYYY-MM-DD" back to database format "MM-DD-YY"
-  const convertInputFormatToDatabaseFormat = (inputDate: string): string => {
+  const convertToDatabaseFormat = (inputDate: string): string => {
     if (!inputDate) return '';
     
-    console.log('EventDateField - Converting input date to database format:', inputDate);
-    
     const [year, month, day] = inputDate.split('-');
-    const shortYear = year.slice(2); // Convert 2025 to 25
-    
-    // Remove leading zeros and convert to integers to ensure clean format
+    const shortYear = year.slice(2);
     const cleanMonth = parseInt(month).toString();
     const cleanDay = parseInt(day).toString();
     
-    const result = `${cleanMonth}-${cleanDay}-${shortYear}`;
-    console.log('EventDateField - Converted to database format:', result);
-    return result;
+    return `${cleanMonth}-${cleanDay}-${shortYear}`;
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,13 +55,13 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
       return;
     }
     
-    const dbFormat = convertInputFormatToDatabaseFormat(inputValue);
-    console.log('EventDateField - Calling onChange with:', dbFormat);
+    const dbFormat = convertToDatabaseFormat(inputValue);
+    console.log('EventDateField - Converted to database format:', dbFormat);
     onChange(dbFormat);
   };
 
-  const displayValue = convertDatabaseDateToInputFormat(value);
-  console.log('EventDateField - Display value for HTML input:', displayValue);
+  const displayValue = convertToInputFormat(value);
+  console.log('EventDateField - Display value:', displayValue);
 
   return (
     <FormItem>
