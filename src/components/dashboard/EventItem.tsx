@@ -29,6 +29,17 @@ export const EventItem = ({
 }: EventItemProps) => {
   const { isPressed, touchProps } = useTouchFeedback();
   
+  const getStatusDisplay = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return 'Registered';
+      case 'waitlist':
+        return 'Waitlisted';
+      default:
+        return 'Not Registered';
+    }
+  };
+  
   return (
     <div
       onClick={() => onEventClick(event.id)}
@@ -71,7 +82,7 @@ export const EventItem = ({
               "capitalize"
             )}
           >
-            {event.status}
+            {getStatusDisplay(event.status)}
           </Badge>
         </div>
       </div>
