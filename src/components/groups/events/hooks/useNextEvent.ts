@@ -26,16 +26,28 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
   } = useQuery({
     queryKey: [...queryKeys.events.group(groupId), 'next-event', userId],
     queryFn: async (): Promise<NextEventData | null> => {
-      const sevenDaysFromNow = new Date();
-      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+      // Get today's date in local timezone (YYYY-MM-DD format)
+      const today = new Date();
+      const todayStr = today.getFullYear() + '-' + 
+        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+        String(today.getDate()).padStart(2, '0');
 
-      // Get the next event within 7 days
+      // Get date 7 days from now in local timezone
+      const sevenDaysFromNow = new Date(today);
+      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+      const sevenDaysStr = sevenDaysFromNow.getFullYear() + '-' + 
+        String(sevenDaysFromNow.getMonth() + 1).padStart(2, '0') + '-' + 
+        String(sevenDaysFromNow.getDate()).padStart(2, '0');
+
+      console.log('Next Event Query - Date range:', { todayStr, sevenDaysStr, groupId });
+
+      // Get the next event within 7 days (including today)
       const { data: events, error: eventsError } = await supabase
         .from('events')
         .select('*')
         .eq('group_id', groupId)
-        .gte('event_date', new Date().toISOString().split('T')[0])
-        .lte('event_date', sevenDaysFromNow.toISOString().split('T')[0])
+        .gte('event_date', todayStr)
+        .lte('event_date', sevenDaysStr)
         .order('event_date', { ascending: true })
         .order('event_time', { ascending: true })
         .limit(1);
@@ -46,10 +58,12 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
       }
 
       if (!events || events.length === 0) {
+        console.log('No events found in the next 7 days for group:', groupId);
         return null;
       }
 
       const nextEvent = events[0];
+      console.log('Found next event:', nextEvent);
       let registrationStatus: PlayerStatus | null = null;
 
       // Get user's registration status if logged in
@@ -66,6 +80,7 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
           // Don't throw error here, just log it and continue without status
         } else {
           registrationStatus = playerStatus;
+          console.log('User registration status:', registrationStatus);
         }
       }
 
