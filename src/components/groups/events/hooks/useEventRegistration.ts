@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +17,7 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
   const queryClient = useQueryClient();
   const [isRegistering, setIsRegistering] = useState(false);
 
-  // Get current registration status - ensuring consistent query key
+  // Get current registration status
   const { data: registration, isLoading: isLoadingRegistration } = useQuery({
     queryKey: ['playerRegistration', eventId, playerId],
     queryFn: async (): Promise<PlayerStatus | null> => {
@@ -31,9 +30,9 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
         .select('*')
         .eq('event_id', eventId)
         .eq('player_id', playerId)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('[Event Registration] Fetch error:', error);
         throw error;
       }
@@ -42,7 +41,7 @@ export const useEventRegistration = ({ eventId, playerId }: UseEventRegistration
       return data;
     },
     enabled: !!eventId && !!playerId,
-    staleTime: 10 * 1000, // 10 seconds - shorter than dashboard to ensure freshness
+    staleTime: 30 * 1000,
   });
 
   // Register mutation using the service

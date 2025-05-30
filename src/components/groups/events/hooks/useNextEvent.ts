@@ -1,7 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { queryKeys } from "@/lib/queryKeys";
 import type { Database } from "@/integrations/supabase/types";
 
 type Event = Database['public']['Tables']['events']['Row'];
@@ -92,8 +91,8 @@ export const useNextEvent = ({ groupId, userId, enabled = true }: UseNextEventPr
       };
     },
     enabled: enabled && !!groupId,
-    staleTime: 30 * 1000, // 30 seconds - consistent with other registration queries
-    gcTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 30 * 1000,
+    gcTime: 2 * 60 * 1000,
   });
 
   return {
