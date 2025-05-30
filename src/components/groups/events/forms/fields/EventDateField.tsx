@@ -31,7 +31,7 @@ export const EventDateField = ({ value, onChange, error }: EventDateFieldProps) 
       console.log('EventDateField - Converted to input format:', result);
       
       // Validate the date to ensure it's correct
-      const testDate = new Date(fullYear, parseInt(month) - 1, parseInt(day));
+      const testDate = new Date(parseInt(fullYear), parseInt(month) - 1, parseInt(day));
       const isValidDate = testDate.getFullYear() == parseInt(fullYear) && 
                          testDate.getMonth() == parseInt(month) - 1 && 
                          testDate.getDate() == parseInt(day);
