@@ -55,6 +55,53 @@ When UI/UX recommendations specify layout details (e.g., 'card height: ~80px, wi
 
 ## CRITICAL: Never Use 'any' Types - TypeScript Best Practices
 
+**CRITICAL: Toast Usage Rule - ALWAYS FOLLOW THIS**
+
+Toast notifications MUST follow this exact pattern to prevent errors:
+
+**CORRECT IMPORT (ALWAYS USE THIS):**
+```typescript
+import { toast } from "sonner";
+```
+
+**FORBIDDEN IMPORTS (NEVER USE THESE):**
+```typescript
+// NEVER use these imports:
+import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
+```
+
+**CORRECT USAGE (STRING PARAMETERS ONLY):**
+```typescript
+// ✅ CORRECT - Use string parameters only
+toast.success("Event updated successfully");
+toast.error("Failed to update the event. Please try again.");
+toast.info("Processing your request...");
+toast.warning("This action cannot be undone");
+```
+
+**FORBIDDEN USAGE (NEVER USE OBJECTS):**
+```typescript
+// ❌ NEVER use object parameters:
+toast({
+  title: "Event updated",
+  description: "The event has been successfully updated.",
+});
+
+toast({
+  title: "Error",
+  description: "Something went wrong",
+  variant: "destructive",
+});
+```
+
+**WHY THIS RULE EXISTS:**
+- Sonner toast expects string parameters
+- Shadcn toast expects object parameters
+- Mixing these causes runtime errors
+- This codebase uses Sonner exclusively
+
 **MANDATORY TYPE IMPORTS**: Always import types from the database schema:
 ```typescript
 import type { Database } from "@/integrations/supabase/types";
