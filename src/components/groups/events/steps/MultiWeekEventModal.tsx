@@ -77,7 +77,7 @@ export const MultiWeekEventModal = ({
       newErrors.eventDate = "Date is required";
     } else {
       const eventDateTime = new Date(`${formData.eventDate}T${formData.eventTime || "00:00"}`);
-      const currentTime = new Date("2025-05-26T20:41:00-07:00"); // MST time from event.md
+      const currentTime = new Date(); // Use current time instead of hardcoded
       if (eventDateTime <= currentTime) {
         newErrors.eventDate = "Date/Time must be in the future";
       }

@@ -19,9 +19,9 @@ export const useStepValidation = () => {
         if (!formData.eventTime) return false;
         if (!formData.location.trim()) return false;
         
-        // Validate date/time is in the future
+        // Validate date/time is in the future - use current time instead of hardcoded
         const eventDateTime = new Date(`${formData.eventDate}T${formData.eventTime}`);
-        const currentTime = new Date("2025-05-26T20:41:00-07:00");
+        const currentTime = new Date();
         if (eventDateTime <= currentTime) return false;
         
         return true;
@@ -57,7 +57,7 @@ export const useStepValidation = () => {
         errors.eventTime = "Time is required";
       } else {
         const eventDateTime = new Date(`${formData.eventDate}T${formData.eventTime}`);
-        const currentTime = new Date("2025-05-26T20:41:00-07:00");
+        const currentTime = new Date();
         if (eventDateTime <= currentTime) {
           errors.eventDate = "Date/Time must be in the future";
         }
