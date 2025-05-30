@@ -1,3 +1,4 @@
+
 # Change Only What's Requested Protocol
 
 **Make ONLY the specific change requested** - nothing more, nothing less
@@ -53,6 +54,53 @@ For new implementations where there is no existing code to preserve (e.g., creat
 When UI/UX recommendations specify layout details (e.g., 'card height: ~80px, with 16px padding'), translate these into CSS properties following the mobile-first design guidelines (e.g., height: 80px; padding: 16px;) and include responsive patterns (e.g., md:padding: 20px). If the recommendation is high-level (e.g., 'single-column layout'), implement it as display: flex; flex-direction: column; max-width: 360px; unless instructed otherwise. Always confirm the CSS implementation in the step.
 
 ## CRITICAL: Never Use 'any' Types - TypeScript Best Practices
+
+**CRITICAL: Toast Usage Rule - ALWAYS FOLLOW THIS**
+
+Toast notifications MUST follow this exact pattern to prevent errors:
+
+**CORRECT IMPORT (ALWAYS USE THIS):**
+```typescript
+import { toast } from "sonner";
+```
+
+**FORBIDDEN IMPORTS (NEVER USE THESE):**
+```typescript
+// NEVER use these imports:
+import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
+```
+
+**CORRECT USAGE (STRING PARAMETERS ONLY):**
+```typescript
+// ✅ CORRECT - Use string parameters only
+toast.success("Event updated successfully");
+toast.error("Failed to update the event. Please try again.");
+toast.info("Processing your request...");
+toast.warning("This action cannot be undone");
+```
+
+**FORBIDDEN USAGE (NEVER USE OBJECTS):**
+```typescript
+// ❌ NEVER use object parameters:
+toast({
+  title: "Event updated",
+  description: "The event has been successfully updated.",
+});
+
+toast({
+  title: "Error",
+  description: "Something went wrong",
+  variant: "destructive",
+});
+```
+
+**WHY THIS RULE EXISTS:**
+- Sonner toast expects string parameters
+- Shadcn toast expects object parameters
+- Mixing these causes runtime errors
+- This codebase uses Sonner exclusively
 
 **MANDATORY TYPE IMPORTS**: Always import types from the database schema:
 ```typescript
@@ -390,7 +438,7 @@ types/componentTypes.ts (if custom types needed)
 
 **Usage**: For ensuring features work correctly.
 
-**AI Instructions**: Create validation test components for complex features.
+**AI Instructions**: Create validation components for complex features.
 
 #### Components to Create:
 - **Validation Test Component**: Interactive testing interface
@@ -605,546 +653,199 @@ This system ensures consistent, structured error resolution while maintaining co
 
 ---
 
-# DETAILED PLAN: Add Upcoming/Past Events Tabs to Group Calendar
+# EditEventForm Rebuild Plan - Following Rules.md Best Practices
 
-## Using Component Creation Template
+## Problem Analysis
+- Database date value: "5-30-25" (MM-DD-YY format)
+- Current form shows incorrect date due to timezone conversion issues
+- Need to rebuild using Component Creation Template and Error Debugging Template
 
-### Phase 1: Create New Hook Variants (No Breaking Changes)
+## Detailed Implementation Plan
 
-**Objective**: Create specialized hooks for upcoming and past events without modifying existing hooks.
+### Phase 1: Component Architecture Analysis (Component Creation Template)
+**Goal**: Break down the monolithic EditEventForm into focused, single-responsibility components
 
-**Files to modify:**
-- `src/components/groups/events/hooks/useGroupEvents.ts` (ADD new exports)
-- `src/components/groups/events/hooks/index.ts` (ADD new exports)
+#### Current Issues:
+- EditEventForm.tsx is 289 lines (exceeds 50 line limit)
+- Complex date formatting logic mixed with form logic
+- Multiple responsibilities in one component
 
-**Implementation Steps:**
-1. **Create `useUpcomingEvents` hook**
-   - Filter events where `event_date >= today`
-   - Use same interface as existing `useGroupEvents`
-   - Preserve all existing functionality (loading, error states, admin status)
+#### Components to Create:
+1. **EventDateField.tsx** (≤50 lines)
+   - Handles date input with proper formatting
+   - Focused on date display/input only
+   - Uses database types from @/integrations/supabase/types
 
-2. **Create `usePastEvents` hook**
-   - Filter events where `event_date < today`
-   - Use same interface as existing `useGroupEvents`
-   - Include proper sorting (most recent first)
+2. **EventTimeField.tsx** (≤50 lines)
+   - Handles time input
+   - Single responsibility for time management
 
-3. **Export new hooks**
-   - Add exports to `hooks/index.ts`
-   - Keep existing exports unchanged
-   - Maintain backward compatibility
+3. **EventBasicFields.tsx** (≤50 lines)
+   - Title, description, location fields
+   - Basic string input handling
 
-**Verification Criteria:**
-- [ ] Original `useGroupEvents` remains unchanged
-- [ ] New hooks use same TypeScript interfaces
-- [ ] No breaking changes to existing components
-- [ ] Both hooks handle loading/error states properly
+4. **EventCapacityFields.tsx** (≤50 lines)
+   - Max players, allow reserves, registration open
+   - Capacity and registration settings
 
----
+5. **EventPricingFields.tsx** (≤50 lines)
+   - Pricing model, fee amount
+   - Conditional pricing logic
 
-### Phase 2: Create Tabbed Events Component
+6. **EditEventForm.tsx** (≤50 lines)
+   - Main form coordinator
+   - Uses all sub-components
+   - Form submission and validation
 
-**Objective**: Build new component that uses the specialized hooks with tab interface.
+### Phase 2: Date Handling Strategy (Error Debugging Template)
+**Goal**: Solve the date display issue with proper date handling
 
-**Files to create:**
-- `src/components/groups/events/TabbedEventsList.tsx`
+#### Root Cause Analysis:
+- Database stores: "5-30-25" (MM-DD-YY)
+- HTML date input expects: "YYYY-MM-DD"
+- Current conversion creates timezone shifts
 
-**Implementation Steps:**
-1. **Create base component structure**
-   - Import shadcn `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent`
-   - Accept same props as existing `EventsList`
-   - Use mobile-first design patterns (`px-3 py-4 md:px-6 md:py-8`)
+#### Solution Strategy:
+1. **Create DateUtils.ts**
+   - Parse "MM-DD-YY" to "YYYY-MM-DD" without timezone conversion
+   - Handle edge cases (invalid dates, null values)
+   - Use string manipulation instead of Date objects
 
-2. **Implement tab content**
-   - "Upcoming Events" tab using `useUpcomingEvents`
-   - "Past Events" tab using `usePastEvents`
-   - Render existing `EventCard` components in each tab
+2. **Date Conversion Logic**:
+   ```typescript
+   // Input: "5-30-25" -> Output: "2025-05-30"
+   const convertDatabaseDateToInputFormat = (dbDate: string): string => {
+     const [month, day, year] = dbDate.split('-');
+     const fullYear = `20${year}`; // Assume 20xx for 2-digit years
+     return `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+   };
+   ```
 
-3. **Add tab-specific features**
-   - Event count badges in tab labels (e.g., "Upcoming (3)")
-   - Tab-specific empty states with appropriate messaging
-   - Preserve all existing `EventCard` click behavior
+### Phase 3: Type Safety Implementation (TypeScript Best Practices)
+**Goal**: Ensure proper TypeScript typing throughout
 
-4. **Handle loading and error states**
-   - Show loading skeletons while data loads
-   - Display error messages if hooks fail
-   - Maintain responsive design on all screen sizes
+#### Type Definitions:
+1. **Database Types**: Use `Database['public']['Tables']['events']['Row']`
+2. **Form Types**: Create focused interfaces for each component
+3. **Date Types**: Explicit string types for date handling
 
-**Component Structure:**
+#### Type Structure:
 ```typescript
-interface TabbedEventsListProps {
-  groupId: string;
-  currentUserId?: string;
+// types/eventFormTypes.ts
+import type { Database } from "@/integrations/supabase/types";
+
+type Event = Database['public']['Tables']['events']['Row'];
+
+interface EventDateFieldProps {
+  value: string;
+  onChange: (date: string) => void;
+  error?: string;
 }
 
-// Tab structure:
-// - Upcoming Events (default active)
-// - Past Events
+interface EventFormData {
+  event_title: string;
+  description: string;
+  event_date: string; // Always YYYY-MM-DD format
+  event_time: string;
+  location: string;
+  max_players: number;
+  allow_reserves: boolean;
+  registration_open: boolean;
+  pricing_model: "free" | "one-time" | "per-event";
+  fee_amount: number | null;
+}
 ```
 
-**Verification Criteria:**
-- [ ] Component renders properly on mobile and desktop
-- [ ] All existing EventCard functionality preserved
-- [ ] Loading states work for both tabs
-- [ ] Error handling works for both tabs
-- [ ] Empty states are appropriate for each tab type
+### Phase 4: Form State Management
+**Goal**: Implement proper form state with react-hook-form
 
----
+#### Implementation:
+1. **Main Form Controller**: EditEventForm.tsx manages overall state
+2. **Field Components**: Each receives value and onChange from main form
+3. **Validation**: Zod schema validation at main form level
+4. **Error Handling**: FormErrorBoundary wrapping
 
-### Phase 3: Update GroupCalendarTab (Minimal Integration)
+### Phase 5: Mobile-First Design
+**Goal**: Ensure responsive design following rules.md patterns
 
-**Objective**: Replace EventsList with TabbedEventsList in the calendar view.
-
-**Files to modify:**
-- `src/components/groups/mobile/GroupCalendarTab.tsx`
-
-**Implementation Steps:**
-1. **Update imports**
-   - Replace `EventsList` import with `TabbedEventsList`
-   - Keep all other imports unchanged
-
-2. **Replace component usage**
-   - Change `<EventsList>` to `<TabbedEventsList>`
-   - Pass same props (groupId, currentUserId)
-   - Maintain exact same positioning in component tree
-
-3. **Preserve all existing features**
-   - Keep admin controls (if any)
-   - Maintain header components
-   - Preserve styling and layout
-   - Keep all loading/error boundaries
-
-**Verification Criteria:**
-- [ ] Calendar page loads without errors
-- [ ] All existing navigation works
-- [ ] Admin controls still function (if applicable)
-- [ ] Page styling remains consistent
-- [ ] Mobile and desktop views both work
-
----
-
-### Phase 4: Update Component Exports
-
-**Objective**: Make new component available while maintaining backward compatibility.
-
-**Files to modify:**
-- `src/components/groups/events/index.ts`
-
-**Implementation Steps:**
-1. **Add new exports**
-   - Export `TabbedEventsList` component
-   - Export new hooks (`useUpcomingEvents`, `usePastEvents`)
-
-2. **Maintain existing exports**
-   - Keep `EventsList` export for other pages
-   - Keep all existing hook exports
-   - Preserve component availability for other features
-
-**Verification Criteria:**
-- [ ] New components can be imported elsewhere
-- [ ] Existing imports continue working
-- [ ] No TypeScript compilation errors
-- [ ] All exports follow naming conventions
-
----
-
-### Phase 5: Enhanced User Experience
-
-**Objective**: Add polish and improved user feedback.
-
-**Files to modify:**
-- `src/components/groups/events/TabbedEventsList.tsx`
-
-**Implementation Steps:**
-1. **Add event count badges**
-   - Show count in tab labels: "Upcoming (5)" and "Past (12)"
-   - Handle zero counts gracefully: "Upcoming" vs "Upcoming (0)"
-   - Update counts reactively when data changes
-
-2. **Improve empty states**
-   - Upcoming empty: "No upcoming events" with appropriate icon
-   - Past empty: "No past events yet" with different messaging
-   - Include admin-specific messaging for upcoming when applicable
-
-3. **Add loading improvements**
-   - Skeleton loading that matches tab structure
-   - Stagger loading between tabs if needed
-   - Smooth transitions between loading and loaded states
-
-4. **Responsive design polish**
-   - Ensure tabs work well on small screens
-   - Optimize tab spacing and sizing
-   - Test tab overflow behavior on very small screens
-
-**Verification Criteria:**
-- [ ] Tab badges show accurate counts
-- [ ] Empty states are contextually appropriate
-- [ ] Loading states are smooth and responsive
-- [ ] Component works well across all screen sizes
-- [ ] No visual glitches or layout issues
-
----
+#### Design Patterns:
+- Padding: `px-3 py-4 md:px-6 md:py-8`
+- Spacing: `space-y-3 md:space-y-4`
+- Icons: Mobile `h-3 w-3`, Desktop `md:h-4 md:w-4`
 
 ### Phase 6: Testing and Validation
-
-**Objective**: Comprehensive testing to ensure reliability.
-
-**Implementation Steps:**
-1. **Functional Testing**
-   - Test tab switching with real data
-   - Verify event card interactions work in both tabs
-   - Test loading states by throttling network
-   - Test error states by simulating API failures
-
-2. **Data Validation**
-   - Verify events appear in correct tabs based on dates
-   - Test edge cases (events today, events from yesterday)
-   - Ensure event counts match actual data
-   - Test with empty data sets
-
-3. **Responsive Testing**
-   - Test on mobile devices (320px and up)
-   - Test on tablets (768px and up)
-   - Test on desktop (1024px and up)
-   - Verify tab behavior on touch devices
-
-4. **Performance Validation**
-   - Ensure hooks don't cause unnecessary re-renders
-   - Verify tab switching is smooth
-   - Test with large numbers of events
-   - Monitor memory usage during tab operations
-
-**Verification Criteria:**
-- [ ] All functionality works as expected
-- [ ] No console errors or warnings
-- [ ] Performance remains acceptable
-- [ ] User experience is smooth and intuitive
-- [ ] Ready for production deployment
-
----
-
-## Risk Mitigation Strategy
-
-### Zero Breaking Changes Approach
-1. **Original EventsList preserved** - Can be used by other components
-2. **New hooks are additions** - Don't modify existing hook behavior
-3. **Single integration point** - Only GroupCalendarTab needs changes
-4. **Easy rollback** - Single import change can revert to original
-
-### Incremental Development
-1. **Phase 1-2** - Build new functionality in isolation
-2. **Phase 3** - Single-line integration change
-3. **Phase 4-6** - Polish and enhancement without risk
-4. **Independent testing** - Each phase can be validated separately
-
-### Fallback Plan
-If any issues arise:
-1. Revert GroupCalendarTab import to original EventsList
-2. All functionality returns to previous state
-3. No data loss or corruption possible
-4. New components remain available for future use
-
----
-
-## Success Metrics
-
-### User Experience
-- [ ] Users can easily switch between upcoming and past events
-- [ ] Tab counts provide immediate value understanding
-- [ ] Loading and empty states are clear and helpful
-- [ ] Mobile experience is smooth and touch-friendly
-
-### Technical Quality
-- [ ] No breaking changes to existing functionality
-- [ ] TypeScript compilation passes without errors
-- [ ] Performance remains optimal
-- [ ] Code follows established patterns and conventions
-
-### Maintainability
-- [ ] New components are small and focused (< 50 lines)
-- [ ] Proper separation of concerns between hooks and UI
-- [ ] Clear component interfaces and prop types
-- [ ] Comprehensive error handling and edge case coverage
-
-This plan ensures a systematic, safe implementation that maintains all existing functionality while adding the requested tabbed interface for better event organization.
-
----
-
-# EVENT EDIT PLAN: Admin Event Editing Functionality
-
-## Using Component Creation Template with Systematic Approach
-
-### Phase 1: Create Edit Event Hook and Service (Backend Logic)
-
-**Objective**: Build the backend logic for event editing with proper admin validation.
-
-**Files to create:**
-- `src/components/groups/events/hooks/useEditEvent.ts`
-- `src/components/groups/events/services/eventUpdateService.ts`
-
-**Implementation Steps:**
-1. **Create `eventUpdateService.ts`**
-   - Add function to update event via Supabase
-   - Include admin permission validation
-   - Handle all event fields (title, description, date, time, location, max_players, etc.)
-   - Add proper error handling and logging
-
-2. **Create `useEditEvent.ts` hook**
-   - Manage edit mutation state (loading, error, success)
-   - Use React Query's `useMutation` for optimistic updates
-   - Include form validation logic
-   - Handle cache invalidation after successful edit
-
-3. **Add admin validation**
-   - Verify user is admin before allowing edits
-   - Check event ownership/group admin status
-   - Prevent editing of past events (optional business rule)
-
-4. **Export new services**
-   - Add exports to `services/index.ts`
-   - Add exports to `hooks/index.ts`
-
-**Verification Criteria:**
-- [ ] Service function handles all event update scenarios
-- [ ] Hook properly manages mutation state
-- [ ] Admin validation works correctly
-- [ ] Error handling covers edge cases
-- [ ] TypeScript types are properly defined
-
-**Status**: Step 1 of 6 completed
-**How to test**: Create a simple test component that calls the service with mock data
-
----
-
-### Phase 2: Create Edit Event Form Components (UI Layer)
-
-**Objective**: Build reusable form components for event editing with proper validation.
-
-**Files to create:**
-- `src/components/groups/events/forms/EditEventForm.tsx`
-- `src/components/groups/events/forms/EditEventDialog.tsx`
-- `src/components/groups/events/forms/index.ts`
-
-**Implementation Steps:**
-1. **Create `EditEventForm.tsx`**
-   - Reuse form fields from existing wizard components
-   - Include all editable event properties
-   - Add form validation using react-hook-form
-   - Handle form submission and error states
-
-2. **Create `EditEventDialog.tsx`**
-   - Build modal wrapper using shadcn Dialog component
-   - Include form inside dialog
-   - Add cancel/save/delete action buttons
-   - Handle dialog open/close state
-
-3. **Add form validation**
-   - Reuse existing event validation schemas
-   - Add client-side validation feedback
-   - Prevent submission of invalid data
-
-4. **Mobile-responsive design**
-   - Ensure forms work on mobile devices
-   - Use proper spacing and sizing patterns
-   - Test touch interactions
-
-**Verification Criteria:**
-- [ ] Form renders all event fields correctly
-- [ ] Validation works as expected
-- [ ] Dialog opens and closes properly
-- [ ] Mobile responsive design functions
-- [ ] Error states display appropriately
-
-**Status**: Step 2 of 6 completed
-**How to test**: Open dialog with mock event data, verify all fields populate and validation works
-
----
-
-### Phase 3: Add Edit Button to Event Details Header
-
-**Objective**: Add admin-only edit button to existing event details header.
-
-**Files to modify:**
-- `src/components/groups/events/components/EventDetailsHeader.tsx`
-
-**Implementation Steps:**
-1. **Import required dependencies**
-   - Import `useEventAdminStatus` hook
-   - Import edit dialog components
-   - Add necessary state management
-
-2. **Add admin status check**
-   - Use existing `useEventAdminStatus` hook
-   - Only show edit button for verified admins
-   - Handle loading state while checking permissions
-
-3. **Add edit button UI**
-   - Place button in header alongside other actions
-   - Use appropriate icon (Edit/Pencil from lucide-react)
-   - Style consistently with existing buttons
-
-4. **Connect button functionality**
-   - Open edit dialog when clicked
-   - Pass current event data to form
-   - Handle dialog state management
-
-**Verification Criteria:**
-- [ ] Button only appears for group admins
-- [ ] Button opens edit dialog correctly
-- [ ] UI maintains existing layout and styling
-- [ ] Loading states work properly
-- [ ] Non-admins cannot see the button
-
-**Status**: Step 3 of 6 completed
-**How to test**: View event as admin (should see button) and as regular user (should not see button)
-
----
-
-### Phase 4: Integrate Edit Functionality with Event Details Page
-
-**Objective**: Complete integration of edit functionality with proper data flow and user feedback.
-
-**Files to modify:**
-- `src/components/groups/events/EventDetailsPage.tsx`
-
-**Implementation Steps:**
-1. **Add edit dialog state management**
-   - Manage dialog open/close state
-   - Handle edit mode vs view mode
-   - Coordinate between header and page components
-
-2. **Connect edit success to data refresh**
-   - Refetch event data after successful edit
-   - Update cache with new event information
-   - Handle optimistic updates if needed
-
-3. **Add user feedback**
-   - Show success toast after edit
-   - Display error messages for failed edits
-   - Add loading indicators during save
-
-4. **Handle edge cases**
-   - Prevent editing if user loses admin status
-   - Handle network errors gracefully
-   - Manage concurrent edit scenarios
-
-**Verification Criteria:**
-- [ ] Edit dialog integrates smoothly with page
-- [ ] Data refreshes after successful edit
-- [ ] User receives appropriate feedback
-- [ ] Error handling works correctly
-- [ ] Page state management is consistent
-
-**Status**: Step 4 of 6 completed
-**How to test**: Complete edit workflow - open dialog, modify event, save, verify changes appear
-
----
-
-### Phase 5: Add Delete Event Functionality (Optional)
-
-**Objective**: Allow admins to delete events with proper confirmation and safety checks.
-
-**Files to modify:**
-- `src/components/groups/events/forms/EditEventDialog.tsx`
-- `src/components/groups/events/services/eventUpdateService.ts`
-
-**Implementation Steps:**
-1. **Add delete confirmation dialog**
-   - Create nested confirmation dialog
-   - Warn about permanent deletion
-   - Show impact (number of registered players)
-
-2. **Implement delete service function**
-   - Add `deleteEvent` function to service
-   - Handle cascade deletion (player registrations, etc.)
-   - Include admin permission validation
-
-3. **Handle post-deletion navigation**
-   - Redirect to group calendar after deletion
-   - Show success message
-   - Update group events cache
-
-4. **Add safety restrictions**
-   - Prevent deletion of events with registered players (optional)
-   - Require additional confirmation for events in progress
-   - Log deletion actions for audit trail
-
-**Verification Criteria:**
-- [ ] Delete confirmation works properly
-- [ ] Service handles deletion correctly
-- [ ] Navigation works after deletion
-- [ ] Safety checks prevent accidental deletion
-- [ ] Audit logging functions (if implemented)
-
-**Status**: Step 5 of 6 completed
-**How to test**: Attempt to delete event, verify confirmation works and navigation redirects properly
-
----
-
-### Phase 6: Real-time Updates and Cache Management
-
-**Objective**: Ensure data consistency and optimal performance across the application.
-
-**Files to modify:**
-- `src/components/groups/events/hooks/useEditEvent.ts`
-- Various query invalidation in related hooks
-
-**Implementation Steps:**
-1. **Implement query invalidation**
-   - Invalidate group events queries after edit
-   - Update event details queries
-   - Refresh related data (player lists, etc.)
-
-2. **Add optimistic updates**
-   - Update local cache immediately on edit
-   - Revert on error
-   - Show loading states appropriately
-
-3. **Handle concurrent scenarios**
-   - Detect if event was modified by another user
-   - Show conflict resolution options
-   - Prevent data loss from concurrent edits
-
-4. **Optimize performance**
-   - Use selective query invalidation
-   - Minimize unnecessary re-renders
-   - Cache form data during editing
-
-**Verification Criteria:**
-- [ ] Cache updates correctly after edits
-- [ ] Optimistic updates work smoothly
-- [ ] Concurrent edit handling functions
-- [ ] Performance remains optimal
-- [ ] Data consistency maintained
-
-**Status**: Step 6 of 6 completed
-**How to test**: Edit event in multiple browser tabs simultaneously, verify data consistency
-
----
-
-## Success Metrics
-
-### User Experience
-- [ ] Admins can easily edit events with intuitive interface
-- [ ] Form validation provides clear feedback
-- [ ] Edit process is smooth and responsive
-- [ ] Mobile experience works seamlessly
-
-### Technical Quality
-- [ ] No breaking changes to existing functionality
-- [ ] TypeScript compilation passes without errors
-- [ ] Performance remains optimal
-- [ ] Proper error handling throughout
-
-### Security & Permissions
-- [ ] Only group admins can edit events
-- [ ] Proper validation at all levels
-- [ ] Audit trail for changes (optional)
-- [ ] Data integrity maintained
-
-### Maintainability
-- [ ] Components are small and focused (< 50 lines)
-- [ ] Proper separation of concerns
-- [ ] Clear interfaces and prop types
-- [ ] Comprehensive error handling
-
-This plan ensures a systematic, safe implementation that maintains all existing functionality while adding the requested admin edit capabilities.
+**Goal**: Create validation component for testing
+
+#### Create EventFormValidationTest.tsx:
+- Test date conversion with actual database values
+- Verify form submission data format
+- Debug logging for troubleshooting
+
+## Implementation Steps
+
+### Step 1: Create Utility Functions
+- DateUtils.ts for date conversion
+- FormValidation.ts for validation helpers
+
+### Step 2: Create Type Definitions
+- eventFormTypes.ts with all interfaces
+- Ensure no 'any' types used
+
+### Step 3: Build Field Components
+- EventDateField.tsx (priority - fixes main issue)
+- EventTimeField.tsx
+- EventBasicFields.tsx
+- EventCapacityFields.tsx
+- EventPricingFields.tsx
+
+### Step 4: Rebuild Main Form
+- New EditEventForm.tsx using sub-components
+- Proper form state management
+- Error boundaries
+
+### Step 5: Create Validation Test
+- EventFormValidationTest.tsx
+- Test with database value "5-30-25"
+- Verify correct display and submission
+
+### Step 6: Integration Testing
+- Test in EditEventDialog.tsx
+- Verify no breaking changes to existing functionality
+- Toast notifications using sonner (not shadcn toast)
+
+## Success Criteria
+1. Date "5-30-25" displays correctly as "May 30, 2025" in form
+2. All components under 50 lines
+3. No 'any' types used
+4. Mobile-first responsive design
+5. Proper error handling with FormErrorBoundary
+6. Working form submission with correct data format
+
+## File Structure After Rebuild
+```
+src/components/groups/events/forms/
+├── EditEventForm.tsx (≤50 lines)
+├── fields/
+│   ├── EventDateField.tsx (≤50 lines)
+│   ├── EventTimeField.tsx (≤50 lines)
+│   ├── EventBasicFields.tsx (≤50 lines)
+│   ├── EventCapacityFields.tsx (≤50 lines)
+│   └── EventPricingFields.tsx (≤50 lines)
+├── utils/
+│   ├── dateUtils.ts
+│   └── formValidation.ts
+├── types/
+│   └── eventFormTypes.ts
+└── validation/
+    └── EventFormValidationTest.tsx
+```
+
+This plan follows rules.md by:
+- Creating small, focused components (50 lines or less)
+- Using proper database types from @/integrations/supabase/types
+- Implementing mobile-first design patterns
+- Using Component Creation Template for structure
+- Using Error Debugging Template for date issue resolution
+- Avoiding 'any' types
+- Using correct toast imports (sonner)
+- Following MANDATORY TRANSPARENCY RULE
